@@ -3,10 +3,17 @@
 This repository contains the ground truth of information that needs to be covered by the tutorials of the Student Cluster Competition. 
 
 ## How To Use
+### Adding Content
 
-In order to suggest changes, please open a **Gitlab** `issue` on this repository and label it with the `Discussion` label. This can be done [here](https://gitlab.com/chpc-ace/scc/first-round/tutorials/central-dogma/-/issues).
+#### When editing existing content
 
-In this `issue`, suggest the changes that you recommend and motivate why you want to do this change.
+1. Fork this project to your personal Github profile.
+2. `git clone` your personal fork.
+4. Make the appropriate changes.
+5. `git add <relative_path_to_changed_file(s)>`
+6. `git commit -m "some_message_pertaining_to_changes_made"`
+7. `git push`
+8. Create a merge request to the upstream Tutorial project.
 
 ## ToC
 
