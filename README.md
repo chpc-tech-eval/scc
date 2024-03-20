@@ -85,7 +85,7 @@ Tutorial 2 deals with reverse proxy access for internal websites, central authen
 
 ### Part 3 - NFS
 - [x] Describe NFS to user and explain it's usefulness
-- Server setup
+- [x] Server setup
   - [x] Install nfs service
   - [x] set up NFS args `/etc/sysconfig/nfs`
   - [x] export home directory
@@ -94,3 +94,21 @@ Tutorial 2 deals with reverse proxy access for internal websites, central authen
   - [x] add to fstab
   - [x] mount 
 - [x] perform ssh keyless pass
+
+## Tutorial 3
+
+Tutorial 3 ......
+
+### Part 1 - Monitoring With Zabbix
+  - [x] Install And Configure The Zabbix Server On The Head Node
+  - [x] Zabbix Server Setup
+    - [x] Zabbix Web Interface Setup
+      - [x] System Configuration
+      - [x] Web Interface Configuration
+  - [x] Install And Configure The Zabbix Agent
+  - [x] Monitoring Your Infrastructure
+
+  ### Part 2 - Slurm Workload Manager
+  - [x] Prerequisites
+  - [x] Server Setup
+  - [x] Client Setup
