@@ -15,7 +15,7 @@ This repository contains the ground truth of information that needs to be covere
 7. `git push`
 8. Create a merge request to the upstream Tutorial project.
 
-## ToC
+## Table of Contents
 
 - [Tutorial 1](#tutorial-1)
 - [Tutorial 2](#tutorial-2)
