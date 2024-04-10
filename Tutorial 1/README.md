@@ -12,7 +12,7 @@
 1. [Generating SSH Keys]()
 1. [Network Primer]()
    - [Internal Intranet vs External Internet]()
-     - [WiFi Hotpot Example]()
+     - [WiFi Hotspot Example]()
    - [Network Ports, Services and Security Groups]()
    - [Associating an Externally Accessible Floating IP Address]()
 1. [Accessing your VM Using SSH vs the OpenStack Web Console]()
@@ -45,7 +45,7 @@ The goal of this tutorial is to introduce you to the competition platform and fa
 - **[Cloud computing](https://en.wikipedia.org/wiki/Cloud_computing)** is the **on-demand** delivery of **I.T. services** by a first-party (you) or third-party (external) provider over a network, possibly including the **internet**. This can allow you to access computing or other I.T. services wherever you are and at your convenience.
 - **[Infrastructure as a Service (IaaS)](https://en.wikipedia.org/wiki/Infrastructure_as_a_service)** is where physical or virtual hardware is presented to a user, but the user is not exposed to the underlying technology. In other words, this competition provides you with an IaaS experience by giving you a set of virtual machines that you can use for the competition. You cannot control the cloud environment that the virtual machines are provided on.
 - **Instances ([virtual machines](https://en.wikipedia.org/wiki/Virtual_machine) or 'VMs')** are software copies of virtual computers that are hosted within a physical computer (the **['host'](https://en.wikipedia.org/wiki/Host_(network))**). The host provides access to one or more virtual computers at the same time. This competition provides you with a set of virtual machines based on the **[CentOS 8](https://www.centos.org/about/)** operating system.
-
+ppp
 This tutorial will help you become familiar with Linux basics, such as navigating and configuring your hosts and network on the terminal. If you are new to Linux and need help getting more comfortable, please check out the resources tab on the learning system.
 
 <span id="fig1" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
