@@ -18,6 +18,8 @@ This repository contains the ground truth of information that needs to be covere
 1. `git commit -m "some_message_pertaining_to_changes_made"`
 1. Push your changes, back upstream to the branch you are currently working on `git push`.
 1. Once you are satisfied with the changes you've have been editing, eliminate all merge conflicts by pulling all upstream changes and deviations into your local working copy. `git pull`.
+   - If you are confident that your feature does or has not deviated from the upstream `main` branch, use `git pull` to automatically `fetch` and `merge` upstream changes from main into your feature branch.
+   - Alternatively, if your branch is old, or depends on / requires changes from upstream use `git fetch`, to `fetch` upstream changes and be able to preview them before merging. 
    - Eliminate your local conflicts and merge all upstream changes `git merge`.
    - Once all the conflicts have been resolved, and you've successfully merged all upstream changes, push your branch upstream.
 1. Create a pull request to the upstream main branch, to incorporate your feature.
