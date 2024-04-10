@@ -58,14 +58,17 @@ You can add an image or a code block, too.
 
 <details>
 <summary>RHEL Based Systems</summary>
-```shell
+
+```bash
    $ sudo dnf install package X
 ```
+
 </details>
 
 <details>
 <summary>Debian Based Systems</summary>
-```shell
+
+```sh
    $ sudo apt-get install lib_package-X
 ```
 
