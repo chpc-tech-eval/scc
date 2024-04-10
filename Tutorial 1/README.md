@@ -21,8 +21,15 @@
    - [Privilege Escalation and `Sudo`]()
    - [Linux Binaries, Libraries and Package Management]()
 1. [Install the High Performance LinPack (HPL) Benchmark]()
+   - [Install the GNU Compiler Collection (GCC)]()
+   - [Install OpenMPI]()
    - [Install the Automatically Tuned Linear Algebra Software (ATLAS) Math Library]()
    - [Fetch and Extract the HPC Source Tarball]()
+1. [Brief Introduction to Text Editors (Vi vs Vim vs Nano vs Emacs)]()
+   - [Copy and Edit the Make File for _your_ Target Architecture]()
+1. [Compile the HPL Source Code to Produce an Executable Binary]()
+   - [Editing _your_ PATH Variable]()
+   - [Dynamic and Static Libraries - Editing _your_ ATLAS Shared Object Libraries]()
 
 ## Overview
 
