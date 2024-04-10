@@ -5,8 +5,9 @@ This repository contains the ground truth of information that needs to be covere
 ## How To Use
 ### Adding Content
 
-#### When editing existing content
+Use the following guide on [Github Markdown Syntax Editing](https://docs.github.com/en/get-started/writing-on-.)
 
+#### When editing existing content
 
 1. `git clone` a local copy of the repository, to your personal work space.
 1. Create a new branch to work on. i.e. `git branch tutX_rework` followed by `git checkout tutX_rework`, or simply use a single command `git checkout -b tutX_rework`.
