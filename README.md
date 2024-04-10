@@ -7,13 +7,16 @@ This repository contains the ground truth of information that needs to be covere
 
 #### When editing existing content
 
-1. Fork this project to your personal Github profile.
-2. `git clone` your personal fork.
-4. Make the appropriate changes.
-5. `git add <relative_path_to_changed_file(s)>`
-6. `git commit -m "some_message_pertaining_to_changes_made"`
-7. `git push`
-8. Create a merge request to the upstream Tutorial project.
+
+1. `git clone` a local copy of the repository, to your personal work space.
+1. Create a new branch to work on. i.e. `git branch tutX_rework` followed by `git checkout tutX_rework`, or simply use a single command `git checkout -b tutX_rework`.
+   - Give the branch a sensible name.
+   - You are encouraged to push the branch back upstream so that collaborators can see what you are working on as you make the changes.
+1. Make the appropriate changes.
+1. `git add <relative_path_to_changed_file(s)>`
+1. `git commit -m "some_message_pertaining_to_changes_made"`
+1. `git push`
+1. Create a merge request to the upstream Tutorial project.
 
 ## Table of Contents
 
