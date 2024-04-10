@@ -12,11 +12,15 @@ This repository contains the ground truth of information that needs to be covere
 1. Create a new branch to work on. i.e. `git branch tutX_rework` followed by `git checkout tutX_rework`, or simply use a single command `git checkout -b tutX_rework`.
    - Give the branch a sensible name.
    - You are encouraged to push the branch back upstream so that collaborators can see what you are working on as you make the changes.
+   - Should you want to make relatively small and quick changes to someone else's feature, then you should branch their branch, and merge that feature, back into that branch before they merge their branch back into main. i.e. `git checkout -b tutX_rework_fixed_typo`.
 1. Make the appropriate changes.
 1. `git add <relative_path_to_changed_file(s)>`
 1. `git commit -m "some_message_pertaining_to_changes_made"`
-1. `git push`
-1. Create a merge request to the upstream Tutorial project.
+1. Push your changes, back upstream to the branch you are currently working on `git push`.
+1. Once you are satisfied with the changes you've have been editing, eliminate all merge conflicts by pulling all upstream changes and deviations into your local working copy. `git pull`.
+   - Eliminate your local conflicts and merge all upstream changes `git merge`.
+   - Once all the conflicts have been resolved, and you've successfully merged all upstream changes, push your branch upstream.
+1. Create a pull request to the upstream main branch, to incorporate your feature.
 
 ## Table of Contents
 
