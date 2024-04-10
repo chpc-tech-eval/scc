@@ -24,6 +24,23 @@ This repository contains the ground truth of information that needs to be covere
    - Once all the conflicts have been resolved, and you've successfully merged all upstream changes, push your branch upstream.
 1. Create a pull request to the upstream main branch, to incorporate your feature.
 
+#### Syntax and Style
+Make use of the following editing features of Github markdown
+[!NOTE]
+Highlights information that users should take into account, even when skimming.
+
+[!TIP]
+Optional information to help a user be more successful.
+
+[!IMPORTANT]
+Crucial information necessary for users to succeed.
+
+[!WARNING]
+Critical content demanding immediate user attention due to potential risks.
+
+[!CAUTION]
+Negative potential consequences of an action.
+
 ## Table of Contents
 
 - [Tutorial 1](#tutorial-1)
