@@ -30,6 +30,9 @@
 1. [Compile the HPL Source Code to Produce an Executable Binary]()
    - [Editing _your_ PATH Variable]()
    - [Dynamic and Static Libraries - Editing _your_ ATLAS Shared Object Libraries]()
+1. [Capturing the Above Commands as a Shell Script]()
+   - [Deploying Packages on Compute Node Using Ansible]()
+1. [Collaborating with your Team and Storing your Progress on Github]()
 
 ## Overview
 
