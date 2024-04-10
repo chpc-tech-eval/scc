@@ -3,7 +3,7 @@
 ## Table of Contents
 
 1. [Overview](#overview)
-1. [Part 1 - Accessing the Cloud](#part-1---accessing-the-cloud)
+1. [Accessing the Cloud](#part-1---accessing-the-cloud)
 1. [Linux Flavors and Distributions]()
 1. [OpenStack Instance Flavors]()
    - [Compute]()
