@@ -5,15 +5,79 @@ This repository contains the ground truth of information that needs to be covere
 ## How To Use
 ### Adding Content
 
+Use the following guide on [Github Markdown Syntax Editing](https://docs.github.com/en/get-started/writing-on-.)
+
 #### When editing existing content
 
-1. Fork this project to your personal Github profile.
-2. `git clone` your personal fork.
-4. Make the appropriate changes.
-5. `git add <relative_path_to_changed_file(s)>`
-6. `git commit -m "some_message_pertaining_to_changes_made"`
-7. `git push`
-8. Create a merge request to the upstream Tutorial project.
+1. `git clone` a local copy of the repository, to your personal work space.
+1. Create a new branch to work on. i.e. `git branch tutX_rework` followed by `git checkout tutX_rework`, or simply use a single command `git checkout -b tutX_rework`.
+   - Give the branch a sensible name.
+   - You are encouraged to push the branch back upstream so that collaborators can see what you are working on as you make the changes.
+   - Should you want to make relatively small and quick changes to someone else's feature, then you should branch their branch, and merge that feature, back into that branch before they merge their branch back into main. i.e. `git checkout -b tutX_rework_fixed_typo`.
+1. Make the appropriate changes.
+1. `git add <relative_path_to_changed_file(s)>`
+1. `git commit -m "some_message_pertaining_to_changes_made"`
+1. Push your changes, back upstream to the branch you are currently working on `git push`.
+1. Once you are satisfied with the changes you've have been editing, eliminate all merge conflicts by pulling all upstream changes and deviations into your local working copy. `git pull`.
+   - If you are confident that your feature does or has not deviated from the upstream `main` branch, use `git pull` to automatically `fetch` and `merge` upstream changes from main into your feature branch.
+   - Alternatively, if your branch is old, or depends on / requires changes from upstream use `git fetch`, to `fetch` upstream changes and be able to preview them before merging. 
+   - Eliminate your local conflicts and merge all upstream changes `git merge`.
+   - Once all the conflicts have been resolved, and you've successfully merged all upstream changes, push your branch upstream.
+1. Create a pull request to the upstream main branch, to incorporate your feature.
+
+### Syntax and Style
+
+Make use of the following editing features of Github markdown
+> [!NOTE]
+> Highlights information that users should take into account, even when skimming.
+
+> [!TIP]
+> Optional information to help a user be more successful.
+
+> [!IMPORTANT]
+> Crucial information necessary for users to succeed.
+
+> [!WARNING]
+> Critical content demanding immediate user attention due to potential risks.
+
+> [!CAUTION]
+> Negative potential consequences of an action.
+
+### Foldable Code Blocks
+
+For different commands, flavors or options, tabbed source code block are not available to use fordable blocks instead:
+<details>
+<summary>Tips for collapsed sections</summary>
+
+### You can add a header
+
+You can add text within a collapsed section. 
+
+You can add an image or a code block, too.
+
+```ruby
+   puts "Hello World"
+```
+</details>
+
+<details>
+<summary>RHEL Based Systems</summary>
+
+```bash
+   $ sudo dnf install package X
+```
+
+</details>
+
+<details>
+<summary>Debian Based Systems</summary>
+
+```sh
+   $ sudo apt-get install lib_package-X
+```
+
+</details>
+
 
 ## Table of Contents
 
