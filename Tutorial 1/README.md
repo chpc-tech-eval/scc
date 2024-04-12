@@ -15,6 +15,8 @@
      - [WiFi Hotspot Example]()
    - [Network Ports, Services and Security Groups]()
    - [Associating an Externally Accessible Floating IP Address]()
+   - [DHCP Server for Public Facing Interface on Headnode]()
+     - [Routing Table and Gateway for External Interface vs Internal]()
 1. [Accessing your VM Using SSH vs the OpenStack Web Console]()
 1. [Introduction to Basic Linux Administration]()
    - [Username and Password]()

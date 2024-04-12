@@ -5,7 +5,13 @@
 
 This is a test modification.
 
-- [Overview](#overview)
+1. [Overview](#overview)
+1. [Spinning Up a Compute Node in OpenStack]()
+   - [Compute Node Considerations]()
+1. [Accessing Your Compute Node]()
+   - [Command Line Proxy Jump Directive]()
+   - [Permanent `~/.ssh/config` Configuration]()
+
 - [Part 1 - Remote Web Service Access](#part-1---remote-web-service-access)
 - [Part 2 - Local User Account Management](#part-2---local-user-account-management)
   - [Create CentOS User Account](#create-centos-user-account)
