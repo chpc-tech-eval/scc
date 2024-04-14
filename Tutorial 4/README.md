@@ -325,6 +325,20 @@ HPC Challenge (or HPCC) is benchmark suite which contains 7 micro-benchmarks use
 <span style="color: #800000">
   !!! Have the output `hpccoutf.txt` AND `Make.<architecture>` **configuration file** ready for instructors to view on request.
 </span>
+<<<<<<< HEAD
+=======
+# Student Cluster Compeititon - Tutorial 5
+
+## Table of Contents
+
+- [Overview](#overview)
+- [GROMACS Application Benchmark](#gromacs-application-benchmark)
+  - [Part 1: Installation](#part-1---installation)
+  - [Part 2: Benchmark](#part-2---benchmark)
+    - [Benchmark 1 (adh_cubic):](#benchmark-1-adh_cubic)
+    - [Benchmark 2 (1.5M_water):](#benchmark-2-15m_water)
+  - [Part 3: Protein Visualisation](#part-3-protein-visualisation)
+>>>>>>> tut2_toc
 
 ## Overview
 
