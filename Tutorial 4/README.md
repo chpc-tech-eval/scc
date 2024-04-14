@@ -17,7 +17,7 @@
    1. [Prerequisites](#prerequisites)
    1. [Server Setup](#server-setup)
    1. [Client Setup](#client-setup)
-   1. [Configure Grafana Dashboard for SLURM]
+   1. [Configure Grafana Dashboard for SLURM]()
 1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
    1. [Protein Visualisation](#protein-visualisation)
 
