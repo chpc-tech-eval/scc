@@ -2,6 +2,17 @@
 
 ## Table of Contents
 
+1. [Overview](#overview)
+1. [Prometheus]()
+1. [Node Exporter]()
+1. [Grafana]()
+   - [Configuring Grafana Dashboards]()
+1. [Slurm Workload Manager](#slurm-workload-manager)
+   - [Prerequisites](#prerequisites)
+   - [Server Setup](#server-setup)
+   - [Client Setup](#client-setup)
+
+
 - [Part 1 - Enviroment Modules with Lmod](#part-1---enviroment-modules-with-lmod)
   - [Installing Lmod](#installing-lmod)
   - [Using Lmod](#using-lmod)
@@ -37,9 +48,26 @@ In this tutorial you will:
 - [ ] Optimise HPL.
 - [ ] Download and compile the High Performance Computing Challenge (HPCC) benchmark.
 
+> [!TIP]
+> You're going to be manipulating both your headnode, as well as your compute node(s) in this tutorial.
+>
+> You are *strongly* advised to make use of a terminal multiplexer, such as `tmux` before making a connection to your VMs.
+>
+>```bash
+>$ tmux
+>```
+>
+> Split the window into two separate panes with `ctrl + b |`.
+> SSH into your headnode, on the one pane, and ssh into your compute node with a hop over your headnode, recall the jumpbox directive. 
+
 <div style="page-break-after: always;"></div>
 
-## Part 1 - Enviroment Modules with Lmod
+## Prometheus
+
+
+## Grafana
+
+## Node Exporter
 
 Environment Modules provide a convenient way to dynamically change a user's environment through _modulefiles_ to simplify software and library use when there are multiple versions of a particular software package (e.g. Python2.7 and Python 3.x) installed on the system. Environment Module parameters typically involve, among other things, modifying the PATH environment variable for locating a particular package (such as dynamically changing the path to Python from `/usr/local/bin/python2.7` to `/usr/local/bin/python3`).
 
@@ -325,20 +353,6 @@ HPC Challenge (or HPCC) is benchmark suite which contains 7 micro-benchmarks use
 <span style="color: #800000">
   !!! Have the output `hpccoutf.txt` AND `Make.<architecture>` **configuration file** ready for instructors to view on request.
 </span>
-<<<<<<< HEAD
-=======
-# Student Cluster Compeititon - Tutorial 5
-
-## Table of Contents
-
-- [Overview](#overview)
-- [GROMACS Application Benchmark](#gromacs-application-benchmark)
-  - [Part 1: Installation](#part-1---installation)
-  - [Part 2: Benchmark](#part-2---benchmark)
-    - [Benchmark 1 (adh_cubic):](#benchmark-1-adh_cubic)
-    - [Benchmark 2 (1.5M_water):](#benchmark-2-15m_water)
-  - [Part 3: Protein Visualisation](#part-3-protein-visualisation)
->>>>>>> tut2_toc
 
 ## Overview
 
