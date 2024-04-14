@@ -4,22 +4,22 @@
 
 1. [Overview](#overview)
 1. [Prometheus]()
-   2. [Edit YML Configuration File]()
-   2. [SSH Port Forwarding](ssh-port-forwarding)
-   2. [X11 Forwarding](#x11-forwarding)
-   2. [Dynamic SOCKS Proxy](#dynamic-socks-proxy)
-   2. [Configure Prometheus as a Service]()
+   1. [Edit YML Configuration File]()
+   1. [SSH Port Forwarding](ssh-port-forwarding)
+   1. [X11 Forwarding](#x11-forwarding)
+   1. [Dynamic SOCKS Proxy](#dynamic-socks-proxy)
+   1. [Configure Prometheus as a Service]()
 1. [Node Exporter]()
-   2. [Configure Node Exporter as a Service]()
+   1. [Configure Node Exporter as a Service]()
 1. [Grafana]()
-   2. [Configuring Grafana Dashboards]()
+   1. [Configuring Grafana Dashboards]()
 1. [Slurm Workload Manager](#slurm-workload-manager)
-   2. [Prerequisites](#prerequisites)
-   2. [Server Setup](#server-setup)
-   2. [Client Setup](#client-setup)
-   2. [Configure Grafana Dashboard for SLURM]
+   1. [Prerequisites](#prerequisites)
+   1. [Server Setup](#server-setup)
+   1. [Client Setup](#client-setup)
+   1. [Configure Grafana Dashboard for SLURM]
 1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
-   2. [Protein Visualisation](#protein-visualisation)
+   1. [Protein Visualisation](#protein-visualisation)
 
 ## Overview
 
