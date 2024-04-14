@@ -3,6 +3,8 @@
 ## Table of Contents
 
 1. [Overview](#overview)
+   1. [Structure of the Tutorials]()
+   1. [Getting Help]()
 1. [Accessing the Cloud](#part-1---accessing-the-cloud)
 1. [Linux Flavors and Distributions]()
 1. [OpenStack Instance Flavors]()
@@ -12,11 +14,11 @@
 1. [Generating SSH Keys]()
 1. [Network Primer]()
    1. [Internal Intranet vs External Internet]()
-     1. [WiFi Hotspot Example]()
+      1. [WiFi Hotspot Example]()
    1. [Network Ports, Services and Security Groups]()
    1. [Associating an Externally Accessible Floating IP Address]()
    1. [DHCP Server for Public Facing Interface on Headnode]()
-     1. [Routing Table and Gateway for External Interface vs Internal]()
+      1. [Routing Table and Gateway for External Interface vs Internal]()
 1. [Accessing your VM Using SSH vs the OpenStack Web Console]()
 1. [Introduction to Basic Linux Administration]()
    1. [Username and Password]()
@@ -32,9 +34,14 @@
 1. [Compile the HPL Source Code to Produce an Executable Binary]()
    1. [Editing _your_ PATH Variable]()
    1. [Dynamic and Static Libraries - Editing _your_ ATLAS Shared Object Libraries]()
-1. [Capturing the Above Commands as a Shell Script]()
+   1. [Configuring _your_`HPL.dat` file using `lscpu` and `lsmem`]()
+   1. [Capturing the Above Commands as a Shell Script]()
    1. [Deploying Packages on Compute Node Using Ansible]()
-1. [Collaborating with your Team and Storing your Progress on Github]()
+1. [Collaborating with your Team and Storing your Progress on GitHub]()
+   1. [Forking the Tutorials into Your Own Team's Private Git Repository]()
+      1. [Branch, Merge and Pull Requests to your Team Captain's Repository]()
+      1. [Editing the Git Markdown Files to Track Your Team's Progress]()
+   1. [Raising Issues and Reporting Bugs with the Tutorial Content]()
 
 ## Overview
 
@@ -66,7 +73,7 @@ You first need to configure the network settings of your VMs properly before you
 
 <u>In this tutorial you will:</u>
 
-- [ ] Learn IT concepts like cloud computing, virtualisation and remote connections.
+- [x] Learn IT concepts like cloud computing, virtualisation and remote connections.
 - [ ] Learn how to use the CHPC's cloud computing environment.
 - [ ] Learn what SSH is and how to use it.
 - [ ] Learn about Linux password management.
