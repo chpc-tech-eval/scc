@@ -4,37 +4,22 @@
 
 1. [Overview](#overview)
 1. [Prometheus]()
+   2. [Edit YML Configuration File]()
+   2. [SSH Port Forwarding](ssh-port-forwarding)
+   2. [X11 Forwarding](#x11-forwarding)
+   2. [Dynamic SOCKS Proxy](#dynamic-socks-proxy)
+   2. [Configure Prometheus as a Service]()
 1. [Node Exporter]()
+   2. [Configure Node Exporter as a Service]()
 1. [Grafana]()
-   - [Configuring Grafana Dashboards]()
+   2. [Configuring Grafana Dashboards]()
 1. [Slurm Workload Manager](#slurm-workload-manager)
-   - [Prerequisites](#prerequisites)
-   - [Server Setup](#server-setup)
-   - [Client Setup](#client-setup)
-
-
-- [Part 1 - Enviroment Modules with Lmod](#part-1---enviroment-modules-with-lmod)
-  - [Installing Lmod](#installing-lmod)
-  - [Using Lmod](#using-lmod)
-  - [Adding modules to Lmod](#adding-modules-to-lmod)
-- [Part 2 - High Performance LINPACK (HPL) Benchmark](#part-2---high-performance-linpack-hpl-benchmark)
-  - [System Libraries](#system-libraries)
-    - [Static Libraries](#static-libraries)
-    - [Dynamic Libraries](#dynamic-libraries)
-  - [Message Passing Interface (MPI)](#message-passing-interface-mpi)
-  - [Installing HPL](#installing-hpl)
-  - [Adding a Second Compute Node](#adding-a-second-compute-node)
-  - [Optimising HPL](#optimising-hpl)
-    - [Theoretical Peak Performance](#theoretical-peak-performance)
-- [Part 3 - HPC Challenge](#part-3---hpc-challenge)
-
-- [Overview](#overview)
-- [GROMACS Application Benchmark](#gromacs-application-benchmark)
-  - [Part 1: Installation](#part-1---installation)
-  - [Part 2: Benchmark](#part-2---benchmark)
-    - [Benchmark 1 (adh_cubic):](#benchmark-1-adh_cubic)
-    - [Benchmark 2 (1.5M_water):](#benchmark-2-15m_water)
-  - [Part 3: Protein Visualisation](#part-3-protein-visualisation)
+   2. [Prerequisites](#prerequisites)
+   2. [Server Setup](#server-setup)
+   2. [Client Setup](#client-setup)
+   2. [Configure Grafana Dashboard for SLURM]
+1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
+   2. [Protein Visualisation](#protein-visualisation)
 
 ## Overview
 
@@ -58,12 +43,22 @@ In this tutorial you will:
 >```
 >
 > Split the window into two separate panes with `ctrl + b |`.
-> SSH into your headnode, on the one pane, and ssh into your compute node with a hop over your headnode, recall the jumpbox directive. 
+> SSH into your headnode, on the one pane, and ssh into your compute node with a hop over your headnode, recall the jumpbox directive.
+>
+> **************Insert image of terminal here***************
 
 <div style="page-break-after: always;"></div>
 
 ## Prometheus
 
+Prometheus can be [installed](https://prometheus.io/docs/prometheus/latest/installation/) using either pre-compiled binaries, source, docker containers or from configuration management systems such as Ansible or Puppet.
+
+From the [Pre-Compiled Binaries Download Page](https://prometheus.io/download/), 
+
+### SSH Port Forwarding
+### X11 Forwarding
+Starting a browser on the remote server
+### Dynamics SOCKS Proxy
 
 ## Grafana
 
