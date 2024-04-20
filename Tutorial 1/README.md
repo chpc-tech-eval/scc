@@ -2,46 +2,67 @@
 
 ## Table of Contents
 
-1. [Overview](#overview)
-   1. [Structure of the Tutorials]()
-   1. [Getting Help]()
-1. [Accessing the Cloud](#part-1---accessing-the-cloud)
-1. [Linux Flavors and Distributions]()
-1. [OpenStack Instance Flavors]()
-   1. [Compute]()
-   1. [Memory]()
-   1. [Storage]()
-1. [Generating SSH Keys]()
-1. [Network Primer]()
-   1. [Internal Intranet vs External Internet]()
-      1. [WiFi Hotspot Example]()
-   1. [Network Ports, Services and Security Groups]()
-   1. [Associating an Externally Accessible Floating IP Address]()
-   1. [DHCP Server for Public Facing Interface on Headnode]()
-      1. [Routing Table and Gateway for External Interface vs Internal]()
-1. [Accessing your VM Using SSH vs the OpenStack Web Console]()
-1. [Introduction to Basic Linux Administration]()
-   1. [Username and Password]()
-   1. [Privilege Escalation and `Sudo`]()
-   1. [Linux Binaries, Libraries and Package Management]()
-1. [Install the High Performance LinPack (HPL) Benchmark]()
-   1. [Install the GNU Compiler Collection (GCC)]()
-   1. [Install OpenMPI]()
-   1. [Install the Automatically Tuned Linear Algebra Software (ATLAS) Math Library]()
-   1. [Fetch and Extract the HPC Source Tarball]()
-1. [Brief Introduction to Text Editors (Vi vs Vim vs Nano vs Emacs)]()
-   1. [Copy and Edit the Make File for _your_ Target Architecture]()
-1. [Compile the HPL Source Code to Produce an Executable Binary]()
-   1. [Editing _your_ PATH Variable]()
-   1. [Dynamic and Static Libraries - Editing _your_ ATLAS Shared Object Libraries]()
-   1. [Configuring _your_`HPL.dat` file using `lscpu` and `lsmem`]()
-   1. [Capturing the Above Commands as a Shell Script]()
-   1. [Deploying Packages on Compute Node Using Ansible]()
-1. [Collaborating with your Team and Storing your Progress on GitHub]()
-   1. [Forking the Tutorials into Your Own Team's Private Git Repository]()
-      1. [Branch, Merge and Pull Requests to your Team Captain's Repository]()
-      1. [Editing the Git Markdown Files to Track Your Team's Progress]()
-   1. [Raising Issues and Reporting Bugs with the Tutorial Content]()
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
+
+- [Student Cluster Competition - Tutorial 1](#student-cluster-competition---tutorial-1)
+    - [Table of Contents](#table-of-contents)
+    - [Overview](#overview)
+    - [Network Primer](#network-primer)
+        - [Internal Intranet vs External Internet](#internal-intranet-vs-external-internet)
+            - [WiFi Hotspot Example](#wifi-hotspot-example)
+            - [WhatIsMyIp.com](#whatismyipcom)
+            - [Windows PowerShell Commands](#windows-powershell-commands)
+                - [`ipconfig`](#ipconfig)
+                - [`ping 8.8.8.8`](#ping-8888)
+                - [`route print`](#route-print)
+                - [`tracert`](#tracert)
+        - [Understanding NAT](#understanding-nat)
+            - [Publicly Accessible IP Address](#publicly-accessible-ip-address)
+            - [Network Ports](#network-ports)
+            - [Internal Subnet](#internal-subnet)
+            - [Default Gateway and Routing Table](#default-gateway-and-routing-table)
+    - [Launching your First Open Stack Virtual Machine Instance](#launching-your-first-open-stack-virtual-machine-instance)
+        - [Accessing the CHPC's Cloud](#accessing-the-chpcs-cloud)
+        - [Verify your Teams' Project Workspace](#verify-your-teams-project-workspace)
+        - [Verify your Teams' Available Resources and Launch a New Instance](#verify-your-teams-available-resources-and-launch-a-new-instance)
+        - [Instance Name](#instance-name)
+        - [Linux Flavors and Distributions](#linux-flavors-and-distributions)
+            - [Desktop Usage vs Server](#desktop-usage-vs-server)
+            - [Table of Linux Distributions](#table-of-linux-distributions)
+        - [OpenStack Instance Flavors](#openstack-instance-flavors)
+            - [Compute](#compute)
+            - [Memory](#memory)
+            - [Storage](#storage)
+        - [Networks, Ports, Services and Security Groups](#networks-ports-services-and-security-groups)
+        - [Generating SSH Keys](#generating-ssh-keys)
+        - [Verify that your Instance was Successfully Deployed and Launched](#verify-that-your-instance-was-successfully-deployed-and-launched)
+        - [Associating an Externally Available IP Address](#associating-an-externally-available-ip-address)
+        - [Success State, Resource Management and Trouble Shooting](#success-state-resource-management-and-trouble-shooting)
+            - [Deleting Instances](#deleting-instances)
+            - [Deleting Volumes](#deleting-volumes)
+            - [Dissociating and Releasing Floating IPs](#dissociating-and-releasing-floating-ips)
+    - [Introduction to Basic Linux Administration](#introduction-to-basic-linux-administration)
+        - [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
+            - [SSH Through a Linux Terminal](#ssh-through-a-linux-terminal)
+            - [PuTTY and / or Windows Power Shell](#putty-and--or-windows-power-shell)
+        - [Username and Password](#username-and-password)
+        - [Brief Introduction to Text Editors (Vi vs Vim vs Nano vs Emacs)](#brief-introduction-to-text-editors-vi-vs-vim-vs-nano-vs-emacs)
+        - [Privilege Escalation and `sudo`](#privilege-escalation-and-sudo)
+        - [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
+        - [Verifying Instance Hostname and `/etc/hosts` File](#verifying-instance-hostname-and-etchosts-file)
+        - [Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark](#install-dependencies-and-fetch-source-files-for-high-performance-linpack-hpl-benchmark)
+            - [Install the GNU Compiler Collection (GCC)](#install-the-gnu-compiler-collection-gcc)
+            - [Install OpenMPI](#install-openmpi)
+            - [Install ATLAS Math Library](#install-atlas-math-library)
+            - [Fetch and Extract the HPC Source Tarball](#fetch-and-extract-the-hpc-source-tarball)
+            - [Copy and Edit the Makefile for _your_ Target Architecture](#copy-and-edit-the-makefile-for-_your_-target-architecture)
+        - [Compile the HPL Source Code to Produce an Executable Binary](#compile-the-hpl-source-code-to-produce-an-executable-binary)
+            - [Editing _your_ PATH Variable](#editing-_your_-path-variable)
+                - [Dynamic and Static Libraries: Editing _Your_ ATLAS Shared Object Files](#dynamic-and-static-libraries-editing-_your_-atlas-shared-object-files)
+        - [Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`](#configuring-_your_-hpldat-file-using-lscpu-and-lsmem)
+
+<!-- markdown-toc end -->
 
 ## Overview
 
@@ -84,7 +105,23 @@ You first need to configure the network settings of your VMs properly before you
 
 <div style="page-break-after: always;"></div>
 
-## Part 1 - Accessing the Cloud
+## Network Primer
+### Internal Intranet vs External Internet
+#### WiFi Hotspot Example
+#### WhatIsMyIp.com
+#### Windows PowerShell Commands
+##### `ipconfig`
+##### `ping 8.8.8.8`
+##### `route print`
+##### `tracert`
+### Understanding NAT
+#### Publicly Accessible IP Address
+#### Network Ports
+#### Internal Subnet
+#### Default Gateway and Routing Table
+## Launching your First Open Stack Virtual Machine Instance
+
+### Accessing the CHPC's Cloud
 
 > **! >>>** _In these tutorials, an asterisk ('\*') or a triangle brackets ('\<\>') are placeholders. You will need to fill in the correct information relevant to you. The line `~$` represents that the command following it is to be typed in a terminal and should not be included when typing the command._
 
@@ -113,9 +150,84 @@ In this part, you will be guided through using the ACE Lab's network to gain acc
 
 <div style="page-break-after: always;"></div>
 
-## Part 1A - IP addresses and Routing
+### Verify your Teams' Project Workspace
 
-### Configuring your VMs
+TODO: Screenshot from Workspace : Projects
+
+### Verify your Teams' Available Resources and Launch a New Instance
+
+TODO: Picture of Compute -> Overview
+TODO: Picture of Compute -> Instances
+TODO: Picture of Compute -> Launch Instance
+
+### Instance Name
+### Linux Flavors and Distributions
+
+#### Desktop Usage vs Server
+
+Daily driver
+
+#### Table of Linux Distributions
+
+Explain package managers
+
+| Package Management System | Flavor                                                                                              | Description | Versions Available as Cloud Instances | General Recommendations and Comments |
+| ---                       | ---                                                                                                 | ---         | ---                                   | ---                                  |
+| RPM                       | [Red Hat Enterprise Linux](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux) |             |                                       |                                      |
+|                           | [Rocky Linux](https://rockylinux.org/)                                                              |             |                                       |                                      |
+|                           | [Alma Linux](https://almalinux.org/)                                                                |             |                                       |                                      |
+|                           | [CentOS Stream](https://www.centos.org/centos-stream/)                                              |             |                                       |                                      |
+|                           | [Fedora](https://fedoraproject.org/)                                                                |             |                                       |                                      |
+|                           | [OpenSUSE](https://www.opensuse.org/)                                                               |             |                                       |                                      |
+| ---                       | ---                                                                                                 | ---         | ---                                   | ---                                  |
+| APT                       | [Debian](https://www.debian.org/)                                                                   |             |                                       |                                      |
+|                           | [Ubuntu](https://ubuntu.com/)                                                                       |             |                                       |                                      |
+|                           | [Linux Mint](https://linuxmint.com/)                                                                |             |                                       |                                      |
+|                           | [Pop! OS](https://pop.system76.com/)                                                                |             |                                       |                                      |
+|                           | [Kali Linux](https://www.kali.org/)                                                                 |             |                                       |                                      |
+| ---                       | ---                                                                                                 | ---         | ---                                   | ---                                  |
+| Pacman                    | [Arch Linux](https://archlinux.org/)                                                                |             |                                       |                                      |
+|                           | [Manjaro](https://manjaro.org/)                                                                     |             |                                       |                                      |
+| ---                       | ---                                                                                                 | ---         | ---                                   | ---                                  |
+| Portage                   | [Gentoo](https://www.gentoo.org/)                                                                   |             |                                       |                                      |
+| ---                       | ---                                                                                                 | ---         | ---                                   | ---                                  |
+| Source-Based              | [Linux From Scratch](https://www.gentoo.org/)                                                       |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+ 
+
+### OpenStack Instance Flavors
+
+Available resource distribution, headnode vs compute node
+
+#### Compute
+#### Memory
+#### Storage
+
+
+### Networks, Ports, Services and Security Groups
+
+### Generating SSH Keys
+
+### Verify that your Instance was Successfully Deployed and Launched
+
+TODO: Picture of Launch Instance
+TODO: Picture of Power State Running
+
+### Associating an Externally Available IP Address
+
+TODO: Picture Actions -> Associate Floating IP
+TODO: Picture +
+TODO: Picture Select Pool
+TODO: Associate Floating IP
+
+### Success State, Resource Management and Trouble Shooting
+#### Deleting Instances
+#### Deleting Volumes
+#### Dissociating and Releasing Floating IPs
+
+## Introduction to Basic Linux Administration
+
+### Accessing your VM Using SSH vs the OpenStack Web Console (VNC)
 
 The VMs are running the **CentOS 8 minimal** operating system. This means that they do not contain a graphical environment for you to use a mouse and keyboard with. You will only be able to manipulate the operating system using the command line, or terminal. 
 
@@ -154,94 +266,6 @@ You can also check the routing table using the command below. Routing is used to
 
 <div style="page-break-after: always;"></div>
 
-#### Network Manager and Networking Setup
-
-You have been assigned IP addresses for your VMs. To identify these, go to the OpenStack user interface and navigate to `Compute -> Instances`. In the list of virtual machines presented to you, click the name of the virtual machine instance, and navigate to the "**Interfaces**" tab (refer to [Figure 4.1 below](#fig4.1)). This list contains the IP addresses assigned to each of your VM network interfaces.
-
-For example, if you have `enp3s0` and `enp4s0`, then you should see two IP addresses listed in the OpenStack interface, such as `10.128.24.x` and `10.0.0.x`. **You absolutely have to use the correct IP addresses for the correct interfaces, as your network may not work if you do not.**
-
-<span id="fig4.1" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="test" src="./resources/ips_openstack.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 4.1: The IP addresses assigned to your interfaces for inside of your VM.</i></span>
-</span>
-
-You can verify which network interface you are modifying by corroborating the [MAC-Address](https://en.wikipedia.org/wiki/MAC_address) from the `ip a` command (in your VM instances) and from those listed in OpenStack (refer to [Figure 4.2 below](#fig4.2)).
-
-<span id="fig4.2" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="test" src="./resources/mac_openstack.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 4.2: The MAC addresses assigned to your interfaces for inside of your VM.</i></span>
-</span>
-
-**CentOS 8** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
-
-##### Head Node (`nmtui`)
-
-For the **head node**, create a new network definition using the `nmtui` graphical tool using the following steps:
-
-0. First we must make sure that our network interfaces are managed by `Network Manager`. By default, this should already be the case. Use the following command to check if the network interfaces are managed:
-
-    ```bash
-    ~$ nmcli dev
-    ```
-
-    You should see something **other than "unmanaged"** next to each of the interfaces (excluding `lo`). If any of your network interfaces (other than `lo`) say "unmanaged", do the following:
-
-
-    ```bash
-   ~$ nmcli dev set <interface> managed yes
-    ```
-    
-1. The `nmtui` tool is a console-graphical tool used to set up and manage network connections for `Network Manager`.
-
-    ```bash
-    ~$ nmtui
-    ```
-
-2. You'll be presented with a screen, select `Edit a connection`, followed by `<Add>` and then `Ethernet`.
-
-3. For **Profile Name**, type the name of the interface you want to assign an IP address to, like `enp3s0` or `enp4s0`, and type the same thing for **Device** (in this instance, **Device** means **interface**).
-
-4. For **IPv4 CONFIGURATION**, change `<Automatic>` to `<Manual>`. This tells NM that we want to assign a static IP address to the connection. Hit enter on `<Show>` to the right of **IPv4 CONFIGURATION** and enter the following information:
-
-    - **Addresses**: Hit `<Add>` and enter the IP address (found in OpenStack) for this interface. After the IP address, add the text "/24" to the end. It should read as `<ip_address>/24` with no spaces. The "/24" is the subnet mask of the IP address in [CIDR notation](#part-1---accessing-the-cloud).
-    - **Gateway**: Enter the gateway address here. This will be the ACE Lab gateway for the external network of the head node.
-    - **DNS servers**: Hit `<Add>` and enter `8.8.8.8`. This is the public DNS server of Google and is used to look up website names. (**NB: DNS is explained later!**)
-
-5. Hit `<OK>` at the bottom of the screen.
-
-6. _Repeat the above processes for any other network interface you want to give an IP address to, if there are more on your machine (you can use `ip a` to check how many there are)._
-
-7. The networks should now be active. You can confirm this by going `<Back>` and then to `Activate a connection`. If you see stars to the left of each of the networks that you have created, then the networks are active. If not, hit enter on the selected network to active it.
-
-8. Your **head node** should now have the correct IP addresses. Exit `nmtui` and check the networking setup is correct. To do so, use the following commands:
-
-    ```bash
-    ~$ ip a
-    ~$ ip route 
-    ```
-
-    - `ip a` will show you the interfaces and their assigned IP addresses.
-    - `ip route` will list the interfaces and their assigned routes.
-
-##### Compute Node (`nmcli`)
-
-You must also set the static IP addressing for all other nodes in your cluster. In order to explore different options for doing so, please use the `nmcli` command. This is the command-line interface (CLI) for `Network Manager`, which is an alternative to the above `nmtui`, which is simply a graphical wrapper for the CLI.
-
-Please look at the following website in order to get the commands that you will need to create a static IP address network connection using the CLI: [https://docs.fedoraproject.org/en-US/Fedora/25/html/Networking_Guide/sec-Connecting_to_a_Network_Using_nmcli.html](https://docs.fedoraproject.org/en-US/Fedora/25/html/Networking_Guide/sec-Connecting_to_a_Network_Using_nmcli.html). Follow the **Adding a Static Ethernet Connection** section. **Note that the IP addresses used in this web guide will not be the same as the ones that you need to use for your node(s) and some of the commands may not be relevant to you.**
-
-At this point you should test connectivity between your nodes. Using the `ping` command, you can see whether the nodes can speak to each other via the network. From your head node, try to ping your compute node:
-
-```bash
-~$ ping <compute_node_ip>
-```
-
-If you get a timeout, then things are not working. Try to check your network configurations again.
-
-_**Please read [what-is-ip-routing](https://study-ccna.com/what-is-ip-routing/) to gain a better understanding of IP routing.**_ This will be impoortant for the rest of this competition and can help your understanding when debugging issues.
-
-<div style="page-break-after: always;"></div>
-
-### Connecting To Your VMs
 
 Once you have the network configured correctly on your VMs you can move on to using the `ssh` command to access the VMs via a terminal. To access the VM network, you first need to log in to the ACE Lab's `ssh` server, as mentioned in the [overview section](#overview).
 
@@ -254,7 +278,7 @@ Once you have the network configured correctly on your VMs you can move on to us
 4. Once connected to the head node of your virtual cluster, you can connect to the compute node of your cluster.
 ```
 
-#### Linux Users
+#### SSH Through a Linux Terminal
 
 Most Linux distributions already include an `ssh` client via `openssh`. To access this, simply open a terminal session and run the command `ssh` with the parameters necessary for what you want to achieve.
 
@@ -273,7 +297,7 @@ Most Linux distributions already include an `ssh` client via `openssh`. To acces
 3. The compute node can then be accessed in the same way, but via the head node now, as the **ACE Lab SSH server does not have direct access to the compute node**. Please refer to [Figure 1](#fig1).
 
 
-#### Microsoft Windows Users
+#### PuTTY and / or Windows Power Shell
 
 If you are using a **Microsoft Windows** environment you can use a tool called `PuTTY` ([Click here to download](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)) to connect to ssh.ace.chpc.ac.za. With `PuTTY`, steps 2 and 3 should be the same.
 
@@ -281,68 +305,11 @@ Please note that using the command `ssh` or connecting with `PuTTY` creates a ne
 
 <div style="page-break-after: always;"></div>
 
-## Part 1B - IP Tables, Firewall and NAT
-
-`Firewalld` is a firewall management daemon (service) available for many Linux distributions which acts as a front-end for the `iptables` packet filtering system provided by the Linux kernel. This daemon manages groups of rules using entities called “zones”. **CentOS 8** comes pre-configured with `firewalld`.
-
-**NOTE:** Only your head node has an interface (on the `10.128.24.0/24` network) that can access the internet. Therefore, you will need to **setup NAT on your head node** to allow your compute node to access the internet via your head node (this effectively treats your head node as a router). Please note that the "external" zone on `firewalld` is configured for **IP masquerading** ([click here to learn more about IP masquerading](https://tldp.org/HOWTO/IP-Masquerade-HOWTO/ipmasq-background2.1.html)) so that your internal network remains private but reachable.
-
-**On the head node**, ensure your **external interface** is assigned to the appropriate zone:
-
-```bash
-~$ nmcli c mod <external_interface> connection.zone external 
-```
-
-Then do the same for the internal interface:
-
-```bash
-~$ nmcli c mod <internal_interface> connection.zone internal
-```
-
-You can now use `firewalld` to allow the head node to act as a router for the compute node.
-
-```bash
-~$ firewall-cmd --zone=external --add-masquerade --permanent
-~$ firewall-cmd --reload 
-```
-
-Confirm that **IP forwarding** is enabled on the head node with the following:
-
-```bash
-~$ cat /proc/sys/net/ipv4/ip_forward
-```
-It should return a `1`.
-
-You can then add the individual firewall rules needed:
-
-```bash
-~$ firewall-cmd --permanent --direct --add-rule ipv4 nat POSTROUTING 0 -o <external_interface> -j MASQUERADE
-~$ firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i <internal_interface> -o <external_interface> \
-      -j ACCEPT
-~$ firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i <external_interface> -o <internal_interface> \ 
-      -m state --state RELATED,ESTABLISHED -j ACCEPT
-```
-
-To validate that your **NAT** rules are working properly, **log into your compute node** and test if you can `ping` the ACE Lab gateway and an external server on the internet.
-
-```bash
-~$ ping 10.128.24.1  # ACE Lab gateway IP address
-~$ ping 8.8.8.8      # Google external DNS server
-```
-
-Once you can ping the servers by their IPs, try ping by name - using Domain Name System (DNS) resolution.
-
-```bash
-~$ ping google.com
-```
-
-If your NAT is working correctly and your compute node's DNS was set correctly with `Network Manager`, you should now be able to ping external servers/websites using their names on all nodes.
-
-> **! >>> Without access to a working DNS server you won't be able to install packages on your compute node (or head node for that matter), even if the internet is otherwise working.**
-
-<div style="page-break-after: always;"></div>
-
-## Part 2 - Hostnames
+### Username and Password
+### Brief Introduction to Text Editors (Vi vs Vim vs Nano vs Emacs)
+### Privilege Escalation and `sudo`
+### Linux Binaries, Libraries and Package Management
+### Verifying Instance Hostname and `/etc/hosts` File
 
 A hostname is what a computer device is called on a network. These are used to make computer addresses easier to remember. It's a lot easier to remember "**headnode.cluster.scc**" than "**10.0.0.51**"!
 
@@ -390,72 +357,15 @@ At this point your VMs and network should be correctly configured and you can co
 
 <div style="page-break-after: always;"></div>
 
-## Part 3 - Network Time Protocol (NTP)
 
-**NTP** or **network time protocol** enables you to synchronise the time across all the computers in your network. This is important for HPC clusters as some applications require that system time be accurate between different nodes (imagine receiving a message 'before' it was sent).
-
-It is also important that your timezones are also consistent across your machines. Time actions on **CentOS 8** can be controlled by a tool called `timedatectl`. For example, if you wanted to change the timezone that your system is in, you could use `timedatectl list-timezones`, find the one you want and then set it by using `timedatectl set-timezone <timezone>`. `timedatectl` can also set the current time on a local machine and more. 
-
-You will now **setup the NTP service** (through the `chronyd` implementation) on your head node and then connect your compute nodes to it.
-
-### On the head node
-
-1. Install the Chrony software package using the CentOS package manager, `dnf`:
-
-    ```bash
-    [root@headnode ~]$ dnf install chrony
-    ```
-
-2. Edit the file `/etc/chrony.conf` and modify the `allow` declaration to include the internal subnet of your cluster (uncomment or remove the "#" in front of `allow` if it's there, otherwise this is ignored).
-
-    ```conf
-    allow 10.0.0.0/24
-    ```
-
-3. Chrony runs as a service (daemon) and  is included with CentOS 8 so it likely is already running. Restart the chrony daemon with `systemctl`. This will also start it if it was not yet started:
-
-    ```bash
-    [root@headnode ~]$ systemctl restart chronyd
-    ```
-
-    Ensure that the chrony service is set to start automatically the next time CentOS boots:
-
-    ```bash
-    [root@headnode ~]$ systemctl enable chronyd
-    ```
-
-4. Add chrony to the firewall exclusion list:
-
-    ```bash
-    [root@headnode ~]$ firewall-cmd --zone=internal --permanent --add-service=ntp
-    [root@headnode ~]$ firewall-cmd --reload
-    ```
-
-You can view the clients that are connected to the chrony server on the head node by using the following command on the head node:
-
-```bash
-[root@headnode ~]$ chronyc clients
-```
-
-This will show empty until you do the steps below.
-
-### On the compute node
-
-1. Install the Chrony software package the same way as the head node.
-
-2. Edit the file `/etc/chrony.conf`, comment out (add a "#" in front of) all the `pool` and `server` declarations and add this new line to the file:
-
-    ```conf
-    server <head_node_ip>
-    ```
-
-3. Restart the chronyd service as above.
-
-4. Enable the chronyd service as above.
-
-Check `chronyc clients` on the head node to see if the compute node is connected and getting information from the head node.
-
-<span id="fig5" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="test" src="./resources/chrony_clients.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;margin-top:5px;"><i>Figure 5: The compute node (chrony client) is a client of the head node (chrony server).</i></span>
-</span>
+### Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark
+#### Install the GNU Compiler Collection (GCC)
+#### Install OpenMPI
+#### Install ATLAS Math Library
+Automatically Tuned Linear Algebra Software
+#### Fetch and Extract the HPC Source Tarball
+#### Copy and Edit the Makefile for _your_ Target Architecture
+### Compile the HPL Source Code to Produce an Executable Binary
+#### Editing _your_ PATH Variable
+##### Dynamic and Static Libraries: Editing _Your_ ATLAS Shared Object Files
+### Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`

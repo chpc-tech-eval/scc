@@ -2,32 +2,38 @@
     
 ## Table of Contents
 
-
-This is a test modification.
-
 1. [Overview](#overview)
 1. [Spinning Up a Compute Node in OpenStack]()
    1. [Compute Node Considerations]()
 1. [Accessing Your Compute Node]()
+   1. [IP Addresses and Routing]()
    1. [Command Line Proxy Jump Directive]()
    1. [Permanent `~/.ssh/config` Configuration]()
-1. [Local User Account Management](#part-2---local-user-account-management)
-   1. [Create CentOS User Account](#create-centos-user-account)
+   1. [Verifying Networking Setup through Network Manager]()
+      1. [Head Node (`nmtui`)]()
+      1. [Compute Node (`nmcli`)]()
+1. [Local User Account Management](#local-user-account-management)
+   1. [Create Team User Account](#create-centos-user-account)
       1. [Head Node](#head-node)
       1. [Compute Node](#compute-node)
       1. [Super User Access](#super-user-access)
-1. [Network File System](#part-3---network-file-system)
-   1. [NFS Server (head node)](#nfs-server-head-node)
-   1. [NFS Client (compute node)](#nfs-client-compute-node)
+1. [Configuring a Basic Stateful Firewall _(Optional_)]()
+1. [Network Time Protocol]()
+   1. [NTP Server (Head Node)]()
+   1. [NTP Client (Compute Node)]()
+1. [Network File System](#network-file-system)
+   1. [NFS Server (Head Node)](#nfs-server-head-node)
+   1. [NFS Client (Compute Node)](#nfs-client-compute-node)
       1. [Mounting An NFS Mount](#mounting-an-nfs-mount)
       1. [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
-1. [Password-less SSH](#part-4---password-less-ssh)
-1. [Central User Management](#part-5---central-user-management)
+1. [Passwordless SSH](#passwordless-ssh)
+1. [Central User Management](#central-user-management)
    1. [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
       1. [Head Node](#head-node-1)
       1. [Compute Node](#compute-node-1)
       1. [Clean Up](#clean-up)
 1. [Ansible User Declaration]()
+
 ## Overview
 
 This tutorial will demonstrate how to access web services that are on your virtual cluster via the web browser on your local computer. It will also cover basic authentication and central authentication.
@@ -44,94 +50,101 @@ This tutorial will demonstrate how to access web services that are on your virtu
 
 <div style="page-break-after: always;"></div>
 
-## Part 1 - Remote Web Service Access
+## Spinning Up a Compute Node in OpenStack
+### Compute Node Considerations
+## Accessing Your Compute Node
+### IP Addresses and Routing
+### Command Line Proxy Jump Directive
+### Permanent `~/.ssh/config` Configuration
+### Verifying Networking Setup through Network Manager
 
-During the course of the competition, you will set up services on your head node that you need to access via a web browser. Considering that your cluster is not directly accessible from the internet, you will need to create an **SSH tunnel** (utilising port forwarding) between your local machine and your head node to access these webpages.
+You have been assigned IP addresses for your VMs. To identify these, go to the OpenStack user interface and navigate to `Compute -> Instances`. In the list of virtual machines presented to you, click the name of the virtual machine instance, and navigate to the "**Interfaces**" tab (refer to [Figure 4.1 below](#fig4.1)). This list contains the IP addresses assigned to each of your VM network interfaces.
 
-> **! >>> Please read and familiarise yourself with the concept of a _port_ before continuing:**
-> - **[Dummies.com - Network Basics: TCP/UDP Socker and Port Overview](https://www.dummies.com/programming/networking/cisco/network-basics-tcpudp-socket-and-port-overview/)**
-> - **[Wikipedia - Port (computer networking)](https://en.wikipedia.org/wiki/Port_(computer_networking))**
+For example, if you have `enp3s0` and `enp4s0`, then you should see two IP addresses listed in the OpenStack interface, such as `10.128.24.x` and `10.0.0.x`. **You absolutely have to use the correct IP addresses for the correct interfaces, as your network may not work if you do not.**
 
-We'll demonstrate how this is done. First, let's create a simple web page that you can serve from your head node. To do this, you need to install a web server. [Apache](https://httpd.apache.org/) is a standard and widely used open-source web server. To install it:
-
-```bash
-~$ dnf install httpd
-```
-
-You'll then need to enable and start the web server service.
-
-```bash
-~$ systemctl start httpd   # Starts the service
-~$ systemctl enable httpd  # Sets service to start on reboot automatically
-```
-Confirm that it's up and running with the following:
-
-```bash
-~$ systemctl status httpd
-```
-
-You now have a running web server. Apache has a default available test-page, but since **the networks for your cluster aren't available outside the ACE Lab private network**, you **can't** simply type the IP address of the head node into your local web browser to access it. To access the test-page (served by your head node) you must establish a tunnel between your local machine and the head node, using the ACE Lab login node (ssh.ace.chpc.ac.za) as a middle-man. This is done using `ssh`.
-
-You need to establish a specific SSH tunnel to achieve this. The specific tunnel demonstrated below is known as an SSH forward tunnel, or SSH local port forwarding. To achieve this, you must tell the `ssh` client on your **local machine (computer at home)** that you will be sending and receiving data to and from a specific port on the **target machine (your head node in this case)** via a specific port on your **local machine**.
-
-Once this tunnel is established, you will be able to open your **local web browser** and access the **local port (the one that you configured to have data forwarded to from the head node)** to see the data forwarded from the target port. Connecting to the local port will request that the data be sent from the target machine - showing you the web page as if you were on the same network as the head node.
-
-Web traffic is by default served on **port 80**. This is thus chosen as the **target port on the head node**, as you want to be able to view this web traffic on your local computer. For the **local port**, we can choose **any port number greater than 1000**, as anything over 1000 is non-system and non-privileged (doesn't require root access).
-
-> **! >>> Please note that the IP address used below is an example.**
-> **! >>> The IP address to use instead of 192.168.0.xx is your HEADNODE public IP.**
-
-<span id="fig1.1" class="img_container center" style="font-size:8px;margin-bottom:0px; display: block;">
-    <img alt="webserver" src="./resources/tut2_fig_part1_ssh_tunnel.png" style="display:block; margin-left: auto; margin-right: auto; width: 75%;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center;margin-left: auto;
-    margin-right: auto; width: 50%;"><i>Figure 1.1: SSH -L tunnel as described below.</i></span>
+<span id="fig4.1" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
+    <img alt="test" src="./resources/ips_openstack.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
+    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 4.1: The IP addresses assigned to your interfaces for inside of your VM.</i></span>
 </span>
 
-1. Firstly, let us allow web traffic through the head node firewall (this is done on the **head node**):
+You can verify which network interface you are modifying by corroborating the [MAC-Address](https://en.wikipedia.org/wiki/MAC_address) from the `ip a` command (in your VM instances) and from those listed in OpenStack (refer to [Figure 4.2 below](#fig4.2)).
 
-    ```bash
-    ~$ firewall-cmd --zone=external --add-service=http --permanent
-    ~$ firewall-cmd --reload
-    ```
-
-2. On your **local machine**, open up the tunnel from the head node's port 80 to your machine's port 8080 ([Figure 1.1](#fig1.1)):
-
-    ```bash
-    ~$ ssh -L 8080:10.128.24.XX:80 <team_name>@ssh.ace.chpc.ac.za
-    ```
-
-    This command uses the following syntax:
-
-    ```
-    ssh -L <localhost_port:target_host:target_host_port> <username>@<remote_host>
-    ```
-
-    The `-L` specifies that you want to create a port forward to/from your `<localhost_port>` to the `<target_host_port>` of the `<target_host>`.
-
-3. Open up your browser and visit:
-
-    ```bash
-    http://127.0.0.1:8080 # 127.0.0.1 is a reference to your own machine, you could also say http://localhost:8080
-    ```
-
-If it is up and running correctly, you should see the default test-page for your Apache server ([Figure 1.2](#fig1.2)).
-
-<span id="fig1.2" class="img_container center" style="font-size:8px;margin-bottom:0px; display: block;">
-    <img alt="webserver" src="./resources/apache_default_page.png" style="display:block; margin-left: auto; margin-right: auto; width: 50%;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center;margin-left: auto;
-    margin-right: auto; width: 50%;"><i>Figure 1.2: The default page for the Apache web server seen through the local browser.</i></span>
+<span id="fig4.2" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
+    <img alt="test" src="./resources/mac_openstack.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
+    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 4.2: The MAC addresses assigned to your interfaces for inside of your VM.</i></span>
 </span>
 
-**Windows users with PuTTY, please follow this guide: [https://stackoverflow.com/questions/4974131/how-to-create-ssh-tunnel-using-putty-in-windows/29168936#29168936](https://stackoverflow.com/questions/4974131/how-to-create-ssh-tunnel-using-putty-in-windows/29168936#29168936).**
+**CentOS 8** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
 
-To clarify, what the `ssh` command above does is the following:
+##### Head Node (`nmtui`)
 
-The `-L 8080:10.128.24.XX:80` tells the `ssh` client that you want to map your local machine port `8080` to the head node's port `80`. However, your local machine can't reach the head node directly since you're not on the same network. In order to know how to get to the head node, you still connect to the login node for the ACE Lab, which is why you specify the `<team_name>@ssh.ace.chpc.ac.za`. The `ssh` client will know to map your port `8080` to the head node's port `80` **via** `ssh.ace.chpc.ac.za`.
+For the **head node**, create a new network definition using the `nmtui` graphical tool using the following steps:
 
+0. First we must make sure that our network interfaces are managed by `Network Manager`. By default, this should already be the case. Use the following command to check if the network interfaces are managed:
+
+    ```bash
+    ~$ nmcli dev
+    ```
+
+    You should see something **other than "unmanaged"** next to each of the interfaces (excluding `lo`). If any of your network interfaces (other than `lo`) say "unmanaged", do the following:
+
+
+    ```bash
+   ~$ nmcli dev set <interface> managed yes
+    ```
+    
+1. The `nmtui` tool is a console-graphical tool used to set up and manage network connections for `Network Manager`.
+
+    ```bash
+    ~$ nmtui
+    ```
+
+2. You'll be presented with a screen, select `Edit a connection`, followed by `<Add>` and then `Ethernet`.
+
+3. For **Profile Name**, type the name of the interface you want to assign an IP address to, like `enp3s0` or `enp4s0`, and type the same thing for **Device** (in this instance, **Device** means **interface**).
+
+4. For **IPv4 CONFIGURATION**, change `<Automatic>` to `<Manual>`. This tells NM that we want to assign a static IP address to the connection. Hit enter on `<Show>` to the right of **IPv4 CONFIGURATION** and enter the following information:
+
+    - **Addresses**: Hit `<Add>` and enter the IP address (found in OpenStack) for this interface. After the IP address, add the text "/24" to the end. It should read as `<ip_address>/24` with no spaces. The "/24" is the subnet mask of the IP address in [CIDR notation](#part-1---accessing-the-cloud).
+    - **Gateway**: Enter the gateway address here. This will be the ACE Lab gateway for the external network of the head node.
+    - **DNS servers**: Hit `<Add>` and enter `8.8.8.8`. This is the public DNS server of Google and is used to look up website names. (**NB: DNS is explained later!**)
+
+5. Hit `<OK>` at the bottom of the screen.
+
+6. _Repeat the above processes for any other network interface you want to give an IP address to, if there are more on your machine (you can use `ip a` to check how many there are)._
+
+7. The networks should now be active. You can confirm this by going `<Back>` and then to `Activate a connection`. If you see stars to the left of each of the networks that you have created, then the networks are active. If not, hit enter on the selected network to active it.
+
+8. Your **head node** should now have the correct IP addresses. Exit `nmtui` and check the networking setup is correct. To do so, use the following commands:
+
+    ```bash
+    ~$ ip a
+    ~$ ip route 
+    ```
+
+    - `ip a` will show you the interfaces and their assigned IP addresses.
+    - `ip route` will list the interfaces and their assigned routes.
+
+##### Compute Node (`nmcli`)
+
+You must also set the static IP addressing for all other nodes in your cluster. In order to explore different options for doing so, please use the `nmcli` command. This is the command-line interface (CLI) for `Network Manager`, which is an alternative to the above `nmtui`, which is simply a graphical wrapper for the CLI.
+
+Please look at the following website in order to get the commands that you will need to create a static IP address network connection using the CLI: [https://docs.fedoraproject.org/en-US/Fedora/25/html/Networking_Guide/sec-Connecting_to_a_Network_Using_nmcli.html](https://docs.fedoraproject.org/en-US/Fedora/25/html/Networking_Guide/sec-Connecting_to_a_Network_Using_nmcli.html). Follow the **Adding a Static Ethernet Connection** section. **Note that the IP addresses used in this web guide will not be the same as the ones that you need to use for your node(s) and some of the commands may not be relevant to you.**
+
+At this point you should test connectivity between your nodes. Using the `ping` command, you can see whether the nodes can speak to each other via the network. From your head node, try to ping your compute node:
+
+```bash
+~$ ping <compute_node_ip>
+```
+
+If you get a timeout, then things are not working. Try to check your network configurations again.
+
+_**Please read [what-is-ip-routing](https://study-ccna.com/what-is-ip-routing/) to gain a better understanding of IP routing.**_ This will be impoortant for the rest of this competition and can help your understanding when debugging issues.
 
 <div style="page-break-after: always;"></div>
 
-## Part 2 - Local User Account Management
+
+## Local User Account Management
 
 In enterprise systems and HPC, it's common to manage user accounts from one central location. These network accounts are then synchronised to the machines in your fleet via the network. This is done for safely, security and management purposes.
 
@@ -155,7 +168,7 @@ uid=0(root) gid=0(root) groups=0(root) context=unconfined_u:unconfined_r:unconfi
 
 This shows that `root` is the user `0` and it's primary group (GID) is group `0`. It also states that it only belongs to one group, which is the `root` group (`0`).
 
-### Create CentOS User Account
+### Create Team User Account
 
 #### Head Node
 
@@ -254,13 +267,146 @@ Now log out and then log back into your node as `centos`. You can use `sudo` one
 
 <div style="page-break-after: always;"></div>
 
-## Part 3 - Network File System
+## Configuring a Basic Stateful Firewall _(Optional)_
+
+`Firewalld` is a firewall management daemon (service) available for many Linux distributions which acts as a front-end for the `iptables` packet filtering system provided by the Linux kernel. This daemon manages groups of rules using entities called “zones”. **CentOS 8** comes pre-configured with `firewalld`.
+
+**NOTE:** Only your head node has an interface (on the `10.128.24.0/24` network) that can access the internet. Therefore, you will need to **setup NAT on your head node** to allow your compute node to access the internet via your head node (this effectively treats your head node as a router). Please note that the "external" zone on `firewalld` is configured for **IP masquerading** ([click here to learn more about IP masquerading](https://tldp.org/HOWTO/IP-Masquerade-HOWTO/ipmasq-background2.1.html)) so that your internal network remains private but reachable.
+
+**On the head node**, ensure your **external interface** is assigned to the appropriate zone:
+
+```bash
+~$ nmcli c mod <external_interface> connection.zone external 
+```
+
+Then do the same for the internal interface:
+
+```bash
+~$ nmcli c mod <internal_interface> connection.zone internal
+```
+
+You can now use `firewalld` to allow the head node to act as a router for the compute node.
+
+```bash
+~$ firewall-cmd --zone=external --add-masquerade --permanent
+~$ firewall-cmd --reload 
+```
+
+Confirm that **IP forwarding** is enabled on the head node with the following:
+
+```bash
+~$ cat /proc/sys/net/ipv4/ip_forward
+```
+It should return a `1`.
+
+You can then add the individual firewall rules needed:
+
+```bash
+~$ firewall-cmd --permanent --direct --add-rule ipv4 nat POSTROUTING 0 -o <external_interface> -j MASQUERADE
+~$ firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i <internal_interface> -o <external_interface> \
+      -j ACCEPT
+~$ firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i <external_interface> -o <internal_interface> \ 
+      -m state --state RELATED,ESTABLISHED -j ACCEPT
+```
+
+To validate that your **NAT** rules are working properly, **log into your compute node** and test if you can `ping` the ACE Lab gateway and an external server on the internet.
+
+```bash
+~$ ping 10.128.24.1  # ACE Lab gateway IP address
+~$ ping 8.8.8.8      # Google external DNS server
+```
+
+Once you can ping the servers by their IPs, try ping by name - using Domain Name System (DNS) resolution.
+
+```bash
+~$ ping google.com
+```
+
+If your NAT is working correctly and your compute node's DNS was set correctly with `Network Manager`, you should now be able to ping external servers/websites using their names on all nodes.
+
+> **! >>> Without access to a working DNS server you won't be able to install packages on your compute node (or head node for that matter), even if the internet is otherwise working.**
+
+<div style="page-break-after: always;"></div>
+
+
+## Network Time Protocol
+
+**NTP** or **network time protocol** enables you to synchronise the time across all the computers in your network. This is important for HPC clusters as some applications require that system time be accurate between different nodes (imagine receiving a message 'before' it was sent).
+
+It is also important that your timezones are also consistent across your machines. Time actions on **CentOS 8** can be controlled by a tool called `timedatectl`. For example, if you wanted to change the timezone that your system is in, you could use `timedatectl list-timezones`, find the one you want and then set it by using `timedatectl set-timezone <timezone>`. `timedatectl` can also set the current time on a local machine and more. 
+
+You will now **setup the NTP service** (through the `chronyd` implementation) on your head node and then connect your compute nodes to it.
+
+### NTP Server (Head Node)
+
+1. Install the Chrony software package using the CentOS package manager, `dnf`:
+
+    ```bash
+    [root@headnode ~]$ dnf install chrony
+    ```
+
+2. Edit the file `/etc/chrony.conf` and modify the `allow` declaration to include the internal subnet of your cluster (uncomment or remove the "#" in front of `allow` if it's there, otherwise this is ignored).
+
+    ```conf
+    allow 10.0.0.0/24
+    ```
+
+3. Chrony runs as a service (daemon) and  is included with CentOS 8 so it likely is already running. Restart the chrony daemon with `systemctl`. This will also start it if it was not yet started:
+
+    ```bash
+    [root@headnode ~]$ systemctl restart chronyd
+    ```
+
+    Ensure that the chrony service is set to start automatically the next time CentOS boots:
+
+    ```bash
+    [root@headnode ~]$ systemctl enable chronyd
+    ```
+
+4. Add chrony to the firewall exclusion list:
+
+    ```bash
+    [root@headnode ~]$ firewall-cmd --zone=internal --permanent --add-service=ntp
+    [root@headnode ~]$ firewall-cmd --reload
+    ```
+
+You can view the clients that are connected to the chrony server on the head node by using the following command on the head node:
+
+```bash
+[root@headnode ~]$ chronyc clients
+```
+
+This will show empty until you do the steps below.
+
+### NTP Client (Compute Node)
+
+1. Install the Chrony software package the same way as the head node.
+
+2. Edit the file `/etc/chrony.conf`, comment out (add a "#" in front of) all the `pool` and `server` declarations and add this new line to the file:
+
+    ```conf
+    server <head_node_ip>
+    ```
+
+3. Restart the chronyd service as above.
+
+4. Enable the chronyd service as above.
+
+Check `chronyc clients` on the head node to see if the compute node is connected and getting information from the head node.
+
+<span id="fig5" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
+    <img alt="test" src="./resources/chrony_clients.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
+    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;margin-top:5px;"><i>Figure 5: The compute node (chrony client) is a client of the head node (chrony server).</i></span>
+</span>
+
+
+## Network File System
 
 Network File System (NFS) enables you to easily share files and directories over the network. NFS is a distributed file system protocol that we will use to share files between our nodes across our private network. It has a server-client architecture that treats one machine as a server of directories, and multiple machines (clients) can connect to it.
 
 This tutorial will show you how to export a directory on the head node and mount it through the network on the compute nodes. With the shared file system in place it becomes easy to enable **public key based ssh authentication**, which allows you to ssh into all the computers in your cluster without requiring a password.
 
-### NFS Server (head node)
+### NFS Server (Head Node)
 
 The head node will act as the NFS server and will export the `/home/` directory to the compute node. The `/home/` directory contains the home directories of all the the non-`root` user accounts on most default Linux operating system configurations.
 
@@ -292,7 +438,7 @@ The head node will act as the NFS server and will export the `/home/` directory 
     [centos@headnode ~]$ sudo firewall-cmd --reload
     ```
 
-### NFS Client (compute node)
+### NFS Client (Compute Node)
 
 The compute node acts as the client for the NFS, which will mount the directory that was exported from the server (`/home`). Once mounted, the compute node will be able to interact with and modify files that exist on the head node and it will be synchronised between the two.
 
@@ -358,7 +504,7 @@ Using `mount` from the command line will not make the mount permanent. It will n
 
 <div style="page-break-after: always;"></div>
 
-## Part 4 - Password-less SSH
+## Passwordless SSH
 
 When managing a large fleet of machines or even when just logging into a single machine repeatedly, it can become very time consuming to have to enter your password repeatedly. Another issue with passwords is that some services may rely on directly connecting to another computer and can't pass a password during login. To get around this, we can use [public key based authentication](https://www.ssh.com/academy/ssh/public-key-authentication) to replace passwords.
 
@@ -403,7 +549,7 @@ How this works is that you copy the public key to the computer that you want to 
 
 <div style="page-break-after: always;"></div>
 
-## Part 5 - Central User Management
+## Central User Management
 
 ### Out-Of-Sync Users and Groups
 
@@ -477,7 +623,8 @@ Do this command for:
 - `unwittinguser` on the compute node.
 - `outofsync` on the compute node.
 
-### FreeIPA <img src="./resources/freeipa.png" width=2.1% />
+### Ansible User Declarationx
+### (Delete)FreeIPA <img src="./resources/freeipa.png" width=2.1% />
 
 FreeIPA is a collection of tools that work together to provide central user account management. It provides identity and authentication services for Linux environments. It can also manage DNS and NTP, but we won't use it for that purpose in this tutorial series. Using FreeIPA, you will be able to keep your cluster user account IDs synchronised and manage everything from one central place.
 

@@ -2,12 +2,43 @@
 
 This repository contains the ground truth of information that needs to be covered by the tutorials of the Student Cluster Competition. 
 
-## How To Use
-### Adding Content
+## Table of Contents
 
-Use the following guide on [Github Markdown Syntax Editing](https://docs.github.com/en/get-started/writing-on-.)
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
 
-#### When editing existing content
+1. [Overview](#overview)
+   1. [Structure of the Tutorials](#sturture-of-the-tutorials)
+   1. [Getting Help](#getting-help)
+1. [Collaborating with your Team and Storing your Progress on GitHub](#collaborating-with-your-team-and-storing-you-progress-on-github)
+   1. [Forking the Tutorials into Your Own Team's Private Git Repository](#forking-the-tutorials-into-your-own-teams-private-github-repository)
+      1. [Branch, Merge and Pull Requests to your Team Captain's Repository]()
+      1. [Editing the Git Markdown Files to Track Your Team's Progress](#editing-the-git-markdown-files-to-track-your-teams-progress)
+1. [Contributing to the Project](#contributing-to-the-project)
+   1. [Raising Issues and Reporting Bugs with the Tutorial Content]()
+   1. [Submitting Pull Requests for Features / Bug Fixes]()
+      1. [Steps to follow when editing content]()
+1. [Tutorial 1](#tutorial-1)
+1. [Tutorial 2](#tutorial-2)
+1. [Tutorial 3](#tutorial-3)
+1. [Tutorial 4](#tutorial-4)
+<!-- markdown-toc end -->
+
+## Overview
+
+### Structure of the Tutorials
+
+### Getting Help
+
+## Collaborating with your Team and Storing you Progress on GitHub
+
+### Forking the Tutorials into Your Own Team's Private GitHub Repository
+
+### Editing the Git Markdown Files to Track Your Team's Progress
+
+## Contributing to the Project
+
+#### Steps to follow when editing existing content
 
 1. `git clone` a local copy of the repository, to your personal work space.
 1. Create a new branch to work on. i.e. `git branch tutX_rework` followed by `git checkout tutX_rework`, or simply use a single command `git checkout -b tutX_rework`.
@@ -26,6 +57,8 @@ Use the following guide on [Github Markdown Syntax Editing](https://docs.github.
 1. Create a pull request to the upstream main branch, to incorporate your feature.
 
 ### Syntax and Style
+
+Use the following guide on [Github Markdown Syntax Editing](https://docs.github.com/en/get-started/writing-on-.)
 
 Make use of the following editing features of Github markdown
 > [!NOTE]
@@ -78,14 +111,6 @@ You can add an image or a code block, too.
 
 </details>
 
-
-## Table of Contents
-
-- [Tutorial 1](#tutorial-1)
-- [Tutorial 2](#tutorial-2)
-- [Tutorial 3](#tutorial-3)
-- [Tutorial 4](#tutorial-4)
-- [Tutorial 5](#tutorial-5)
 
 ## Tutorial 1
 
