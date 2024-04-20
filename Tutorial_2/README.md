@@ -33,6 +33,7 @@
       1. [Compute Node](#compute-node-1)
       1. [Clean Up](#clean-up)
 1. [Ansible User Declaration]()
+1. [WireGuard VPN Cluster Access]()
 
 ## Overview
 

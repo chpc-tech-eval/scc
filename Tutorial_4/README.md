@@ -20,6 +20,8 @@
    1. [Configure Grafana Dashboard for SLURM]()
 1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
    1. [Protein Visualisation](#protein-visualisation)
+1. [LAMMPS Visualization]()
+1. [Qiskit Jupyter Notebook]
 
 ## Overview
 
