@@ -20,6 +20,8 @@
    1. [Configure Grafana Dashboard for SLURM]()
 1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
    1. [Protein Visualisation](#protein-visualisation)
+1. [LAMMPS Visualization]()
+1. [Qiskit Jupyter Notebook]
 
 ## Overview
 
@@ -48,6 +50,95 @@ In this tutorial you will:
 > **************Insert image of terminal here***************
 
 <div style="page-break-after: always;"></div>
+
+## (Delete) - Remote Web Service Access
+
+During the course of the competition, you will set up services on your head node that you need to access via a web browser. Considering that your cluster is not directly accessible from the internet, you will need to create an **SSH tunnel** (utilising port forwarding) between your local machine and your head node to access these webpages.
+
+> **! >>> Please read and familiarise yourself with the concept of a _port_ before continuing:**
+> - **[Dummies.com - Network Basics: TCP/UDP Socker and Port Overview](https://www.dummies.com/programming/networking/cisco/network-basics-tcpudp-socket-and-port-overview/)**
+> - **[Wikipedia - Port (computer networking)](https://en.wikipedia.org/wiki/Port_(computer_networking))**
+
+We'll demonstrate how this is done. First, let's create a simple web page that you can serve from your head node. To do this, you need to install a web server. [Apache](https://httpd.apache.org/) is a standard and widely used open-source web server. To install it:
+
+```bash
+~$ dnf install httpd
+```
+
+You'll then need to enable and start the web server service.
+
+```bash
+~$ systemctl start httpd   # Starts the service
+~$ systemctl enable httpd  # Sets service to start on reboot automatically
+```
+Confirm that it's up and running with the following:
+
+```bash
+~$ systemctl status httpd
+```
+
+You now have a running web server. Apache has a default available test-page, but since **the networks for your cluster aren't available outside the ACE Lab private network**, you **can't** simply type the IP address of the head node into your local web browser to access it. To access the test-page (served by your head node) you must establish a tunnel between your local machine and the head node, using the ACE Lab login node (ssh.ace.chpc.ac.za) as a middle-man. This is done using `ssh`.
+
+You need to establish a specific SSH tunnel to achieve this. The specific tunnel demonstrated below is known as an SSH forward tunnel, or SSH local port forwarding. To achieve this, you must tell the `ssh` client on your **local machine (computer at home)** that you will be sending and receiving data to and from a specific port on the **target machine (your head node in this case)** via a specific port on your **local machine**.
+
+Once this tunnel is established, you will be able to open your **local web browser** and access the **local port (the one that you configured to have data forwarded to from the head node)** to see the data forwarded from the target port. Connecting to the local port will request that the data be sent from the target machine - showing you the web page as if you were on the same network as the head node.
+
+Web traffic is by default served on **port 80**. This is thus chosen as the **target port on the head node**, as you want to be able to view this web traffic on your local computer. For the **local port**, we can choose **any port number greater than 1000**, as anything over 1000 is non-system and non-privileged (doesn't require root access).
+
+> **! >>> Please note that the IP address used below is an example.**
+> **! >>> The IP address to use instead of 192.168.0.xx is your HEADNODE public IP.**
+
+<span id="fig1.1" class="img_container center" style="font-size:8px;margin-bottom:0px; display: block;">
+    <img alt="webserver" src="./resources/tut2_fig_part1_ssh_tunnel.png" style="display:block; margin-left: auto; margin-right: auto; width: 75%;" title="caption" />
+    <span class="img_caption" style="display: block; text-align: center;margin-left: auto;
+    margin-right: auto; width: 50%;"><i>Figure 1.1: SSH -L tunnel as described below.</i></span>
+</span>
+
+1. Firstly, let us allow web traffic through the head node firewall (this is done on the **head node**):
+
+    ```bash
+    ~$ firewall-cmd --zone=external --add-service=http --permanent
+    ~$ firewall-cmd --reload
+    ```
+
+2. On your **local machine**, open up the tunnel from the head node's port 80 to your machine's port 8080 ([Figure 1.1](#fig1.1)):
+
+    ```bash
+    ~$ ssh -L 8080:10.128.24.XX:80 <team_name>@ssh.ace.chpc.ac.za
+    ```
+
+    This command uses the following syntax:
+
+    ```
+    ssh -L <localhost_port:target_host:target_host_port> <username>@<remote_host>
+    ```
+
+    The `-L` specifies that you want to create a port forward to/from your `<localhost_port>` to the `<target_host_port>` of the `<target_host>`.
+
+3. Open up your browser and visit:
+
+    ```bash
+    http://127.0.0.1:8080 # 127.0.0.1 is a reference to your own machine, you could also say http://localhost:8080
+    ```
+
+If it is up and running correctly, you should see the default test-page for your Apache server ([Figure 1.2](#fig1.2)).
+
+<span id="fig1.2" class="img_container center" style="font-size:8px;margin-bottom:0px; display: block;">
+    <img alt="webserver" src="./resources/apache_default_page.png" style="display:block; margin-left: auto; margin-right: auto; width: 50%;" title="caption" />
+    <span class="img_caption" style="display: block; text-align: center;margin-left: auto;
+    margin-right: auto; width: 50%;"><i>Figure 1.2: The default page for the Apache web server seen through the local browser.</i></span>
+</span>
+
+**Windows users with PuTTY, please follow this guide: [https://stackoverflow.com/questions/4974131/how-to-create-ssh-tunnel-using-putty-in-windows/29168936#29168936](https://stackoverflow.com/questions/4974131/how-to-create-ssh-tunnel-using-putty-in-windows/29168936#29168936).**
+
+To clarify, what the `ssh` command above does is the following:
+
+The `-L 8080:10.128.24.XX:80` tells the `ssh` client that you want to map your local machine port `8080` to the head node's port `80`. However, your local machine can't reach the head node directly since you're not on the same network. In order to know how to get to the head node, you still connect to the login node for the ACE Lab, which is why you specify the `<team_name>@ssh.ace.chpc.ac.za`. The `ssh` client will know to map your port `8080` to the head node's port `80` **via** `ssh.ace.chpc.ac.za`.
+
+
+<div style="page-break-after: always;"></div>
+
+
 
 ## Prometheus
 
