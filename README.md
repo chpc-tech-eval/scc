@@ -170,7 +170,7 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
 1. [Compile the HPL Source Code to Produce an Executable Binary](Tutorial_1/README.md#compile-the-hpl-source-code-to-produce-an-executable-binary)
    1. [Editing _your_ PATH Variable](Tutorial_1/README.md#editing-_your_-path-variable)
       1. [Dynamic and Static Libraries: Editing _Your_ ATLAS Shared Object Files](Tutorial_1/README.md#dynamic-and-static-libraries-editing-_your_-atlas-shared-object-files)
-   1. [Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`](Tutorial_1/README.md#configuring-_your_-hpldat-file-using-lscpu-and-lsmem)
+   1. [Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`](Tutorial\ 1/README.md#configuring-_your_-hpldat-file-using-lscpu-and-lsmem)
 ### Part 1 - Overview
 - [x] Introduce cloud computing
 - [x] Introduce IaaS
