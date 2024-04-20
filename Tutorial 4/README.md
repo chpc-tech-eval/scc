@@ -2,28 +2,24 @@
 
 ## Table of Contents
 
-- [Part 1 - Enviroment Modules with Lmod](#part-1---enviroment-modules-with-lmod)
-  - [Installing Lmod](#installing-lmod)
-  - [Using Lmod](#using-lmod)
-  - [Adding modules to Lmod](#adding-modules-to-lmod)
-- [Part 2 - High Performance LINPACK (HPL) Benchmark](#part-2---high-performance-linpack-hpl-benchmark)
-  - [System Libraries](#system-libraries)
-    - [Static Libraries](#static-libraries)
-    - [Dynamic Libraries](#dynamic-libraries)
-  - [Message Passing Interface (MPI)](#message-passing-interface-mpi)
-  - [Installing HPL](#installing-hpl)
-  - [Adding a Second Compute Node](#adding-a-second-compute-node)
-  - [Optimising HPL](#optimising-hpl)
-    - [Theoretical Peak Performance](#theoretical-peak-performance)
-- [Part 3 - HPC Challenge](#part-3---hpc-challenge)
-
-- [Overview](#overview)
-- [GROMACS Application Benchmark](#gromacs-application-benchmark)
-  - [Part 1: Installation](#part-1---installation)
-  - [Part 2: Benchmark](#part-2---benchmark)
-    - [Benchmark 1 (adh_cubic):](#benchmark-1-adh_cubic)
-    - [Benchmark 2 (1.5M_water):](#benchmark-2-15m_water)
-  - [Part 3: Protein Visualisation](#part-3-protein-visualisation)
+1. [Overview](#overview)
+1. [Prometheus]()
+   1. [Edit YML Configuration File]()
+   1. [SSH Port Forwarding](ssh-port-forwarding)
+   1. [X11 Forwarding](#x11-forwarding)
+   1. [Dynamic SOCKS Proxy](#dynamic-socks-proxy)
+   1. [Configure Prometheus as a Service]()
+1. [Node Exporter]()
+   1. [Configure Node Exporter as a Service]()
+1. [Grafana]()
+   1. [Configuring Grafana Dashboards]()
+1. [Slurm Workload Manager](#slurm-workload-manager)
+   1. [Prerequisites](#prerequisites)
+   1. [Server Setup](#server-setup)
+   1. [Client Setup](#client-setup)
+   1. [Configure Grafana Dashboard for SLURM]()
+1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
+   1. [Protein Visualisation](#protein-visualisation)
 
 ## Overview
 
@@ -37,9 +33,36 @@ In this tutorial you will:
 - [ ] Optimise HPL.
 - [ ] Download and compile the High Performance Computing Challenge (HPCC) benchmark.
 
+> [!TIP]
+> You're going to be manipulating both your headnode, as well as your compute node(s) in this tutorial.
+>
+> You are *strongly* advised to make use of a terminal multiplexer, such as `tmux` before making a connection to your VMs.
+>
+>```bash
+>$ tmux
+>```
+>
+> Split the window into two separate panes with `ctrl + b |`.
+> SSH into your headnode, on the one pane, and ssh into your compute node with a hop over your headnode, recall the jumpbox directive.
+>
+> **************Insert image of terminal here***************
+
 <div style="page-break-after: always;"></div>
 
-## Part 1 - Enviroment Modules with Lmod
+## Prometheus
+
+Prometheus can be [installed](https://prometheus.io/docs/prometheus/latest/installation/) using either pre-compiled binaries, source, docker containers or from configuration management systems such as Ansible or Puppet.
+
+From the [Pre-Compiled Binaries Download Page](https://prometheus.io/download/), 
+
+### SSH Port Forwarding
+### X11 Forwarding
+Starting a browser on the remote server
+### Dynamics SOCKS Proxy
+
+## Grafana
+
+## Node Exporter
 
 Environment Modules provide a convenient way to dynamically change a user's environment through _modulefiles_ to simplify software and library use when there are multiple versions of a particular software package (e.g. Python2.7 and Python 3.x) installed on the system. Environment Module parameters typically involve, among other things, modifying the PATH environment variable for locating a particular package (such as dynamically changing the path to Python from `/usr/local/bin/python2.7` to `/usr/local/bin/python3`).
 

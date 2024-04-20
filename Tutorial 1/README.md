@@ -3,36 +3,45 @@
 ## Table of Contents
 
 1. [Overview](#overview)
+   1. [Structure of the Tutorials]()
+   1. [Getting Help]()
 1. [Accessing the Cloud](#part-1---accessing-the-cloud)
 1. [Linux Flavors and Distributions]()
 1. [OpenStack Instance Flavors]()
-   - [Compute]()
-   - [Memory]()
-   - [Storage]()
+   1. [Compute]()
+   1. [Memory]()
+   1. [Storage]()
 1. [Generating SSH Keys]()
 1. [Network Primer]()
-   - [Internal Intranet vs External Internet]()
-     - [WiFi Hotspot Example]()
-   - [Network Ports, Services and Security Groups]()
-   - [Associating an Externally Accessible Floating IP Address]()
+   1. [Internal Intranet vs External Internet]()
+      1. [WiFi Hotspot Example]()
+   1. [Network Ports, Services and Security Groups]()
+   1. [Associating an Externally Accessible Floating IP Address]()
+   1. [DHCP Server for Public Facing Interface on Headnode]()
+      1. [Routing Table and Gateway for External Interface vs Internal]()
 1. [Accessing your VM Using SSH vs the OpenStack Web Console]()
 1. [Introduction to Basic Linux Administration]()
-   - [Username and Password]()
-   - [Privilege Escalation and `Sudo`]()
-   - [Linux Binaries, Libraries and Package Management]()
+   1. [Username and Password]()
+   1. [Privilege Escalation and `Sudo`]()
+   1. [Linux Binaries, Libraries and Package Management]()
 1. [Install the High Performance LinPack (HPL) Benchmark]()
-   - [Install the GNU Compiler Collection (GCC)]()
-   - [Install OpenMPI]()
-   - [Install the Automatically Tuned Linear Algebra Software (ATLAS) Math Library]()
-   - [Fetch and Extract the HPC Source Tarball]()
+   1. [Install the GNU Compiler Collection (GCC)]()
+   1. [Install OpenMPI]()
+   1. [Install the Automatically Tuned Linear Algebra Software (ATLAS) Math Library]()
+   1. [Fetch and Extract the HPC Source Tarball]()
 1. [Brief Introduction to Text Editors (Vi vs Vim vs Nano vs Emacs)]()
-   - [Copy and Edit the Make File for _your_ Target Architecture]()
+   1. [Copy and Edit the Make File for _your_ Target Architecture]()
 1. [Compile the HPL Source Code to Produce an Executable Binary]()
-   - [Editing _your_ PATH Variable]()
-   - [Dynamic and Static Libraries - Editing _your_ ATLAS Shared Object Libraries]()
-1. [Capturing the Above Commands as a Shell Script]()
-   - [Deploying Packages on Compute Node Using Ansible]()
-1. [Collaborating with your Team and Storing your Progress on Github]()
+   1. [Editing _your_ PATH Variable]()
+   1. [Dynamic and Static Libraries - Editing _your_ ATLAS Shared Object Libraries]()
+   1. [Configuring _your_`HPL.dat` file using `lscpu` and `lsmem`]()
+   1. [Capturing the Above Commands as a Shell Script]()
+   1. [Deploying Packages on Compute Node Using Ansible]()
+1. [Collaborating with your Team and Storing your Progress on GitHub]()
+   1. [Forking the Tutorials into Your Own Team's Private Git Repository]()
+      1. [Branch, Merge and Pull Requests to your Team Captain's Repository]()
+      1. [Editing the Git Markdown Files to Track Your Team's Progress]()
+   1. [Raising Issues and Reporting Bugs with the Tutorial Content]()
 
 ## Overview
 
@@ -64,7 +73,7 @@ You first need to configure the network settings of your VMs properly before you
 
 <u>In this tutorial you will:</u>
 
-- [ ] Learn IT concepts like cloud computing, virtualisation and remote connections.
+- [x] Learn IT concepts like cloud computing, virtualisation and remote connections.
 - [ ] Learn how to use the CHPC's cloud computing environment.
 - [ ] Learn what SSH is and how to use it.
 - [ ] Learn about Linux password management.
