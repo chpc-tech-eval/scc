@@ -121,6 +121,8 @@ Syntax for light themes add to image addition
 
 TODO: Fix links
 
+TODO: Add objectives for each Tutorial and section. They should be editable so students check them off as they go along.
+
 ## Tutorial 1
 
 Tutorial 1 deals with introducing concepts to users and getting them started with using the virtual lab, setting up networking and remotely connecting. The content is as follows:
