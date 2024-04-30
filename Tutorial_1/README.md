@@ -78,7 +78,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
 <u>Use the following checklist to keep track of your team's progress and to ensure that all members in your understand these concepts.</u>
 
 - [ ] Understand IT concepts like cloud computing, virtualisation and remote connections:
-  - [ ] Understand and be able to explain networking terms such as IP Address, Port, Subnet, Gateway, Router, and
+  - [ ] Understand and be able to explain networking terms such as URL, DNS, IP Address, Port, Subnet, Gateway, Router, and
   - [ ] Understand the difference between a Local Private Network and an External Public Network.
 - [ ] Learn how to use the CHPC's cloud computing environment:
   - [ ] Learn about different Linux Distributions and Flavors, and
@@ -101,14 +101,34 @@ This tutorial will conclude with you downloading, installing and running the Hig
 <div style="page-break-after: always;"></div>
 
 ## Network Primer
-### Internal Intranet vs External Internet
+
+At the core of High Performance Computing (HPC) is networking. Something as simple as browsing the internet from either your cell phone or the workstation in front of you, involves the transfer and exchange of information between many different networks. Each resource or service connected to the internet is made available through a unique address and network port. For example, https://www.google.co.za:443 is the [Uniform Resource Locator (URL)](https://en.wikipedia.org/wiki/URL) used to uniquely identify Google's search engine page on the South African [co.za]. [domain](https://en.wikipedia.org/wiki/Domain_name). The [443] is the [port number](https://en.wikipedia.org/wiki/Port_(computer_networking)) which in this instance lets you know that you're connecting to a secure [https](https://en.wikipedia.org/wiki/HTTPS) server.
+
+When you enter this address into your browser, one of the first things that will happen is that a [Domain Name Service (DNS)](https://en.wikipedia.org/wiki/Domain_Name_System) will translate the URL [google.co.za] into it's corresponding [Internet Protocol (IP) Address](https://en.wikipedia.org/wiki/IP_address) [142.251.216.67].
+
+A number of [routing](https://en.wikipedia.org/wiki/Router_(computing)) lookup tables will be utilized to determine an available, _and preferably optimal_ path to the resource that you'd requested, thereafter a number of routers or gateway devices will be used to exchange packets between your workstation, through all of the intermediary networks, and finally the target resource. 
+
+At this point it is important to note that even though packets and network traffic are being exchanged between your local workstation and the Google servers, at no point is the private IP Address of your workstation exposed to the external Google Servers. Your workstation would have been assigned a private internal IP Address based on the computer laboratory. Traffic is then routed between the computer laboratory's private internal network and the rest of the university's networks through routers and gateway devices. All the internal computers and components across the campus will appear to the outside as though they have a single public IP address. This is accomplished through a process known as [Network address Translation (NAT)](https://en.wikipedia.org/wiki/Network_address_translation).
+
+<span id="fig2" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
+    <img alt="test" src="./resources/browsing_internet.pdf" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
+    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 1: Diagram loosely describing process behind browsing to Google.com.</i></span>
+</span>
+
+<div style="page-break-after: always;"></div>
+
+
+### Basic Networking Example
+
+
+
 #### WiFi Hotspot Example
 #### WhatIsMyIp.com
-#### Windows PowerShell Commands
-##### `ipconfig`
-##### `ping 8.8.8.8`
-##### `route print`
-##### `tracert`
+### Windows PowerShell Commands
+#### `ipconfig`
+#### `ping 8.8.8.8`
+#### `route print`
+#### `tracert`
 ### Understanding NAT
 #### Publicly Accessible IP Address
 #### Network Ports
