@@ -1,6 +1,6 @@
 # CHPC Student Cluster Competition Tutorials
 
-This repository contains the ground truth of information that needs to be covered by the tutorials of the Student Cluster Competition. 
+This repository contains the information that will be covered by the tutorials of the Student Cluster Competition. 
 
 ## Table of Contents
 
@@ -8,24 +8,34 @@ This repository contains the ground truth of information that needs to be covere
 **Table of Contents**
 
 1. [Overview](#overview)
-   1. [Structure of the Tutorials](#/sturture-of-the-tutorials)
-   1. [Getting Help](#/getting-help)
-1. [Collaborating with your Team and Storing your Progress on GitHub](#/collaborating-with-your-team-and-storing-you-progress-on-github)
-   1. [Forking the Tutorials into Your Own Team's Private Git Repository](#/forking-the-tutorials-into-your-own-teams-private-github-repository)
+   1. [Structure of the Tutorials](#sturture-of-the-tutorials)
+   1. [Getting Help](#getting-help)
+1. [Collaborating with your Team and Storing your Progress on GitHub](#collaborating-with-your-team-and-storing-you-progress-on-github)
+   1. [Forking the Tutorials into Your Own Team's Private Git Repository](#forking-the-tutorials-into-your-own-teams-private-github-repository)
       1. [Branch, Merge and Pull Requests to your Team Captain's Repository]()
-      1. [Editing the Git Markdown Files to Track Your Team's Progress](#/editing-the-git-markdown-files-to-track-your-teams-progress)
-1. [Contributing to the Project](#/contributing-to-the-project)
+      1. [Editing the Git Markdown Files to Track Your Team's Progress](#editing-the-git-markdown-files-to-track-your-teams-progress)
+1. [Contributing to the Project](#contributing-to-the-project)
    1. [Raising Issues and Reporting Bugs with the Tutorial Content]()
    1. [Submitting Pull Requests for Features / Bug Fixes]()
       1. [Steps to follow when editing content]()
-1. [Tutorial 1](#/tutorial-1)
-
-1. [Tutorial 2](#tutorial-2)
-1. [Tutorial 3](#tutorial-3)
-1. [Tutorial 4](#tutorial-4)
+1. [Tutorial Sections](#tutorial-sections)
+   1. [Tutorial 1](#tutorial-1)
+   1. [Tutorial 2](#tutorial-2)
+   1. [Tutorial 3](#tutorial-3)
+   1. [Tutorial 4](#tutorial-4)
 <!-- markdown-toc end -->
 
 ## Overview
+
+Welcome the **Center for High Performance Computing (CHPC)'s Student Cluster Competition (SCC)** - Team Selection Round. This round requires each team to build a **prototype compute cluster** in the ACE Lab's **virtual compute cloud** (described below).
+
+The goal of this tutorial is to introduce you to the competition platform and familiarise you with some Linux and systems administration concepts.
+
+<u>Please note the following concepts:</u>
+
+- **[Cloud computing](https://en.wikipedia.org/wiki/Cloud_computing)** is the **on-demand** delivery of **I.T. services** by a first-party (you) or third-party (external) provider over a network, possibly including the **internet**. This can allow you to access computing or other I.T. services wherever you are and at your convenience.
+- **[Infrastructure as a Service (IaaS)](https://en.wikipedia.org/wiki/Infrastructure_as_a_service)** is where physical or virtual hardware is presented to a user, but the user is not exposed to the underlying technology. In other words, this competition provides you with an IaaS experience by giving you a set of virtual machines that you can use for the competition. You cannot control the cloud environment that the virtual machines are provided on.
+- **Instances ([virtual machines](https://en.wikipedia.org/wiki/Virtual_machine) or 'VMs')** are software copies of virtual computers that are hosted within a physical computer (the **['host'](https://en.wikipedia.org/wiki/Host_(network))**). The host provides access to one or more virtual computers at the same time. This competition provides you with a fixed set of virtual resources, that you will use to initialize a set a set of virtual machines instances based on your choice _or flavor_ of **[Linux Operating System Distributions](https://en.wikipedia.org/wiki/List_of_Linux_distributions)**.
 
 ### Structure of the Tutorials
 

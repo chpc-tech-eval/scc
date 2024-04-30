@@ -4,6 +4,7 @@
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 1. [Overview](#overview)
+   1. [Checklist](#checklist)
 1. [Network Primer](#network-primer)
    1. [Internal Intranet vs External Internet](#internal-intranet-vs-external-internet)
       1. [WiFi Hotspot Example](#wifi-hotspot-example)
@@ -18,7 +19,7 @@
       1. [Network Ports](#network-ports)
       1. [Internal Subnet](#internal-subnet)
       1. [Default Gateway and Routing Table](#default-gateway-and-routing-table)
-1. [Launching your First Open Stack Virtual Machine Instance](#launching-your-first-open-stack-virtual-machine-instance)
+1. [Launching your First OpenStack Virtual Machine Instance](#launching-your-first-open-stack-virtual-machine-instance)
    1. [Accessing the CHPC's Cloud](#accessing-the-chpcs-cloud)
    1. [Verify your Teams' Project Workspace](#verify-your-teams-project-workspace)
    1. [Verify your Teams' Available Resources and Launch a New Instance](#verify-your-teams-available-resources-and-launch-a-new-instance)
@@ -62,42 +63,40 @@
 
 ## Overview
 
-Welcome the **CHPC's Student Cluster Competition** - team selection round - presented by the **Advanced Computer Engineering (ACE) Lab**. This round requires each team to build a **prototype compute cluster** in the ACE Lab's **virtual compute cloud** (described below).
+This tutorial will help you become familiar with Cloud Computing and will also serve as an introduction to Linux. This tutorial will start with a network primer that will help you to understand the basics of public and private networks, ip addresses, ports and routing.
 
-The goal of this tutorial is to introduce you to the competition platform and familiarise you with some Linux and systems administration concepts.
+You will then login into the CHPC's Cloud Computing Platform and launch your own OpenStack virtual machine instances. Here you will need to make a decision on choice of Linux distribution that you will use as well as how your team will allocate your limited cloud computing resources. 
 
-<u>Please note the following concepts:</u>
+such as navigating and configuring your hosts and network on the terminal. If you are new to Linux and need help getting more comfortable, please check out the resources tab on the learning system.
 
-- **[Cloud computing](https://en.wikipedia.org/wiki/Cloud_computing)** is the **on-demand** delivery of **I.T. services** by a first-party (you) or third-party (external) provider over a network, possibly including the **internet**. This can allow you to access computing or other I.T. services wherever you are and at your convenience.
-- **[Infrastructure as a Service (IaaS)](https://en.wikipedia.org/wiki/Infrastructure_as_a_service)** is where physical or virtual hardware is presented to a user, but the user is not exposed to the underlying technology. In other words, this competition provides you with an IaaS experience by giving you a set of virtual machines that you can use for the competition. You cannot control the cloud environment that the virtual machines are provided on.
-- **Instances ([virtual machines](https://en.wikipedia.org/wiki/Virtual_machine) or 'VMs')** are software copies of virtual computers that are hosted within a physical computer (the **['host'](https://en.wikipedia.org/wiki/Host_(network))**). The host provides access to one or more virtual computers at the same time. This competition provides you with a set of virtual machines based on the **[CentOS 8](https://www.centos.org/about/)** operating system.
-ppp
-This tutorial will help you become familiar with Linux basics, such as navigating and configuring your hosts and network on the terminal. If you are new to Linux and need help getting more comfortable, please check out the resources tab on the learning system.
+Once your team has successfully launched your instances you'll login to your VM's to do some basic Linux administration.
 
-<span id="fig1" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="test" src="./resources/SCC-tut1-fig1.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 1: Layout of the ACE Lab network for SCC.</i></span>
-</span>
+This tutorial will conclude with you downloading, installing and running the High Performance LinPACK benchmark on your newly created VM's.
 
-[Figure 1](#fig1) provides an overview of the infrastructure made available to you. Please note that when you are connected to a virtual machine within this cloud, you are using the ACE Lab's **private cloud** which utilises **OpenStack** (a software cloud environment), and sits within a private network. There are two access methods for these resources:
+### Checklist
 
-1. **[cloud.ace.chpc.ac.za](https://cloud.ace.chpc.ac.za) (web-based)**
-   - This is the web front-end to the cloud that you can access via a web browser. It will also allow graphical access to the VMs through **[Virtual Network Computing (VNC)](https://en.wikipedia.org/wiki/Virtual_Network_Computing)**.
-2. **ssh.ace.chpc.ac.za (terminal-based)**
-   - This is the login node for the ACE Lab. Using an **SSH ([secure-shell](https://en.wikipedia.org/wiki/Secure_Shell_Protocol), described further later)** client, you can establish a remote terminal session to the ACE Lab's network, which in turn will allow you to connect to your virtual machines.
+<u>Use the following checklist to keep track of your team's progress and to ensure that all members in your understand these concepts.</u>
 
-You first need to configure the network settings of your VMs properly before you can use the **SSH** method. This will be the main way that you interact with your infrastructure.
-
-<u>In this tutorial you will:</u>
-
-- [x] Learn IT concepts like cloud computing, virtualisation and remote connections.
-- [ ] Learn how to use the CHPC's cloud computing environment.
-- [ ] Learn what SSH is and how to use it.
-- [ ] Learn about Linux password management.
-- [ ] Configure Linux networks.
-- [ ] Configure a Linux firewall.
-- [ ] Set up your compute network names.
-- [ ] Configure network time synchronisation.
+- [ ] Understand IT concepts like cloud computing, virtualisation and remote connections:
+  - [ ] Understand and be able to explain networking terms such as IP Address, Port, Subnet, Gateway, Router, and
+  - [ ] Understand the difference between a Local Private Network and an External Public Network.
+- [ ] Learn how to use the CHPC's cloud computing environment:
+  - [ ] Learn about different Linux Distributions and Flavors, and
+  - [ ] Learn about Cloud Resource Management.
+- [ ] Learn about Basic Linux Administration:
+  - [ ] Learn what SSH is and how to use it,
+  - [ ] Learn about Linux password management,
+  - [ ] Use a Linux Console / Terminal Based Text Editors,
+  - [ ] Understand Linux Privileges and the Root user,
+  - [ ] Learn how to Install Packages in your Linux Environment, and
+  - [ ] Learn about Configuring system files.
+- [ ] Download, Configure, Install and Run HPL Benchmark:
+  - [ ] Understand how to satisfy Linux Package Dependencies,
+  - [ ] Download and unpack files using a terminal,
+  - [ ] Editing Makefiles,
+  - [ ] Compiling Sourcefiles to produce an Executable Binary,
+  - [ ] Understanding the basics of the Linux Shell Environment, and
+  - [ ] Understanding the basic tuning required to successfully run a benchmark in your environment.
 
 <div style="page-break-after: always;"></div>
 
