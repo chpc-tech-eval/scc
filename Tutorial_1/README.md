@@ -111,7 +111,7 @@ A number of [routing](https://en.wikipedia.org/wiki/Router_(computing)) lookup t
 At this point it is important to note that even though packets and network traffic are being exchanged between your local workstation and the Google servers, at no point is the private IP Address of your workstation exposed to the external Google Servers. Your workstation would have been assigned a private internal IP Address based on the computer laboratory. Traffic is then routed between the computer laboratory's private internal network and the rest of the university's networks through routers and gateway devices. All the internal computers and components across the campus will appear to the outside as though they have a single public IP address. This is accomplished through a process known as [Network address Translation (NAT)](https://en.wikipedia.org/wiki/Network_address_translation).
 
 <span id="fig2" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="test" src="./resources/browsing_internet.pdf" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
+    <img alt="./resources/browsing_internet.pdf" src="./resources/browsing_internet.pdf" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
     <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 1: Diagram loosely describing process behind browsing to Google.com.</i></span>
 </span>
 
