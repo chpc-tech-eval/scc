@@ -112,7 +112,7 @@ A number of [routing](https://en.wikipedia.org/wiki/Router_(computing)) lookup t
 At this point it is important to note that even though packets and network traffic are being exchanged between your local workstation and the Google servers, at no point is the private IP Address of your workstation exposed to the external Google Servers. Your workstation would have been assigned a private internal IP Address based on the computer laboratory. Traffic is then routed between the computer laboratory's private internal network and the rest of the university's networks through routers and gateway devices. All the internal computers and components across the campus will appear to the outside as though they have a single public IP address. This is accomplished through a process known as [Network address Translation (NAT)](https://en.wikipedia.org/wiki/Network_address_translation).
 
 <span id="fig1" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="Diagram loosely describing process behind browsing to Google.com. You have no information about the computers and servers behind 72.14.222.1, just as Google has no information about your workstation’s internal IP." src="./resources/browsing_internet_dark.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" width=600/>
+    <img alt="Diagram loosely describing process behind browsing to Google.com. You have no information about the computers and servers behind 72.14.222.1, just as Google has no information about your workstation’s internal IP." src="./resources/browsing_internet_dark.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
     <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 1: Diagram loosely describing process behind browsing to Google.com. You have no information about the computers and servers behind 72.14.222.1, just as Google has no information about your workstation’s internal IP.</i></span>
 </span>
 
@@ -132,7 +132,7 @@ The process of browsing to [[google.co.za]] on your workstation, can be simplifi
 In the following examples, you will be using your Android and/or Apple Cellular devices to complete the following tasks in your respective groups. Start by ensuring that your cell phone is connected to the local WiFi. Then navigate to the _"Network Details"_ page of the WiFi connection.
 
 <span id="fig2" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="Typical information displayed from the WiFi Network Settings Options Section of an Android device." src="./resources/android_networking_info.jpeg" style="display:block; margin-left: auto; margin-right: auto;" title="caption" width=300/>
+    <img alt="Typical information displayed from the WiFi Network Settings Options Section of an Android device." src="./resources/android_networking_info.jpeg" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
     <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 2: Typical information displayed from the WiFi Network Settings Options Section of an Android device.</i></span>
 </span>
 
