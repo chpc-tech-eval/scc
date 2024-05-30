@@ -131,7 +131,7 @@ The process of browsing to [[google.co.za]] on your workstation, can be simplifi
 
 In the following examples, you will be using your Android and/or Apple Cellular devices to complete the following tasks in your respective groups. Start by ensuring that your cell phone is connected to the local WiFi. Then navigate to the _"Network Details"_ page of the WiFi connection.
 
-<span id="fig2" class="img_container left" style="font-size:8px;margin-bottom:20px; display: block;">
+<span id="fig2" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
     <img alt="Typical information displayed from the WiFi Network Settings Options Section of an Android device." src="./resources/android_networking_info.jpeg" style="display:block; margin-left: auto; margin-right: auto;" title="caption" width=300/>
     <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 2: Typical information displayed from the WiFi Network Settings Options Section of an Android device.</i></span>
 </span>
