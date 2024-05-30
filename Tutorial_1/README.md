@@ -113,22 +113,20 @@ At this point it is important to note that even though packets and network traff
 
 <img alt="Diagram loosely describing process behind browsing to Google.com. You have no information about the computers and servers behind 72.14.222.1, just as Google has no information about your workstation’s internal IP." src="./resources/browsing_internet_dark.png" />
 
-The process of browsing to [[google.co.za]] on your workstation, can be simplified and summarized in _Figure 1_, through the following steps:
-1. You open a browser on your workspace and navigate to [[google.co.za]].
-1. A DNS Server then translates the URL [[google.co.za]] into it's corresponding IP Address [[142.251.216.67]].
+The process of browsing to https://www.google.co.za on your workstation, can be simplified and depicted in the image above and summarized as follows:
+1. You open a browser on your workspace and navigate to [google.co.za](https://www.google.com).
+1. A DNS Server then translates the URL [google.co.za](https://www.google.co.za) into it's corresponding IP Address [142.251.216.67](142.251.216.67).
 1. With the relevant IP Address, a Routing Table is used to navigate a path between your workstation and the server housing the information / data that you're after. Packets are exchanged between your workstation and all the networks between you and your desired data:
    1. Data Packets are exchanged between your workstation and the computer laboratory's internal networks (e.g. 192.168.0.1/24 and 10.0.0.1/24 networks),
    1. Data Packets are exchanged between Universities' _internal_ networks and _publicly_ assigned IP Address Range (e.g. 192.96.15.90),
    1. Data Packets are exchanged between Universities' _public_ facing network interfaces, to the regional, national and international backbone networks and connections, and finally
-   1. Data Packets are exchanged between _Regional_, _National_ and _International_ networks and those of the target [Google](https://www.google.com) domains (e.g.: _local [google.co.za]:_ [142.251.216.67], or _California [google.com]_ [72.14.222.1])
-
-<div style="page-break-after: always;"></div>
+   1. Data Packets are exchanged between _Regional_, _National_ and _International_ networks and those of the target [Google](https://www.google.com) domains (e.g.: _local [Google.co.za](https://www.google.co.za):_ [142.251.216.67](142.251.216.67), or _California_ [72.14.222.1](72.14.222.1))
 
 ### Basic Networking Example (WhatIsMyIp.com)
 
 In the following examples, you will be using your Android and/or Apple Cellular devices to complete the following tasks in your respective groups. Start by ensuring that your cell phone is connected to the local WiFi. Then navigate to the _"Network Details"_ page of the WiFi connection.
 
-<img alt="Typical information displayed from the WiFi Network Settings Options Section of an Android device." src="./resources/android_networking_info.jpeg" width=300 />
+<div style="text-align:center"><img alt="Typical information displayed from the WiFi Network Settings Options Section of an Android device." src="./resources/android_networking_info.jpeg" width=300 /></div>
 
 You should see something very similar to that [Figure 2](fig2), which will have the following details:
 * Wi-Fi Type 2.4GHz vs 5GHz: Your cellular device may have a WiFi radio card operating at either [2.4GHz or 5GHz](https://help.afrihost.com/entry/the-difference-between-2-4-ghz-and-5-ghz-wi-fi) or two independent radios so that it operates at _both_ frequencies.
