@@ -111,7 +111,7 @@ A number of [routing](https://en.wikipedia.org/wiki/Router_(computing)) lookup t
 
 At this point it is important to note that even though packets and network traffic are being exchanged between your local workstation and the Google servers, at no point is the private IP Address of your workstation exposed to the external Google Servers. Your workstation would have been assigned a private internal IP Address based on the computer laboratory. Traffic is then routed between the computer laboratory's private internal network and the rest of the university's networks through routers and gateway devices. All the internal computers and components across the campus will appear to the outside as though they have a single public IP address. This is accomplished through a process known as [Network address Translation (NAT)](https://en.wikipedia.org/wiki/Network_address_translation).
 
-<img alt="Diagram loosely describing process behind browsing to Google.com. You have no information about the computers and servers behind 72.14.222.1, just as Google has no information about your workstation’s internal IP" src="./resources/browsing_internet_dark.png" width="40">
+<img alt="Diagram loosely describing process behind browsing to Google.com. You have no information about the computers and servers behind 72.14.222.1, just as Google has no information about your workstation’s internal IP" src="./resources/browsing_internet_dark.png" width="100">
 
 The process of browsing to [[google.co.za]] on your workstation, can be simplified and summarized in _Figure 1_, through the following steps:
 1. You open a browser on your workspace and navigate to [[google.co.za]].
@@ -128,7 +128,7 @@ The process of browsing to [[google.co.za]] on your workstation, can be simplifi
 
 In the following examples, you will be using your Android and/or Apple Cellular devices to complete the following tasks in your respective groups. Start by ensuring that your cell phone is connected to the local WiFi. Then navigate to the _"Network Details"_ page of the WiFi connection.
 
-<img src="Typical information displayed from the WiFi Network Settings Options Section of an Android device." src="./resources/android_networking_info.jpeg" width="40">
+<img src="Typical information displayed from the WiFi Network Settings Options Section of an Android device." src="./resources/android_networking_info.jpeg" width="100">
 
 You should see something very similar to that [Figure 2](fig2), which will have the following details:
 * Wi-Fi Type 2.4GHz vs 5GHz: Your cellular device may have a WiFi radio card operating at either [2.4GHz or 5GHz](https://help.afrihost.com/entry/the-difference-between-2-4-ghz-and-5-ghz-wi-fi) or two independent radios so that it operates at _both_ frequencies.
