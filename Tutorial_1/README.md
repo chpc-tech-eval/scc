@@ -6,12 +6,13 @@
 1. [Overview](#overview)
    1. [Checklist](#checklist)
 1. [Network Primer](#network-primer)
-   1. [Internal Intranet vs External Internet](#internal-intranet-vs-external-internet)
+   1. [Basic Networking Example (WhatIsMyIp.com)](#basic-networking-example-whatismyipcom)
+      1. [Local WiFi Network](#local-wifi-network)
+      1. [External Cellular Network](#external-cellular-network)
       1. [WiFi Hotspot Example](#wifi-hotspot-example)
-      1. [WhatIsMyIp.com](#whatismyipcom)
    1. [Windows PowerShell Commands](#windows-powershell-commands)
       1. [`ipconfig`](#ipconfig)
-      1. [`ping 8.8.8.8`](#ping-8888)qqq
+      1. [`ping 8.8.8.8`](#ping-8888)
       1. [`route print`](#route-print)
       1. [`tracert`](#tracert)
    1. [Understanding NAT](#understanding-nat)
@@ -22,6 +23,7 @@
 1. [Launching your First OpenStack Virtual Machine Instance](#launching-your-first-open-stack-virtual-machine-instance)
    1. [Accessing the CHPC's Cloud](#accessing-the-chpcs-cloud)
    1. [Verify your Teams' Project Workspace](#verify-your-teams-project-workspace)
+   1. [Generating SSH Keys](#generating-ssh-keys)
    1. [Verify your Teams' Available Resources and Launch a New Instance](#verify-your-teams-available-resources-and-launch-a-new-instance)
    1. [Instance Name](#instance-name)
    1. [Linux Flavors and Distributions](#linux-flavors-and-distributions)
@@ -32,7 +34,6 @@
       1. [Memory](#memory)
       1. [Storage](#storage)
    1. [Networks, Ports, Services and Security Groups](#networks-ports-services-and-security-groups)
-   1. [Generating SSH Keys](#generating-ssh-keys)
    1. [Verify that your Instance was Successfully Deployed and Launched](#verify-that-your-instance-was-successfully-deployed-and-launched)
    1. [Associating an Externally Available IP Address](#associating-an-externally-available-ip-address)
    1. [Success State, Resource Management and Trouble Shooting](#success-state-resource-management-and-trouble-shooting)
@@ -110,19 +111,38 @@ A number of [routing](https://en.wikipedia.org/wiki/Router_(computing)) lookup t
 
 At this point it is important to note that even though packets and network traffic are being exchanged between your local workstation and the Google servers, at no point is the private IP Address of your workstation exposed to the external Google Servers. Your workstation would have been assigned a private internal IP Address based on the computer laboratory. Traffic is then routed between the computer laboratory's private internal network and the rest of the university's networks through routers and gateway devices. All the internal computers and components across the campus will appear to the outside as though they have a single public IP address. This is accomplished through a process known as [Network address Translation (NAT)](https://en.wikipedia.org/wiki/Network_address_translation).
 
-<span id="fig2" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="./resources/browsing_internet_dark.png" src="./resources/browsing_internet.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 1: Diagram loosely describing process behind browsing to Google.com. You have no information about the computers and servers behind 72.14.222.1, just as Google has no information about your workstation’s internal IP</i></span>
+<span id="fig1" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
+    <img alt="./resources/browsing_internet_dark.png" src="./resources/browsing_internet_light.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
+    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 1: Diagram loosely describing process behind browsing to Google.com. You have no information about the computers and servers behind 72.14.222.1, just as Google has no information about your workstation’s internal IP.</i></span>
 </span>
+
+The process of browsing to [[google.co.za]] on your workstation, can be simplified and summarized in _Figure 1_, through the following steps:
+1. You open a browser on your workspace and navigate to [[google.co.za]].
+1. A DNS Server then translates the URL [[google.co.za]] into it's corresponding IP Address [[142.251.216.67]].
+1. With the relevant IP Address, a Routing Table is used to navigate a path between your workstation and the server housing the information / data that you're after. Packets are exchanged between your workstation and all the networks between you and your desired data:
+   1. Data Packets are exchanged between your workstation and the computer laboratory's internal networks (e.g. 192.168.0.1/24 and 10.0.0.1/24 networks),
+   1. Data Packets are exchanged between Universities' _internal_ networks and _publicly_ assigned IP Address Range (e.g. 192.96.15.90),
+   1. Data Packets are exchanged between Universities' _public_ facing network interfaces, to the regional, national and international backbone networks and connections, and finally
+   1. Data Packets are exchanged between _Regional_, _National_ and _International_ networks and those of the target [Google](https://www.google.com) domains (e.g.: _local [google.co.za]:_ [142.251.216.67], or _California [google.com]_ [72.14.222.1])
 
 <div style="page-break-after: always;"></div>
 
-### Basic Networking Example
+### Basic Networking Example (WhatIsMyIp.com)
 
+In the following examples, you will be using your Android and/or Apple Cellular devices to complete the following tasks in your respective groups. Start by ensuring that your cell phone is connected to the local WiFi. Then navigate to the _"Network Details"_ page of the WiFi connection.
 
+<span id="fig2" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
+    <img alt="./resources/android_networking_info.jpeg" src="./resources/android_networking_info.jpeg" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
+    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 2: Typical information displayed from the WiFi Network Settings Options Section of an Android device..</i></span>
+</span>
+
+You should see something very similar to that [Figure 2](fig2), which will have the following details:
+* Wi-Fi Type 2.4GHz vs 5GHz: Your cellular device may have a WiFi radio card operating at either [2.4GHz or 5GHz](https://help.afrihost.com/entry/the-difference-between-2-4-ghz-and-5-ghz-wi-fi) or two independent radios so that it operates at _both_ frequencies.
+#### Local WiFi Network
+
+#### External Cellular Network
 
 #### WiFi Hotspot Example
-#### WhatIsMyIp.com
 ### Windows PowerShell Commands
 #### `ipconfig`
 #### `ping 8.8.8.8`
@@ -147,11 +167,11 @@ In this part, you will be guided through using the ACE Lab's network to gain acc
    - **<provided_password>** for the `Password`.
 3. Once logged in to the web front-end, on the left navigate to `Project` and click `Instances` tab under `Compute`. You will see the VM resources provisioned for you by the ACE Lab.
 4. Please note the **IP addresses** assigned to each VM.
-    - Your cluster's headnode, **which is one of the VMs**, has two network interfaces attached with 2 unique IP addresses (think of it as having two network ports):
-        - An external (public) interface with IP range: **10.128.24.0/24**
-        - An internal (private) interface with IP range: **10.0.0.0/24**
-        - **The above IP address ranges are specified in [CIDR notation](https://www.ionos.com/digitalguide/server/know-how/cidr-classless-inter-domain-routing/).**
-        - The **external network** is **still private** within the ACE Lab, but it can reach the internet through the **gateway address 10.128.24.1**, using a method called **[NAT (Network Address Translation)](https://en.wikipedia.org/wiki/Network_address_translation)** which will be detailed later.
+   - Your cluster's headnode, **which is one of the VMs**, has two network interfaces attached with 2 unique IP addresses (think of it as having two network ports):
+     - An external (public) interface with IP range: **10.128.24.0/24**
+     - An internal (private) interface with IP range: **10.0.0.0/24**
+     - **The above IP address ranges are specified in [CIDR notation](https://www.ionos.com/digitalguide/server/know-how/cidr-classless-inter-domain-routing/).**
+     - The **external network** is **still private** within the ACE Lab, but it can reach the internet through the **gateway address 10.128.24.1**, using a method called **[NAT (Network Address Translation)](https://en.wikipedia.org/wiki/Network_address_translation)** which will be detailed later.
 5. Access your VMs via the "Console (VNC)" utility embedded within OpenStack by clicking into one of the VMs listed in the `Compute -> Instances` tab, clicking the name of the VM instance, and navigating to the "Console" tab on the top as shown in [Figure 2](#fig2).
 
 **Hint:** _Your headnode acts as a gateway for your compute nodes using the private virtual network (10.0.0.0/24)._
@@ -167,6 +187,8 @@ In this part, you will be guided through using the ACE Lab's network to gain acc
 ### Verify your Teams' Project Workspace
 
 TODO: Screenshot from Workspace : Projects
+
+### Generating SSH Keys
 
 ### Verify your Teams' Available Resources and Launch a New Instance
 
@@ -215,8 +237,6 @@ Available resource distribution, headnode vs compute node
 
 
 ### Networks, Ports, Services and Security Groups
-
-### Generating SSH Keys
 
 ### Verify that your Instance was Successfully Deployed and Launched
 
