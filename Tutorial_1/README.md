@@ -162,46 +162,17 @@ On your cellular device, ensure that you are connected to your Team Captain's Wi
 
 <p align="center"><img alt="WhatIsMyWiFi.com test while connected to your Team Captain's WiFi Hotspot network." src="./resources/whatismyip_hotspot.png" width=600 /></p>
 
+> [!TIP]
+> Pay careful attention to the IP Address reported by WhatIsMyIp.com. This is the unique identifier that _your_ device will be identified and recognized by externally on the internet. Use this information to assist you to understand and describe [NAT](https://en.wikipedia.org/wiki/Network_address_translation).
+
 ### Windows PowerShell Commands
 #### `ipconfig`
 #### `ping 8.8.8.8`
 #### `route print`
 #### `tracert`
-### Understanding NAT
-#### Publicly Accessible IP Address
-#### Network Ports
-#### Internal Subnet
-#### Default Gateway and Routing Table
 ## Launching your First Open Stack Virtual Machine Instance
 
 ### Accessing the CHPC's Cloud
-
-> **! >>>** _In these tutorials, an asterisk ('\*') or a triangle brackets ('\<\>') are placeholders. You will need to fill in the correct information relevant to you. The line `~$` represents that the command following it is to be typed in a terminal and should not be included when typing the command._
-
-In this part, you will be guided through using the ACE Lab's network to gain access to your VMs. You will primarily be using these VMs to do the tutorials. 
-
-1. Open your web browser and visit **cloud.ace.chpc.ac.za**.
-2. Use the credentials provided to you to log into the cloud platform ([OpenStack](https://www.openstack.org/)):
-   - **<team_name>** for the `Username` and;
-   - **<provided_password>** for the `Password`.
-3. Once logged in to the web front-end, on the left navigate to `Project` and click `Instances` tab under `Compute`. You will see the VM resources provisioned for you by the ACE Lab.
-4. Please note the **IP addresses** assigned to each VM.
-   - Your cluster's headnode, **which is one of the VMs**, has two network interfaces attached with 2 unique IP addresses (think of it as having two network ports):
-     - An external (public) interface with IP range: **10.128.24.0/24**
-     - An internal (private) interface with IP range: **10.0.0.0/24**
-     - **The above IP address ranges are specified in [CIDR notation](https://www.ionos.com/digitalguide/server/know-how/cidr-classless-inter-domain-routing/).**
-     - The **external network** is **still private** within the ACE Lab, but it can reach the internet through the **gateway address 10.128.24.1**, using a method called **[NAT (Network Address Translation)](https://en.wikipedia.org/wiki/Network_address_translation)** which will be detailed later.
-5. Access your VMs via the "Console (VNC)" utility embedded within OpenStack by clicking into one of the VMs listed in the `Compute -> Instances` tab, clicking the name of the VM instance, and navigating to the "Console" tab on the top as shown in [Figure 2](#fig2).
-
-**Hint:** _Your headnode acts as a gateway for your compute nodes using the private virtual network (10.0.0.0/24)._
-
-
-<span id="fig2" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="test" src="./resources/VNC_icon.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 2: The Console (VNC) button and dashboard seen in the OpenStack user interface.</i></span>
-</span>
-
-<div style="page-break-after: always;"></div>
 
 ### Verify your Teams' Project Workspace
 
