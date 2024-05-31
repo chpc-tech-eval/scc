@@ -4,23 +4,21 @@
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 1. [Overview](#overview)
+   1. [Checklist](#checklist)
 1. [Network Primer](#network-primer)
-   1. [Internal Intranet vs External Internet](#internal-intranet-vs-external-internet)
+   1. [Basic Networking Example (WhatIsMyIp.com)](#basic-networking-example-whatismyipcom)
+      1. [Local WiFi Network](#local-wifi-network)
+      1. [External Cellular Network](#external-cellular-network)
       1. [WiFi Hotspot Example](#wifi-hotspot-example)
-      1. [WhatIsMyIp.com](#whatismyipcom)
    1. [Windows PowerShell Commands](#windows-powershell-commands)
       1. [`ipconfig`](#ipconfig)
-      1. [`ping 8.8.8.8`](#ping-8888)qqq
+      1. [`ping 8.8.8.8`](#ping-8888)
       1. [`route print`](#route-print)
       1. [`tracert`](#tracert)
-   1. [Understanding NAT](#understanding-nat)
-      1. [Publicly Accessible IP Address](#publicly-accessible-ip-address)
-      1. [Network Ports](#network-ports)
-      1. [Internal Subnet](#internal-subnet)
-      1. [Default Gateway and Routing Table](#default-gateway-and-routing-table)
-1. [Launching your First Open Stack Virtual Machine Instance](#launching-your-first-open-stack-virtual-machine-instance)
+1. [Launching your First OpenStack Virtual Machine Instance](#launching-your-first-open-stack-virtual-machine-instance)
    1. [Accessing the CHPC's Cloud](#accessing-the-chpcs-cloud)
    1. [Verify your Teams' Project Workspace](#verify-your-teams-project-workspace)
+   1. [Generating SSH Keys](#generating-ssh-keys)
    1. [Verify your Teams' Available Resources and Launch a New Instance](#verify-your-teams-available-resources-and-launch-a-new-instance)
    1. [Instance Name](#instance-name)
    1. [Linux Flavors and Distributions](#linux-flavors-and-distributions)
@@ -31,7 +29,6 @@
       1. [Memory](#memory)
       1. [Storage](#storage)
    1. [Networks, Ports, Services and Security Groups](#networks-ports-services-and-security-groups)
-   1. [Generating SSH Keys](#generating-ssh-keys)
    1. [Verify that your Instance was Successfully Deployed and Launched](#verify-that-your-instance-was-successfully-deployed-and-launched)
    1. [Associating an Externally Available IP Address](#associating-an-externally-available-ip-address)
    1. [Success State, Resource Management and Trouble Shooting](#success-state-resource-management-and-trouble-shooting)
@@ -62,93 +59,126 @@
 
 ## Overview
 
-Welcome the **CHPC's Student Cluster Competition** - team selection round - presented by the **Advanced Computer Engineering (ACE) Lab**. This round requires each team to build a **prototype compute cluster** in the ACE Lab's **virtual compute cloud** (described below).
+This tutorial will help you become familiar with Cloud Computing and will also serve as an introduction to Linux. This tutorial will start with a network primer that will help you to understand the basics of public and private networks, ip addresses, ports and routing.
 
-The goal of this tutorial is to introduce you to the competition platform and familiarise you with some Linux and systems administration concepts.
+You will then login into the CHPC's Cloud Computing Platform and launch your own OpenStack virtual machine instances. Here you will need to make a decision on choice of Linux distribution that you will use as well as how your team will allocate your limited cloud computing resources. 
 
-<u>Please note the following concepts:</u>
+such as navigating and configuring your hosts and network on the terminal. If you are new to Linux and need help getting more comfortable, please check out the resources tab on the learning system.
 
-- **[Cloud computing](https://en.wikipedia.org/wiki/Cloud_computing)** is the **on-demand** delivery of **I.T. services** by a first-party (you) or third-party (external) provider over a network, possibly including the **internet**. This can allow you to access computing or other I.T. services wherever you are and at your convenience.
-- **[Infrastructure as a Service (IaaS)](https://en.wikipedia.org/wiki/Infrastructure_as_a_service)** is where physical or virtual hardware is presented to a user, but the user is not exposed to the underlying technology. In other words, this competition provides you with an IaaS experience by giving you a set of virtual machines that you can use for the competition. You cannot control the cloud environment that the virtual machines are provided on.
-- **Instances ([virtual machines](https://en.wikipedia.org/wiki/Virtual_machine) or 'VMs')** are software copies of virtual computers that are hosted within a physical computer (the **['host'](https://en.wikipedia.org/wiki/Host_(network))**). The host provides access to one or more virtual computers at the same time. This competition provides you with a set of virtual machines based on the **[CentOS 8](https://www.centos.org/about/)** operating system.
-ppp
-This tutorial will help you become familiar with Linux basics, such as navigating and configuring your hosts and network on the terminal. If you are new to Linux and need help getting more comfortable, please check out the resources tab on the learning system.
+Once your team has successfully launched your instances you'll login to your VM's to do some basic Linux administration.
 
-<span id="fig1" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="test" src="./resources/SCC-tut1-fig1.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 1: Layout of the ACE Lab network for SCC.</i></span>
-</span>
+This tutorial will conclude with you downloading, installing and running the High Performance LinPACK benchmark on your newly created VM's.
 
-[Figure 1](#fig1) provides an overview of the infrastructure made available to you. Please note that when you are connected to a virtual machine within this cloud, you are using the ACE Lab's **private cloud** which utilises **OpenStack** (a software cloud environment), and sits within a private network. There are two access methods for these resources:
+### Checklist
 
-1. **[cloud.ace.chpc.ac.za](https://cloud.ace.chpc.ac.za) (web-based)**
-   - This is the web front-end to the cloud that you can access via a web browser. It will also allow graphical access to the VMs through **[Virtual Network Computing (VNC)](https://en.wikipedia.org/wiki/Virtual_Network_Computing)**.
-2. **ssh.ace.chpc.ac.za (terminal-based)**
-   - This is the login node for the ACE Lab. Using an **SSH ([secure-shell](https://en.wikipedia.org/wiki/Secure_Shell_Protocol), described further later)** client, you can establish a remote terminal session to the ACE Lab's network, which in turn will allow you to connect to your virtual machines.
+<u>Use the following checklist to keep track of your team's progress and to ensure that all members in your understand these concepts.</u>
 
-You first need to configure the network settings of your VMs properly before you can use the **SSH** method. This will be the main way that you interact with your infrastructure.
-
-<u>In this tutorial you will:</u>
-
-- [x] Learn IT concepts like cloud computing, virtualisation and remote connections.
-- [ ] Learn how to use the CHPC's cloud computing environment.
-- [ ] Learn what SSH is and how to use it.
-- [ ] Learn about Linux password management.
-- [ ] Configure Linux networks.
-- [ ] Configure a Linux firewall.
-- [ ] Set up your compute network names.
-- [ ] Configure network time synchronisation.
+- [ ] Understand IT concepts like cloud computing, virtualisation and remote connections:
+  - [ ] Understand and be able to explain networking terms such as URL, DNS, IP Address, Port, Subnet, Gateway, Router, and
+  - [ ] Understand the difference between a Local Private Network and an External Public Network.
+- [ ] Learn how to use the CHPC's cloud computing environment:
+  - [ ] Learn about different Linux Distributions and Flavors, and
+  - [ ] Learn about Cloud Resource Management.
+- [ ] Learn about Basic Linux Administration:
+  - [ ] Learn what SSH is and how to use it,
+  - [ ] Learn about Linux password management,
+  - [ ] Use a Linux Console / Terminal Based Text Editors,
+  - [ ] Understand Linux Privileges and the Root user,
+  - [ ] Learn how to Install Packages in your Linux Environment, and
+  - [ ] Learn about Configuring system files.
+- [ ] Download, Configure, Install and Run HPL Benchmark:
+  - [ ] Understand how to satisfy Linux Package Dependencies,
+  - [ ] Download and unpack files using a terminal,
+  - [ ] Editing Makefiles,
+  - [ ] Compiling Sourcefiles to produce an Executable Binary,
+  - [ ] Understanding the basics of the Linux Shell Environment, and
+  - [ ] Understanding the basic tuning required to successfully run a benchmark in your environment.
 
 <div style="page-break-after: always;"></div>
 
 ## Network Primer
-### Internal Intranet vs External Internet
+
+At the core of High Performance Computing (HPC) is networking. Something as simple as browsing the internet from either your cell phone or the workstation in front of you, involves the transfer and exchange of information between many different networks. Each resource or service connected to the internet is made available through a unique address and network port. For example, https://www.google.co.za:443 is the [Uniform Resource Locator (URL)](https://en.wikipedia.org/wiki/URL) used to uniquely identify Google's search engine page on the South African [co.za]. [domain](https://en.wikipedia.org/wiki/Domain_name). The [443] is the [port number](https://en.wikipedia.org/wiki/Port_(computer_networking)) which in this instance lets you know that you're connecting to a secure [https](https://en.wikipedia.org/wiki/HTTPS) server.
+
+When you enter this address into your browser, one of the first things that will happen is that a [Domain Name Service (DNS)](https://en.wikipedia.org/wiki/Domain_Name_System) will translate the URL [google.co.za] into it's corresponding [Internet Protocol (IP) Address](https://en.wikipedia.org/wiki/IP_address) [142.251.216.67].
+
+A number of [routing](https://en.wikipedia.org/wiki/Router_(computing)) lookup tables will be utilized to determine an available, _and preferably optimal_ path to the resource that you'd requested, thereafter a number of routers or gateway devices will be used to exchange packets between your workstation, through all of the intermediary networks, and finally the target resource. 
+
+At this point it is important to note that even though packets and network traffic are being exchanged between your local workstation and the Google servers, at no point is the private IP Address of your workstation exposed to the external Google Servers. Your workstation would have been assigned a private internal IP Address based on the computer laboratory. Traffic is then routed between the computer laboratory's private internal network and the rest of the university's networks through routers and gateway devices. All the internal computers and components across the campus will appear to the outside as though they have a single public IP address. This is accomplished through a process known as [Network address Translation (NAT)](https://en.wikipedia.org/wiki/Network_address_translation).
+
+<img alt="Diagram loosely describing process behind browsing to Google.com. You have no information about the computers and servers behind 72.14.222.1, just as Google has no information about your workstation’s internal IP." src="./resources/browsing_internet_light.png" />
+
+The process of browsing to https://www.google.co.za on your workstation, can be simplified and depicted in the image above and summarized as follows:
+1. You open a browser on your workspace and navigate to [google.co.za](https://www.google.com).
+1. A DNS Server then translates the URL [google.co.za](https://www.google.co.za) into it's corresponding IP Address [142.251.216.67](142.251.216.67).
+1. With the relevant IP Address, a Routing Table is used to navigate a path between your workstation and the server housing the information / data that you're after. Packets are exchanged between your workstation and all the networks between you and your desired data:
+   1. Data Packets are exchanged between your workstation and the computer laboratory's internal networks (e.g. 192.168.0.1/24 and 10.0.0.1/24 networks),
+   1. Data Packets are exchanged between Universities' _internal_ networks and _publicly_ assigned IP Address Range (e.g. 192.96.15.90),
+   1. Data Packets are exchanged between Universities' _public_ facing network interfaces, to the regional, national and international backbone networks and connections, and finally
+   1. Data Packets are exchanged between _Regional_, _National_ and _International_ networks and those of the target [Google](https://www.google.com) domains (e.g.: _local [Google.co.za](https://www.google.co.za):_ [142.251.216.67](142.251.216.67), or _California_ [72.14.222.1](72.14.222.1))
+
+> [!IMPORTANT]
+> It is important to note that in the preceding examples, the specific IP Address and Routing Tables provided were merely an indicative oversimplification for the purposes of clarifying the related concepts.
+
+### Basic Networking Example (WhatIsMyIp.com)
+
+In the following examples, you will be using your Android and/or Apple Cellular devices to complete the following tasks in your respective groups. Start by ensuring that your cell phone is connected to the local WiFi. Then navigate to the _"Network Details"_ page of the WiFi connection.
+
+<p align="center"><img alt="Typical information displayed from the WiFi Network Settings Options Section of an Android device." src="./resources/android_networking_info.jpeg" width=300 /></p>
+
+From the _"Network Details"_ section of your own device, you should see similar information and you will have the following details:
+* *Wi-Fi Type*: Your cellular device may have a WiFi radio card operating at either [2.4GHz or 5GHz](https://help.afrihost.com/entry/the-difference-between-2-4-ghz-and-5-ghz-wi-fi) or two independent radios so that it operates at _both_ frequencies,
+* *MAC Address*: [Medium Access Control Address](https://en.wikipedia.org/wiki/MAC_address) which is a unique identifier that each physical network interface controller on any device will have, i.e. if your phone has both 2.4GHz and 5GHz radios, then each will have their own physical unique MAC addresses.
+* *IP Address*: [Internet Protocol Address](https://en.wikipedia.org/wiki/IP_address) is the unique address assigned to a device connected to a network implementing the IP protocol for communication, _(i.e. you cell connected to the WiFi)_.
+* *Gateway*: _or_ [Router](https://en.wikipedia.org/wiki/Gateway_(telecommunications)) is a hardware or software device used to transmit data between different networks_or (subnets)_, _i.e. the same way that the WiFi Router, connects your cell phone to the rest of the university and to the internet_.
+* *Subnet Mask*: A [Subnet](https://en.wikipedia.org/wiki/Subnet) corresponds to the logical subdivision of a network and serves as an indication of the number of hosts available on a particular network. I.e. for the subnet mask _255.255.224.0_, there are _8192_ possible hosts over the subnets _10.31.[0-31].[1-254]_.
+* *DNS*: A [Domain Name System](https://en.wikipedia.org/wiki/Domain_Name_System) is a lookup service that translates human readable domain names into the corresponding IP Addresses.
+
+> [!IMPORTANT]
+> The IP Addresses, Gateways, Subnet Masks, DNS Servers _may_ not correspond to those on _YOUR_ particular device.
+
+Each member of your team must the *IP Address*, *Gateway*, *Subnet Mask*, and *DNS* settings from their connection to the laboratory WiFi.
+
+#### Local WiFi Network
+
+On your cellular device, ensure that you are connected to the *computer laboratory's WiFi network* and that all SIM card(s) are disabled. Navigate to https://WhatIsMyIp.com, explore the website and record the IP Address indicated.
+
+<p align="center"><img alt="WhatIsMyWiFi.com test while connected to university computer laboratory WiFi." src="./resources/whatismyip_wifi.png" width=600 /></p>
+
+#### External Cellular Network
+
+On your cellular device, ensure that you are connected to your *SIM provider's network* and that all WiFi radios are disabled. Navigate to https://www.whatismyip.com and again record the IP Address indicated.
+
+<p align="center"><img alt="WhatIsMyWiFi.com test while connected to your SIM provider's network." src="./resources/whatismyip_cell.png" width=600 /></p>
+
+> [!WARNING]
+> You must ensure that you are connected to the correct network when executing the above tasks.
+
 #### WiFi Hotspot Example
-#### WhatIsMyIp.com
-#### Windows PowerShell Commands
-##### `ipconfig`
-##### `ping 8.8.8.8`
-##### `route print`
-##### `tracert`
-### Understanding NAT
-#### Publicly Accessible IP Address
-#### Network Ports
-#### Internal Subnet
-#### Default Gateway and Routing Table
+
+Team Captain's are required to setup and establish a WiFi Hotspot for their team mates. The above experiments will be repeated for the university's computer laboratory WiFi connections as well as the Team Captain's Cellular SIM provider's network.
+
+On your cellular device, ensure that you are connected to your Team Captain's WiFi Hotspot network, *alternating for both* the *SIM provider's network* as well as the *university's computer laboratory's WiFi network*. Navigate to https://www.whatismyip.com and again record the IP Address indicated and this time you *MUST* also record your device's _"Network Settings"_.
+
+<p align="center"><img alt="WhatIsMyWiFi.com test while connected to your Team Captain's WiFi Hotspot network." src="./resources/whatismyip_hotspot.png" width=600 /></p>
+
+> [!TIP]
+> Pay careful attention to the IP Address reported by WhatIsMyIp.com. This is the unique identifier that _your_ device will be identified and recognized by externally on the internet. Use this information to assist you to understand and describe [NAT](https://en.wikipedia.org/wiki/Network_address_translation).
+
+### Windows PowerShell Commands
+#### `ipconfig`
+#### `ping 8.8.8.8`
+#### `route print`
+#### `tracert`
 ## Launching your First Open Stack Virtual Machine Instance
 
 ### Accessing the CHPC's Cloud
 
-> **! >>>** _In these tutorials, an asterisk ('\*') or a triangle brackets ('\<\>') are placeholders. You will need to fill in the correct information relevant to you. The line `~$` represents that the command following it is to be typed in a terminal and should not be included when typing the command._
-
-In this part, you will be guided through using the ACE Lab's network to gain access to your VMs. You will primarily be using these VMs to do the tutorials. 
-
-1. Open your web browser and visit **cloud.ace.chpc.ac.za**.
-2. Use the credentials provided to you to log into the cloud platform ([OpenStack](https://www.openstack.org/)):
-   - **<team_name>** for the `Username` and;
-   - **<provided_password>** for the `Password`.
-3. Once logged in to the web front-end, on the left navigate to `Project` and click `Instances` tab under `Compute`. You will see the VM resources provisioned for you by the ACE Lab.
-4. Please note the **IP addresses** assigned to each VM.
-    - Your cluster's headnode, **which is one of the VMs**, has two network interfaces attached with 2 unique IP addresses (think of it as having two network ports):
-        - An external (public) interface with IP range: **10.128.24.0/24**
-        - An internal (private) interface with IP range: **10.0.0.0/24**
-        - **The above IP address ranges are specified in [CIDR notation](https://www.ionos.com/digitalguide/server/know-how/cidr-classless-inter-domain-routing/).**
-        - The **external network** is **still private** within the ACE Lab, but it can reach the internet through the **gateway address 10.128.24.1**, using a method called **[NAT (Network Address Translation)](https://en.wikipedia.org/wiki/Network_address_translation)** which will be detailed later.
-5. Access your VMs via the "Console (VNC)" utility embedded within OpenStack by clicking into one of the VMs listed in the `Compute -> Instances` tab, clicking the name of the VM instance, and navigating to the "Console" tab on the top as shown in [Figure 2](#fig2).
-
-**Hint:** _Your headnode acts as a gateway for your compute nodes using the private virtual network (10.0.0.0/24)._
-
-
-<span id="fig2" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="test" src="./resources/VNC_icon.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 2: The Console (VNC) button and dashboard seen in the OpenStack user interface.</i></span>
-</span>
-
-<div style="page-break-after: always;"></div>
-
 ### Verify your Teams' Project Workspace
 
 TODO: Screenshot from Workspace : Projects
+
+### Generating SSH Keys
 
 ### Verify your Teams' Available Resources and Launch a New Instance
 
@@ -167,28 +197,24 @@ Daily driver
 
 Explain package managers
 
-| Package Management System | Flavor                                                                                              | Description | Versions Available as Cloud Instances | General Recommendations and Comments |
-| ---                       | ---                                                                                                 | ---         | ---                                   | ---                                  |
-| RPM                       | [Red Hat Enterprise Linux](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux) |             |                                       |                                      |
-|                           | [Rocky Linux](https://rockylinux.org/)                                                              |             |                                       |                                      |
-|                           | [Alma Linux](https://almalinux.org/)                                                                |             |                                       |                                      |
-|                           | [CentOS Stream](https://www.centos.org/centos-stream/)                                              |             |                                       |                                      |
-|                           | [Fedora](https://fedoraproject.org/)                                                                |             |                                       |                                      |
-|                           | [OpenSUSE](https://www.opensuse.org/)                                                               |             |                                       |                                      |
-| ---                       | ---                                                                                                 | ---         | ---                                   | ---                                  |
-| APT                       | [Debian](https://www.debian.org/)                                                                   |             |                                       |                                      |
-|                           | [Ubuntu](https://ubuntu.com/)                                                                       |             |                                       |                                      |
-|                           | [Linux Mint](https://linuxmint.com/)                                                                |             |                                       |                                      |
-|                           | [Pop! OS](https://pop.system76.com/)                                                                |             |                                       |                                      |
-|                           | [Kali Linux](https://www.kali.org/)                                                                 |             |                                       |                                      |
-| ---                       | ---                                                                                                 | ---         | ---                                   | ---                                  |
-| Pacman                    | [Arch Linux](https://archlinux.org/)                                                                |             |                                       |                                      |
-|                           | [Manjaro](https://manjaro.org/)                                                                     |             |                                       |                                      |
-| ---                       | ---                                                                                                 | ---         | ---                                   | ---                                  |
-| Portage                   | [Gentoo](https://www.gentoo.org/)                                                                   |             |                                       |                                      |
-| ---                       | ---                                                                                                 | ---         | ---                                   | ---                                  |
-| Source-Based              | [Linux From Scratch](https://www.gentoo.org/)                                                       |             |                                       |                                      |
-|                           |                                                                                                     |             |                                       |                                      |
+| Package Management System      | Flavor                                                                                              | Description | Versions Available as Cloud Instances | General Recommendations and Comments |
+| ---                            | ---                                                                                                 | ---         | ---                                   | ---                                  |
+| RPM                            | [Red Hat Enterprise Linux](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux) |             |                                       |                                      |
+|                                | [Rocky Linux](https://rockylinux.org/)                                                              |             |                                       |                                      |
+|                                | [Alma Linux](https://almalinux.org/)                                                                |             |                                       |                                      |
+|                                | [CentOS Stream](https://www.centos.org/centos-stream/)                                              |             |                                       |                                      |
+|                                | [Fedora](https://fedoraproject.org/)                                                                |             |                                       |                                      |
+|                                | [OpenSUSE](https://www.opensuse.org/)                                                               |             |                                       |                                      |
+| APT                            | [Debian](https://www.debian.org/)                                                                   |             |                                       |                                      |
+|                                | [Ubuntu](https://ubuntu.com/)                                                                       |             |                                       |                                      |
+|                                | [Linux Mint](https://linuxmint.com/)                                                                |             |                                       |                                      |
+|                                | [Pop! OS](https://pop.system76.com/)                                                                |             |                                       |                                      |
+|                                | [Kali Linux](https://www.kali.org/)                                                                 |             |                                       |                                      |
+| Pacman                         | [Arch Linux](https://archlinux.org/)                                                                |             |                                       |                                      |
+|                                | [Manjaro](https://manjaro.org/)                                                                     |             |                                       |                                      |
+| Portage                        | [Gentoo](https://www.gentoo.org/)                                                                   |             |                                       |                                      |
+| Source-Based                   | [Linux From Scratch](https://www.gentoo.org/)                                                       |             |                                       |                                      |
+|                                |                                                                                                     |             |                                       |                                      |
  
 
 ### OpenStack Instance Flavors
@@ -201,8 +227,6 @@ Available resource distribution, headnode vs compute node
 
 
 ### Networks, Ports, Services and Security Groups
-
-### Generating SSH Keys
 
 ### Verify that your Instance was Successfully Deployed and Launched
 
