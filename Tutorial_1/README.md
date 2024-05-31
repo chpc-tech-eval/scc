@@ -15,11 +15,6 @@
       1. [`ping 8.8.8.8`](#ping-8888)
       1. [`route print`](#route-print)
       1. [`tracert`](#tracert)
-   1. [Understanding NAT](#understanding-nat)
-      1. [Publicly Accessible IP Address](#publicly-accessible-ip-address)
-      1. [Network Ports](#network-ports)
-      1. [Internal Subnet](#internal-subnet)
-      1. [Default Gateway and Routing Table](#default-gateway-and-routing-table)
 1. [Launching your First OpenStack Virtual Machine Instance](#launching-your-first-open-stack-virtual-machine-instance)
    1. [Accessing the CHPC's Cloud](#accessing-the-chpcs-cloud)
    1. [Verify your Teams' Project Workspace](#verify-your-teams-project-workspace)
@@ -122,6 +117,9 @@ The process of browsing to https://www.google.co.za on your workstation, can be 
    1. Data Packets are exchanged between Universities' _public_ facing network interfaces, to the regional, national and international backbone networks and connections, and finally
    1. Data Packets are exchanged between _Regional_, _National_ and _International_ networks and those of the target [Google](https://www.google.com) domains (e.g.: _local [Google.co.za](https://www.google.co.za):_ [142.251.216.67](142.251.216.67), or _California_ [72.14.222.1](72.14.222.1))
 
+> [!IMPORTANT]
+> It is important to note that in the preceding examples, the specific IP Address and Routing Tables provided were merely an indicative oversimplification for the purposes of clarifying the related concepts.
+
 ### Basic Networking Example (WhatIsMyIp.com)
 
 In the following examples, you will be using your Android and/or Apple Cellular devices to complete the following tasks in your respective groups. Start by ensuring that your cell phone is connected to the local WiFi. Then navigate to the _"Network Details"_ page of the WiFi connection.
@@ -136,19 +134,34 @@ From the _"Network Details"_ section of your own device, you should see similar 
 * *Subnet Mask*: A [Subnet](https://en.wikipedia.org/wiki/Subnet) corresponds to the logical subdivision of a network and serves as an indication of the number of hosts available on a particular network. I.e. for the subnet mask _255.255.224.0_, there are _8192_ possible hosts over the subnets _10.31.[0-31].[1-254]_.
 * *DNS*: A [Domain Name System](https://en.wikipedia.org/wiki/Domain_Name_System) is a lookup service that translates human readable domain names into the corresponding IP Addresses.
 
+> [!IMPORTANT]
+> The IP Addresses, Gateways, Subnet Masks, DNS Servers _may_ not correspond to those on _YOUR_ particular device.
+
 Each member of your team must the *IP Address*, *Gateway*, *Subnet Mask*, and *DNS* settings from their connection to the laboratory WiFi.
 
 #### Local WiFi Network
 
-On your cellular device, ensure that you are connected to the computer laboratory's WiFi network and that all SIM card(s) are disabled. Navigate to https://WhatIsMyIp.com, explore the website and record the IP Address indicated.
-
-
+On your cellular device, ensure that you are connected to the *computer laboratory's WiFi network* and that all SIM card(s) are disabled. Navigate to https://WhatIsMyIp.com, explore the website and record the IP Address indicated.
 
 <p align="center"><img alt="WhatIsMyWiFi.com test while connected to university computer laboratory WiFi." src="./resources/whatismyip_wifi.png" /></p>
 
 #### External Cellular Network
 
+On your cellular device, ensure that you are connected to your *SIM provider's network* and that all WiFi radios are disabled. Navigate to https://www.whatismyip.com and again record the IP Address indicated.
+
+<p align="center"><img alt="WhatIsMyWiFi.com test while connected to your SIM provider's network." src="./resources/whatismyip_cell.png" /></p>
+
+> [!WARNING]
+> You must ensure that you are connected to the correct network when executing the above tasks.
+
 #### WiFi Hotspot Example
+
+Team Captain's are required to setup and establish a WiFi Hotspot for their team mates. The above experiments will be repeated for the university's computer laboratory WiFi connections as well as the Team Captain's Cellular SIM provider's network.
+
+On your cellular device, ensure that you are connected to your Team Captain's WiFi Hotspot network, *alternating for both* the *SIM provider's network* as well as the *university's computer laboratory's WiFi network*. Navigate to https://www.whatismyip.com and again record the IP Address indicated and this time you *MUST* also record your device's _"Network Settings"_.
+
+<p align="center"><img alt="WhatIsMyWiFi.com test while connected to your Team Captain's WiFi Hotspot network." src="./resources/whatismyip_hotspot.png" /></p>
+
 ### Windows PowerShell Commands
 #### `ipconfig`
 #### `ping 8.8.8.8`

@@ -14,7 +14,7 @@ This repository contains the information that will be covered by the tutorials o
    1. [Forking the Tutorials into Your Own Team's Private Git Repository](#forking-the-tutorials-into-your-own-teams-private-github-repository)
       1. [Branch, Merge and Pull Requests to your Team Captain's Repository]()
       1. [Editing the Git Markdown Files to Track Your Team's Progress](#editing-the-git-markdown-files-to-track-your-teams-progress)
-1. [Tutorial Sections](#tutorial-sections)
+1. [Glossary and Section Overview](#glossary-and-section-overview)
    1. [Tutorial 1](#tutorial-1)
    1. [Tutorial 2](#tutorial-2)
    1. [Tutorial 3](#tutorial-3)
@@ -49,7 +49,7 @@ The goal of this tutorial is to introduce you to the competition platform and fa
 
 TODO: Add objectives for each Tutorial and section. They should be editable so students check them off as they go along.
 
-## Tutorial Sections
+## Glossary and Section Overview
 
 ### Tutorial 1
 
@@ -66,11 +66,6 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
       1. [`ping 8.8.8.8`](Tutorial_1/README.md#ping-8888)
       1. [`route print`](Tutorial_1/README.md#route-print)
       1. [`tracert`](Tutorial_1/README.md#tracert)
-   1. [Understanding NAT](Tutorial_1/README.md#understanding-nat)
-      1. [Publicly Accessible IP Address](Tutorial_1/README.md#publicly-accessible-ip-address)
-      1. [Network Ports](Tutorial_1/README.md#network-ports)
-      1. [Internal Subnet](Tutorial_1/README.md#internal-subnet)
-      1. [Default Gateway and Routing Table](Tutorial_1/README.md#default-gateway-and-routing-table)
 1. [Launching your First Open Stack Virtual Machine Instance](Tutorial_1/README.md#launching-your-first-open-stack-virtual-machine-instance)
    1. [Accessing the CHPC's Cloud](Tutorial_1/README.md#accessing-the-chpcs-cloud)
    1. [Verify your Teams' Project Workspace](Tutorial_1/README.md#verify-your-teams-project-workspace)
@@ -110,31 +105,6 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
    1. [Editing _your_ PATH Variable](Tutorial_1/README.md#editing-_your_-path-variable)
       1. [Dynamic and Static Libraries: Editing _Your_ ATLAS Shared Object Files](Tutorial_1/README.md#dynamic-and-static-libraries-editing-_your_-atlas-shared-object-files)
    1. [Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`](Tutorial_1/README.md#configuring-_your_-hpldat-file-using-lscpu-and-lsmem)
-
-#### Tutorial 1 - Checklist
-
-<u>Use the following checklist to keep track of your team's progress and to ensure that all members in your understand these concepts.</u>
-
-- [ ] Understand IT concepts like cloud computing, virtualisation and remote connections:
-  - [ ] Understand and be able to explain networking terms such as URL, DNS, IP Address, Port, Subnet, Gateway, Router, and
-  - [ ] Understand the difference between a Local Private Network and an External Public Network.
-- [ ] Learn how to use the CHPC's cloud computing environment:
-  - [ ] Learn about different Linux Distributions and Flavors, and
-  - [ ] Learn about Cloud Resource Management.
-- [ ] Learn about Basic Linux Administration:
-  - [ ] Learn what SSH is and how to use it,
-  - [ ] Learn about Linux password management,
-  - [ ] Use a Linux Console / Terminal Based Text Editors,
-  - [ ] Understand Linux Privileges and the Root user,
-  - [ ] Learn how to Install Packages in your Linux Environment, and
-  - [ ] Learn about Configuring system files.
-- [ ] Download, Configure, Install and Run HPL Benchmark:
-  - [ ] Understand how to satisfy Linux Package Dependencies,
-  - [ ] Download and unpack files using a terminal,
-  - [ ] Editing Makefiles,
-  - [ ] Compiling Sourcefiles to produce an Executable Binary,
-  - [ ] Understanding the basics of the Linux Shell Environment, and
-  - [ ] Understanding the basic tuning required to successfully run a benchmark in your environment.
 
 ### Tutorial 2
 
