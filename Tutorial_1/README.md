@@ -188,25 +188,25 @@ Once you've successfully logged in, navigate to `Computer -> Overview` and verif
 
 > [!NOTE]
 > The following screenshot is for illustration purposes only, your actual available resources _may_ differ.
-> <p align="center"><img alt="Sebowa.nicis.ac.za NICIS OpenStack Cloud available resources." src="./resources/openstack_overview.png" width=600 /></p>
+<p align="center"><img alt="Sebowa.nicis.ac.za NICIS OpenStack Cloud available resources." src="./resources/openstack_overview.png" width=600 /></p>
 
 ### Generating SSH Keys
 
 Over the course of the lecture content and the tutorials, you will be making extensive use of [Secure Shell (SSH)](https://en.wikipedia.org/wiki/Secure_Shell) which grants you a [Command-Line Interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface) with which to access your VMs.
 
 > [!IMPORTANT]
-> When you are presented with foldable code blocks, you must implement only *one* of the options presented, which is suitable to your current configuration or circumstance.
->
-><details>
-><summary>Windows with PowerShell</summary>
->
->From the `Start` menu, open the Windows `PowerShell` application:
->1. Generate an SSH key pair:
->```shell
->ssh-keygen -t ed25519
->```
->1. When prompted to _"Enter file in which to save the key"_, press `Enter`,
->1. When prompted to _"Enter a passphrase"_, press `Enter`, and `Enter` again to verify it.
+> When you are presented with foldable code blocks, you must pick and implement only **one** of the options presented, which is suitable to your current configuration or circumstance.
+
+<details>
+<summary>Windows with PowerShell</summary>
+
+From the `Start` menu, open the Windows `PowerShell` application:
+1. Generate an SSH key pair:
+   ```shell
+   ssh-keygen -t ed25519
+   ```
+1. When prompted to _"Enter file in which to save the key"_, press `Enter`,
+1. When prompted to _"Enter a passphrase"_, press `Enter`, and `Enter` again to verify it.
 
 ></details>
 
