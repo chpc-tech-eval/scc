@@ -16,10 +16,10 @@
       1. [`route print`](#route-print)
       1. [`tracert`](#tracert)
 1. [Launching your First OpenStack Virtual Machine Instance](#launching-your-first-open-stack-virtual-machine-instance)
-   1. [Accessing the CHPC's Cloud](#accessing-the-chpcs-cloud)
-   1. [Verify your Teams' Project Workspace](#verify-your-teams-project-workspace)
+   1. [Accessing the NICIS Cloud](#accessing-the-NICIS-cloud)
+   1. [Verify your Teams' Project Workspace and Available Resources](#verify-your-teams-project-workspace-and-available-resources)
    1. [Generating SSH Keys](#generating-ssh-keys)
-   1. [Verify your Teams' Available Resources and Launch a New Instance](#verify-your-teams-available-resources-and-launch-a-new-instance)
+   1. [Launch a New Instance](#launch-a-new-instance)
    1. [Instance Name](#instance-name)
    1. [Linux Flavors and Distributions](#linux-flavors-and-distributions)
       1. [Desktop Usage vs Server](#desktop-usage-vs-server)
@@ -156,7 +156,7 @@ On your cellular device, ensure that you are connected to your *SIM provider's n
 
 #### WiFi Hotspot Example
 
-Team Captain's are required to setup and establish a WiFi Hotspot for their team mates. The above experiments will be repeated for the university's computer laboratory WiFi connections as well as the Team Captain's Cellular SIM provider's network.
+Team Captains are required to setup and establish a WiFi Hotspot for their team mates. The above experiments will be repeated for the university's computer laboratory WiFi connections as well as the Team Captain's Cellular SIM provider's network.
 
 On your cellular device, ensure that you are connected to your Team Captain's WiFi Hotspot network, *alternating for both* the *SIM provider's network* as well as the *university's computer laboratory's WiFi network*. Navigate to https://www.whatismyip.com and again record the IP Address indicated and this time you *MUST* also record your device's _"Network Settings"_.
 
@@ -172,17 +172,54 @@ On your cellular device, ensure that you are connected to your Team Captain's Wi
 #### `tracert`
 ## Launching your First Open Stack Virtual Machine Instance
 
-### Accessing the CHPC's Cloud
+In this section you will be configuring and launching your first [Virtual Machine](https://en.wikipedia.org/wiki/Virtual_machine) instance. This allows you to use a portion of another computer's resources, to host another [Operating System](https://en.wikipedia.org/wiki/Operating_system) as though it were running on its own dedicated hardware resources. For example, your laptops or workstations are running a Windows-based operating system, you _"could"_ use a type of computer software [Hypervisor](https://en.wikipedia.org/wiki/Hypervisor), that runs and creates _virtual machines_, to run a Linux-based operating while your are in your Windows environment.
 
-### Verify your Teams' Project Workspace
+The physical servers that you will use to spawn your VM's are housed in Rosebank, Cape Town. We will verify this later using [WhatIsMyIp](https://www.whatismyip.com).
 
-TODO: Screenshot from Workspace : Projects
+### Accessing the NICIS Cloud
+
+Open your web browser and navigate to the NICIS OpenStack Cloud platform  https://sebowa.nicis.ac.za/, and use the credentials that your team has been provided with to login into your team's project workspace.
+
+<p align="center"><img alt="Sebowa.nicis.ac.za NICIS OpenStack Cloud." src="./resources/openstack_login.png" width=600 /></p>
+
+### Verify your Teams' Project Workspace and Available Resources
+
+Once you've successfully logged in, navigate to `Computer -> Overview` and verify that the Project Workspace corresponds to _YOUR TEAM_ and that you've been allocated the correct number of resources.
+
+> [!NOTE]
+> The following screenshot is for illustration purposes only, your actual available resources _may_ differ.
+> <p align="center"><img alt="Sebowa.nicis.ac.za NICIS OpenStack Cloud available resources." src="./resources/openstack_overview.png" width=600 /></p>
 
 ### Generating SSH Keys
 
-### Verify your Teams' Available Resources and Launch a New Instance
+Over the course of the lecture content and the tutorials, you will be making extensive use of [Secure Shell (SSH)](https://en.wikipedia.org/wiki/Secure_Shell) which grants you a [Command-Line Interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface) with which to access your VMs.
 
-TODO: Picture of Compute -> Overview
+> [!IMPORTANT]
+> When you are presented with foldable code blocks, you must implement only *one* of the options presented, which is suitable to your current configuration or circumstance.
+>
+><details>
+><summary>Windows with PowerShell</summary>
+>
+>From the `Start` menu, open the Windows `PowerShell` application:
+>1. Generate an SSH key pair:
+>```shell
+>ssh-keygen -t ed25519
+>```
+>1. When prompted to _"Enter file in which to save the key"_, press `Enter`,
+>1. When prompted to _"Enter a passphrase"_, press `Enter`, and `Enter` again to verify it.
+
+></details>
+
+<details>
+<summary>Windows PuTTY</summary>
+</details>
+
+<details>
+<summary>Linux, Unix and MacOS Terminals</summary>
+</details>
+
+### Launch a New Instance
+
 TODO: Picture of Compute -> Instances
 TODO: Picture of Compute -> Launch Instance
 

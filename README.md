@@ -27,15 +27,9 @@ This repository contains the information that will be covered by the tutorials o
 
 ## Overview
 
-Welcome the **Center for High Performance Computing (CHPC)'s Student Cluster Competition (SCC)** - Team Selection Round. This round requires each team to build a **prototype compute cluster** in the ACE Lab's **virtual compute cloud** (described below).
+Welcome the **Center for High Performance Computing (CHPC)'s Student Cluster Competition (SCC)** - Team Selection Round. This round requires each team to build a **prototype multi-node compute cluster** within the National Integrated Cyber Infrastructure Systems (NICIS) **virtual compute cloud** (described below).
 
-The goal of this tutorial is to introduce you to the competition platform and familiarise you with some Linux and systems administration concepts.
-
-<u>Please note the following concepts:</u>
-
-- **[Cloud computing](https://en.wikipedia.org/wiki/Cloud_computing)** is the **on-demand** delivery of **I.T. services** by a first-party (you) or third-party (external) provider over a network, possibly including the **internet**. This can allow you to access computing or other I.T. services wherever you are and at your convenience.
-- **[Infrastructure as a Service (IaaS)](https://en.wikipedia.org/wiki/Infrastructure_as_a_service)** is where physical or virtual hardware is presented to a user, but the user is not exposed to the underlying technology. In other words, this competition provides you with an IaaS experience by giving you a set of virtual machines that you can use for the competition. You cannot control the cloud environment that the virtual machines are provided on.
-- **Instances ([virtual machines](https://en.wikipedia.org/wiki/Virtual_machine) or 'VMs')** are software copies of virtual computers that are hosted within a physical computer (the **['host'](https://en.wikipedia.org/wiki/Host_(network))**). The host provides access to one or more virtual computers at the same time. This competition provides you with a fixed set of virtual resources, that you will use to initialize a set a set of virtual machines instances based on your choice _or flavor_ of **[Linux Operating System Distributions](https://en.wikipedia.org/wiki/List_of_Linux_distributions)**.
+The goal of this tutorial is to introduce you to the competition platform and familiarise you with some Linux and systems administration concepts. This competition provides you with a fixed set of virtual resources, that you will use to initialize a set a set of virtual machines instances based on your choice _or flavor_ of **[Linux Operating System Distributions](https://en.wikipedia.org/wiki/List_of_Linux_distributions)
 
 ### Structure of the Tutorials
 
@@ -67,10 +61,10 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
       1. [`route print`](Tutorial_1/README.md#route-print)
       1. [`tracert`](Tutorial_1/README.md#tracert)
 1. [Launching your First Open Stack Virtual Machine Instance](Tutorial_1/README.md#launching-your-first-open-stack-virtual-machine-instance)
-   1. [Accessing the CHPC's Cloud](Tutorial_1/README.md#accessing-the-chpcs-cloud)
-   1. [Verify your Teams' Project Workspace](Tutorial_1/README.md#verify-your-teams-project-workspace)
+   1. [Accessing the NICIS Cloud](Tutorial_1/README.md#accessing-the-nicis-cloud)
+   1. [Verify your Teams' Project Workspace and Available Resources](Tutorial_1/README.md#verify-your-teams-project-workspace-and-available-resources)
    1. [Generating SSH Keys](Tutorial_1/README.md#generating-ssh-keys)
-   1. [Verify your Teams' Available Resources and Launch a New Instance](Tutorial_1/README.md#verify-your-teams-available-resources-and-launch-a-new-instance)
+   1. [Launch a New Instance](Tutorial_1/README.md#launch-a-new-instance)
    1. [Instance Name](Tutorial_1/README.md#instance-name)
    1. [Linux Flavors and Distributions](Tutorial_1/README.md#linux-flavors-and-distributions)
       1. [Desktop Usage vs Server](Tutorial_1/README.md#desktop-usage-vs-server)
