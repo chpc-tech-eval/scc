@@ -192,11 +192,14 @@ Once you've successfully logged in, navigate to `Computer -> Overview` and verif
 
 ### Generating SSH Keys
 
-Over the course of the lecture content and the tutorials, you will be making extensive use of [Secure Shell (SSH)](https://en.wikipedia.org/wiki/Secure_Shell) which grants you a [Command-Line Interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface) with which to access your VMs.
+Over the course of the lecture content and the tutorials, you will be making extensive use of [Secure Shell (SSH)](https://en.wikipedia.org/wiki/Secure_Shell) which grants you a [Command-Line Interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface) with which to access your VMs. SSH keys allows you to authenticate against a remote SSH server, without the use of a password.
 
 > [!IMPORTANT]
 > When you are presented with foldable code blocks, you must pick and implement only **one** of the options presented, which is suitable to your current configuration and/or circumstance.
 
+> [!TIP]
+> A number [encryption algorithms](https://en.wikipedia.org/wiki/Public-key_cryptography) exist for securing your SSH connections. [Elliptic Curve Digital Signature Algorithm (ECDSA)](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) is secure and simple enough should you need to copy the public key manually. Nonetheless however, you are free to use whichever algorithm you want to.
+   
 <details>
 <summary>Windows with PowerShell</summary>
 
@@ -205,8 +208,7 @@ From the `Start` menu, open the Windows `PowerShell` application:
    ```shell
    ssh-keygen -t ed25519
    ```
-   > [!TIP]
-   > A number [encryption algorithms](https://en.wikipedia.org/wiki/Public-key_cryptography) exist for securing your SSH connections. [Elliptic Curve Digital Signature Algorithm (ECDSA)](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) is secure and simple enough should you need to copy the public key manually.
+   
 1. When prompted to _"Enter file in which to save the key"_, press `Enter`,
 1. When prompted to _"Enter a passphrase"_, press `Enter`, and `Enter` again to verify it.
 
@@ -222,7 +224,7 @@ From the `Start` menu, open the Windows `PowerShell` application:
 1. Generate the necessary entropy by moving your mouse pointer over the `Key` section until the green bar is filled.
    <p align="center"><img alt="PuTTYgen Generate." src="./resources/windows_puttygen_generate.png" width=600 /></p>
 1. Proceed to **Save** both the `Private Key` and `Public Key`.
-   <p align="center"><img alt="PuTTYgen Generate." src="./resources/windows_puttygen_save.png" width=600 /></p>
+   <p align="center"><img alt="PuTTYgen Generate Save." src="./resources/windows_puttygen_save.png" width=600 /></p>
 </details>
 
 <details>
@@ -236,10 +238,16 @@ You must follow the same procedure as you would have done for the Windows PowerS
 
 </details>
 
+> [!NOTE]
+> You **MUST** take note of the location and paths to **BOTH** your public and private keys.
+
 ### Launch a New Instance
 
 TODO: Picture of Compute -> Instances
 TODO: Picture of Compute -> Launch Instance
+From your Team's OpenStack Project Workspace, navigate to `Compute -> Instance` and click `Launch Instance`.
+
+<p align="center"><img alt="OpenStack Launch New Instance." src="./resources/openstack_launch_instance_highlight.png" width=900 /></p>
 
 ### Instance Name
 ### Linux Flavors and Distributions
