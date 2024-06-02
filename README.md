@@ -29,7 +29,7 @@ This repository contains the information that will be covered by the tutorials o
 
 Welcome the **Center for High Performance Computing (CHPC)'s Student Cluster Competition (SCC)** - Team Selection Round. This round requires each team to build a **prototype multi-node compute cluster** within the National Integrated Cyber Infrastructure Systems (NICIS) **virtual compute cloud** (described below).
 
-The goal of this tutorial is to introduce you to the competition platform and familiarise you with some Linux and systems administration concepts. This competition provides you with a fixed set of virtual resources, that you will use to initialize a set a set of virtual machines instances based on your choice _or flavor_ of **[Linux Operating System Distributions](https://en.wikipedia.org/wiki/List_of_Linux_distributions)
+The goal of this tutorial is to introduce you to the competition platform and familiarise you with some Linux and systems administration concepts. This competition provides you with a fixed set of virtual resources, that you will use to initialize a set a set of virtual machines instances based on your choice _or flavor_ of **
 
 ### Structure of the Tutorials
 
@@ -65,7 +65,6 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
    1. [Verify your Teams' Project Workspace and Available Resources](Tutorial_1/README.md#verify-your-teams-project-workspace-and-available-resources)
    1. [Generating SSH Keys](Tutorial_1/README.md#generating-ssh-keys)
    1. [Launch a New Instance](Tutorial_1/README.md#launch-a-new-instance)
-   1. [Instance Name](Tutorial_1/README.md#instance-name)
    1. [Linux Flavors and Distributions](Tutorial_1/README.md#linux-flavors-and-distributions)
       1. [Desktop Usage vs Server](Tutorial_1/README.md#desktop-usage-vs-server)
       1. [Table of Linux Distributions](Tutorial_1/README.md#table-of-linux-distributions)
@@ -73,6 +72,7 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
       1. [Compute](Tutorial_1/README.md#compute)
       1. [Memory](Tutorial_1/README.md#memory)
       1. [Storage](Tutorial_1/README.md#storage)
+      1. [Headnode Resource Allocations](Tutorial_1/README.md#headnode-resource-allocations)
    1. [Networks, Ports, Services and Security Groups](Tutorial_1/README.md#networks-ports-services-and-security-groups)
    1. [Verify that your Instance was Successfully Deployed and Launched](Tutorial_1/README.md#verify-that-your-instance-was-successfully-deployed-and-launched)
    1. [Associating an Externally Available IP Address](Tutorial_1/README.md#associating-an-externally-available-ip-address)
