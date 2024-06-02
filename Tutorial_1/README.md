@@ -247,20 +247,19 @@ Once you have successfully generated an SSH key pair, navigate to `Compute` &rar
 
 ### Launch a New Instance
 
-From your Team's OpenStack Project Workspace, navigate to `Compute` &#8594; `Instance` and click `Launch Instance`.
+From your Team's OpenStack Project Workspace, navigate to `Compute` &#8594; `Instance` and click `Launch Instance**.
 
 <p align="center"><img alt="OpenStack Launch New Instance." src="./resources/openstack_launch_instance_highlight.png" width=900 /></p>
 
-Within the popup window, enter an appropriate name for your instance that will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be `headnode`.
+Within the popup window, enter an appropriate name for your instance that will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be **headnode**.
 
 ### Linux Flavors and Distributions
 
-After configuring your new VM name under instance details, you will need to select the template that will be used to create the instance from the `Source` menu. Before selection a [Linux Operating System Distribution](https://en.wikipedia.org/wiki/Linux_distribution) for your new instance, ensure that the default `Source ` options are correctly configured:
+After configuring your new VM name under instance details, you will need to select the template that will be used to create the instance from the *Source* menu. Before selection a [Linux Operating System Distribution](https://en.wikipedia.org/wiki/Linux_distribution) for your new instance, ensure that the default *Source* options are correctly configured:
 1. *Select Boot Source* is set to `Image`,
 1. *Create New Volume* is `Yes`,
 1. *Delete Volume on Instance Delete* is `No`, and
 1. *Volume Size (GB)* will be set when you configure the instance flavor.
-
 <p align="center"><img alt="OpenStack Launch New Instance." src="./resources/openstack_source_image.png" width=900 /></p>
 
 There are a number of considerations that must be taken into account when selecting a Linux Distribution that will be appropriate for your requirements and needs.
@@ -346,13 +345,13 @@ The following table summarizes the various permutations and allocations that can
 
 | Cluster Configurations                                                                | Compute (vCPUS)                         | Memory (RAM)                                        | Storage (Disk)                                    |
 | ---                                                                                   | ---                                     | ---                                                 | ---                                               |
-| <ul><li>Dedicated Head Node</li><li>Compute Node 01</li><li>Compute Node 02</li></ul> | <ul><li>2</li><li>8</li><li>8</li></ul> | <ul><li>4 GB</li><li>16 GB</li><li>16 GB</li></ul>  | <ul><li>40 GB</li><li>5 GB</li><li>5 GB</li></ul> |
-| <ul><li>Hybrid Head node</li><li>Compute Node 01</li><li>Compute Node 02</li></ul>    | <ul><li>6</li><li>6</li><li>6</li></ul> | <ul><li>12 GB</li><li>12 GB</li><li>12 GB</li></ul> | <ul><li>40 GB</li><li>5 GB</li><li>5 GB</li></ul> |
-| <ul><li>Hybrid Head node</li><li>Compute Node 01</li></ul>                            | <ul><li>10</li><li>8</li></ul>          | <ul><li>20 GB</li><li>16 GB</li></ul>               | <ul><li>40 GB</li><li>10 GB</li></ul>             |
+| <ul style="list-style-type:none;"><li>Dedicated Head Node</li><li>Compute Node 01</li><li>Compute Node 02</li></ul> | <ul style="list-style-type:none;"><li>2</li><li>8</li><li>8</li></ul> | <ul style="list-style-type:none;"><li>4 GB</li><li>16 GB</li><li>16 GB</li></ul>  | <ul style="list-style-type:none;"><li>40 GB</li><li>5 GB</li><li>5 GB</li></ul> |
+| <ul style="list-style-type:none;"><li>Hybrid Head node</li><li>Compute Node 01</li><li>Compute Node 02</li></ul>    | <ul style="list-style-type:none;"><li>6</li><li>6</li><li>6</li></ul> | <ul style="list-style-type:none;"><li>12 GB</li><li>12 GB</li><li>12 GB</li></ul> | <ul style="list-style-type:none;"><li>40 GB</li><li>5 GB</li><li>5 GB</li></ul> |
+| <ul style="list-style-type:none;"><li>Hybrid Head node</li><li>Compute Node 01</li></ul>                            | <ul style="list-style-type:none;"><li>10</li><li>8</li></ul>          | <ul style="list-style-type:none;"><li>20 GB</li><li>16 GB</li></ul>               | <ul style="list-style-type:none;"><li>40 GB</li><li>10 GB</li></ul>             |
 |                                                                                       |                                         |                                                     |                                                   |
 
 > [!TIP]
-> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your headnode is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the `sccHeadN` flvaor with `2 vCPUs` and `4 GB RAM`.
+> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your headnode is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the *sccHeadN** flavor with *2 vCPUs* and *4 GB RAM*.
 
 <p align="center"><img alt="OpenStack Launch New Instance." src="./resources/openstack_instance_flavor.png" width=900 /></p>
 
