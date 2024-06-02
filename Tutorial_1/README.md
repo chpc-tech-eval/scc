@@ -241,13 +241,13 @@ You must follow the same procedure as you would have done for the Windows PowerS
 > [!NOTE]
 > You **MUST** take note of the location and paths to **BOTH** your public and private keys. Your public key will be shared and distributed to the SSH servers you want to authenticate against. Your private key must be kept secure within your team, and must not be shared or distributed to anyone.
 
-Once you have successfully generated an SSH key pair, navigate to `Compute &rarr; Key Pairs ` and import the **public** key `id_ed25519.pub` into your Team's Project Workspace within OpenStack.
+Once you have successfully generated an SSH key pair, navigate to `Compute` &rarr; `Key Pairs` and import the **public** key `id_ed25519.pub` into your Team's Project Workspace within OpenStack.
 
 <p align="center"><img alt="Import id_25519.pub into OpenStack." src="./resources/openstack_import_public_key_highlight.png" width=900 /></p>
 
 ### Launch a New Instance
 
-From your Team's OpenStack Project Workspace, navigate to `Compute &#8594; Instance` and click `Launch Instance`.
+From your Team's OpenStack Project Workspace, navigate to `Compute` &#8594; `Instance` and click `Launch Instance`.
 
 <p align="center"><img alt="OpenStack Launch New Instance." src="./resources/openstack_launch_instance_highlight.png" width=900 /></p>
 
@@ -256,10 +256,10 @@ Within the popup window, enter an appropriate name for your instance that will d
 ### Linux Flavors and Distributions
 
 After configuring your new VM name under instance details, you will need to select the template that will be used to create the instance from the `Source` menu. Before selection a [Linux Operating System Distribution](https://en.wikipedia.org/wiki/Linux_distribution) for your new instance, ensure that the default `Source ` options are correctly configured:
-1. `Select Boot Source == Image`,
-1. `Create New Volume == Yes`,
-1. `Delete Volume on Instance Delete == No`, and
-1. `Volume Size (GB) *` will be set when you configure the instance flavor.
+1. *Select Boot Source* is set to `Image`,
+1. *Create New Volume* is `Yes`,
+1. *Delete Volume on Instance Delete* is `No`, and
+1. *Volume Size (GB)* will be set when you configure the instance flavor.
 
 <p align="center"><img alt="OpenStack Launch New Instance." src="./resources/openstack_source_image.png" width=900 /></p>
 
@@ -272,7 +272,7 @@ There are a number of considerations that must be taken into account when select
 An argument could be made, that the best way to acquire Linux systems administration skills, is to make daily use of a Linux Distribution by running it on your personal laptop, desktop or workstation at home / school.
 
 This is something for you and your team to investigate after the competition and will not be covered in these tutorials. If you feel that you are not comfortable completely migrating to a Linux-based environment, there are a number of methods that can be implemented to assist you in transitioning from Windows to a Linux (or macOS) based *'Daily Driver*:
-* **Dual-boot** Linux alongside your Windows environment,
+* Dual-boot Linux alongside your Windows environment,
 * Windows Subsystem for Linux [(WSL)](https://learn.microsoft.com/en-us/linux/install),
 * Running Linux VM's locally within your Windows environment,
 * Running Linux VM's through cloud-based solutions, and Virtual Private Servers [(VPS)](https://en.wikipedia.org/wiki/Virtual_private_server), as you are doing for the competition. There are many commercial and free-tier services available, e.g. [Amazon AWS](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=*all), [Google Cloud](https://cloud.google.com/free) and [Microsoft Azure](https://azure.microsoft.com/en-us/free), 
@@ -332,31 +332,27 @@ You have been allocated a pool totaling **36 GB** of RAM, which would permit the
 1. Head node (12 GB RAM) and 2 x Compute Nodes (12 GB RAM each),
 1. Head node (20 GB RAM) and 1 x Compute Node (16 GB RAM).
 
-> [!TIP]
-> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**.
-
 #### Storage (DISK)
 
 You have been allocated a pool of 50 GB of storage, which can be distributed in the following configurations:
 1. Head Node (40 GB of storage) and 2 x Compute Nodes (5 GB of storage each),
+1. Head Node (40 GB of storage) and 2 x Compute Nodes (5 GB of storage each), and
 1. Head Node (40 GB of storage) and 1 x Compute Node (10 GB of storage).
 
-> [!TIP]
-> The storage on your headnode is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System)
 
 #### Headnode Resource Allocations
 
 The following table summarizes the various permutations and allocations that can be used for designing your clusters within your Team's Project Workspace on Sebowa's OpenStack cloud platform.
 
-| Cluster Configurations                            | Compute (vCPUS)                                                                         | Memory (RAM)                                                                                        | Storage (Disk)                                                                                    |
-| ---                                               | ---                                                                                     | ---                                                                                                 | ---                                                                                               |
-| Dedicated admin / head node and two compute nodes | <ul><li>Head node [2]</li><li>Compute Node 01 [8]</li><li>Compute Node 02 [8]</li></ul> | <ul><li>Head node [4 GB]</li><li>Compute Node 01 [16 GB]</li><li>Compute Node 02 [16 GB]</li></ul>  | <ul><li>Head node [40 GB]</li><li>Compute Node 01 [5 GB]</li><li>Compute Node 02 [5 GB]</li></ul> |
-| Hybrid admin / compute node and two compute nodes | <ul><li>Head node [6]</li><li>Compute Node 01 [6]</li><li>Compute Node 02 [6]</li></ul> | <ul><li>Head node [12 GB]</li><li>Compute Node 01 [12 GB]</li><li>Compute Node 02 [12 GB]</li></ul> | <ul><li>Head node [40 GB]</li><li>Compute Node 01 [5 GB]</li><li>Compute Node 02 [5 GB]</li></ul> |
-| Hybrid admin / compute node and one compute node  | <ul><li>Head node [10]</li><li>Compute Node 01 [8]</li></ul>                            | <ul><li>Head node [20 GB]</li><li>Compute Node 01 [16 GB]</li></ul>                                 | <ul><li>Head node [40 GB]</li><li>Compute Node 01 [10 GB]</li></ul>                               |
-|                                                   |                                                                                         |                                                                                                     |                                                                                                   |
+| Cluster Configurations                                                                | Compute (vCPUS)                         | Memory (RAM)                                        | Storage (Disk)                                    |
+| ---                                                                                   | ---                                     | ---                                                 | ---                                               |
+| <ul><li>Dedicated Head Node</li><li>Compute Node 01</li><li>Compute Node 02</li></ul> | <ul><li>2</li><li>8</li><li>8</li></ul> | <ul><li>4 GB</li><li>16 GB</li><li>16 GB</li></ul>  | <ul><li>40 GB</li><li>5 GB</li><li>5 GB</li></ul> |
+| <ul><li>Hybrid Head node</li><li>Compute Node 01</li><li>Compute Node 02</li></ul>    | <ul><li>6</li><li>6</li><li>6</li></ul> | <ul><li>12 GB</li><li>12 GB</li><li>12 GB</li></ul> | <ul><li>40 GB</li><li>5 GB</li><li>5 GB</li></ul> |
+| <ul><li>Hybrid Head node</li><li>Compute Node 01</li></ul>                            | <ul><li>10</li><li>8</li></ul>          | <ul><li>20 GB</li><li>16 GB</li></ul>               | <ul><li>40 GB</li><li>10 GB</li></ul>             |
+|                                                                                       |                                         |                                                     |                                                   |
 
 > [!TIP]
-> A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the `sccHeadN` flvaor with `2 vCPUs` and `4 GB RAM`.
+> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your headnode is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the `sccHeadN` flvaor with `2 vCPUs` and `4 GB RAM`.
 
 <p align="center"><img alt="OpenStack Launch New Instance." src="./resources/openstack_instance_flavor.png" width=900 /></p>
 
