@@ -343,13 +343,18 @@ You have been allocated a pool of 50 GB of storage, which can be distributed in 
 
 The following table summarizes the various permutations and allocations that can be used for designing your clusters within your Team's Project Workspace on Sebowa's OpenStack cloud platform.
 
-| Cluster Configurations                                                                                              | Compute (vCPUS)                                                       | Memory (RAM)                                                                      | Storage (Disk)                                                                  |
-| ---                                                                                                                 | ---                                                                   | ---                                                                               | ---                                                                             |
-| <ul style="list-style-type:none;"><li>Dedicated Head Node</li><li>Compute Node 01</li><li>Compute Node 02</li></ul> | <ul style="list-style-type:none;"><li>2</li><li>8</li><li>8</li></ul> | <ul style="list-style-type:none;"><li>4 GB</li><li>16 GB</li><li>16 GB</li></ul>  | <ul style="list-style-type:none;"><li>40 GB</li><li>5 GB</li><li>5 GB</li></ul> |
-|                                                                                                                     |                                                                       |                                                                                   |                                                                                 |
-| <ul style="list-style-type:none;"><li>Hybrid Head node</li><li>Compute Node 01</li><li>Compute Node 02</li></ul>    | <ul style="list-style-type:none;"><li>6</li><li>6</li><li>6</li></ul> | <ul style="list-style-type:none;"><li>12 GB</li><li>12 GB</li><li>12 GB</li></ul> | <ul style="list-style-type:none;"><li>40 GB</li><li>5 GB</li><li>5 GB</li></ul> |
-| <ul style="list-style-type:none;"><li>Hybrid Head node</li><li>Compute Node 01</li></ul>                            | <ul style="list-style-type:none;"><li>10</li><li>8</li></ul>          | <ul style="list-style-type:none;"><li>20 GB</li><li>16 GB</li></ul>               | <ul style="list-style-type:none;"><li>40 GB</li><li>10 GB</li></ul>             |
-|                                                                                                                     |                                                                       |                                                                                   |                                                                                 |
+| Cluster Configurations | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
+| ---                    |           :---: | :---:        | :---:          |
+| Dedicated Head Node    |               2 | 4 GB         | 40 GB          |
+| Compute Node 01        |               8 | 16 GB        | 5 GB           |
+| Compute Node 02        |               8 | 16 GB        | 5 GB           |
+|                        |                 |              |                |
+| Hybrid Head Node       |               6 | 12 GB        | 40 GB          |
+| Compute Node 01        |               8 | 12 GB        | 5 GB           |
+| Compute Node 02        |               8 | 12 GB        | 5 GB           |
+|                        |                 |              |                |
+| Hybrid Head Node       |              10 | 20 GB        | 40 GB          |
+| Compute Node 01        |               8 | 16 GB        | 10 GB          |
 
 > [!TIP]
 > When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your headnode is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the *sccHeadN** flavor with *2 vCPUs* and *4 GB RAM*.
