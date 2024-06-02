@@ -29,8 +29,9 @@
       1. [Storage (DISK)](#storage-disk)
       1. [Headnode Resource Allocations](#headnode-resource-allocations)
    1. [Networks, Ports, Services and Security Groups](#networks-ports-services-and-security-groups)
+   1. [Key Pair](#key-pair)
    1. [Verify that your Instance was Successfully Deployed and Launched](#verify-that-your-instance-was-successfully-deployed-and-launched)
-   1. [Associating an Externally Available IP Address](#associating-an-externally-available-ip-address)
+   1. [Associating an Externally Accessible IP Address](#associating-an-externally-Accessible-ip-address)
    1. [Success State, Resource Management and Trouble Shooting](#success-state-resource-management-and-trouble-shooting)
       1. [Deleting Instances](#deleting-instances)
       1. [Deleting Volumes](#deleting-volumes)
@@ -345,13 +346,16 @@ The following table summarizes the various permutations and allocations that can
 
 | Cluster Configurations | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
 | ---                    |           :---: | :---:        | :---:          |
+|                        |                 |              |                |
 | Dedicated Head Node    |               2 | 4 GB         | 40 GB          |
 | Compute Node 01        |               8 | 16 GB        | 5 GB           |
 | Compute Node 02        |               8 | 16 GB        | 5 GB           |
 |                        |                 |              |                |
+|                        |                 |              |                |
 | Hybrid Head Node       |               6 | 12 GB        | 40 GB          |
 | Compute Node 01        |               8 | 12 GB        | 5 GB           |
 | Compute Node 02        |               8 | 12 GB        | 5 GB           |
+|                        |                 |              |                |
 |                        |                 |              |                |
 | Hybrid Head Node       |              10 | 20 GB        | 40 GB          |
 | Compute Node 01        |               8 | 16 GB        | 10 GB          |
@@ -359,23 +363,40 @@ The following table summarizes the various permutations and allocations that can
 > [!TIP]
 > When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your headnode is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the *sccHeadN** flavor with *2 vCPUs* and *4 GB RAM*.
 
-<p align="center"><img alt="OpenStack Launch New Instance." src="./resources/openstack_instance_flavor.png" width=900 /></p>
+<p align="center"><img alt="OpenStack Instance Flavor Selection." src="./resources/openstack_instance_flavor.png" width=900 /></p>
 
 ### Networks, Ports, Services and Security Groups
 
+Under the *Networks* settings, make sure to select the `vxlan` that corresponds to your Team Name.
 
+<p align="center"><img alt="OpenStack Networks Selection." src="./resources/openstack_networks.png" width=900 /></p>
+
+No configurations are required for *Network Ports*, however you must ensure that you have selected `ssh & web services` under *Security Groups*.
+
+<p align="center"><img alt="OpenStack Security Groups Selection." src="./resources/openstack_security_groups.png" width=900 /></p>
+
+### Key Pair
+
+> [!CAUTION]
+> You must ensure that associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance 
+><p align="center"><img alt="OpenStack Key Pair Selection." src="./resources/openstack_key_pair_select.png" width=900 /></p>
 
 ### Verify that your Instance was Successfully Deployed and Launched
 
-TODO: Picture of Launch Instance
-TODO: Picture of Power State Running
+Congratulations! If your `Power State` indicates **Running**, then you have successfully launched your very first OpenStack instance.
 
-### Associating an Externally Available IP Address
+<p align="center"><img alt="OpenStack Running State." src="./resources/openstack_running.png" width=900 /></p>
 
-TODO: Picture Actions -> Associate Floating IP
-TODO: Picture +
-TODO: Picture Select Pool
-TODO: Associate Floating IP
+### Associating an Externally Accessible IP Address
+
+In order for you to be able to SSH into your newly created OpenStack instance, you'll need to associate a publicly accessible [Floating IP](https://kb.leaseweb.com/network/floating-ips/using-floating-ips) address. This allocates a *virtual IP* address to your *virtual machine*, so that you can access it directly from your laboratory workstation.
+
+1. Select ***Associate Floating IP*** from the *Create Snapshot* dropdown menu, just below the *Actions* tab:
+   <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_associate_floating_ip.png" width=900 /></p>
+1. From the *Manage Floating IP Associations* dialog box, click the "➕" and select *publicnet*:
+   <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_public_net.png" width=900 /></p>
+1. Select the `154.114.57.*` IP address allocated and click on the *Associate* button.
+   <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_added_floating_ip.png" width=900 /></p>
 
 ### Success State, Resource Management and Trouble Shooting
 #### Deleting Instances
