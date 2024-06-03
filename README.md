@@ -1,14 +1,15 @@
-CHPC 2024 Student Cluster Competition
+CHOC 2024 Student Cluster Competition
 ======================================
 
-Lecture, Tutorials, Benchmarking and Competition instructions for the Center for High Performance Computing (CHPC) 2024 Student Cluster Compettion (SCC). Which is hosted by the National Integrated Cyber Infrastructure Systems (NICIS), a division of the South African Council for Scientific and Industrial Research (CSIR). For 2024 the Selection Round will be held in person at the Nelson  Mandela University in the Eastern Cape, South Africa.
+Welcome the **Center for High Performance Computing (CHPC)'s Student Cluster Competition (SCC)** - Team Selection Round. This round requires each team to build a **prototype multi-node compute cluster** within the National Integrated Cyber Infrastructure Systems (NICIS) **virtual compute cloud** (described below).
+
+The goal of this tutorial is to introduce you to the competition platform and familiarise you with some Linux and systems administration concepts. This competition provides you with a fixed set of virtual resources, that you will use to initialize a set a set of virtual machines instances based on your choice _or flavor_ of **
 
 # Table of Contents
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
-1. [Overview](#overview)
-   1. [Structure of the Tutorials](#sturture-of-the-tutorials)
+1. [Structure of the Competition](#sturture-of-competition)
    1. [Getting Help](#getting-help)
    1. [Timetable](#timetable)
    1. [Scoring](#scoring)
@@ -33,13 +34,7 @@ Lecture, Tutorials, Benchmarking and Competition instructions for the Center for
       1. [Editing the Git Markdown Files to Track Your Team's Progress](#editing-the-git-markdown-files-to-track-your-teams-progress)
 <!-- markdown-toc end -->
 
-# Overview
-
-Welcome the **Center for High Performance Computing (CHPC)'s Student Cluster Competition (SCC)** - Team Selection Round. This round requires each team to build a **prototype multi-node compute cluster** within the National Integrated Cyber Infrastructure Systems (NICIS) **virtual compute cloud** (described below).
-
-The goal of this tutorial is to introduce you to the competition platform and familiarise you with some Linux and systems administration concepts. This competition provides you with a fixed set of virtual resources, that you will use to initialize a set a set of virtual machines instances based on your choice _or flavor_ of **
-
-## Structure of the Tutorials
+# Structure of the Competition
 
 ## Getting Help
 
@@ -127,7 +122,7 @@ TODO: Add objectives for each Tutorial and section. They should be editable so s
 
 Tutorial 1 deals with introducing concepts to users and getting them started with using the virtual lab, setting up networking and remotely connecting. The content is as follows:
 
-1. [Overview](tutorial1/README.md#overview)
+1. [Checklist](tutorial1/README.md#checklist)
 1. [Network Primer](tutorial1/README.md#network-primer)
    1. [Basic Networking Example (WhatIsMyIp.com)](tutorial1/README.md#basic-networking-example-whatismyipcom)
       1. [Local WiFi Network](tutorial1/README.md#local-wifi-network)
@@ -155,16 +150,16 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
    1. [Key Pair](tutorial1/README.md#key-pair)
    1. [Verify that your Instance was Successfully Deployed and Launched](tutorial1/README.md#verify-that-your-instance-was-successfully-deployed-and-launched)
    1. [Associating an Externally Accessible IP Address](tutorial1/README.md#associating-an-externally-Accesssible-ip-address)
-   1. [Success State, Resource Management and Trouble Shooting](tutorial1/README.md#success-state-resource-management-and-trouble-shooting)
+   1. [Success State, Resource Management and Troubleshooting](tutorial1/README.md#success-state-resource-management-and-troubleshooting)
       1. [Deleting Instances](tutorial1/README.md#deleting-instances)
       1. [Deleting Volumes](tutorial1/README.md#deleting-volumes)
       1. [Dissociating and Releasing Floating IPs](tutorial1/README.md#dissociating-and-releasing-floating-ips)
 1. [Introduction to Basic Linux Administration](tutorial1/README.md#introduction-to-basic-linux-administration)
    1. [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](tutorial1/README.md#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
       1. [SSH Through a Linux Terminal](tutorial1/README.md#ssh-through-a-linux-terminal)
-      1. [PuTTY and / or Windows Power Shell](tutorial1/README.md#putty-and--or-windows-power-shell)
+      1. [Windows PuTTY](tutorial1/README.md#windows-putty)
    1. [Username and Password](tutorial1/README.md#username-and-password)
-   1. [Brief Introduction to Text Editors (Vi vs Vim vs Nano vs Emacs)](tutorial1/README.md#brief-introduction-to-text-editors-vi-vs-vim-vs-nano-vs-emacs)
+   1. [Brief Introduction to Text Editors (Vi vs Vim vs Nano)](tutorial1/README.md#brief-introduction-to-text-editors-vi-vs-vim-vs-nano)
    1. [Privilege Escalation and `sudo`](tutorial1/README.md#privilege-escalation-and-sudo)
    1. [Linux Binaries, Libraries and Package Management](tutorial1/README.md#linux-binaries-libraries-and-package-management)
    1. [Verifying Instance Hostname and `/etc/hosts` File](tutorial1/README.md#verifying-instance-hostname-and-etchosts-file)
