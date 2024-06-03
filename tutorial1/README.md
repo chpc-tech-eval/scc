@@ -144,13 +144,13 @@ Each member of your team must the *IP Address*, *Gateway*, *Subnet Mask*, and *D
 
 On your cellular device, ensure that you are connected to the *computer laboratory's WiFi network* and that all SIM card(s) are disabled. Navigate to https://WhatIsMyIp.com, explore the website and record the IP Address indicated.
 
-<p align="center"><img alt="WhatIsMyWiFi.com test while connected to university computer laboratory WiFi." src="./resources/whatismyip_wifi.png" width=600 /></p>
+<p align="center"><img alt="WhatIsMyWiFi.com test while connected to university computer laboratory WiFi." src="./resources/whatismyip_wifi.png" width=900 /></p>
 
 #### External Cellular Network
 
 On your cellular device, ensure that you are connected to your *SIM provider's network* and that all WiFi radios are disabled. Navigate to https://www.whatismyip.com and again record the IP Address indicated.
 
-<p align="center"><img alt="WhatIsMyWiFi.com test while connected to your SIM provider's network." src="./resources/whatismyip_cell.png" width=600 /></p>
+<p align="center"><img alt="WhatIsMyWiFi.com test while connected to your SIM provider's network." src="./resources/whatismyip_cell.png" width=900 /></p>
 
 > [!WARNING]
 > You must ensure that you are connected to the correct network when executing the above tasks.
@@ -161,7 +161,7 @@ Team Captains are required to setup and establish a WiFi Hotspot for their team 
 
 On your cellular device, ensure that you are connected to your Team Captain's WiFi Hotspot network, *alternating for both* the *SIM provider's network* as well as the *university's computer laboratory's WiFi network*. Navigate to https://www.whatismyip.com and again record the IP Address indicated and this time you *MUST* also record your device's _"Network Settings"_.
 
-<p align="center"><img alt="WhatIsMyWiFi.com test while connected to your Team Captain's WiFi Hotspot network." src="./resources/whatismyip_hotspot.png" width=600 /></p>
+<p align="center"><img alt="WhatIsMyWiFi.com test while connected to your Team Captain's WiFi Hotspot network." src="./resources/whatismyip_hotspot.png" width=900 /></p>
 
 > [!TIP]
 > Pay careful attention to the IP Address reported by WhatIsMyIp.com. This is the unique identifier that _your_ device will be identified and recognized by externally on the internet. Use this information to assist you to understand and describe [NAT](https://en.wikipedia.org/wiki/Network_address_translation).
@@ -189,7 +189,7 @@ Once you've successfully logged in, navigate to `Computer -> Overview` and verif
 
 > [!NOTE]
 > The following screenshot is for illustration purposes only, your actual available resources _may_ differ.
-<p align="center"><img alt="Sebowa.nicis.ac.za NICIS OpenStack Cloud available resources." src="./resources/openstack_overview.png" width=600 /></p>
+<p align="center"><img alt="Sebowa.nicis.ac.za NICIS OpenStack Cloud available resources." src="./resources/openstack_overview.png" width=900 /></p>
 
 ### Generating SSH Keys
 
@@ -213,7 +213,7 @@ From the `Start` menu, open the Windows `PowerShell` application:
 1. When prompted to _"Enter file in which to save the key"_, press `Enter`,
 1. When prompted to _"Enter a passphrase"_, press `Enter`, and `Enter` again to verify it.
 
-   <p align="center"><img alt="Windows Powershell SSH Keygen." src="./resources/windows_powershell_sshkeygen.png" width=600 /></p>
+   <p align="center"><img alt="Windows Powershell SSH Keygen." src="./resources/windows_powershell_sshkeygen.png" width=900 /></p>
 
 ></details>
 
@@ -223,9 +223,9 @@ From the `Start` menu, open the Windows `PowerShell` application:
 [PuTTY](https://putty.org/) is a Windows-based SSH and Telnet client. From the `Start` menu, open the `PuTTYgen` application.
 1. Generate an SSH key pair using the `Ed25519` encryption algorithm.
 1. Generate the necessary entropy by moving your mouse pointer over the `Key` section until the green bar is filled.
-   <p align="center"><img alt="PuTTYgen Generate." src="./resources/windows_puttygen_generate.png" width=600 /></p>
+   <p align="center"><img alt="PuTTYgen Generate." src="./resources/windows_puttygen_generate.png" width=900 /></p>
 1. Proceed to **Save** both the `Private Key` and `Public Key`.
-   <p align="center"><img alt="PuTTYgen Generate Save." src="./resources/windows_puttygen_save.png" width=600 /></p>
+   <p align="center"><img alt="PuTTYgen Generate Save." src="./resources/windows_puttygen_save.png" width=900 /></p>
 </details>
 
 <details>
@@ -395,7 +395,7 @@ No configurations are required for *Network Ports*, however you must ensure that
 
 ### Verify that your Instance was Successfully Deployed and Launched
 
-Congratulations! If your `Power State` indicates **Running**, then you have successfully launched your very first OpenStack instance.
+Congratulations! Once your VM instance has completed it's building and deployment phase, and if your *Power State* indicates `Running`, then you have successfully launched your very first OpenStack instance.
 
 <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_running.png" width=900 /></p>
 
@@ -417,11 +417,11 @@ In order for you to be able to SSH into your newly created OpenStack instance, y
 
 ## Introduction to Basic Linux Administration
 
-
+If you've managed to successfully build and deploy your VM instance, and you managed to successfully associate and attach a floating IP bridged over your internal interface, you are finally ready to connect to your newly created instance.
 
 ### Accessing your VM Using SSH vs the OpenStack Web Console (VNC)
 
-The VMs are running the **CentOS 8 minimal** operating system. This means that they do not contain a graphical environment for you to use a mouse and keyboard with. You will only be able to manipulate the operating system using the command line, or terminal. 
+The VMs are running minimalist, cloud-based operating systems that are not packaged with a graphical desktop environment. You are required to interact with the VM instance using text prompts, through a [Command-Line Interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface).
 
 By default, you can only access the VMs using the `root` user account. The default password for this account is **123qwe**.
 

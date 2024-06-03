@@ -46,6 +46,8 @@ The goal of this tutorial is to introduce you to the competition platform and fa
 
 ## Timetable
 
+<p align="center"><img alt="Timetable." src="./CHPC_2024_SCC_Local_Selection_Round_Timetable.png" width=900 /></p>
+
 ## Scoring
 
 | Component                      | Weight | Breakdown |
