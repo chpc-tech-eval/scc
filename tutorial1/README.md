@@ -20,17 +20,18 @@
    1. [Verify your Teams' Project Workspace and Available Resources](#verify-your-teams-project-workspace-and-available-resources)
    1. [Generating SSH Keys](#generating-ssh-keys)
    1. [Launch a New Instance](#launch-a-new-instance)
-   1. [Instance Name](#instance-name)
    1. [Linux Flavors and Distributions](#linux-flavors-and-distributions)
       1. [Desktop Usage vs Server](#desktop-usage-vs-server)
       1. [Table of Linux Distributions](#table-of-linux-distributions)
    1. [OpenStack Instance Flavors](#openstack-instance-flavors)
-      1. [Compute](#compute)
-      1. [Memory](#memory)
-      1. [Storage](#storage)
+      1. [Compute (vCPUs)](#compute-vcpus)
+      1. [Memory (RAM)](#memory-ram)
+      1. [Storage (DISK)](#storage-disk)
+      1. [Headnode Resource Allocations](#headnode-resource-allocations)
    1. [Networks, Ports, Services and Security Groups](#networks-ports-services-and-security-groups)
+   1. [Key Pair](#key-pair)
    1. [Verify that your Instance was Successfully Deployed and Launched](#verify-that-your-instance-was-successfully-deployed-and-launched)
-   1. [Associating an Externally Available IP Address](#associating-an-externally-available-ip-address)
+   1. [Associating an Externally Accessible IP Address](#associating-an-externally-Accessible-ip-address)
    1. [Success State, Resource Management and Trouble Shooting](#success-state-resource-management-and-trouble-shooting)
       1. [Deleting Instances](#deleting-instances)
       1. [Deleting Volumes](#deleting-volumes)
@@ -143,13 +144,13 @@ Each member of your team must the *IP Address*, *Gateway*, *Subnet Mask*, and *D
 
 On your cellular device, ensure that you are connected to the *computer laboratory's WiFi network* and that all SIM card(s) are disabled. Navigate to https://WhatIsMyIp.com, explore the website and record the IP Address indicated.
 
-<p align="center"><img alt="WhatIsMyWiFi.com test while connected to university computer laboratory WiFi." src="./resources/whatismyip_wifi.png" width=600 /></p>
+<p align="center"><img alt="WhatIsMyWiFi.com test while connected to university computer laboratory WiFi." src="./resources/whatismyip_wifi.png" width=900 /></p>
 
 #### External Cellular Network
 
 On your cellular device, ensure that you are connected to your *SIM provider's network* and that all WiFi radios are disabled. Navigate to https://www.whatismyip.com and again record the IP Address indicated.
 
-<p align="center"><img alt="WhatIsMyWiFi.com test while connected to your SIM provider's network." src="./resources/whatismyip_cell.png" width=600 /></p>
+<p align="center"><img alt="WhatIsMyWiFi.com test while connected to your SIM provider's network." src="./resources/whatismyip_cell.png" width=900 /></p>
 
 > [!WARNING]
 > You must ensure that you are connected to the correct network when executing the above tasks.
@@ -160,7 +161,7 @@ Team Captains are required to setup and establish a WiFi Hotspot for their team 
 
 On your cellular device, ensure that you are connected to your Team Captain's WiFi Hotspot network, *alternating for both* the *SIM provider's network* as well as the *university's computer laboratory's WiFi network*. Navigate to https://www.whatismyip.com and again record the IP Address indicated and this time you *MUST* also record your device's _"Network Settings"_.
 
-<p align="center"><img alt="WhatIsMyWiFi.com test while connected to your Team Captain's WiFi Hotspot network." src="./resources/whatismyip_hotspot.png" width=600 /></p>
+<p align="center"><img alt="WhatIsMyWiFi.com test while connected to your Team Captain's WiFi Hotspot network." src="./resources/whatismyip_hotspot.png" width=900 /></p>
 
 > [!TIP]
 > Pay careful attention to the IP Address reported by WhatIsMyIp.com. This is the unique identifier that _your_ device will be identified and recognized by externally on the internet. Use this information to assist you to understand and describe [NAT](https://en.wikipedia.org/wiki/Network_address_translation).
@@ -188,94 +189,226 @@ Once you've successfully logged in, navigate to `Computer -> Overview` and verif
 
 > [!NOTE]
 > The following screenshot is for illustration purposes only, your actual available resources _may_ differ.
-> <p align="center"><img alt="Sebowa.nicis.ac.za NICIS OpenStack Cloud available resources." src="./resources/openstack_overview.png" width=600 /></p>
+<p align="center"><img alt="Sebowa.nicis.ac.za NICIS OpenStack Cloud available resources." src="./resources/openstack_overview.png" width=900 /></p>
 
 ### Generating SSH Keys
 
-Over the course of the lecture content and the tutorials, you will be making extensive use of [Secure Shell (SSH)](https://en.wikipedia.org/wiki/Secure_Shell) which grants you a [Command-Line Interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface) with which to access your VMs.
+Over the course of the lecture content and the tutorials, you will be making extensive use of [Secure Shell (SSH)](https://en.wikipedia.org/wiki/Secure_Shell) which grants you a [Command-Line Interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface) with which to access your VMs. SSH keys allows you to authenticate against a remote SSH server, without the use of a password.
 
 > [!IMPORTANT]
-> When you are presented with foldable code blocks, you must implement only *one* of the options presented, which is suitable to your current configuration or circumstance.
->
-><details>
-><summary>Windows with PowerShell</summary>
->
->From the `Start` menu, open the Windows `PowerShell` application:
->1. Generate an SSH key pair:
->```shell
->ssh-keygen -t ed25519
->```
->1. When prompted to _"Enter file in which to save the key"_, press `Enter`,
->1. When prompted to _"Enter a passphrase"_, press `Enter`, and `Enter` again to verify it.
+> When you are presented with foldable code blocks, you must pick and implement only **one** of the options presented, which is suitable to your current configuration and/or circumstance.
+
+> [!TIP]
+> A number [encryption algorithms](https://en.wikipedia.org/wiki/Public-key_cryptography) exist for securing your SSH connections. [Elliptic Curve Digital Signature Algorithm (ECDSA)](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) is secure and simple enough should you need to copy the public key manually. Nonetheless however, you are free to use whichever algorithm you choose to.
+   
+<details>
+<summary>Windows with PowerShell</summary>
+
+From the `Start` menu, open the Windows `PowerShell` application:
+1. Generate an SSH key pair:
+   ```shell
+   ssh-keygen -t ed25519
+   ```
+   
+1. When prompted to _"Enter file in which to save the key"_, press `Enter`,
+1. When prompted to _"Enter a passphrase"_, press `Enter`, and `Enter` again to verify it.
+
+   <p align="center"><img alt="Windows Powershell SSH Keygen." src="./resources/windows_powershell_sshkeygen.png" width=900 /></p>
 
 ></details>
 
 <details>
 <summary>Windows PuTTY</summary>
+
+[PuTTY](https://putty.org/) is a Windows-based SSH and Telnet client. From the `Start` menu, open the `PuTTYgen` application.
+1. Generate an SSH key pair using the `Ed25519` encryption algorithm.
+1. Generate the necessary entropy by moving your mouse pointer over the `Key` section until the green bar is filled.
+   <p align="center"><img alt="PuTTYgen Generate." src="./resources/windows_puttygen_generate.png" width=900 /></p>
+1. Proceed to **Save** both the `Private Key` and `Public Key`.
+   <p align="center"><img alt="PuTTYgen Generate Save." src="./resources/windows_puttygen_save.png" width=900 /></p>
 </details>
 
 <details>
-<summary>Linux, Unix and MacOS Terminals</summary>
+<summary>Linux, Unix or MacOS Terminal</summary>
+
+You must follow the same procedure as you would have done for the Windows PowerShell scenario.
+1. Generate an SSH key pair:
+   ```shell
+   ssh-keygen -t ed25519
+   ```
+
 </details>
+
+> [!NOTE]
+> You **MUST** take note of the location and paths to **BOTH** your public and private keys. Your public key will be shared and distributed to the SSH servers you want to authenticate against. Your private key must be kept secure within your team, and must not be shared or distributed to anyone.
+
+Once you have successfully generated an SSH key pair, navigate to `Compute` &rarr; `Key Pairs` and import the **public** key `id_ed25519.pub` into your Team's Project Workspace within OpenStack.
+
+<p align="center"><img alt="Import id_25519.pub into OpenStack." src="./resources/openstack_import_public_key_highlight.png" width=900 /></p>
 
 ### Launch a New Instance
 
-TODO: Picture of Compute -> Instances
-TODO: Picture of Compute -> Launch Instance
+From your Team's OpenStack Project Workspace, navigate to `Compute` &#8594; `Instance` and click `Launch Instance**.
 
-### Instance Name
+<p align="center"><img alt="OpenStack Launch New Instance." src="./resources/openstack_launch_instance_highlight.png" width=900 /></p>
+
+Within the popup window, enter an appropriate name for your instance that will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be **headnode**.
+
 ### Linux Flavors and Distributions
+
+After configuring your new VM name under instance details, you will need to select the template that will be used to create the instance from the *Source* menu. Before selection a [Linux Operating System Distribution](https://en.wikipedia.org/wiki/Linux_distribution) for your new instance, ensure that the default *Source* options are correctly configured:
+1. *Select Boot Source* is set to `Image`,
+1. *Create New Volume* is `Yes`,
+1. *Delete Volume on Instance Delete* is `No`, and
+1. *Volume Size (GB)* will be set when you configure the instance flavor.
+<p align="center"><img alt="OpenStack Launch New Instance." src="./resources/openstack_source_image.png" width=900 /></p>
+
+There are a number of considerations that must be taken into account when selecting a Linux Distribution that will be appropriate for your requirements and needs.
 
 #### Desktop Usage vs Server
 
-Daily driver
+[Since June 2017](https://www.top500.org/statistics/details/osfam/1/) **all** of the systems on the Top500 list make use of a Linux-based Operating System. Familiarity and proficiency with Linux-based operating systems and their derivatives is a mandatory requirement for gaining expertise in Software Development, Systems Administration and Networking.
+
+An argument could be made, that the best way to acquire Linux systems administration skills, is to make daily use of a Linux Distribution by running it on your personal laptop, desktop or workstation at home / school.
+
+This is something for you and your team to investigate after the competition and will not be covered in these tutorials. If you feel that you are not comfortable completely migrating to a Linux-based environment, there are a number of methods that can be implemented to assist you in transitioning from Windows to a Linux (or macOS) based *'Daily Driver*:
+* Dual-boot Linux alongside your Windows environment,
+* Windows Subsystem for Linux [(WSL)](https://learn.microsoft.com/en-us/linux/install),
+* Running Linux VM's locally within your Windows environment,
+* Running Linux VM's through cloud-based solutions, and Virtual Private Servers [(VPS)](https://en.wikipedia.org/wiki/Virtual_private_server), as you are doing for the competition. There are many commercial and free-tier services available, e.g. [Amazon AWS](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=*all), [Google Cloud](https://cloud.google.com/free) and [Microsoft Azure](https://azure.microsoft.com/en-us/free), 
 
 #### Table of Linux Distributions
 
-Explain package managers
+A Linux distribution, is a collection of software that is at the very leased comprised of a [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) and a [package manager](https://en.wikipedia.org/wiki/Package_manager). A package manager is responsible for automating the process of installing, configuring, upgrading, downgrading and removing software programs and associated components from a computer's operating system.
 
-| Package Management System      | Flavor                                                                                              | Description | Versions Available as Cloud Instances | General Recommendations and Comments |
-| ---                            | ---                                                                                                 | ---         | ---                                   | ---                                  |
-| RPM                            | [Red Hat Enterprise Linux](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux) |             |                                       |                                      |
-|                                | [Rocky Linux](https://rockylinux.org/)                                                              |             |                                       |                                      |
-|                                | [Alma Linux](https://almalinux.org/)                                                                |             |                                       |                                      |
-|                                | [CentOS Stream](https://www.centos.org/centos-stream/)                                              |             |                                       |                                      |
-|                                | [Fedora](https://fedoraproject.org/)                                                                |             |                                       |                                      |
-|                                | [OpenSUSE](https://www.opensuse.org/)                                                               |             |                                       |                                      |
-| APT                            | [Debian](https://www.debian.org/)                                                                   |             |                                       |                                      |
-|                                | [Ubuntu](https://ubuntu.com/)                                                                       |             |                                       |                                      |
-|                                | [Linux Mint](https://linuxmint.com/)                                                                |             |                                       |                                      |
-|                                | [Pop! OS](https://pop.system76.com/)                                                                |             |                                       |                                      |
-|                                | [Kali Linux](https://www.kali.org/)                                                                 |             |                                       |                                      |
-| Pacman                         | [Arch Linux](https://archlinux.org/)                                                                |             |                                       |                                      |
-|                                | [Manjaro](https://manjaro.org/)                                                                     |             |                                       |                                      |
-| Portage                        | [Gentoo](https://www.gentoo.org/)                                                                   |             |                                       |                                      |
-| Source-Based                   | [Linux From Scratch](https://www.gentoo.org/)                                                       |             |                                       |                                      |
-|                                |                                                                                                     |             |                                       |                                      |
- 
+A number of considerations must be taken into account when deciding on choice of Linux distro as a *'daily driver'* and as well as a server. There are subtleties and nuances between the various Linux flavors. These vary from a number of factors, not least of which including:
+* Support - is the project well documented and do the developers respond to queries, 
+* Community - is there a large and an active userbase,
+* Driver Compatibility - will the distro *'natively'* run on your hardware without workarounds or custom compilation / installation of various device drivers,
+* Stability and Maturity - is the intended distro and version currently actively supported and maintained, not 'End of Life' and verified to run across a number of different systems and environment configurations. Or do you intend to run a *'bleeding-edge'* distro so that you may in the future, influence the direction of application development and assist developers in identifying bugs in their releases...
+
+You and your Team, together with input and advise from your mentors, must do some research and depending on the intended use case, decide which will be the best choice.
+
+The following table summarizes a few Linux distros that *may* be available on the Sebowa OpenStack cloud for you to use, and that you *might* consider using as a *'daily driver'*.
+
+| Package Management System | Flavor                                                                                              | Description | Versions Available as Cloud Instances | General Recommendations and Comments |
+| ---                       | ---                                                                                                 | ---         | ---                                   | ---                                  |
+|                           |                                                                                                     |             |                                       |                                      |
+| RPM                       | [Red Hat Enterprise Linux](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux) |             |                                       |                                      |
+|                           | [Rocky Linux](https://rockylinux.org/)                                                              |             |                                       |                                      |
+|                           | [Alma Linux](https://almalinux.org/)                                                                |             |                                       |                                      |
+|                           | [CentOS Stream](https://www.centos.org/centos-stream/)                                              |             |                                       |                                      |
+|                           | [Fedora](https://fedoraproject.org/)                                                                |             |                                       |                                      |
+|                           | [OpenSUSE](https://www.opensuse.org/)                                                               |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+| PkgTool                   | [Slackware Linux](http://www.slackware.com/)                                                        |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+| APT                       | [Debian](https://www.debian.org/)                                                                   |             |                                       |                                      |
+|                           | [Ubuntu](https://ubuntu.com/)                                                                       |             |                                       |                                      |
+|                           | [Linux Mint](https://linuxmint.com/)                                                                |             |                                       |                                      |
+|                           | [Pop! OS](https://pop.system76.com/)                                                                |             |                                       |                                      |
+|                           | [Kali Linux](https://www.kali.org/)                                                                 |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+| Pacman                    | [Arch Linux](https://archlinux.org/)                                                                |             |                                       |                                      |
+|                           | [Manjaro](https://manjaro.org/)                                                                     |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+| Portage                   | [Gentoo](https://www.gentoo.org/)                                                                   |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+| Source-Based              | [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/)                                       |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+
+> [!TIP]
+> The set of tutorials have been tested against **Alma Linux 8.9, 9.3**, **Arch Linux**, **CentOS Stream 9**, **Rocky Linux 8, 9.2, 9.3** and **Ubuntu Server 23.10**. 
 
 ### OpenStack Instance Flavors
 
-Available resource distribution, headnode vs compute node
+An important aspect of system administration is resource monitoring, management and utilization. Each Team will be required to manage their available resources and ensure that the resources of their clusters are utilized in such a way as to maximize system performance. You have been allocated a pool of resources which you will need to decide how you are going to allocate the sizing of the compute, memory and storage across your headnode and compute node(s).
 
-#### Compute
-#### Memory
-#### Storage
+#### Compute (vCPUs)
 
+You have been allocated a pool totaling **18 vCPUs**, which would permit the following configurations:
+1. Head Node (2 vCPUs) and 2 x Compute Nodes (8 vCPUs each),
+1. Head node (6 vCPUs) and 2 x Compute Nodes (6 vCPUs each),
+1. Head node (10 vCPUs) and 1 x Compute Node (8 vCPUs).
+
+#### Memory (RAM)
+
+You have been allocated a pool totaling **36 GB** of RAM, which would permit the following configurations:
+1. Head Node (4 GB RAM) and 2 x Compute Nodes (16 GB RAM each),
+1. Head node (12 GB RAM) and 2 x Compute Nodes (12 GB RAM each),
+1. Head node (20 GB RAM) and 1 x Compute Node (16 GB RAM).
+
+#### Storage (DISK)
+
+You have been allocated a pool of 50 GB of storage, which can be distributed in the following configurations:
+1. Head Node (40 GB of storage) and 2 x Compute Nodes (5 GB of storage each),
+1. Head Node (40 GB of storage) and 2 x Compute Nodes (5 GB of storage each), and
+1. Head Node (40 GB of storage) and 1 x Compute Node (10 GB of storage).
+
+
+#### Headnode Resource Allocations
+
+The following table summarizes the various permutations and allocations that can be used for designing your clusters within your Team's Project Workspace on Sebowa's OpenStack cloud platform.
+
+| Cluster Configurations     | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
+| ---                        |           :---: | :---:        | :---:          |
+|                            |                 |              |                |
+| Dedicated Head Node        |               2 | 4 GB         | 40 GB          |
+| Compute Node 01            |               8 | 16 GB        | 5 GB           |
+| Compute Node 02            |               8 | 16 GB        | 5 GB           |
+|                            |                 |              |                |
+|                            |                 |              |                |
+| Hybrid Head / Compute Node |               6 | 12 GB        | 40 GB          |
+| Compute Node 01            |               6 | 12 GB        | 5 GB           |
+| Compute Node 02            |               6 | 12 GB        | 5 GB           |
+|                            |                 |              |                |
+|                            |                 |              |                |
+| Hybrid Head / Compute Node |              10 | 20 GB        | 40 GB          |
+| Compute Node 01            |               8 | 16 GB        | 10 GB          |
+|                            |                 |              |                |
+
+> [!TIP]
+> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your headnode is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the *sccHeadN** flavor with *2 vCPUs* and *4 GB RAM*.
+
+<p align="center"><img alt="OpenStack Instance Flavor Selection." src="./resources/openstack_instance_flavor.png" width=900 /></p>
 
 ### Networks, Ports, Services and Security Groups
 
+Under the *Networks* settings, make sure to select the `vxlan` that corresponds to your Team Name.
+
+<p align="center"><img alt="OpenStack Networks Selection." src="./resources/openstack_networks.png" width=900 /></p>
+
+No configurations are required for *Network Ports*, however you must ensure that you have selected `ssh & web services` under *Security Groups*.
+
+<p align="center"><img alt="OpenStack Security Groups Selection." src="./resources/openstack_security_groups.png" width=900 /></p>
+
+### Key Pair
+
+> [!CAUTION]
+> You must ensure that you associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance 
+><p align="center"><img alt="OpenStack Key Pair Selection." src="./resources/openstack_key_pair_select.png" width=900 /></p>
+
 ### Verify that your Instance was Successfully Deployed and Launched
 
-TODO: Picture of Launch Instance
-TODO: Picture of Power State Running
+Congratulations! Once your VM instance has completed it's building and deployment phase, and if your *Power State* indicates `Running`, then you have successfully launched your very first OpenStack instance.
 
-### Associating an Externally Available IP Address
+<p align="center"><img alt="OpenStack Running State." src="./resources/openstack_running.png" width=900 /></p>
 
-TODO: Picture Actions -> Associate Floating IP
-TODO: Picture +
-TODO: Picture Select Pool
-TODO: Associate Floating IP
+### Associating an Externally Accessible IP Address
+
+In order for you to be able to SSH into your newly created OpenStack instance, you'll need to associate a publicly accessible [Floating IP](https://kb.leaseweb.com/network/floating-ips/using-floating-ips) address. This allocates a *virtual IP* address to your *virtual machine*, so that you can access it directly from your laboratory workstation.
+
+1. Select ***Associate Floating IP*** from the *Create Snapshot* dropdown menu, just below the *Actions* tab:
+   <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_associate_floating_ip.png" width=900 /></p>
+1. From the *Manage Floating IP Associations* dialog box, click the "➕" and select *publicnet*:
+   <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_public_net.png" width=900 /></p>
+1. Select the `154.114.57.*` IP address allocated and click on the *Associate* button.
+   <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_added_floating_ip.png" width=900 /></p>
 
 ### Success State, Resource Management and Trouble Shooting
 #### Deleting Instances
@@ -284,9 +417,11 @@ TODO: Associate Floating IP
 
 ## Introduction to Basic Linux Administration
 
+If you've managed to successfully build and deploy your VM instance, and you managed to successfully associate and attach a floating IP bridged over your internal interface, you are finally ready to connect to your newly created instance.
+
 ### Accessing your VM Using SSH vs the OpenStack Web Console (VNC)
 
-The VMs are running the **CentOS 8 minimal** operating system. This means that they do not contain a graphical environment for you to use a mouse and keyboard with. You will only be able to manipulate the operating system using the command line, or terminal. 
+The VMs are running minimalist, cloud-based operating systems that are not packaged with a graphical desktop environment. You are required to interact with the VM instance using text prompts, through a [Command-Line Interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface).
 
 By default, you can only access the VMs using the `root` user account. The default password for this account is **123qwe**.
 
@@ -356,11 +491,7 @@ Most Linux distributions already include an `ssh` client via `openssh`. To acces
 
 #### PuTTY and / or Windows Power Shell
 
-If you are using a **Microsoft Windows** environment you can use a tool called `PuTTY` ([Click here to download](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)) to connect to ssh.ace.chpc.ac.za. With `PuTTY`, steps 2 and 3 should be the same.
 
-Please note that using the command `ssh` or connecting with `PuTTY` creates a new `BASH` shell on the target machine (the machine that you are connecting to). To end this session you must exit. Using the `ssh` command over and over will nest multiple `BASH` shells inside of one another and is not recommended.
-
-<div style="page-break-after: always;"></div>
 
 ### Username and Password
 ### Brief Introduction to Text Editors (Vi vs Vim vs Nano vs Emacs)
