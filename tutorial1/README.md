@@ -434,6 +434,7 @@ If your workstation or laptop is running a Linux-based or macOS operating system
 
 <details>
 <summary>Alma Linux</summary>
+
 ```bash
    ssh -i ~/.ssh/id_ed25519 alma@154.114.57.<YOUR Head Node IP>
 ```
@@ -441,6 +442,7 @@ If your workstation or laptop is running a Linux-based or macOS operating system
 
 <details>
 <summary>Arch Linux</summary>
+
 ```bash
    ssh -i ~/.ssh/id_ed25519 arch@154.114.57.<YOUR Head Node IP>
 ```
@@ -448,6 +450,7 @@ If your workstation or laptop is running a Linux-based or macOS operating system
 
 <details>
 <summary>CentOS Stream</summary>
+
 ```bash
    ssh -i ~/.ssh/id_ed25519 centos@154.114.57.<YOUR Head Node IP>
 ```
@@ -455,6 +458,7 @@ If your workstation or laptop is running a Linux-based or macOS operating system
 
 <details>
 <summary>Rocky Linux</summary>
+
 ```bash
    ssh -i ~/.ssh/id_ed25519 rocky@154.114.57.<YOUR Head Node IP>
 ```
@@ -462,6 +466,7 @@ If your workstation or laptop is running a Linux-based or macOS operating system
 
 <details>
 <summary>Ubuntu Server</summary>
+
 ```bash
    ssh -i ~/.ssh/id_ed25519 ubuntu@154.114.57.<YOUR Head Node IP>
 ```
