@@ -49,9 +49,9 @@ This tutorial will conclude with you downloading, installing and running the Hig
       1. [Dissociating and Releasing Floating IPs](#dissociating-and-releasing-floating-ips)
 1. [Introduction to Basic Linux Administration](#introduction-to-basic-linux-administration)
    1. [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
-      1. [SSH Through a Linux Terminal](#ssh-through-a-linux-terminal)
-      1. [Windows PowerShell or PuTTY](#windows-powershell-or-putty)
-   1. [Username and Password](#username-and-password)
+      1. [SSH Through a Linux Terminal or Windows PowerShell](#ssh-through-a-linux-terminal-or-windows-powershell)
+      1. [Windows PuTTY](#windows-putty)
+      1. [Username and Password](#username-and-password)
    1. [Brief Introduction to Text Editors (Vi vs Vim vs Nano)](#brief-introduction-to-text-editors-vi-vs-vim-vs-nano)
    1. [Privilege Escalation and `sudo`](#privilege-escalation-and-sudo)
    1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
@@ -481,67 +481,33 @@ If your workstation or laptop is running a Linux-based or macOS operating system
 
 If your workstation or laptop is running Windows, then you may proceed using either Windows PowerShell above *(preferred)* or PuTTY. Use PuTTY only if Windows PowerShell is not available on your current system.
 
-1. Launch the PuTTY application and from the *Session* category, enter your <headnode's IP address>
+1. Launch the PuTTY application and from the *Session* category, enter your `<headnode's IP address>`
    <p align="center"><img alt="OpenStack Running State." src="./resources/windows_putty_enter_headnode_ip.png" width=900 /></p>
-1. From the *Connection* &rarr; *Data* category, enter your <username>
+1. From the *Connection* &rarr; *Data* category, enter your `<username>`
    <p align="center"><img alt="OpenStack Running State." src="./resources/windows_putty_username.png" width=900 /></p>
 1. From the *Connection* &rarr; *SSH* &rarr; *Auth* &rarr; *Credentials* category, select `Browse` and navigate to the path where your private key is located:
    <p align="center"><img alt="OpenStack Running State." src="./resources/windows_putty_enter_private_key.png" width=900 /></p>
 
-## Username and Password
+### Username and Password
 
+Once you've successfully logged into your headnode VM, you are encouraged to change your password so that you may access your headnode through the OpenStack VNC console interface.
+
+```bash
+   sudo passwd <username>
+   
+```
+
+> [!CAUTION]
+> Setting up a password for any user *- especially the default user -* will make your VM's vulnerable to [Brute Force SSH Attacks](https://helpcenter.trendmicro.com/en-us/article/tmka-19689)!
+
+Now you  can use 
 ping, ip a and ip route
-## Brief Introduction to Text Editors (Vi vs Vim vs Nano vs Emacs)
+## Brief Introduction to Text Editors (Vi vs Vim vs Nano)
 ## Privilege Escalation and `sudo`
 ## Linux Binaries, Libraries and Package Management
 ## Verifying Instance Hostname and `/etc/hosts` File
-
-A hostname is what a computer device is called on a network. These are used to make computer addresses easier to remember. It's a lot easier to remember "**headnode.cluster.scc**" than "**10.0.0.51**"!
-
-To make it easier to distinguish between your head node and your compute node, you should change their hostnames to something logical.
-
-1. Use the `hostnamectl` command to set the new hostname for each machine.
-
-    ```bash
-    ~$ hostnamectl set-hostname --static <new_host_name>.cluster.scc
-    ```
-
-    A good example would be `headnode.cluster.scc`.
-    
-    _**This will only reflect once you log out and back into your node! So log out and log back in now.**_
-
-2. In order to access your nodes by hostname rather than IP address (if you **aren't using your own self-controlled DNS server**), you need to populate the `/etc/hosts` file on each machine with the IP address/hostname mappings. 
-
-    This file is used to keep track of static (non-DNS server) hostname/IP mappings. In the `/etc/hosts` file on each of your machines, add the following line:
-
-    ```
-    <ip_address_of_machine> <host_name_of_machine>.cluster.scc <host_name_of_machine> 
-    ```
-
-    **This order is important for later.**
-
-    **For example**, if we have a head node called "headnode" with an internal (private) network IP of 10.0.0.1, we can use the following:
-
-    ```
-    10.0.0.1 headnode.cluster.scc headnode 
-    ```
-
-3. You can test connectivity between your two nodes by pinging from one to the other. For example, from your headnode:
-
-    ```bash
-    [root@headnode ~]$ ping <compute_node_ip>
-    ```
-
-4. Test that you can access your compute node by its hostname:
-
-    ```bash
-    [root@headnode ~]$ ssh <compute_node_name>
-    ```
-
+hostname and etc/hosts
 At this point your VMs and network should be correctly configured and you can continue with setting up some important Linux services.
-
-<div style="page-break-after: always;"></div>
-
 
 ## Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark
 ### Install the GNU Compiler Collection (GCC)
