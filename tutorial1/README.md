@@ -293,26 +293,37 @@ The following table summarizes a few Linux distros that *may* be available on th
 
 | Package Management System | Flavor                                                                                              | Description | Versions Available as Cloud Instances | General Recommendations and Comments |
 | ---                       | ---                                                                                                 | ---         | ---                                   | ---                                  |
+|                           |                                                                                                     |             |                                       |                                      |
 | RPM                       | [Red Hat Enterprise Linux](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux) |             |                                       |                                      |
 |                           | [Rocky Linux](https://rockylinux.org/)                                                              |             |                                       |                                      |
 |                           | [Alma Linux](https://almalinux.org/)                                                                |             |                                       |                                      |
 |                           | [CentOS Stream](https://www.centos.org/centos-stream/)                                              |             |                                       |                                      |
 |                           | [Fedora](https://fedoraproject.org/)                                                                |             |                                       |                                      |
 |                           | [OpenSUSE](https://www.opensuse.org/)                                                               |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
 | PkgTool                   | [Slackware Linux](http://www.slackware.com/)                                                        |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
 | APT                       | [Debian](https://www.debian.org/)                                                                   |             |                                       |                                      |
 |                           | [Ubuntu](https://ubuntu.com/)                                                                       |             |                                       |                                      |
 |                           | [Linux Mint](https://linuxmint.com/)                                                                |             |                                       |                                      |
 |                           | [Pop! OS](https://pop.system76.com/)                                                                |             |                                       |                                      |
 |                           | [Kali Linux](https://www.kali.org/)                                                                 |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
 | Pacman                    | [Arch Linux](https://archlinux.org/)                                                                |             |                                       |                                      |
 |                           | [Manjaro](https://manjaro.org/)                                                                     |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
 | Portage                   | [Gentoo](https://www.gentoo.org/)                                                                   |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
 | Source-Based              | [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/)                                       |             |                                       |                                      |
 |                           |                                                                                                     |             |                                       |                                      |
 
 > [!TIP]
-> The set of tutorials have been tested against **Alma Linux 9.3**, **Arch Linux**, **CentOS Stream 9**, **Rocky Linux 9.3** and **Ubuntu Server 23.10**. 
+> The set of tutorials have been tested against **Alma Linux 8.9, 9.3**, **Arch Linux**, **CentOS Stream 9**, **Rocky Linux 8, 9.2, 9.3** and **Ubuntu Server 23.10**. 
 
 ### OpenStack Instance Flavors
 
@@ -344,21 +355,22 @@ You have been allocated a pool of 50 GB of storage, which can be distributed in 
 
 The following table summarizes the various permutations and allocations that can be used for designing your clusters within your Team's Project Workspace on Sebowa's OpenStack cloud platform.
 
-| Cluster Configurations | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
-| ---                    |           :---: | :---:        | :---:          |
-|                        |                 |              |                |
-| Dedicated Head Node    |               2 | 4 GB         | 40 GB          |
-| Compute Node 01        |               8 | 16 GB        | 5 GB           |
-| Compute Node 02        |               8 | 16 GB        | 5 GB           |
-|                        |                 |              |                |
-|                        |                 |              |                |
-| Hybrid Head Node       |               6 | 12 GB        | 40 GB          |
-| Compute Node 01        |               8 | 12 GB        | 5 GB           |
-| Compute Node 02        |               8 | 12 GB        | 5 GB           |
-|                        |                 |              |                |
-|                        |                 |              |                |
-| Hybrid Head Node       |              10 | 20 GB        | 40 GB          |
-| Compute Node 01        |               8 | 16 GB        | 10 GB          |
+| Cluster Configurations     | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
+| ---                        |           :---: | :---:        | :---:          |
+|                            |                 |              |                |
+| Dedicated Head Node        |               2 | 4 GB         | 40 GB          |
+| Compute Node 01            |               8 | 16 GB        | 5 GB           |
+| Compute Node 02            |               8 | 16 GB        | 5 GB           |
+|                            |                 |              |                |
+|                            |                 |              |                |
+| Hybrid Head / Compute Node |               6 | 12 GB        | 40 GB          |
+| Compute Node 01            |               6 | 12 GB        | 5 GB           |
+| Compute Node 02            |               6 | 12 GB        | 5 GB           |
+|                            |                 |              |                |
+|                            |                 |              |                |
+| Hybrid Head / Compute Node |              10 | 20 GB        | 40 GB          |
+| Compute Node 01            |               8 | 16 GB        | 10 GB          |
+|                            |                 |              |                |
 
 > [!TIP]
 > When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your headnode is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the *sccHeadN** flavor with *2 vCPUs* and *4 GB RAM*.
@@ -378,7 +390,7 @@ No configurations are required for *Network Ports*, however you must ensure that
 ### Key Pair
 
 > [!CAUTION]
-> You must ensure that associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance 
+> You must ensure that you associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance 
 ><p align="center"><img alt="OpenStack Key Pair Selection." src="./resources/openstack_key_pair_select.png" width=900 /></p>
 
 ### Verify that your Instance was Successfully Deployed and Launched
@@ -404,6 +416,8 @@ In order for you to be able to SSH into your newly created OpenStack instance, y
 #### Dissociating and Releasing Floating IPs
 
 ## Introduction to Basic Linux Administration
+
+
 
 ### Accessing your VM Using SSH vs the OpenStack Web Console (VNC)
 
@@ -477,11 +491,7 @@ Most Linux distributions already include an `ssh` client via `openssh`. To acces
 
 #### PuTTY and / or Windows Power Shell
 
-If you are using a **Microsoft Windows** environment you can use a tool called `PuTTY` ([Click here to download](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)) to connect to ssh.ace.chpc.ac.za. With `PuTTY`, steps 2 and 3 should be the same.
 
-Please note that using the command `ssh` or connecting with `PuTTY` creates a new `BASH` shell on the target machine (the machine that you are connecting to). To end this session you must exit. Using the `ssh` command over and over will nest multiple `BASH` shells inside of one another and is not recommended.
-
-<div style="page-break-after: always;"></div>
 
 ### Username and Password
 ### Brief Introduction to Text Editors (Vi vs Vim vs Nano vs Emacs)
