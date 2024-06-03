@@ -421,79 +421,45 @@ If you've managed to successfully build and deploy your VM instance, and you man
 
 ### Accessing your VM Using SSH vs the OpenStack Web Console (VNC)
 
-The VMs are running minimalist, cloud-based operating systems that are not packaged with a graphical desktop environment. You are required to interact with the VM instance using text prompts, through a [Command-Line Interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface).
+The VMs are running minimalist, cloud-based operating systems that are not packaged with a graphical desktop environment. You are required to interact with the VM instance using text prompts, through a [Command-Line Interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface). By design for security reasons, the cloud images are only accessible via SSH after instantiating a VM. Once you have successfully logged into your instance, you may change the password so as to enable you to make use of the [VNC Console](https://en.wikipedia.org/wiki/Virtual_Network_Computing).
 
-By default, you can only access the VMs using the `root` user account. The default password for this account is **123qwe**.
-
-Use the **[Console (VNC)](https://en.wikipedia.org/wiki/Virtual_Network_Computing)** connection in **OpenStack** to access your VMs for this section.
-
-It is **highly recommended** that you **change your root password** for all of your VMs, as this will prevent unwanted people from getting access to them. This should be done for all of your VMs and not just the head node. You can do so using the `passwd` command.
-
-```bash
-~$ passwd
-```
-
-Use the command below to list the network interfaces and their current configuration. You will see the names of the interfaces, for example `eth1`, `enp3s0`, or something similar.
-
-```bash
-~$ ip a
-```
-
-> **! >>> It is important to note here that you will have no IP addresses listed for your network interfaces (such as enp3s0), because they have not been configured yet.**
-
-> **! >>> Ignore and do not count the [**lo**](https://en.wikipedia.org/wiki/Localhost#Loopback) interface!**
-
-<span id="fig3" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="test" src="./resources/ip a.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 3: What you should see when you use the "ip a" command.</i></span>
-</span>
-
-You can also check the routing table using the command below. Routing is used to allow one network to communicate with another. At this stage, it should be empty since there is not networking configured.
-
-```bash
-~$ ip route
-```
-
-   > **! >>> This should be empty, as your networks have not yet been configured.**
-
-<div style="page-break-after: always;"></div>
-
-
-Once you have the network configured correctly on your VMs you can move on to using the `ssh` command to access the VMs via a terminal. To access the VM network, you first need to log in to the ACE Lab's `ssh` server, as mentioned in the [overview section](#overview).
-
-**To recap, the process is:**
-
-```plaintext
-1. You are a user trying to connect to your VM from your home or university internet.
-2. You use your computer to connect to the ACE Lab login node (ssh.ace.chpc.ac.za).
-3. Once logged into the ACE Lab login node, you can then connect to the head node of your virtual cluster.
-4. Once connected to the head node of your virtual cluster, you can connect to the compute node of your cluster.
-```
+> [!NOTE]
+> You will require the **PATH** to the private SSH key that you have previously [generated](#generating-ssh-keys), as well as the Floating IP address [associated](#associating-an-externally-Accessible-ip-address) to your VM.
 
 #### SSH Through a Linux Terminal
 
-Most Linux distributions already include an `ssh` client via `openssh`. To access this, simply open a terminal session and run the command `ssh` with the parameters necessary for what you want to achieve.
+Most Linux distributions come preshipped with an SSH client included via `OpenSSH`. Depending on the specific distribution your Team chose to implement, the default username will vary accordingly.
 
-1. Use the credentials that have been provided to you by the ACE Lab to log in to the ssh.ace.chpc.ac.za server.
+<details>
+<summary>Alma Linux</summary>
+```bash
+ssh -i ~/.ssh/id_ed25519 @154.114.57.???
+```
+</details>
 
-    ```bash
-    [student@home_or_school ~]$ ssh <team_name>@ssh.ace.chpc.ac.za 
-    ```
+<details>
+<summary>Arch Linux</summary>
+</details>
 
-2. Once logged in, from this server run the `ssh` command to the `root` user account of your head node, using the external address **10.128.24.\***, where **\*** is the last digit(s) of your head node's IP address.
+<details>
+<summary>CentOS Stream</summary>
+</details>
 
-    ```bash
-    [team_name@ssh ~]$ ssh root@10.128.24.*
-    ```
+<details>
+<summary>Rocky Linux</summary>
+</details>
 
-3. The compute node can then be accessed in the same way, but via the head node now, as the **ACE Lab SSH server does not have direct access to the compute node**. Please refer to [Figure 1](#fig1).
-
+<details>
+<summary>Ubuntu Server</summary>
+</details>
 
 #### PuTTY and / or Windows Power Shell
 
 
 
 ### Username and Password
+
+ping, ip a and ip route
 ### Brief Introduction to Text Editors (Vi vs Vim vs Nano vs Emacs)
 ### Privilege Escalation and `sudo`
 ### Linux Binaries, Libraries and Package Management

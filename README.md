@@ -6,7 +6,6 @@ Lecture, Tutorials, Benchmarking and Competition instructions for the Center for
 # Table of Contents
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-**Table of Contents**
 
 1. [Overview](#overview)
    1. [Structure of the Tutorials](#sturture-of-the-tutorials)
