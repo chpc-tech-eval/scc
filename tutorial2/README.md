@@ -1,41 +1,53 @@
-#  Student Cluster Competition - Tutorial 2
+Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
+=========================================================================
     
-## Table of Contents
+# Table of Contents
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
-1. [Overview](#overview)
-1. [Spinning Up a Compute Node in OpenStack]()
-   1. [Compute Node Considerations]()
-1. [Accessing Your Compute Node]()
-   1. [IP Addresses and Routing]()
-   1. [Command Line Proxy Jump Directive]()
-   1. [Permanent `~/.ssh/config` Configuration]()
-   1. [Verifying Networking Setup through Network Manager]()
-      1. [Head Node (`nmtui`)]()
-      1. [Compute Node (`nmcli`)]()
-1. [Local User Account Management](#local-user-account-management)
-   1. [Create Team User Account](#create-centos-user-account)
+1. [Checklist](#checklist)
+1. [Spinning Up a Compute Node in OpenStack](#spinning-up-a-compute-node-in-openstack)
+   1. [Compute Node Considerations](#compute-node-considerations)
+1. [Accessing Your Compute Node](#accessing-your-compute-node)
+   1. [IP Addresses and Routing](#ip-addresses-and-routing)
+   1. [Command Line Proxy Jump Directive](#command-line-proxy-jump-directive)
+   1. [Permanent `~/.ssh/config` Configuration](#permanent-sshconfig-configuration)
+   1. [Verifying Networking Setup](#verifying-networking-setup)
       1. [Head Node](#head-node)
       1. [Compute Node](#compute-node)
-      1. [Super User Access](#super-user-access)
-1. [Configuring a Basic Stateful Firewall _(Optional_)]()
-1. [Network Time Protocol]()
-   1. [NTP Server (Head Node)]()
-   1. [NTP Client (Compute Node)]()
+1. [Configuring a Basic Stateful Firewall NFTABLES _(Optional)_](#configuring-a-basic-stateful-firewall-nftables-_optional_)
+1. [Network Time Protocol](#network-time-protocol)
+   1. [NTP Server (Head Node)](#ntp-server-head-node)
+   1. [NTP Client (Compute Node)](#ntp-client-compute-node)
 1. [Network File System](#network-file-system)
    1. [NFS Server (Head Node)](#nfs-server-head-node)
    1. [NFS Client (Compute Node)](#nfs-client-compute-node)
       1. [Mounting An NFS Mount](#mounting-an-nfs-mount)
       1. [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
-1. [Passwordless SSH](#passwordless-ssh)
-1. [Central User Management](#central-user-management)
+   1. [Passwordless SSH](#passwordless-ssh)
+1. [User Account Management](#central-user-management)
+   1. [Create Team Captain Account](#create-team-captain-account)
+      1. [Super User Access](#super-user-access)
    1. [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
-      1. [Head Node](#head-node-1)
-      1. [Compute Node](#compute-node-1)
+      1. [Example of _BAD_ Users on Nodes]
       1. [Clean Up](#clean-up)
-1. [Ansible User Declaration]()
+   1. [Ansible User Declaration](#ansible-user-declaration)
+      1. [Create Team Member Accounts]()
 1. [WireGuard VPN Cluster Access]()
 
-## Overview
+    1. [(Delete)FreeIPA <img src="./resources/freeipa.png" width=2.1% />](#deletefreeipa-img-srcresourcesfreeipapng-width21-)
+        1. [FreeIPA Server (Head Node)](#freeipa-server-head-node)
+        1. [FreeIPA Client (Compute Node)](#freeipa-client-compute-node)
+        1. [FreeIPA Web Interface](#freeipa-web-interface)
+        move to tut 4
+            1. [Dynamic SSH Tunnel](#dynamic-ssh-tunnel)
+            1. [Firefox and Proxy Configuration](#firefox-and-proxy-configuration)
+            1. [Creating a User](#creating-a-user)
+                1. [Creating the Group](#creating-the-group)
+                1. [Creating the Users](#creating-the-users)
+
+<!-- markdown-toc end -->
+
+# Checklist
 
 This tutorial will demonstrate how to access web services that are on your virtual cluster via the web browser on your local computer. It will also cover basic authentication and central authentication.
 
@@ -51,13 +63,13 @@ This tutorial will demonstrate how to access web services that are on your virtu
 
 <div style="page-break-after: always;"></div>
 
-## Spinning Up a Compute Node in OpenStack
-### Compute Node Considerations
-## Accessing Your Compute Node
-### IP Addresses and Routing
-### Command Line Proxy Jump Directive
-### Permanent `~/.ssh/config` Configuration
-### Verifying Networking Setup through Network Manager
+# Spinning Up a Compute Node in OpenStack
+## Compute Node Considerations
+# Accessing Your Compute Node
+## IP Addresses and Routing
+## Command Line Proxy Jump Directive
+## Permanent `~/.ssh/config` Configuration
+## Verifying Networking Setup
 
 You have been assigned IP addresses for your VMs. To identify these, go to the OpenStack user interface and navigate to `Compute -> Instances`. In the list of virtual machines presented to you, click the name of the virtual machine instance, and navigate to the "**Interfaces**" tab (refer to [Figure 4.1 below](#fig4.1)). This list contains the IP addresses assigned to each of your VM network interfaces.
 
@@ -77,7 +89,7 @@ You can verify which network interface you are modifying by corroborating the [M
 
 **CentOS 8** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
 
-##### Head Node (`nmtui`)
+### Head Node
 
 For the **head node**, create a new network definition using the `nmtui` graphical tool using the following steps:
 
@@ -126,7 +138,7 @@ For the **head node**, create a new network definition using the `nmtui` graphic
     - `ip a` will show you the interfaces and their assigned IP addresses.
     - `ip route` will list the interfaces and their assigned routes.
 
-##### Compute Node (`nmcli`)
+### Compute Node
 
 You must also set the static IP addressing for all other nodes in your cluster. In order to explore different options for doing so, please use the `nmcli` command. This is the command-line interface (CLI) for `Network Manager`, which is an alternative to the above `nmtui`, which is simply a graphical wrapper for the CLI.
 
@@ -145,7 +157,7 @@ _**Please read [what-is-ip-routing](https://study-ccna.com/what-is-ip-routing/) 
 <div style="page-break-after: always;"></div>
 
 
-## Local User Account Management
+# Local User Account Management
 
 In enterprise systems and HPC, it's common to manage user accounts from one central location. These network accounts are then synchronised to the machines in your fleet via the network. This is done for safely, security and management purposes.
 
@@ -169,9 +181,9 @@ uid=0(root) gid=0(root) groups=0(root) context=unconfined_u:unconfined_r:unconfi
 
 This shows that `root` is the user `0` and it's primary group (GID) is group `0`. It also states that it only belongs to one group, which is the `root` group (`0`).
 
-### Create Team User Account
+## Create Team User Account
 
-#### Head Node
+### Head Node
 
 Let us now create a user account on the head node:
 
@@ -200,7 +212,7 @@ Let us now create a user account on the head node:
 
     As you can tell, it has a different ID for the user and group than `root`.
 
-#### Compute Node
+### Compute Node
 
 Log into thetest compute node and try to verify that the `centos` user **does NOT exist** there:
 
@@ -216,7 +228,7 @@ id: ‘centos’: no such user
 
 We will now create the same user here. Follow the steps above for creating the `centos` user on the compute node.
 
-#### Super User Access
+### Super User Access
 
 The `centos` user will not have the privileges to do anything that modify system files or configurations. Many Linux operating systems come with a program called `sudo` which manages and allows normal user accounts to access `root` privileges.
 
@@ -229,14 +241,14 @@ A user is only able to evoke root privileges if their account has been explicitl
 The `sudo` program is controlled by a file located at `/etc/sudoers`. This file specifies which users and/or groups can access superuser privileges. In this file for a default **CentOS 8** installation, it specifies that the user `root` is allowed to run all actions and any user in the `wheel` group is also allowed to:
 
 ```ini
-## Allow root to run any commands anywhere 
+# Allow root to run any commands anywhere 
 root	ALL=(ALL) 	ALL
 
-## Allows members of the 'sys' group to run networking, software, 
-## service management apps and more.
-# %sys ALL = NETWORKING, SOFTWARE, SERVICES, STORAGE, DELEGATING, PROCESSES, LOCATE, DRIVERS
+# Allows members of the 'sys' group to run networking, software, 
+# service management apps and more.
+ %sys ALL = NETWORKING, SOFTWARE, SERVICES, STORAGE, DELEGATING, PROCESSES, LOCATE, DRIVERS
 
-## Allows people in group wheel to run all commands
+# Allows people in group wheel to run all commands
 %wheel	ALL=(ALL)	ALL
 ```
 
@@ -268,7 +280,7 @@ Now log out and then log back into your node as `centos`. You can use `sudo` one
 
 <div style="page-break-after: always;"></div>
 
-## Configuring a Basic Stateful Firewall _(Optional)_
+# Configuring a Basic Stateful Firewall NFTABLES _(Optional)_
 
 `Firewalld` is a firewall management daemon (service) available for many Linux distributions which acts as a front-end for the `iptables` packet filtering system provided by the Linux kernel. This daemon manages groups of rules using entities called “zones”. **CentOS 8** comes pre-configured with `firewalld`.
 
@@ -313,8 +325,8 @@ You can then add the individual firewall rules needed:
 To validate that your **NAT** rules are working properly, **log into your compute node** and test if you can `ping` the ACE Lab gateway and an external server on the internet.
 
 ```bash
-~$ ping 10.128.24.1  # ACE Lab gateway IP address
-~$ ping 8.8.8.8      # Google external DNS server
+~$ ping 10.128.24.1   ACE Lab gateway IP address
+~$ ping 8.8.8.8       Google external DNS server
 ```
 
 Once you can ping the servers by their IPs, try ping by name - using Domain Name System (DNS) resolution.
@@ -330,7 +342,7 @@ If your NAT is working correctly and your compute node's DNS was set correctly w
 <div style="page-break-after: always;"></div>
 
 
-## Network Time Protocol
+# Network Time Protocol
 
 **NTP** or **network time protocol** enables you to synchronise the time across all the computers in your network. This is important for HPC clusters as some applications require that system time be accurate between different nodes (imagine receiving a message 'before' it was sent).
 
@@ -338,7 +350,7 @@ It is also important that your timezones are also consistent across your machine
 
 You will now **setup the NTP service** (through the `chronyd` implementation) on your head node and then connect your compute nodes to it.
 
-### NTP Server (Head Node)
+## NTP Server (Head Node)
 
 1. Install the Chrony software package using the CentOS package manager, `dnf`:
 
@@ -379,7 +391,7 @@ You can view the clients that are connected to the chrony server on the head nod
 
 This will show empty until you do the steps below.
 
-### NTP Client (Compute Node)
+## NTP Client (Compute Node)
 
 1. Install the Chrony software package the same way as the head node.
 
@@ -401,13 +413,13 @@ Check `chronyc clients` on the head node to see if the compute node is connected
 </span>
 
 
-## Network File System
+# Network File System
 
 Network File System (NFS) enables you to easily share files and directories over the network. NFS is a distributed file system protocol that we will use to share files between our nodes across our private network. It has a server-client architecture that treats one machine as a server of directories, and multiple machines (clients) can connect to it.
 
 This tutorial will show you how to export a directory on the head node and mount it through the network on the compute nodes. With the shared file system in place it becomes easy to enable **public key based ssh authentication**, which allows you to ssh into all the computers in your cluster without requiring a password.
 
-### NFS Server (Head Node)
+## NFS Server (Head Node)
 
 The head node will act as the NFS server and will export the `/home/` directory to the compute node. The `/home/` directory contains the home directories of all the the non-`root` user accounts on most default Linux operating system configurations.
 
@@ -439,11 +451,11 @@ The head node will act as the NFS server and will export the `/home/` directory 
     [centos@headnode ~]$ sudo firewall-cmd --reload
     ```
 
-### NFS Client (Compute Node)
+## NFS Client (Compute Node)
 
 The compute node acts as the client for the NFS, which will mount the directory that was exported from the server (`/home`). Once mounted, the compute node will be able to interact with and modify files that exist on the head node and it will be synchronised between the two.
 
-#### Mounting An NFS Mount
+### Mounting An NFS Mount
 
 The `nfs-utils` package needs to be installed before you can do anything NFS related on the compute node. Since the directory we want to mount is the `/home` directory, the user can not be in that directory.
 
@@ -467,7 +479,7 @@ The `nfs-utils` package needs to be installed before you can do anything NFS rel
 
 With this mounted, it effectively replaces the `/home` directory of the compute node with the head node's one until it is unmounted. To verify this, create a file on the compute node's `centos` user home directory (`/home/centos`) and see if it is also automatically on the head node. If not, you may have done something wrong and may need to redo the above steps!
 
-#### Making The NFS Mount Permanent
+### Making The NFS Mount Permanent
 
 Using `mount` from the command line will not make the mount permanent. It will not survive a reboot. To make it permanent, we need to edit the `/etc/fstab` file on the compute node. This file contains the mappings for each mount of any drives or network locations on boot of the operating system.
 
@@ -505,7 +517,7 @@ Using `mount` from the command line will not make the mount permanent. It will n
 
 <div style="page-break-after: always;"></div>
 
-## Passwordless SSH
+# Passwordless SSH
 
 When managing a large fleet of machines or even when just logging into a single machine repeatedly, it can become very time consuming to have to enter your password repeatedly. Another issue with passwords is that some services may rely on directly connecting to another computer and can't pass a password during login. To get around this, we can use [public key based authentication](https://www.ssh.com/academy/ssh/public-key-authentication) to replace passwords.
 
@@ -550,9 +562,9 @@ How this works is that you copy the public key to the computer that you want to 
 
 <div style="page-break-after: always;"></div>
 
-## Central User Management
+# Central User Management
 
-### Out-Of-Sync Users and Groups
+## Out-Of-Sync Users and Groups
 
 When managing a large cluster of machines, it gets really complicated to manage user ID and group ID mappings. With things like shared file systems (e.g. NFS), if user account names are the same, but IDs don't match across machines then we get permission problems. 
 
@@ -576,7 +588,7 @@ These do not match, so if Alice wants to create a file on the head node and acce
 
 User- and group- names do not matter to Linux, only the numerical IDs. Let us demonstrate this now.
 
-#### Head Node
+### Head Node
 
 1. Create a new user on the head node, let's call it `outofsync`. If you check it's IDs with `id outofsync`, you should see it belongs to UID/GID `1001`. 
 
@@ -584,7 +596,7 @@ User- and group- names do not matter to Linux, only the numerical IDs. Let us de
 
 3. Create a file in the home directory of `outofsync` (`/home/outofsync`) called `testfile.txt` and put some words in it.
 
-#### Compute Node
+### Compute Node
 
 1. Create a new user on the compute node called `unwittinguser`. If you check the ID of this user, you will see that `unwittinguser` has UID/GID of `1001`.
 
@@ -608,7 +620,7 @@ Check `ls -ln /home/outofsync` on the **head node** and you'll see that the `tes
     margin-right: auto; width: 45%;"><i>Figure 3: The head node's `testfile.txt` is owned by user 1001, which is user `outofsync` on the head node.</i></span>
 </span>
 
-#### Clean Up
+### Clean Up
 
 **Before proceeding, you must delete the users that you have created on the machines.**
 
@@ -624,14 +636,14 @@ Do this command for:
 - `unwittinguser` on the compute node.
 - `outofsync` on the compute node.
 
-### Ansible User Declarationx
-### (Delete)FreeIPA <img src="./resources/freeipa.png" width=2.1% />
+## Ansible User Declarationx
+## (Delete)FreeIPA <img src="./resources/freeipa.png" width=2.1% />
 
 FreeIPA is a collection of tools that work together to provide central user account management. It provides identity and authentication services for Linux environments. It can also manage DNS and NTP, but we won't use it for that purpose in this tutorial series. Using FreeIPA, you will be able to keep your cluster user account IDs synchronised and manage everything from one central place.
 
 > **! >>> Learn about LDAP, Kerberos and other authentication tools which make up FreeIPA here: [https://www.freeipa.org/page/About](https://www.freeipa.org/page/About).**
 
-#### FreeIPA Server (Head Node)
+### FreeIPA Server (Head Node)
 
 > **! >>> It is recommended to run the commands below in a `screen` or `tmux` session as some of them run for extended periods of time.**
 
@@ -684,7 +696,7 @@ Lastly, run the following command:
 [centos@headnode ~]$ ipa config-mod --defaultshell=/bin/bash
 ```
 
-#### FreeIPA Client (Compute Node)
+### FreeIPA Client (Compute Node)
 
 > **! >>> It is recommended to run the commands below in a `screen` or `tmux` session as some of them run for extended periods of time.**
 
@@ -716,9 +728,9 @@ When prompted with the password for `admin@CLUSTER.SCC`, enter the **IPA admin p
 
 **Congratulations!** You've just configured central authentication. The user `admin` exists on the head node and the compute node as managed by FreeIPA.
 
-#### FreeIPA Web Interface
+### FreeIPA Web Interface
 
-##### Dynamic SSH Tunnel
+#### Dynamic SSH Tunnel
 
 The FreeIPA web interface is hosted on the head node and available on port `443 (https)`. You won't be able to access this interface using the SSH Tunnel technique described in [Part 1](#part-1---remote-web-service-access)), as when you enter the address to access the forwarded port (something like http://127.0.0.1:1234) FreeIPA's web interface will automatically redirect you to `https://headnode.cluster.scc`. Since `headnode.cluster.scc` (or whatever your head node name is), does not exist on your local network at home, this will result in your browser telling you that it can't find that server.
 
@@ -747,7 +759,7 @@ You are essentially **hopping through** `ssh.ace.chpc.ac.za` into your head node
 
 **Windows user with PuTTY, please read the following PDF: https://webdevolutions.blob.core.windows.net/blog/pdf/how-to-configure-an-ssh-tunnel-on-putty.pdf. Please refer to Step 4.**
 
-##### Firefox and Proxy Configuration
+#### Firefox and Proxy Configuration
 
 The Firefox browser will allow the easiest proxy configuration. Please download and install Firefox from here: [https://www.mozilla.org/en-US/firefox/download/](https://www.mozilla.org/en-US/firefox/download/).
 
@@ -773,7 +785,7 @@ Now you can enter https://headnode.cluster.scc/ipa/ui in your browser and you'll
 
 > **! >>> Remember to set your proxy settings back to `No Proxy` if you want to use your own local internet on Firefox.**
 
-##### Creating a User
+#### Creating a User
 
 With the proxy up and set in Firefox, go to https://headnode.cluster.scc/ipa/ui and log in with the `admin` user and the password you set up for **IPA admin password**.
 
@@ -785,7 +797,7 @@ We need to do two things here:
 - Create a user to replace the `centos` user.
 - Add the new user to the above mentioned group.
 
-###### Creating the Group
+##### Creating the Group
 
 1. In the main menu, click "Groups".
 
@@ -808,7 +820,7 @@ We need to do two things here:
 
 10. Click the "Save" button at the top of the page (under "Settings").
 
-###### Creating the Users
+##### Creating the Users
 
 Make sure that you go back to the main menu by clicking the "Identity" button.
 

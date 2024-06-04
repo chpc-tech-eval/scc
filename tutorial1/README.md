@@ -1,10 +1,21 @@
-# Student Cluster Competition - Tutorial 1
+Tutorial 1: Standing Up Your Head Node and Running HPL
+======================================================
 
-## Table of Contents
+This tutorial will help you become familiar with Cloud Computing and will also serve as an introduction to Linux. This tutorial will start with a network primer that will help you to understand the basics of public and private networks, ip addresses, ports and routing.
+
+You will then login into the CHPC's Cloud Computing Platform and launch your own OpenStack virtual machine instances. Here you will need to make a decision on choice of Linux distribution that you will use as well as how your team will allocate your limited cloud computing resources. 
+
+such as navigating and configuring your hosts and network on the terminal. If you are new to Linux and need help getting more comfortable, please check out the resources tab on the learning system.
+
+Once your team has successfully launched your instances you'll login to your VM's to do some basic Linux administration.
+
+This tutorial will conclude with you downloading, installing and running the High Performance LinPACK benchmark on your newly created VM's.
+
+
+# Table of Contents
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-1. [Overview](#overview)
-   1. [Checklist](#checklist)
+1. [Checklist](#checklist)
 1. [Network Primer](#network-primer)
    1. [Basic Networking Example (WhatIsMyIp.com)](#basic-networking-example-whatismyipcom)
       1. [Local WiFi Network](#local-wifi-network)
@@ -32,16 +43,16 @@
    1. [Key Pair](#key-pair)
    1. [Verify that your Instance was Successfully Deployed and Launched](#verify-that-your-instance-was-successfully-deployed-and-launched)
    1. [Associating an Externally Accessible IP Address](#associating-an-externally-Accessible-ip-address)
-   1. [Success State, Resource Management and Trouble Shooting](#success-state-resource-management-and-trouble-shooting)
+   1. [Success State, Resource Management and Troubleshooting](#success-state-resource-management-and-troubleshooting)
       1. [Deleting Instances](#deleting-instances)
       1. [Deleting Volumes](#deleting-volumes)
       1. [Dissociating and Releasing Floating IPs](#dissociating-and-releasing-floating-ips)
 1. [Introduction to Basic Linux Administration](#introduction-to-basic-linux-administration)
    1. [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
-      1. [SSH Through a Linux Terminal](#ssh-through-a-linux-terminal)
-      1. [PuTTY and / or Windows Power Shell](#putty-and--or-windows-power-shell)
-   1. [Username and Password](#username-and-password)
-   1. [Brief Introduction to Text Editors (Vi vs Vim vs Nano vs Emacs)](#brief-introduction-to-text-editors-vi-vs-vim-vs-nano-vs-emacs)
+      1. [SSH Through a Linux Terminal or Windows PowerShell](#ssh-through-a-linux-terminal-or-windows-powershell)
+      1. [Windows PuTTY](#windows-putty)
+      1. [Username and Password](#username-and-password)
+   1. [Brief Introduction to Text Editors (Vi vs Vim vs Nano)](#brief-introduction-to-text-editors-vi-vs-vim-vs-nano)
    1. [Privilege Escalation and `sudo`](#privilege-escalation-and-sudo)
    1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
    1. [Verifying Instance Hostname and `/etc/hosts` File](#verifying-instance-hostname-and-etchosts-file)
@@ -58,19 +69,7 @@
 
 <!-- markdown-toc end -->
 
-## Overview
-
-This tutorial will help you become familiar with Cloud Computing and will also serve as an introduction to Linux. This tutorial will start with a network primer that will help you to understand the basics of public and private networks, ip addresses, ports and routing.
-
-You will then login into the CHPC's Cloud Computing Platform and launch your own OpenStack virtual machine instances. Here you will need to make a decision on choice of Linux distribution that you will use as well as how your team will allocate your limited cloud computing resources. 
-
-such as navigating and configuring your hosts and network on the terminal. If you are new to Linux and need help getting more comfortable, please check out the resources tab on the learning system.
-
-Once your team has successfully launched your instances you'll login to your VM's to do some basic Linux administration.
-
-This tutorial will conclude with you downloading, installing and running the High Performance LinPACK benchmark on your newly created VM's.
-
-### Checklist
+# Checklist
 
 <u>Use the following checklist to keep track of your team's progress and to ensure that all members in your understand these concepts.</u>
 
@@ -97,7 +96,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
 
 <div style="page-break-after: always;"></div>
 
-## Network Primer
+# Network Primer
 
 At the core of High Performance Computing (HPC) is networking. Something as simple as browsing the internet from either your cell phone or the workstation in front of you, involves the transfer and exchange of information between many different networks. Each resource or service connected to the internet is made available through a unique address and network port. For example, https://www.google.co.za:443 is the [Uniform Resource Locator (URL)](https://en.wikipedia.org/wiki/URL) used to uniquely identify Google's search engine page on the South African [co.za]. [domain](https://en.wikipedia.org/wiki/Domain_name). The [443] is the [port number](https://en.wikipedia.org/wiki/Port_(computer_networking)) which in this instance lets you know that you're connecting to a secure [https](https://en.wikipedia.org/wiki/HTTPS) server.
 
@@ -121,7 +120,7 @@ The process of browsing to https://www.google.co.za on your workstation, can be 
 > [!IMPORTANT]
 > It is important to note that in the preceding examples, the specific IP Address and Routing Tables provided were merely an indicative oversimplification for the purposes of clarifying the related concepts.
 
-### Basic Networking Example (WhatIsMyIp.com)
+## Basic Networking Example (WhatIsMyIp.com)
 
 In the following examples, you will be using your Android and/or Apple Cellular devices to complete the following tasks in your respective groups. Start by ensuring that your cell phone is connected to the local WiFi. Then navigate to the _"Network Details"_ page of the WiFi connection.
 
@@ -140,13 +139,13 @@ From the _"Network Details"_ section of your own device, you should see similar 
 
 Each member of your team must the *IP Address*, *Gateway*, *Subnet Mask*, and *DNS* settings from their connection to the laboratory WiFi.
 
-#### Local WiFi Network
+### Local WiFi Network
 
 On your cellular device, ensure that you are connected to the *computer laboratory's WiFi network* and that all SIM card(s) are disabled. Navigate to https://WhatIsMyIp.com, explore the website and record the IP Address indicated.
 
 <p align="center"><img alt="WhatIsMyWiFi.com test while connected to university computer laboratory WiFi." src="./resources/whatismyip_wifi.png" width=900 /></p>
 
-#### External Cellular Network
+### External Cellular Network
 
 On your cellular device, ensure that you are connected to your *SIM provider's network* and that all WiFi radios are disabled. Navigate to https://www.whatismyip.com and again record the IP Address indicated.
 
@@ -155,7 +154,7 @@ On your cellular device, ensure that you are connected to your *SIM provider's n
 > [!WARNING]
 > You must ensure that you are connected to the correct network when executing the above tasks.
 
-#### WiFi Hotspot Example
+### WiFi Hotspot Example
 
 Team Captains are required to setup and establish a WiFi Hotspot for their team mates. The above experiments will be repeated for the university's computer laboratory WiFi connections as well as the Team Captain's Cellular SIM provider's network.
 
@@ -166,24 +165,24 @@ On your cellular device, ensure that you are connected to your Team Captain's Wi
 > [!TIP]
 > Pay careful attention to the IP Address reported by WhatIsMyIp.com. This is the unique identifier that _your_ device will be identified and recognized by externally on the internet. Use this information to assist you to understand and describe [NAT](https://en.wikipedia.org/wiki/Network_address_translation).
 
-### Windows PowerShell Commands
-#### `ipconfig`
-#### `ping 8.8.8.8`
-#### `route print`
-#### `tracert`
-## Launching your First Open Stack Virtual Machine Instance
+## Windows PowerShell Commands
+### `ipconfig`
+### `ping 8.8.8.8`
+### `route print`
+### `tracert`
+# Launching your First Open Stack Virtual Machine Instance
 
 In this section you will be configuring and launching your first [Virtual Machine](https://en.wikipedia.org/wiki/Virtual_machine) instance. This allows you to use a portion of another computer's resources, to host another [Operating System](https://en.wikipedia.org/wiki/Operating_system) as though it were running on its own dedicated hardware resources. For example, your laptops or workstations are running a Windows-based operating system, you _"could"_ use a type of computer software [Hypervisor](https://en.wikipedia.org/wiki/Hypervisor), that runs and creates _virtual machines_, to run a Linux-based operating while your are in your Windows environment.
 
 The physical servers that you will use to spawn your VM's are housed in Rosebank, Cape Town. We will verify this later using [WhatIsMyIp](https://www.whatismyip.com).
 
-### Accessing the NICIS Cloud
+## Accessing the NICIS Cloud
 
 Open your web browser and navigate to the NICIS OpenStack Cloud platform  https://sebowa.nicis.ac.za/, and use the credentials that your team has been provided with to login into your team's project workspace.
 
 <p align="center"><img alt="Sebowa.nicis.ac.za NICIS OpenStack Cloud." src="./resources/openstack_login.png" width=600 /></p>
 
-### Verify your Teams' Project Workspace and Available Resources
+## Verify your Teams' Project Workspace and Available Resources
 
 Once you've successfully logged in, navigate to `Computer -> Overview` and verify that the Project Workspace corresponds to _YOUR TEAM_ and that you've been allocated the correct number of resources.
 
@@ -191,7 +190,7 @@ Once you've successfully logged in, navigate to `Computer -> Overview` and verif
 > The following screenshot is for illustration purposes only, your actual available resources _may_ differ.
 <p align="center"><img alt="Sebowa.nicis.ac.za NICIS OpenStack Cloud available resources." src="./resources/openstack_overview.png" width=900 /></p>
 
-### Generating SSH Keys
+## Generating SSH Keys
 
 Over the course of the lecture content and the tutorials, you will be making extensive use of [Secure Shell (SSH)](https://en.wikipedia.org/wiki/Secure_Shell) which grants you a [Command-Line Interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface) with which to access your VMs. SSH keys allows you to authenticate against a remote SSH server, without the use of a password.
 
@@ -246,7 +245,7 @@ Once you have successfully generated an SSH key pair, navigate to `Compute` &rar
 
 <p align="center"><img alt="Import id_25519.pub into OpenStack." src="./resources/openstack_import_public_key_highlight.png" width=900 /></p>
 
-### Launch a New Instance
+## Launch a New Instance
 
 From your Team's OpenStack Project Workspace, navigate to `Compute` &#8594; `Instance` and click `Launch Instance**.
 
@@ -254,7 +253,7 @@ From your Team's OpenStack Project Workspace, navigate to `Compute` &#8594; `Ins
 
 Within the popup window, enter an appropriate name for your instance that will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be **headnode**.
 
-### Linux Flavors and Distributions
+## Linux Flavors and Distributions
 
 After configuring your new VM name under instance details, you will need to select the template that will be used to create the instance from the *Source* menu. Before selection a [Linux Operating System Distribution](https://en.wikipedia.org/wiki/Linux_distribution) for your new instance, ensure that the default *Source* options are correctly configured:
 1. *Select Boot Source* is set to `Image`,
@@ -265,7 +264,7 @@ After configuring your new VM name under instance details, you will need to sele
 
 There are a number of considerations that must be taken into account when selecting a Linux Distribution that will be appropriate for your requirements and needs.
 
-#### Desktop Usage vs Server
+### Desktop Usage vs Server
 
 [Since June 2017](https://www.top500.org/statistics/details/osfam/1/) **all** of the systems on the Top500 list make use of a Linux-based Operating System. Familiarity and proficiency with Linux-based operating systems and their derivatives is a mandatory requirement for gaining expertise in Software Development, Systems Administration and Networking.
 
@@ -277,7 +276,7 @@ This is something for you and your team to investigate after the competition and
 * Running Linux VM's locally within your Windows environment,
 * Running Linux VM's through cloud-based solutions, and Virtual Private Servers [(VPS)](https://en.wikipedia.org/wiki/Virtual_private_server), as you are doing for the competition. There are many commercial and free-tier services available, e.g. [Amazon AWS](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=*all), [Google Cloud](https://cloud.google.com/free) and [Microsoft Azure](https://azure.microsoft.com/en-us/free), 
 
-#### Table of Linux Distributions
+### Table of Linux Distributions
 
 A Linux distribution, is a collection of software that is at the very leased comprised of a [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) and a [package manager](https://en.wikipedia.org/wiki/Package_manager). A package manager is responsible for automating the process of installing, configuring, upgrading, downgrading and removing software programs and associated components from a computer's operating system.
 
@@ -325,33 +324,32 @@ The following table summarizes a few Linux distros that *may* be available on th
 > [!TIP]
 > The set of tutorials have been tested against **Alma Linux 8.9, 9.3**, **Arch Linux**, **CentOS Stream 9**, **Rocky Linux 8, 9.2, 9.3** and **Ubuntu Server 23.10**. 
 
-### OpenStack Instance Flavors
+## OpenStack Instance Flavors
 
 An important aspect of system administration is resource monitoring, management and utilization. Each Team will be required to manage their available resources and ensure that the resources of their clusters are utilized in such a way as to maximize system performance. You have been allocated a pool of resources which you will need to decide how you are going to allocate the sizing of the compute, memory and storage across your headnode and compute node(s).
 
-#### Compute (vCPUs)
+### Compute (vCPUs)
 
 You have been allocated a pool totaling **18 vCPUs**, which would permit the following configurations:
 1. Head Node (2 vCPUs) and 2 x Compute Nodes (8 vCPUs each),
 1. Head node (6 vCPUs) and 2 x Compute Nodes (6 vCPUs each),
 1. Head node (10 vCPUs) and 1 x Compute Node (8 vCPUs).
 
-#### Memory (RAM)
+### Memory (RAM)
 
 You have been allocated a pool totaling **36 GB** of RAM, which would permit the following configurations:
 1. Head Node (4 GB RAM) and 2 x Compute Nodes (16 GB RAM each),
 1. Head node (12 GB RAM) and 2 x Compute Nodes (12 GB RAM each),
 1. Head node (20 GB RAM) and 1 x Compute Node (16 GB RAM).
 
-#### Storage (DISK)
+### Storage (DISK)
 
 You have been allocated a pool of 50 GB of storage, which can be distributed in the following configurations:
 1. Head Node (40 GB of storage) and 2 x Compute Nodes (5 GB of storage each),
 1. Head Node (40 GB of storage) and 2 x Compute Nodes (5 GB of storage each), and
 1. Head Node (40 GB of storage) and 1 x Compute Node (10 GB of storage).
 
-
-#### Headnode Resource Allocations
+### Headnode Resource Allocations
 
 The following table summarizes the various permutations and allocations that can be used for designing your clusters within your Team's Project Workspace on Sebowa's OpenStack cloud platform.
 
@@ -377,7 +375,7 @@ The following table summarizes the various permutations and allocations that can
 
 <p align="center"><img alt="OpenStack Instance Flavor Selection." src="./resources/openstack_instance_flavor.png" width=900 /></p>
 
-### Networks, Ports, Services and Security Groups
+## Networks, Ports, Services and Security Groups
 
 Under the *Networks* settings, make sure to select the `vxlan` that corresponds to your Team Name.
 
@@ -387,19 +385,19 @@ No configurations are required for *Network Ports*, however you must ensure that
 
 <p align="center"><img alt="OpenStack Security Groups Selection." src="./resources/openstack_security_groups.png" width=900 /></p>
 
-### Key Pair
+## Key Pair
 
 > [!CAUTION]
 > You must ensure that you associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance 
 ><p align="center"><img alt="OpenStack Key Pair Selection." src="./resources/openstack_key_pair_select.png" width=900 /></p>
 
-### Verify that your Instance was Successfully Deployed and Launched
+## Verify that your Instance was Successfully Deployed and Launched
 
-Congratulations! Once your VM instance has completed it's building and deployment phase, and if your *Power State* indicates `Running`, then you have successfully launched your very first OpenStack instance.
+Congratulations! Once your VM instance has completed it's building, block device mapping  and deployment phase, and if your *Power State* indicates `Running`, then you have successfully launched your very first OpenStack instance.
 
 <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_running.png" width=900 /></p>
 
-### Associating an Externally Accessible IP Address
+## Associating an Externally Accessible IP Address
 
 In order for you to be able to SSH into your newly created OpenStack instance, you'll need to associate a publicly accessible [Floating IP](https://kb.leaseweb.com/network/floating-ips/using-floating-ips) address. This allocates a *virtual IP* address to your *virtual machine*, so that you can access it directly from your laboratory workstation.
 
@@ -410,150 +408,115 @@ In order for you to be able to SSH into your newly created OpenStack instance, y
 1. Select the `154.114.57.*` IP address allocated and click on the *Associate* button.
    <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_added_floating_ip.png" width=900 /></p>
 
-### Success State, Resource Management and Trouble Shooting
-#### Deleting Instances
-#### Deleting Volumes
-#### Dissociating and Releasing Floating IPs
+## Success State, Resource Management and Troubleshooting
 
-## Introduction to Basic Linux Administration
+> [!CAUTION]
+> The following section is strictly for debugging and troubleshooting purposes
+
+### Deleting Instances
+### Deleting Volumes
+### Dissociating and Releasing Floating IPs
+
+# Introduction to Basic Linux Administration
 
 If you've managed to successfully build and deploy your VM instance, and you managed to successfully associate and attach a floating IP bridged over your internal interface, you are finally ready to connect to your newly created instance.
 
-### Accessing your VM Using SSH vs the OpenStack Web Console (VNC)
+## Accessing your VM Using SSH vs the OpenStack Web Console (VNC)
 
-The VMs are running minimalist, cloud-based operating systems that are not packaged with a graphical desktop environment. You are required to interact with the VM instance using text prompts, through a [Command-Line Interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface).
+The VMs are running minimalist, cloud-based operating systems that are not packaged with a graphical desktop environment. You are required to interact with the VM instance using text prompts, through a [Command-Line Interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface). By design for security reasons, the cloud images are only accessible via SSH after instantiating a VM. Once you have successfully logged into your instance, you may change the password so as to enable you to make use of the [VNC Console](https://en.wikipedia.org/wiki/Virtual_Network_Computing).
 
-By default, you can only access the VMs using the `root` user account. The default password for this account is **123qwe**.
+> [!NOTE]
+> You will require the **PATH** to the private SSH key that you have previously [generated](#generating-ssh-keys), as well as the Floating IP address [associated](#associating-an-externally-Accessible-ip-address) to your VM. Depending on the specific distribution your Team chose to implement for your Headnode, the ***default username** will vary accordingly.
 
-Use the **[Console (VNC)](https://en.wikipedia.org/wiki/Virtual_Network_Computing)** connection in **OpenStack** to access your VMs for this section.
+### SSH Through a Linux Terminal or Windows PowerShell
 
-It is **highly recommended** that you **change your root password** for all of your VMs, as this will prevent unwanted people from getting access to them. This should be done for all of your VMs and not just the head node. You can do so using the `passwd` command.
+If your workstation or laptop is running a Linux-based or macOS operating system, or a version of Windows with PowerShell, then you may proceed using a terminal. Most Linux and macOS distributions come preshipped with an SSH client included via `OpenSSH`.
 
-```bash
-~$ passwd
-```
-
-Use the command below to list the network interfaces and their current configuration. You will see the names of the interfaces, for example `eth1`, `enp3s0`, or something similar.
+<details>
+<summary>Alma Linux</summary>
 
 ```bash
-~$ ip a
+   ssh -i ~/.ssh/id_ed25519 alma@154.114.57.<YOUR Head Node IP>
 ```
+</details>
 
-> **! >>> It is important to note here that you will have no IP addresses listed for your network interfaces (such as enp3s0), because they have not been configured yet.**
-
-> **! >>> Ignore and do not count the [**lo**](https://en.wikipedia.org/wiki/Localhost#Loopback) interface!**
-
-<span id="fig3" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="test" src="./resources/ip a.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 3: What you should see when you use the "ip a" command.</i></span>
-</span>
-
-You can also check the routing table using the command below. Routing is used to allow one network to communicate with another. At this stage, it should be empty since there is not networking configured.
+<details>
+<summary>Arch Linux</summary>
 
 ```bash
-~$ ip route
+   ssh -i ~/.ssh/id_ed25519 arch@154.114.57.<YOUR Head Node IP>
 ```
+</details>
 
-   > **! >>> This should be empty, as your networks have not yet been configured.**
+<details>
+<summary>CentOS Stream</summary>
 
-<div style="page-break-after: always;"></div>
-
-
-Once you have the network configured correctly on your VMs you can move on to using the `ssh` command to access the VMs via a terminal. To access the VM network, you first need to log in to the ACE Lab's `ssh` server, as mentioned in the [overview section](#overview).
-
-**To recap, the process is:**
-
-```plaintext
-1. You are a user trying to connect to your VM from your home or university internet.
-2. You use your computer to connect to the ACE Lab login node (ssh.ace.chpc.ac.za).
-3. Once logged into the ACE Lab login node, you can then connect to the head node of your virtual cluster.
-4. Once connected to the head node of your virtual cluster, you can connect to the compute node of your cluster.
+```bash
+   ssh -i ~/.ssh/id_ed25519 centos@154.114.57.<YOUR Head Node IP>
 ```
+</details>
 
-#### SSH Through a Linux Terminal
+<details>
+<summary>Rocky Linux</summary>
 
-Most Linux distributions already include an `ssh` client via `openssh`. To access this, simply open a terminal session and run the command `ssh` with the parameters necessary for what you want to achieve.
+```bash
+   ssh -i ~/.ssh/id_ed25519 rocky@154.114.57.<YOUR Head Node IP>
+```
+</details>
 
-1. Use the credentials that have been provided to you by the ACE Lab to log in to the ssh.ace.chpc.ac.za server.
+<details>
+<summary>Ubuntu Server</summary>
 
-    ```bash
-    [student@home_or_school ~]$ ssh <team_name>@ssh.ace.chpc.ac.za 
-    ```
+```bash
+   ssh -i ~/.ssh/id_ed25519 ubuntu@154.114.57.<YOUR Head Node IP>
+```
+</details>
 
-2. Once logged in, from this server run the `ssh` command to the `root` user account of your head node, using the external address **10.128.24.\***, where **\*** is the last digit(s) of your head node's IP address.
+> [!TIP]
+> The "~" in `~/.ssh/id_ed25519` is a shortcut for `/home/<username>`. Secondly, the first time you connect to a new SSH server, you will be prompted to confirm the authenticity of the host. Type 'yes' and hit 'Enter'
 
-    ```bash
-    [team_name@ssh ~]$ ssh root@10.128.24.*
-    ```
+<p align="center"><img alt="OpenStack Running State." src="./resources/windows_powershell_firsttime_ssh.png" width=900 /></p>
 
-3. The compute node can then be accessed in the same way, but via the head node now, as the **ACE Lab SSH server does not have direct access to the compute node**. Please refer to [Figure 1](#fig1).
+### Windows PuTTY
 
+If your workstation or laptop is running Windows, then you may proceed using either Windows PowerShell above *(preferred)* or PuTTY. Use PuTTY only if Windows PowerShell is not available on your current system.
 
-#### PuTTY and / or Windows Power Shell
-
-
+1. Launch the PuTTY application and from the *Session* category, enter your `<headnode's IP address>`
+   <p align="center"><img alt="OpenStack Running State." src="./resources/windows_putty_enter_headnode_ip.png" width=900 /></p>
+1. From the *Connection* &rarr; *Data* category, enter your `<username>`
+   <p align="center"><img alt="OpenStack Running State." src="./resources/windows_putty_username.png" width=900 /></p>
+1. From the *Connection* &rarr; *SSH* &rarr; *Auth* &rarr; *Credentials* category, select `Browse` and navigate to the path where your private key is located:
+   <p align="center"><img alt="OpenStack Running State." src="./resources/windows_putty_enter_private_key.png" width=900 /></p>
 
 ### Username and Password
-### Brief Introduction to Text Editors (Vi vs Vim vs Nano vs Emacs)
-### Privilege Escalation and `sudo`
-### Linux Binaries, Libraries and Package Management
-### Verifying Instance Hostname and `/etc/hosts` File
 
-A hostname is what a computer device is called on a network. These are used to make computer addresses easier to remember. It's a lot easier to remember "**headnode.cluster.scc**" than "**10.0.0.51**"!
+Once you've successfully logged into your headnode VM, you are encouraged to change your password so that you may access your headnode through the OpenStack VNC console interface.
 
-To make it easier to distinguish between your head node and your compute node, you should change their hostnames to something logical.
+```bash
+   sudo passwd <username>
+   
+```
 
-1. Use the `hostnamectl` command to set the new hostname for each machine.
+> [!CAUTION]
+> Setting up a password for any user *- especially the default user -* will make your VM's vulnerable to [Brute Force SSH Attacks](https://helpcenter.trendmicro.com/en-us/article/tmka-19689)!
 
-    ```bash
-    ~$ hostnamectl set-hostname --static <new_host_name>.cluster.scc
-    ```
-
-    A good example would be `headnode.cluster.scc`.
-    
-    _**This will only reflect once you log out and back into your node! So log out and log back in now.**_
-
-2. In order to access your nodes by hostname rather than IP address (if you **aren't using your own self-controlled DNS server**), you need to populate the `/etc/hosts` file on each machine with the IP address/hostname mappings. 
-
-    This file is used to keep track of static (non-DNS server) hostname/IP mappings. In the `/etc/hosts` file on each of your machines, add the following line:
-
-    ```
-    <ip_address_of_machine> <host_name_of_machine>.cluster.scc <host_name_of_machine> 
-    ```
-
-    **This order is important for later.**
-
-    **For example**, if we have a head node called "headnode" with an internal (private) network IP of 10.0.0.1, we can use the following:
-
-    ```
-    10.0.0.1 headnode.cluster.scc headnode 
-    ```
-
-3. You can test connectivity between your two nodes by pinging from one to the other. For example, from your headnode:
-
-    ```bash
-    [root@headnode ~]$ ping <compute_node_ip>
-    ```
-
-4. Test that you can access your compute node by its hostname:
-
-    ```bash
-    [root@headnode ~]$ ssh <compute_node_name>
-    ```
-
+Now you  can use 
+ping, ip a and ip route
+## Brief Introduction to Text Editors (Vi vs Vim vs Nano)
+## Privilege Escalation and `sudo`
+## Linux Binaries, Libraries and Package Management
+## Verifying Instance Hostname and `/etc/hosts` File
+hostname and etc/hosts
 At this point your VMs and network should be correctly configured and you can continue with setting up some important Linux services.
 
-<div style="page-break-after: always;"></div>
-
-
-### Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark
-#### Install the GNU Compiler Collection (GCC)
-#### Install OpenMPI
-#### Install ATLAS Math Library
+## Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark
+### Install the GNU Compiler Collection (GCC)
+### Install OpenMPI
+### Install ATLAS Math Library
 Automatically Tuned Linear Algebra Software
-#### Fetch and Extract the HPC Source Tarball
-#### Copy and Edit the Makefile for _your_ Target Architecture
-### Compile the HPL Source Code to Produce an Executable Binary
-#### Editing _your_ PATH Variable
-##### Dynamic and Static Libraries: Editing _Your_ ATLAS Shared Object Files
-### Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`
+### Fetch and Extract the HPC Source Tarball
+### Copy and Edit the Makefile for _your_ Target Architecture
+## Compile the HPL Source Code to Produce an Executable Binary
+### Editing _your_ PATH Variable
+#### Dynamic and Static Libraries: Editing _Your_ ATLAS Shared Object Files
+## Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`
