@@ -2,39 +2,50 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 =========================================================================
     
 # Table of Contents
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
-1. [Overview](#overview)
-1. [Spinning Up a Compute Node in OpenStack]()
-   1. [Compute Node Considerations]()
-1. [Accessing Your Compute Node]()
-   1. [IP Addresses and Routing]()
-   1. [Command Line Proxy Jump Directive]()
-   1. [Permanent `~/.ssh/config` Configuration]()
-   1. [Verifying Networking Setup through Network Manager]()
-      1. [Head Node (`nmtui`)]()
-      1. [Compute Node (`nmcli`)]()
-1. [Local User Account Management](#local-user-account-management)
-   1. [Create Team User Account](#create-centos-user-account)
+1. [Checklist](#checklist)
+1. [Spinning Up a Compute Node in OpenStack](#spinning-up-a-compute-node-in-openstack)
+   1. [Compute Node Considerations](#compute-node-considerations)
+1. [Accessing Your Compute Node](#accessing-your-compute-node)
+   1. [IP Addresses and Routing](#ip-addresses-and-routing)
+   1. [Command Line Proxy Jump Directive](#command-line-proxy-jump-directive)
+   1. [Permanent `~/.ssh/config` Configuration](#permanent-sshconfig-configuration)
+   1. [Verifying Networking Setup](#verifying-networking-setup)
       1. [Head Node](#head-node)
       1. [Compute Node](#compute-node)
-      1. [Super User Access](#super-user-access)
-1. [Configuring a Basic Stateful Firewall _(Optional_)]()
-1. [Network Time Protocol]()
-   1. [NTP Server (Head Node)]()
-   1. [NTP Client (Compute Node)]()
+1. [Configuring a Basic Stateful Firewall NFTABLES _(Optional)_](#configuring-a-basic-stateful-firewall-nftables-_optional_)
+1. [Network Time Protocol](#network-time-protocol)
+   1. [NTP Server (Head Node)](#ntp-server-head-node)
+   1. [NTP Client (Compute Node)](#ntp-client-compute-node)
 1. [Network File System](#network-file-system)
    1. [NFS Server (Head Node)](#nfs-server-head-node)
    1. [NFS Client (Compute Node)](#nfs-client-compute-node)
       1. [Mounting An NFS Mount](#mounting-an-nfs-mount)
       1. [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
-1. [Passwordless SSH](#passwordless-ssh)
-1. [Central User Management](#central-user-management)
+   1. [Passwordless SSH](#passwordless-ssh)
+1. [User Account Management](#central-user-management)
+   1. [Create Team Captain Account](#create-team-captain-account)
+      1. [Super User Access](#super-user-access)
    1. [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
-      1. [Head Node](#head-node-1)
-      1. [Compute Node](#compute-node-1)
+      1. [Example of _BAD_ Users on Nodes]
       1. [Clean Up](#clean-up)
-1. [Ansible User Declaration]()
+   1. [Ansible User Declaration](#ansible-user-declaration)
+      1. [Create Team Member Accounts]()
 1. [WireGuard VPN Cluster Access]()
+
+    1. [(Delete)FreeIPA <img src="./resources/freeipa.png" width=2.1% />](#deletefreeipa-img-srcresourcesfreeipapng-width21-)
+        1. [FreeIPA Server (Head Node)](#freeipa-server-head-node)
+        1. [FreeIPA Client (Compute Node)](#freeipa-client-compute-node)
+        1. [FreeIPA Web Interface](#freeipa-web-interface)
+        move to tut 4
+            1. [Dynamic SSH Tunnel](#dynamic-ssh-tunnel)
+            1. [Firefox and Proxy Configuration](#firefox-and-proxy-configuration)
+            1. [Creating a User](#creating-a-user)
+                1. [Creating the Group](#creating-the-group)
+                1. [Creating the Users](#creating-the-users)
+
+<!-- markdown-toc end -->
 
 # Checklist
 
@@ -58,7 +69,7 @@ This tutorial will demonstrate how to access web services that are on your virtu
 ## IP Addresses and Routing
 ## Command Line Proxy Jump Directive
 ## Permanent `~/.ssh/config` Configuration
-## Verifying Networking Setup through Network Manager
+## Verifying Networking Setup
 
 You have been assigned IP addresses for your VMs. To identify these, go to the OpenStack user interface and navigate to `Compute -> Instances`. In the list of virtual machines presented to you, click the name of the virtual machine instance, and navigate to the "**Interfaces**" tab (refer to [Figure 4.1 below](#fig4.1)). This list contains the IP addresses assigned to each of your VM network interfaces.
 
@@ -78,7 +89,7 @@ You can verify which network interface you are modifying by corroborating the [M
 
 **CentOS 8** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
 
-#### Head Node (`nmtui`)
+### Head Node
 
 For the **head node**, create a new network definition using the `nmtui` graphical tool using the following steps:
 
@@ -127,7 +138,7 @@ For the **head node**, create a new network definition using the `nmtui` graphic
     - `ip a` will show you the interfaces and their assigned IP addresses.
     - `ip route` will list the interfaces and their assigned routes.
 
-#### Compute Node (`nmcli`)
+### Compute Node
 
 You must also set the static IP addressing for all other nodes in your cluster. In order to explore different options for doing so, please use the `nmcli` command. This is the command-line interface (CLI) for `Network Manager`, which is an alternative to the above `nmtui`, which is simply a graphical wrapper for the CLI.
 
