@@ -3,7 +3,7 @@ Tutorial 1: Standing Up Your Head Node and Running HPL
 
 This tutorial will help you become familiar with Cloud Computing and will also serve as an introduction to Linux. This tutorial will start with a network primer that will help you to understand the basics of public and private networks, ip addresses, ports and routing.
 
-You will then login into the CHPC's Cloud Computing Platform and launch your own OpenStack virtual machine instances. Here you will need to make a decision on choice of Linux distribution that you will use as well as how your team will allocate your limited cloud computing resources. 
+You will then login into the CHPC's Cloud Computing Platform and launch your own OpenStack virtual machine instances. Here you will need to make a decision on choice of Linux distribution that you will use as well as how your team will allocate your limited cloud computing resources.
 
 such as navigating and configuring your hosts and network on the terminal. If you are new to Linux and need help getting more comfortable, please check out the resources tab on the learning system.
 
@@ -38,7 +38,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
       1. [Compute (vCPUs)](#compute-vcpus)
       1. [Memory (RAM)](#memory-ram)
       1. [Storage (DISK)](#storage-disk)
-      1. [Headnode Resource Allocations](#headnode-resource-allocations)
+      1. [Head Node Resource Allocations](#head node-resource-allocations)
    1. [Networks, Ports, Services and Security Groups](#networks-ports-services-and-security-groups)
    1. [Key Pair](#key-pair)
    1. [Verify that your Instance was Successfully Deployed and Launched](#verify-that-your-instance-was-successfully-deployed-and-launched)
@@ -93,8 +93,6 @@ This tutorial will conclude with you downloading, installing and running the Hig
   - [ ] Compiling Sourcefiles to produce an Executable Binary,
   - [ ] Understanding the basics of the Linux Shell Environment, and
   - [ ] Understanding the basic tuning required to successfully run a benchmark in your environment.
-
-<div style="page-break-after: always;"></div>
 
 # Network Primer
 
@@ -251,7 +249,7 @@ From your Team's OpenStack Project Workspace, navigate to `Compute` &#8594; `Ins
 
 <p align="center"><img alt="OpenStack Launch New Instance." src="./resources/openstack_launch_instance_highlight.png" width=900 /></p>
 
-Within the popup window, enter an appropriate name for your instance that will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be **headnode**.
+Within the popup window, enter an appropriate name for your instance that will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be **head node**.
 
 ## Linux Flavors and Distributions
 
@@ -326,7 +324,7 @@ The following table summarizes a few Linux distros that *may* be available on th
 
 ## OpenStack Instance Flavors
 
-An important aspect of system administration is resource monitoring, management and utilization. Each Team will be required to manage their available resources and ensure that the resources of their clusters are utilized in such a way as to maximize system performance. You have been allocated a pool of resources which you will need to decide how you are going to allocate the sizing of the compute, memory and storage across your headnode and compute node(s).
+An important aspect of system administration is resource monitoring, management and utilization. Each Team will be required to manage their available resources and ensure that the resources of their clusters are utilized in such a way as to maximize system performance. You have been allocated a pool of resources which you will need to decide how you are going to allocate the sizing of the compute, memory and storage across your head node and compute node(s).
 
 ### Compute (vCPUs)
 
@@ -345,33 +343,33 @@ You have been allocated a pool totaling **36 GB** of RAM, which would permit the
 ### Storage (DISK)
 
 You have been allocated a pool of 50 GB of storage, which can be distributed in the following configurations:
-1. Head Node (40 GB of storage) and 2 x Compute Nodes (5 GB of storage each),
-1. Head Node (40 GB of storage) and 2 x Compute Nodes (5 GB of storage each), and
-1. Head Node (40 GB of storage) and 1 x Compute Node (10 GB of storage).
+1. Head Node (60 GB of storage) and 2 x Compute Nodes (10 GB of storage each),
+1. Head Node (60 GB of storage) and 2 x Compute Nodes (10 GB of storage each), and
+1. Head Node (60 GB of storage) and 1 x Compute Node (10 GB of storage).
 
-### Headnode Resource Allocations
+### Head Node Resource Allocations
 
 The following table summarizes the various permutations and allocations that can be used for designing your clusters within your Team's Project Workspace on Sebowa's OpenStack cloud platform.
 
-| Cluster Configurations     | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
-| ---                        |           :---: | :---:        | :---:          |
-|                            |                 |              |                |
-| Dedicated Head Node        |               2 | 4 GB         | 40 GB          |
-| Compute Node 01            |               8 | 16 GB        | 5 GB           |
-| Compute Node 02            |               8 | 16 GB        | 5 GB           |
-|                            |                 |              |                |
-|                            |                 |              |                |
-| Hybrid Head / Compute Node |               6 | 12 GB        | 40 GB          |
-| Compute Node 01            |               6 | 12 GB        | 5 GB           |
-| Compute Node 02            |               6 | 12 GB        | 5 GB           |
-|                            |                 |              |                |
-|                            |                 |              |                |
-| Hybrid Head / Compute Node |              10 | 20 GB        | 40 GB          |
-| Compute Node 01            |               8 | 16 GB        | 10 GB          |
-|                            |                 |              |                |
+| Cluster Configurations     | Instance Flavor   | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
+|----------------------------|:-----------------:|:---------------:|:------------:|:--------------:|
+|                            |                   |                 |              |                |
+| Dedicated Head Node        | scc24.C2.M4.S60   | 2               | 4 GB         | 60 GB          |
+| Compute Node 01            | scc24.C8.M16.S10  | 8               | 16 GB        | 10 GB          |
+| Compute Node 02            | scc24.C8.M16.S10  | 8               | 16 GB        | 10 GB          |
+|                            |                   |                 |              |                |
+|                            |                   |                 |              |                |
+| Hybrid Head / Compute Node | scc24.C6.M12.S60  | 6               | 12 GB        | 60 GB          |
+| Compute Node 01            | scc24.C6.M12.S10  | 6               | 12 GB        | 10 GB          |
+| Compute Node 02            | scc24.C6.M12.S10  | 6               | 12 GB        | 10 GB          |
+|                            |                   |                 |              |                |
+|                            |                   |                 |              |                |
+| Hybrid Head / Compute Node | scc24.C10.M20.S60 | 10              | 20 GB        | 60 GB          |
+| Compute Node 01            | scc24.C8.M16.S10  | 8               | 16 GB        | 10 GB          |
+|                            |                   |                 |              |                |
 
 > [!TIP]
-> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your headnode is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the *sccHeadN** flavor with *2 vCPUs* and *4 GB RAM*.
+> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the *sccHeadN** flavor with *2 vCPUs* and *4 GB RAM*.
 
 <p align="center"><img alt="OpenStack Instance Flavor Selection." src="./resources/openstack_instance_flavor.png" width=900 /></p>
 
@@ -426,7 +424,7 @@ If you've managed to successfully build and deploy your VM instance, and you man
 The VMs are running minimalist, cloud-based operating systems that are not packaged with a graphical desktop environment. You are required to interact with the VM instance using text prompts, through a [Command-Line Interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface). By design for security reasons, the cloud images are only accessible via SSH after instantiating a VM. Once you have successfully logged into your instance, you may change the password so as to enable you to make use of the [VNC Console](https://en.wikipedia.org/wiki/Virtual_Network_Computing).
 
 > [!NOTE]
-> You will require the **PATH** to the private SSH key that you have previously [generated](#generating-ssh-keys), as well as the Floating IP address [associated](#associating-an-externally-Accessible-ip-address) to your VM. Depending on the specific distribution your Team chose to implement for your Headnode, the ***default username** will vary accordingly.
+> You will require the **PATH** to the private SSH key that you have previously [generated](#generating-ssh-keys), as well as the Floating IP address [associated](#associating-an-externally-Accessible-ip-address) to your VM. Depending on the specific distribution your Team chose to implement for your Head Node, the ***default username** will vary accordingly.
 
 ### SSH Through a Linux Terminal or Windows PowerShell
 
@@ -481,7 +479,7 @@ If your workstation or laptop is running a Linux-based or macOS operating system
 
 If your workstation or laptop is running Windows, then you may proceed using either Windows PowerShell above *(preferred)* or PuTTY. Use PuTTY only if Windows PowerShell is not available on your current system.
 
-1. Launch the PuTTY application and from the *Session* category, enter your `<headnode's IP address>`
+1. Launch the PuTTY application and from the *Session* category, enter your `<head node's IP address>`
    <p align="center"><img alt="OpenStack Running State." src="./resources/windows_putty_enter_headnode_ip.png" width=900 /></p>
 1. From the *Connection* &rarr; *Data* category, enter your `<username>`
    <p align="center"><img alt="OpenStack Running State." src="./resources/windows_putty_username.png" width=900 /></p>
@@ -490,7 +488,7 @@ If your workstation or laptop is running Windows, then you may proceed using eit
 
 ### Username and Password
 
-Once you've successfully logged into your headnode VM, you are encouraged to change your password so that you may access your headnode through the OpenStack VNC console interface.
+Once you've successfully logged into your head node VM, you are encouraged to change your password so that you may access your head node through the OpenStack VNC console interface.
 
 ```bash
    sudo passwd <username>

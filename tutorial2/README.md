@@ -1,9 +1,9 @@
 Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 =========================================================================
-    
-# Table of Contents
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
+# Table of Contents
+
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 1. [Checklist](#checklist)
 1. [Spinning Up a Compute Node in OpenStack](#spinning-up-a-compute-node-in-openstack)
    1. [Compute Node Considerations](#compute-node-considerations)
@@ -14,7 +14,7 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
    1. [Verifying Networking Setup](#verifying-networking-setup)
       1. [Head Node](#head-node)
       1. [Compute Node](#compute-node)
-1. [Configuring a Basic Stateful Firewall NFTABLES _(Optional)_](#configuring-a-basic-stateful-firewall-nftables-_optional_)
+1. [Configuring a Basic Stateful Firewall NFTABLES](#configuring-a-basic-stateful-firewall-nftables)
 1. [Network Time Protocol](#network-time-protocol)
    1. [NTP Server (Head Node)](#ntp-server-head-node)
    1. [NTP Client (Compute Node)](#ntp-client-compute-node)
@@ -33,21 +33,24 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
    1. [Ansible User Declaration](#ansible-user-declaration)
       1. [Create Team Member Accounts]()
 1. [WireGuard VPN Cluster Access]()
-
-    1. [(Delete)FreeIPA <img src="./resources/freeipa.png" width=2.1% />](#deletefreeipa-img-srcresourcesfreeipapng-width21-)
-        1. [FreeIPA Server (Head Node)](#freeipa-server-head-node)
-        1. [FreeIPA Client (Compute Node)](#freeipa-client-compute-node)
-        1. [FreeIPA Web Interface](#freeipa-web-interface)
-        move to tut 4
-            1. [Dynamic SSH Tunnel](#dynamic-ssh-tunnel)
+   1. [(Delete)FreeIPA <img src="./resources/freeipa.png" width=2.1% />](#deletefreeipa-img-srcresourcesfreeipapng-width21-)
+      1. [FreeIPA Server (Head Node)](#freeipa-server-head-node)
+      1. [FreeIPA Client (Compute Node)](#freeipa-client-compute-node)
+      1. [FreeIPA Web Interface](#freeipa-web-interface)
+         move to tut 4
+         1. [Dynamic SSH Tunnel](#dynamic-ssh-tunnel)
             1. [Firefox and Proxy Configuration](#firefox-and-proxy-configuration)
             1. [Creating a User](#creating-a-user)
-                1. [Creating the Group](#creating-the-group)
-                1. [Creating the Users](#creating-the-users)
+               1. [Creating the Group](#creating-the-group)
+               1. [Creating the Users](#creating-the-users)
+
+TODO: give a primer on shell scripting and history bash etc..
 
 <!-- markdown-toc end -->
 
 # Checklist
+
+TODO: Fix checklist
 
 This tutorial will demonstrate how to access web services that are on your virtual cluster via the web browser on your local computer. It will also cover basic authentication and central authentication.
 
@@ -61,10 +64,25 @@ This tutorial will demonstrate how to access web services that are on your virtu
 - [ ] Connect to machines without a password using public key based authentication.
 - [ ] Install and use central authentication.
 
-<div style="page-break-after: always;"></div>
-
 # Spinning Up a Compute Node in OpenStack
+
+play around
+
+scripting and automation to test out differnet configurtaions
+
+As previously discussed in [Tutorial 1: OpenStack Flavors](../tutorial1/README.md#openstack-instance-flavors), an important aspect of system administration is resource monitoring, management and utilization. Once you have successfully stood up your head node, your team will need to plan and manage the resources remaining which will be available for your compute node(s).
+
+You would have seen in [Tutorial: Head Node Resource Allocations](../tutorial1/README.md#head-node-resource-allocations), that there are a number of potentially _(in)_valid configurations that you can utilize for your cluster design.
+
+> [!TIP]
+> You are encourage to **strongly** encouraged to automate the deployment, installation and configuration of your cluster nodes through the use of either at least basic shell scripts or more advanced Ansible playbooks. This will allow you to rapidly experiment with and test the performance of different configurations in order to determine an optimum cluster for the applications you're required to evaluate.
+
 ## Compute Node Considerations
+
+While the head node is responsible for administrative and management related tasks, such as authenticating user logins into the cluster, managing services, hosting a network file system, workload management and load balancing, compute nodes are responsible executing compute intensive tasks.
+
+Sensible default Instance Flavors have already been identified and configured for you. The choice your team made for your head node will determine and inform sensible decisions for the compute node(s) instance flavors.
+
 # Accessing Your Compute Node
 ## IP Addresses and Routing
 ## Command Line Proxy Jump Directive
@@ -89,7 +107,7 @@ You can verify which network interface you are modifying by corroborating the [M
 
 **CentOS 8** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
 
-### Head Node
+p### Head Node
 
 For the **head node**, create a new network definition using the `nmtui` graphical tool using the following steps:
 
@@ -105,7 +123,7 @@ For the **head node**, create a new network definition using the `nmtui` graphic
     ```bash
    ~$ nmcli dev set <interface> managed yes
     ```
-    
+
 1. The `nmtui` tool is a console-graphical tool used to set up and manage network connections for `Network Manager`.
 
     ```bash
@@ -132,7 +150,7 @@ For the **head node**, create a new network definition using the `nmtui` graphic
 
     ```bash
     ~$ ip a
-    ~$ ip route 
+    ~$ ip route
     ```
 
     - `ip a` will show you the interfaces and their assigned IP addresses.
@@ -167,7 +185,7 @@ We're going to demonstrate some of this.
 
 Right now you have one user: `root`. `root` is the default super-user of Linux operating systems. It is all powerful. It is generally **NOT recommended** to operate as `root` for the majority of things you would do on a system. This is to prevent things from going wrong.
 
-When logged in to the head node or compute node, check the UID and GID of `root` by using the `id` command. 
+When logged in to the head node or compute node, check the UID and GID of `root` by using the `id` command.
 
 ```bash
 ~$ id
@@ -234,17 +252,17 @@ The `centos` user will not have the privileges to do anything that modify system
 
 A user is only able to evoke root privileges if their account has been explicitly added to at least one of the following:
 - the default sudo users group (the actual term of this group varies across Linux variants, such as **wheel** **sudoers** etc.)
-- a newly created sudo users group, 
+- a newly created sudo users group,
 - or, if the user has been explicitly added as a privileged user directly in the Sudo configuration file.
 
 
 The `sudo` program is controlled by a file located at `/etc/sudoers`. This file specifies which users and/or groups can access superuser privileges. In this file for a default **CentOS 8** installation, it specifies that the user `root` is allowed to run all actions and any user in the `wheel` group is also allowed to:
 
 ```ini
-# Allow root to run any commands anywhere 
+# Allow root to run any commands anywhere
 root	ALL=(ALL) 	ALL
 
-# Allows members of the 'sys' group to run networking, software, 
+# Allows members of the 'sys' group to run networking, software,
 # service management apps and more.
  %sys ALL = NETWORKING, SOFTWARE, SERVICES, STORAGE, DELEGATING, PROCESSES, LOCATE, DRIVERS
 
@@ -280,7 +298,7 @@ Now log out and then log back into your node as `centos`. You can use `sudo` one
 
 <div style="page-break-after: always;"></div>
 
-# Configuring a Basic Stateful Firewall NFTABLES _(Optional)_
+# Configuring a Basic Stateful Firewall NFTABLES
 
 `Firewalld` is a firewall management daemon (service) available for many Linux distributions which acts as a front-end for the `iptables` packet filtering system provided by the Linux kernel. This daemon manages groups of rules using entities called “zones”. **CentOS 8** comes pre-configured with `firewalld`.
 
@@ -289,7 +307,7 @@ Now log out and then log back into your node as `centos`. You can use `sudo` one
 **On the head node**, ensure your **external interface** is assigned to the appropriate zone:
 
 ```bash
-~$ nmcli c mod <external_interface> connection.zone external 
+~$ nmcli c mod <external_interface> connection.zone external
 ```
 
 Then do the same for the internal interface:
@@ -302,7 +320,7 @@ You can now use `firewalld` to allow the head node to act as a router for the co
 
 ```bash
 ~$ firewall-cmd --zone=external --add-masquerade --permanent
-~$ firewall-cmd --reload 
+~$ firewall-cmd --reload
 ```
 
 Confirm that **IP forwarding** is enabled on the head node with the following:
