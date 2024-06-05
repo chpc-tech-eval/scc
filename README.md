@@ -178,13 +178,90 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
 
 Tutorial 2 deals with reverse proxy access for internal websites, central authentication and shared file systems.
 
-# Collaborating with your Team and Storing you Progress on GitHub
+1. [Checklist](#checklist)
+1. [Spinning Up a Compute Node in OpenStack](#spinning-up-a-compute-node-in-openstack)
+   1. [Compute Node Considerations](#compute-node-considerations)
+1. [Accessing Your Compute Node](#accessing-your-compute-node)
+   1. [IP Addresses and Routing](#ip-addresses-and-routing)
+   1. [Command Line Proxy Jump Directive](#command-line-proxy-jump-directive)
+   1. [Permanent `~/.ssh/config` Configuration](#permanent-sshconfig-configuration)
+   1. [Verifying Networking Setup](#verifying-networking-setup)
+      1. [Head Node](#head-node)
+      1. [Compute Node](#compute-node)
+1. [Configuring a Basic Stateful Firewall NFTABLES _(Optional)_](#configuring-a-basic-stateful-firewall-nftables-_optional_)
+1. [Network Time Protocol](#network-time-protocol)
+   1. [NTP Server (Head Node)](#ntp-server-head-node)
+   1. [NTP Client (Compute Node)](#ntp-client-compute-node)
+1. [Network File System](#network-file-system)
+   1. [NFS Server (Head Node)](#nfs-server-head-node)
+   1. [NFS Client (Compute Node)](#nfs-client-compute-node)
+      1. [Mounting An NFS Mount](#mounting-an-nfs-mount)
+      1. [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
+   1. [Passwordless SSH](#passwordless-ssh)
+1. [User Account Management](#central-user-management)
+   1. [Create Team Captain Account](#create-team-captain-account)
+      1. [Super User Access](#super-user-access)
+   1. [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
+      1. [Example of _BAD_ Users on Nodes]
+      1. [Clean Up](#clean-up)
+   1. [Ansible User Declaration](#ansible-user-declaration)
+      1. [Create Team Member Accounts]()
+1. [WireGuard VPN Cluster Access]()
 
-## Forking the Tutorials into Your Own Team's Private GitHub Repository
 
-## Editing the Git Markdown Files to Track Your Team's Progress
+## Tutorial 3
+
+1. [Environment Modules with Lmod](#part-1---enviroment-modules-with-lmod)
+   1. [Installing Lmod](#installing-lmod)
+   1. [Using Lmod](#using-lmod)
+   1. [Adding modules to Lmod](#adding-modules-to-lmod)
+1. [High Performance LINPACK (HPL) Benchmark](#part-2---high-performance-linpack-hpl-benchmark)
+   1. [System Libraries](#system-libraries)
+      1. [Static Libraries](#static-libraries)
+      1. [Dynamic Libraries](#dynamic-libraries)
+   1. [Message Passing Interface (MPI)](#message-passing-interface-mpi)
+   1. [Installing HPL](#installing-hpl)
+   1. [Adding a Second Compute Node](#adding-a-second-compute-node)
+   1. [Optimizing HPL](#optimising-hpl)
+      1. [Theoretical Peak Performance](#theoretical-peak-performance)
+      1. [Intel OneAPI Toolkit and Compiler Suite]()
+1. [HPC Challenge](#part-3---hpc-challenge)
+1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
+   1. [Installation](#part-1---installation)
+   1. [Benchmark](#part-2---benchmark)
+      1. [Benchmark 1 (adh_cubic):](#benchmark-1-adh_cubic)
+      1. [Benchmark 2 (1.5M_water):](#benchmark-2-15m_water)
+1. [LAMMPS Application Benchmark]()
+1. [Qiskit Application Benchmark]()
+
+## Tutorial 4
+
+1. [Overview](#overview)
+1. [Prometheus]()
+   1. [Edit YML Configuration File]()
+   1. [SSH Port Forwarding](ssh-port-forwarding)
+   1. [X11 Forwarding](#x11-forwarding)
+   1. [Dynamic SOCKS Proxy](#dynamic-socks-proxy)
+   1. [Configure Prometheus as a Service]()
+1. [Node Exporter]()
+   1. [Configure Node Exporter as a Service]()
+1. [Grafana]()
+   1. [Configuring Grafana Dashboards]()
+1. [Slurm Workload Manager](#slurm-workload-manager)
+   1. [Prerequisites](#prerequisites)
+   1. [Server Setup](#server-setup)
+   1. [Client Setup](#client-setup)
+   1. [Configure Grafana Dashboard for SLURM]()
+1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
+   1. [Protein Visualisation](#protein-visualisation)
+1. [LAMMPS Visualization]()
+1. [Qiskit Jupyter Notebook]()
 
 # Contributing to the Project
+
+You
+
+[How to clone, push, and pull with git (beginners GitHub tutorial)](https://youtu.be/yxvqLBHZfXk?si=jFFdP1XafscVX9BF)
 
 ## Steps to follow when editing existing content
 
@@ -208,65 +285,13 @@ Tutorial 2 deals with reverse proxy access for internal websites, central authen
 
 Use the following guide on [Github Markdown Syntax Editing](https://docs.github.com/en/get-started/writing-on-.)
 
-Make use of the following editing features of Github markdown
-> [!NOTE]
-> Highlights information that users should take into account, even when skimming.
-
-> [!TIP]
-> Optional information to help a user be more successful.
-
-> [!IMPORTANT]
-> Crucial information necessary for users to succeed.
-
-> [!WARNING]
-> Critical content demanding immediate user attention due to potential risks.
-
-> [!CAUTION]
-> Negative potential consequences of an action.
-
-## Foldable Code Blocks
-
-For different commands, flavors or options, tabbed source code block are not available to use fordable blocks instead:
-<details>
-<summary>Tips for collapsed sections</summary>
-
-## You can add a header
-
-You can add text within a collapsed section. 
-
-You can add an image or a code block, too.
-
-```ruby
-   puts "Hello World"
-```
-</details>
-
-<details>
-<summary>RHEL Based Systems</summary>
-
-```bash
-   $ sudo dnf install package X
-```
-
-</details>
-
-<details>
-<summary>Debian Based Systems</summary>
-
-```sh
-   $ sudo apt-get install lib_package-X
-```
-
-</details>
-
-## Dark and Light Themes
-Syntax for light themes add to image addition
-```shell
-![Termux Logo](https://user-images.githubusercontent.com/72879799/153904003-d7dee710-6552-4d23-a803-7a9a0ba67d92.png#gh-dark-mode-only)
-![Termux Logo](https://user-images.githubusercontent.com/72879799/153904095-9d78a019-8495-4035-8174-e3da8e4dd66b.png#gh-light-mode-only)
-```
 
 TODO: Fix links
 
 TODO: Add objectives for each Tutorial and section. They should be editable so students check them off as they go along.
 
+# Collaborating with your Team and Storing you Progress on GitHub
+
+## Forking the Tutorials into Your Own Team's Private GitHub Repository
+
+## Editing the Git Markdown Files to Track Your Team's Progress

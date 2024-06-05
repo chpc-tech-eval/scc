@@ -21,7 +21,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
       1. [Local WiFi Network](#local-wifi-network)
       1. [External Cellular Network](#external-cellular-network)
       1. [WiFi Hotspot Example](#wifi-hotspot-example)
-   1. [Windows PowerShell Commands](#windows-powershell-commands)
+   1. [MobaXterm and  Windows PowerShell Commands](#mobaxterm-and-windows-powershell-commands)
       1. [`ipconfig`](#ipconfig)
       1. [`ping 8.8.8.8`](#ping-8888)
       1. [`route print`](#route-print)
