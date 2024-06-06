@@ -68,7 +68,7 @@ This tutorial will demonstrate how to access web services that are on your virtu
 
 play around
 
-scripting and automation to test out differnet configurtaions
+scripting and automation to test out differnet configurations
 
 As previously discussed in [Tutorial 1: OpenStack Flavors](../tutorial1/README.md#openstack-instance-flavors), an important aspect of system administration is resource monitoring, management and utilization. Once you have successfully stood up your head node, your team will need to plan and manage the resources remaining which will be available for your compute node(s).
 

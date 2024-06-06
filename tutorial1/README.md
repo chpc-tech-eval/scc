@@ -197,16 +197,17 @@ Over the course of the lecture content and the tutorials, you will be making ext
 
 > [!TIP]
 > A number [encryption algorithms](https://en.wikipedia.org/wiki/Public-key_cryptography) exist for securing your SSH connections. [Elliptic Curve Digital Signature Algorithm (ECDSA)](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) is secure and simple enough should you need to copy the public key manually. Nonetheless however, you are free to use whichever algorithm you choose to.
-   
+
 <details>
 <summary>Windows with PowerShell</summary>
 
 From the `Start` menu, open the Windows `PowerShell` application:
 1. Generate an SSH key pair:
    ```shell
-   ssh-keygen -t ed25519
-   ```
    
+   ssh-keygen -t ed25519
+   
+   ```
 1. When prompted to _"Enter file in which to save the key"_, press `Enter`,
 1. When prompted to _"Enter a passphrase"_, press `Enter`, and `Enter` again to verify it.
 

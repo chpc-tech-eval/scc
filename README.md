@@ -259,13 +259,23 @@ Tutorial 2 deals with reverse proxy access for internal websites, central authen
 
 # Contributing to the Project
 
-You
-
-[How to clone, push, and pull with git (beginners GitHub tutorial)](https://youtu.be/yxvqLBHZfXk?si=jFFdP1XafscVX9BF)
+You are strongly encouraged to contribute and improve the project by [Opening and Participating in Discussions](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions), [Raising, Addressing and Resolving Issues](https://github.com/chpc-tech-eval/chpc24-scc-nmu/issues) and editing the course content directly. The following guide describes [How to clone, push, and pull with git (beginners GitHub tutorial)](https://youtu.be/yxvqLBHZfXk?si=jFFdP1XafscVX9BF).
 
 ## Steps to follow when editing existing content
 
+Editing the content directly, will require the use of Git. Using a terminal application or [Git for Windows PowerShell](https://git-scm.com/book/en/v2/Appendix-A:-Git-in-Other-Environments-Git-in-PowerShell) or [Git for MobaXTerm](https://www.geeksforgeeks.org/how-to-install-git-on-mobaxterm/).
+
+1. [Generate an SSH Key](#tutorial1/README.md#generating-ssh-keys) (or use an existing one).
+1. Add your SSH key to your Git profile.
+   - Navigate to your *'Profile'* and go to *'Settings'*.
+   - Under *'Access'*, navigate to *'SSH and GPG Keys'*
+     <p align="center"><img alt="Adding SSH Keys to GitHub." src="./resources/github_profile_settings_highlight.png" width=900 /></p>
 1. `git clone` a local copy of the repository, to your personal work space.
+   <p align="center"><img alt="Adding SSH Keys to GitHub." src="./resources/github_profile_settings_highlight.png" width=900 /></p>
+   ```bash
+   git clone git@github.com:chpc-tech-eval/chpc24-scc-nmu.git
+   
+   ```
 1. Create a new branch to work on. i.e. `git branch tutX_rework` followed by `git checkout tutX_rework`, or simply use a single command `git checkout -b tutX_rework`.
    - Give the branch a sensible name.
    - You are encouraged to push the branch back upstream so that collaborators can see what you are working on as you make the changes.
@@ -276,7 +286,7 @@ You
 1. Push your changes, back upstream to the branch you are currently working on `git push`.
 1. Once you are satisfied with the changes you've have been editing, eliminate all merge conflicts by pulling all upstream changes and deviations into your local working copy. `git pull`.
    - If you are confident that your feature does or has not deviated from the upstream `main` branch, use `git pull` to automatically `fetch` and `merge` upstream changes from main into your feature branch.
-   - Alternatively, if your branch is old, or depends on / requires changes from upstream use `git fetch`, to `fetch` upstream changes and be able to preview them before merging. 
+   - Alternatively, if your branch is old, or depends on / requires changes from upstream use `git fetch`, to `fetch` upstream changes and be able to preview them before merging.
    - Eliminate your local conflicts and merge all upstream changes `git merge`.
    - Once all the conflicts have been resolved, and you've successfully merged all upstream changes, push your branch upstream.
 1. Create a pull request to the upstream main branch, to incorporate your feature.
