@@ -84,6 +84,9 @@ While the head node is responsible for administrative and management related tas
 Sensible default Instance Flavors have already been identified and configured for you. The choice your team made for your head node will determine and inform sensible decisions for the compute node(s) instance flavors.
 
 # Accessing Your Compute Node
+
+
+
 ## IP Addresses and Routing
 ## Command Line Proxy Jump Directive
 ## Permanent `~/.ssh/config` Configuration
