@@ -1,4 +1,4 @@
-CHOC 2024 Student Cluster Competition
+CHPC 2024 Student Cluster Competition
 ======================================
 
 Welcome the **Center for High Performance Computing (CHPC)'s Student Cluster Competition (SCC)** - Team Selection Round. This round requires each team to build a **prototype multi-node compute cluster** within the National Integrated Cyber Infrastructure Systems (NICIS) **virtual compute cloud** (described below).
@@ -280,15 +280,11 @@ You
    - Eliminate your local conflicts and merge all upstream changes `git merge`.
    - Once all the conflicts have been resolved, and you've successfully merged all upstream changes, push your branch upstream.
 1. Create a pull request to the upstream main branch, to incorporate your feature.
+   - Or another branch, if your feature branch was adding functionality to an existing feature branch.
 
 ## Syntax and Style
 
 Use the following guide on [Github Markdown Syntax Editing](https://docs.github.com/en/get-started/writing-on-.)
-
-
-TODO: Fix links
-
-TODO: Add objectives for each Tutorial and section. They should be editable so students check them off as they go along.
 
 # Collaborating with your Team and Storing you Progress on GitHub
 
