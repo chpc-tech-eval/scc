@@ -272,7 +272,8 @@ Editing the content directly, will require the use of Git. Using a terminal appl
      <p align="center"><img alt="Adding SSH Keys to GitHub." src="./resources/github_profile_settings_highlight.png" width=900 /></p>
 1. `git clone` a local copy of the repository, to your personal work space.
    <p align="center"><img alt="Adding SSH Keys to GitHub." src="./resources/github_profile_settings_highlight.png" width=900 /></p>
-   ```bash
+   
+   ``` bash
    
       git clone git@github.com:chpc-tech-eval/chpc24-scc-nmu.git
    
