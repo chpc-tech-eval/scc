@@ -521,12 +521,6 @@ Once logged into your head node, you can now make use of the [previously discuss
 ## Privilege Escalation and `sudo`
 ## Linux Services - Understanding `journalctl` and `systemctl`
 
-### Hostname
-
-<p align="center"><img alt="Linux basic networking on workstation." src="./resources/linux_basics_hostname.png" width=900 /></p>
-
-<p align="center"><img alt="Linux basic networking on workstation." src="./resources/headnode_hostname_status.png" width=900 /></p>
-
 ### Networking
 
 <p align="center"><img alt="Linux basic networking on workstation." src="./resources/linux_basic_networking_checking_networkd_service.png" width=900 /></p>
@@ -543,6 +537,9 @@ Once logged into your head node, you can now make use of the [previously discuss
 
 <p align="center"><img alt="Linux basic networking on workstation." src="./resources/headnode_systemd_resolved.png" width=900 /></p>
 
+> [!CAUTION]
+> It is **CRITICAL** that you are always aware and sure which node or server your are working on. As you can see in the examples above, you can run *similar* commands in a Linux terminal on your workstation, on the console prompt of your headnode, and as you will see later, on the console prompt of your compute node.
+
 ### Failed SSH Brute Force Login Attempts
 
 talk about tarpitting and stateful firewall
@@ -552,6 +549,13 @@ mention that there are many more services
 <p align="center"><img alt="Linux basic networking on workstation." src="./resources/headnode_journalctl_sshd_brute_force.png" width=900 /></p>
 
 ## Verifying Instance Hostname and `/etc/hosts` File
+
+
+
+<p align="center"><img alt="Linux basic networking on workstation." src="./resources/linux_basics_hostname.png" width=900 /></p>
+
+<p align="center"><img alt="Linux basic networking on workstation." src="./resources/headnode_hostname_status.png" width=900 /></p>
+
 ## Linux Binaries, Libraries and Package Management
 ### User Environment and the `PATH` Variable
 hostname and etc/hosts
