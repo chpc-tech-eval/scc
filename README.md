@@ -273,7 +273,7 @@ Editing the content directly, will require the use of Git. Using a terminal appl
 1. `git clone` a local copy of the repository, to your personal work space.
    <p align="center"><img alt="Adding SSH Keys to GitHub." src="./resources/github_profile_settings_highlight.png" width=900 /></p>
    ```bash
-   git clone git@github.com:chpc-tech-eval/chpc24-scc-nmu.git
+      git clone git@github.com:chpc-tech-eval/chpc24-scc-nmu.git
    
    ```
 1. Create a new branch to work on. i.e. `git branch tutX_rework` followed by `git checkout tutX_rework`, or simply use a single command `git checkout -b tutX_rework`.
