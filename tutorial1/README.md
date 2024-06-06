@@ -21,10 +21,10 @@ This tutorial will conclude with you downloading, installing and running the Hig
       1. [Local WiFi Network](#local-wifi-network)
       1. [External Cellular Network](#external-cellular-network)
       1. [WiFi Hotspot Example](#wifi-hotspot-example)
-   1. [MobaXterm and  Windows PowerShell Commands](#mobaxterm-and-windows-powershell-commands)
-      1. [`ipconfig`](#ipconfig)
+   1. [Terminal, MobaXterm and Windows PowerShell Commands](#terminal-mobaxterm-and-windows-powershell-commands)
+      1. [`ip a` and  `ipconfig`](#ipconfig)
       1. [`ping 8.8.8.8`](#ping-8888)
-      1. [`route print`](#route-print)
+      1. [`ip route ``route print`](#route-print)
       1. [`tracert`](#tracert)
 1. [Launching your First OpenStack Virtual Machine Instance](#launching-your-first-open-stack-virtual-machine-instance)
    1. [Accessing the NICIS Cloud](#accessing-the-NICIS-cloud)
@@ -163,11 +163,18 @@ On your cellular device, ensure that you are connected to your Team Captain's Wi
 > [!TIP]
 > Pay careful attention to the IP Address reported by WhatIsMyIp.com. This is the unique identifier that _your_ device will be identified and recognized by externally on the internet. Use this information to assist you to understand and describe [NAT](https://en.wikipedia.org/wiki/Network_address_translation).
 
-## Windows PowerShell Commands
-### `ipconfig`
+## Terminal, Windows MobaXTerm and PowerShell Commands
+
+
+
+<p align="center"><img alt="Basic Networking Commands Linux Terminal." src="./resources/linux_terminal_network_basics.png" width=900 /></p>
+
+### `ip a` or `ipconfig`
 ### `ping 8.8.8.8`
-### `route print`
-### `tracert`
+### `ip route` or `route print`
+### `tracepath` or `tracert`
+
+
 # Launching your First Open Stack Virtual Machine Instance
 
 In this section you will be configuring and launching your first [Virtual Machine](https://en.wikipedia.org/wiki/Virtual_machine) instance. This allows you to use a portion of another computer's resources, to host another [Operating System](https://en.wikipedia.org/wiki/Operating_system) as though it were running on its own dedicated hardware resources. For example, your laptops or workstations are running a Windows-based operating system, you _"could"_ use a type of computer software [Hypervisor](https://en.wikipedia.org/wiki/Hypervisor), that runs and creates _virtual machines_, to run a Linux-based operating while your are in your Windows environment.
@@ -499,12 +506,54 @@ Once you've successfully logged into your head node VM, you are encouraged to ch
 > [!CAUTION]
 > Setting up a password for any user *- especially the default user -* will make your VM's vulnerable to [Brute Force SSH Attacks](https://helpcenter.trendmicro.com/en-us/article/tmka-19689)!
 
-Now you  can use 
-ping, ip a and ip route
+### Running Basic Networking Commands
+
+Once logged into your head node, you can now make use of the [previously discussed basic networking commands](#terminal-mobaxterm-and-windows-powershell-commands): `ip a`, `ping`, `ip route` and `tracepath`.
+
+<p align="center"><img alt="Verifying head node basic networking configuration." src="./resources/head_node_basic_networking_commands.png" width=900 /></p>
+
+## Manual Pages `man`, Reading Documents `cat` and the `-h` Switch
+## Piping `|` Through `grep`, `more` or `less`
+## Redirecting `>>` Console Output to a File
+## GNU `history` Library
 ## Brief Introduction to Text Editors (Vi vs Vim vs Nano)
+### Your First Shell Script
 ## Privilege Escalation and `sudo`
-## Linux Binaries, Libraries and Package Management
+## Linux Services - Understanding `journalctl` and `systemctl`
+
+### Hostname
+
+<p align="center"><img alt="Linux basic networking on workstation." src="./resources/linux_basics_hostname.png" width=900 /></p>
+
+<p align="center"><img alt="Linux basic networking on workstation." src="./resources/headnode_hostname_status.png" width=900 /></p>
+
+### Networking
+
+<p align="center"><img alt="Linux basic networking on workstation." src="./resources/linux_basic_networking_checking_networkd_service.png" width=900 /></p>
+
+<p align="center"><img alt="Linux basic networking on workstation." src="./resources/headnode_systemd-networkd.png" width=900 /></p>
+
+### Resolv.conf
+
+<p align="center"><img alt="Linux basic networking on workstation." src="./resources/linux_basic_networking_checking_resolv_service.png" width=900 /></p>
+
+<p align="center"><img alt="Linux basic networking on workstation." src="./resources/linux_basic_networking_checking_resolvconf_file.png" width=900 /></p>
+
+<p align="center"><img alt="Linux basic networking on workstation." src="./resources/headnode_resolv_status.png" width=900 /></p>
+
+<p align="center"><img alt="Linux basic networking on workstation." src="./resources/headnode_systemd_resolved.png" width=900 /></p>
+
+### Failed SSH Brute Force Login Attempts
+
+talk about tarpitting and stateful firewall
+
+mention that there are many more services
+
+<p align="center"><img alt="Linux basic networking on workstation." src="./resources/headnode_journalctl_sshd_brute_force.png" width=900 /></p>
+
 ## Verifying Instance Hostname and `/etc/hosts` File
+## Linux Binaries, Libraries and Package Management
+### User Environment and the `PATH` Variable
 hostname and etc/hosts
 At this point your VMs and network should be correctly configured and you can continue with setting up some important Linux services.
 

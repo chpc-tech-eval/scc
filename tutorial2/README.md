@@ -79,16 +79,33 @@ You would have seen in [Tutorial: Head Node Resource Allocations](../tutorial1/R
 
 ## Compute Node Considerations
 
-While the head node is responsible for administrative and management related tasks, such as authenticating user logins into the cluster, managing services, hosting a network file system, workload management and load balancing, compute nodes are responsible executing compute intensive tasks.
+While the head node is responsible for administrative and management related tasks, such as authenticating user logins into the cluster, managing services, hosting a network file system, workload management and load balancing, while compute nodes are responsible executing compute intensive tasks.
 
-Sensible default Instance Flavors have already been identified and configured for you. The choice your team made for your head node will determine and inform sensible decisions for the compute node(s) instance flavors.
+Sensible default instance flavors have already been identified and configured for you. The choice your team made for your head node will determine and inform sensible decisions for the compute node(s) instance flavors.
+
+One important distinction between your head node and compute node(s), is that the compute nodes will **not** have a floating IP associated to them. Your head node will act as a ***Gateway*** for your Compute Node(s), and ***Route*** traffic between the internet and your cluster, using a method referred to as ***Network Address Translation (NAT)***, which was discussed in the [WiFi Hotspot Example](../tutorial1/README.md#wifi-hotspot-example).
+
+The final important consideration that must be made for your compute node is that you must not forget to configure an SSH key, so that you may access it after it has successfully launched. For ease of access and to simplify your configuration, you are *strongly* advised to use the same SSH key that you'd [previously generated](../tutorial1/README.md#generating-ssh-keys).
 
 # Accessing Your Compute Node
 
-
+After you have successfully [Launched Your Second OpenStack VM Instance](../tutorial1/README.md#launching-your-first-openstack-virtual-machine-instance), you can SSH into your new compute node VM instance using your head node as a [Jump Box](https://goteleport.com/blog/ssh-proxyjump-ssh-proxycommand/).
 
 ## IP Addresses and Routing
+
+Before your access your compute node, we must verify a few details on the head node. Your will already be familiar with many of these commands.
+
+<p align="center"><img alt="OpenStack Running State." src="./resources/windows_powershell_firsttime_ssh.png" width=900 /></p>
+
+
 ## Command Line Proxy Jump Directive
+### Editing Your `~/.ssh/config` File
+## Manipulating Files and Directories
+### List Directory `ls`
+### Change Directory `cd`
+### Move File or Directory `mv`
+### Make a New Directory `mkdir`
+### Remove File or Directory `rm`
 ## Permanent `~/.ssh/config` Configuration
 ## Verifying Networking Setup
 
