@@ -2,32 +2,63 @@
 
 ## Table of Contents
 
-1. [Environment Modules with Lmod](#part-1---enviroment-modules-with-lmod)
-   1. [Installing Lmod](#installing-lmod)
-   1. [Using Lmod](#using-lmod)
-   1. [Adding modules to Lmod](#adding-modules-to-lmod)
-1. [High Performance LINPACK (HPL) Benchmark](#part-2---high-performance-linpack-hpl-benchmark)
-   1. [System Libraries](#system-libraries)
-      1. [Static Libraries](#static-libraries)
-      1. [Dynamic Libraries](#dynamic-libraries)
-   1. [Message Passing Interface (MPI)](#message-passing-interface-mpi)
-   1. [Installing HPL](#installing-hpl)
-   1. [Adding a Second Compute Node](#adding-a-second-compute-node)
-   1. [Optimizing HPL](#optimising-hpl)
-      1. [Theoretical Peak Performance](#theoretical-peak-performance)
-      1. [Intel OneAPI Toolkit and Compiler Suite]()
-1. [HPC Challenge](#part-3---hpc-challenge)
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+
+1. [Checklist](#checklist)
+1. [Managing Your Environment](#managing-your-environment)
+    1. [NFS Mounted Shared `home` folder and the `PATH` Variable](#nfs-mounted-shared-home-folder-and-the-path-variable)
+    1. [System Software Across Multiple Nodes](#system-software-across-multiple-nodes)
+    1. [Environment Modules](#environment-modules)
+    1. [Install Lmod](#install-lmod)
+    1. [Lmod Usage](#lmod-usage)
+    1. [Adding Modules to Lmod](#adding-modules-to-lmod)
+1. [Lmod Modulefiles](#lmod-modulefiles)
+    1. [Install Git Using the System Package Manager](#install-git-using-the-system-package-manager)
+    1. [Install a Different Version of Git from Source](#install-a-different-version-of-git-from-source)
+    1. [Writing a Lmod Modulefile](#writing-a-lmod-modulefile)
+    1. [Verifying and Using Different Versions of Git](#verifying-and-using-different-versions-of-git)
+1. [Running the High Performance LINPACK (HPL) Benchmark on Your Compute Node](#running-the-high-performance-linpack-hpl-benchmark-on-your-compute-node)
+    1. [System Libraries](#system-libraries)
+        1. [Static Libraries](#static-libraries)
+        1. [Dynamic Libraries](#dynamic-libraries)
+    1. [Message Passing Interface (MPI)](#message-passing-interface-mpi)
+    1. [Basic Linear Algebra Subprograms Libraries](#basic-linear-algebra-subprograms-libraries)
+    1. [Install HPL](#install-hpl)
+1. [Spinning Up a Second Compute Node](#spinning-up-a-second-compute-node)
+    1. [Cluster Considerations](#cluster-considerations)
+    1. [Using a Snapshot](#using-a-snapshot)
+    1. [Running HPC Across Multiple Nodes](#running-hpc-across-multiple-nodes)
+        1. [Configuring OpenMPI Hosts File](#configuring-openmpi-hosts-file)
+        1. [Runtime Configuration Options for `mpirun`](#runtime-configuration-options-for-mpirun)
+1. [Building and Compiling GCC, OpenMPI and BLAS Libraries from Source](#building-and-compiling-gcc-openmpi-and-blas-libraries-from-source)
+    1. [Compiler](#compiler)
+    1. [OpenMPI](#openmpi)
+    1. [BLAS Library](#blas-library)
+        1. [OpenBLAS](#openblas)
+        1. [ATLAS](#atlas)
+        1. [GotoBLAS](#gotoblas)
+        1. [BLIS](#blis)
+        1. [GSL](#gsl)
+1. [Intel OneAPI Toolkit and Compiler Suite](#intel-oneapi-toolkit-and-compiler-suite)
+    1. [Fetch and Unpack Intel OneAPI Toolkit Sourcefiles](#fetch-and-unpack-intel-oneapi-toolkit-sourcefiles)
+    1. [Configure and Install Intel OneAPI Toolkit](#configure-and-install-intel-oneapi-toolkit)
+    1. [Configure LMOD Environment Modulefile](#configure-lmod-environment-modulefile)
+    1. [Configuring and Running HPL with Intel OneAPI Toolkit and MKL](#configuring-and-running-hpl-with-intel-oneapi-toolkit-and-mkl)
+1. [LinPACK Theoretical Peak Performance](#linpack-theoretical-peak-performance)
+    1. [Top500 List](#top500-list)
+    1. [Plot a Graph of Your HPL Benchmark Results](#plot-a-graph-of-your-hpl-benchmark-results)
+1. [HPC Challenge](#hpc-challenge)
 1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
-   1. [Installation](#part-1---installation)
-   1. [Benchmark](#part-2---benchmark)
-      1. [Benchmark 1 (adh_cubic):](#benchmark-1-adh_cubic)
-      1. [Benchmark 2 (1.5M_water):](#benchmark-2-15m_water)
-1. [LAMMPS Application Benchmark]()
-1. [Qiskit Application Benchmark]()
+    1. [Installation](#installation)
+    1. [Application Benchmark and System Evaluation](#application-benchmark-and-system-evaluation)
+        1. [Benchmark 1 (adh_cubic):](#benchmark-1-adh_cubic)
+        1. [Benchmark 2 (1.5M_water):](#benchmark-2-15m_water)
+1. [LAMMPS Application Benchmark](#lammps-application-benchmark)
+1. [Qiskit Application Benchmark](#qiskit-application-benchmark)
 
-## Overview
+<!-- markdown-toc end -->
 
-## Overview
+# Checklist
 
 Tutorial 4 demonstrates environment module manipulation and the compilation and optimisation of HPC benchmark software. This introduces the reader to the concepts of environment management and workspace sanity, as well as compilation of software on Linux.
 
@@ -41,13 +72,21 @@ In this tutorial you will:
 
 <div style="page-break-after: always;"></div>
 
-## Part 1 - Enviroment Modules with Lmod
+# Managing Your Environment
+
+## NFS Mounted Shared `home` folder and the `PATH` Variable
+
+## System Software Across Multiple Nodes
+
+Software on one node will not automatically be installed across all nodes, friend installs whatsapp, you don't magically get whatapp on your phone
+
+## Environment Modules
 
 Environment Modules provide a convenient way to dynamically change a user's environment through _modulefiles_ to simplify software and library use when there are multiple versions of a particular software package (e.g. Python2.7 and Python 3.x) installed on the system. Environment Module parameters typically involve, among other things, modifying the PATH environment variable for locating a particular package (such as dynamically changing the path to Python from `/usr/local/bin/python2.7` to `/usr/local/bin/python3`).
 
 Lmod is a Lua-based environment module tool for users to easily manipulate their HPC software environment and is used on thousands of HPC systems around the world.
 
-### Installing Lmod
+## Install Lmod
 
 To install Lmod on **CentOS 8**, make sure that you have the **EPEL** repository enabled:
 
@@ -63,7 +102,7 @@ This will enable additional software to be made available to the CentOS package 
 
 Now log out and back into your session.
 
-### Using Lmod
+## Lmod Usage
 
 With Lmod installed, you'll now have some new commands on the terminal. Namely, these are: `module <subcommand>`. The important ones for you to know and use are: `module avail`, `module list`, `module load` and `module unload`. These commands do the following:
 
@@ -86,29 +125,35 @@ Lmod also features a shortcut command `ml` which can perform all of the above co
 | `ml foo -bar`       | Same as `module load foo` and `module unload bar`|
 
 
-### Adding modules to Lmod
+## Adding Modules to Lmod
 
 Some installed packages will automatically add environment modules to the Lmod system, while others will not and will require you to manually add definitions for them. For example, the `openmpi` package that we will install with `dnf` later in this tutorial will automatically add a module file to the system for loading via Lmod.
 
-We will detail how to create a module file for your own software later.
+# Lmod Modulefiles
 
-<div style="page-break-after: always;"></div>
+## Install Git Using the System Package Manager
 
-## Part 2 - High Performance LINPACK (HPL) Benchmark
+## Install a Different Version of Git from Source
+
+## Writing a Lmod Modulefile
+
+## Verifying and Using Different Versions of Git
+
+# Running the High Performance LINPACK (HPL) Benchmark on Your Compute Node
 
 The High Performance LINPACK (HPL) benchmark is used to measure a system's floating point number processing power. The resulting score (in Floating Point Operations Per Second, or FLOPS for short) is often used to roughly quantify the computational power of an HPC system. HPL requires math libraries to perform its floating point operations as it does not include these by itself and it also requires an MPI installation for communication in order to execute in parallel across multiple CPU cores (and hosts).
 
-### System Libraries
+## System Libraries
 
 A library is a collection of pre-compiled code that provides functionality to other software. This allows the re-use of common code (such as math operations) and simplifies software development. You get two types of libraries on Linux: `static` and `dynamic` libraries.
 
-#### Static Libraries
+### Static Libraries
 
 Static libraries are embedded into the binary that you create when you compile your software. In essence, it copies the library that exists on your computer into the executable that gets created at **compilation time**. This means that the resulting program binary is self-contained and can operate on multiple systems without them needing the libraries installed first. Static libraries are normally files that end with the `.a` extension, for "archive".
 
 Advantages here are that the program can potentially be faster, as it has direct access to the required libraries without having to query the operating system first, but disadavanges include the file size being larger and updating the library requires recompiling (and linking the updated library) the software.
 
-#### Dynamic Libraries
+### Dynamic Libraries
 
 Dynamic libraries are loaded into a compiled program at **runtime**, meaning that the library that the program needs is **not** embedded into the executable program binary at compilation time. Dynamic libraries are files that normally end with the `.so` extension, for "shared object".
 
@@ -116,11 +161,13 @@ Advantages here are that the file size can be much smaller and the application d
 
 HPL uses dynamic libraries for its math and MPI communication, as mentioned above.
 
-### Message Passing Interface (MPI)
+## Message Passing Interface (MPI)
 
 MPI is a message-passing standard used for parallel software communication. It allows for software to send messages between multiple processes. These processes could be on the local computer (think multiple cores of a CPU or multiple CPUs) as well as on networked computers. MPI is a cornerstone of HPC. There are many implementations of MPI in software such as OpenMPI, MPICH, MVAPICH2 and so forth. To find out more about MPI, please read the following: [https://www.linuxtoday.com/blog/mpi-in-thirty-minutes.html](https://www.linuxtoday.com/blog/mpi-in-thirty-minutes.html)
 
-### Installing HPL
+## Basic Linear Algebra Subprograms Libraries
+
+## Install HPL
 
 We need to install the dynamic libraries that HPL expects to have, as well as the software for MPI. The MPI implementation we're going to use here is OpenMPI and we will use the Automatically Tuned Linear Algebra Software (ATLAS) math library.
 
@@ -235,9 +282,13 @@ We need to install the dynamic libraries that HPL expects to have, as well as th
 
     By default, SLURM will store the job output to a log file `slurm-<job_id>.out`, on the compute node (Slurm writes the output file on the first node that the job has been allocated to by default). Since your home directory is shared via NFS, you should be able to check the output on any of your nodes.
 
-### Adding a Second Compute Node
+# Spinning Up a Second Compute Node
 
-At this point you are ready to run HPL on your cluster with two compute nodes. It's time to deploy a second compute node in OpenStack.
+## Cluster Considerations
+
+## Using a Snapshot
+
+At this point you are ready to run HPL on your cluster with two compute nodes. It's time to deploy a second compute node in Open Stack.
 
 <span style="color: #800000">
   !!! Have the output **log file** `slurm-<job_id>.out` AND `Make.<architecture>` **configuration file** ready for instructors to view on request.
@@ -249,7 +300,37 @@ Pay careful attention to the hostname, network and other configuration settings 
 
 As a sanity check repeat Steps 10-12 of the previous task: [Message Passing Interface (MPI)](#message-passing-interface-mpi), but this time do it for **two** compute nodes and check the new results of your benchmark.
 
-### Optimising HPL
+## Running HPC Across Multiple Nodes
+
+### Configuring OpenMPI Hosts File
+
+### Runtime Configuration Options for `mpirun`
+
+# Building and Compiling GCC, OpenMPI and BLAS Libraries from Source
+
+## Compiler
+
+## OpenMPI
+
+## BLAS Library
+
+### OpenBLAS
+### ATLAS
+### GotoBLAS
+### BLIS
+### GSL
+
+mention folder and module structure
+
+# Intel OneAPI Toolkit and Compiler Suite
+
+## Fetch and Unpack Intel OneAPI Toolkit Sourcefiles 
+
+## Configure and Install Intel OneAPI Toolkit
+
+## Configure LMOD Environment Modulefile
+
+## Configuring and Running HPL with Intel OneAPI Toolkit and MKL
 
 You now have a functioning HPL benchmark and a compute cluster. However, using math libraries (BLAS, LAPACK, **ATLAS**) from a repository (`dnf`) **will not yield optimum performance**, because these repositories **contain generic code compiled to work on all x86 hardware**.
 
@@ -263,7 +344,7 @@ The VMs that make up your cluster are not necessarily the same architecture, sin
 
 3. Re-run HPL on your cluster.
 
-#### Theoretical Peak Performance
+# LinPACK Theoretical Peak Performance
 
 It is useful to know what the theoretical FLOPS performance (RPeak) of your hardware is when trying to obtain the highest benchmark result (RMax). RPeak can be derived from the formula:
 
@@ -292,7 +373,11 @@ For model name, you should see something like "... Intel Xeon E5-26.....". If in
 
 You can determine the maximum and base frequency of your CPU model on the Intel Ark website. Because HPL is a demanding workload, assume the CPU is operating at its base frequency and **NOT** the boost/turbo frequency. You should have everything you need to calculate the RPeak of your cluster. Typically an efficiency of at least 75% is considered adequate for Intel CPUs (RMax / RPeak > 0.75).
 
-## Part 3 - HPC Challenge
+## Top500 List
+
+## Plot a Graph of Your HPL Benchmark Results
+
+# HPC Challenge
 
 HPC Challenge (or HPCC) is benchmark suite which contains 7 micro-benchmarks used to test various performance aspects of your cluster. HPCC includes HPL which it uses to access FLOPs performance. Having successfully compiled and executed HPL, the process is fairly straight forward to setup HPCC (it uses the same Makefile structure).
 
@@ -327,7 +412,9 @@ HPC Challenge (or HPCC) is benchmark suite which contains 7 micro-benchmarks use
 <span style="color: #800000">
   !!! Have the output `hpccoutf.txt` AND `Make.<architecture>` **configuration file** ready for instructors to view on request.
 </span>
-## Overview
+
+# GROMACS Application Benchmark
+
 
 Tutorial 5 has you compile the GROMACS scientific software. You will then run the software on data sets that are provided to you and upload the results.
 
@@ -339,13 +426,11 @@ In this tutorial you will:
 
 <div style="page-break-after: always;"></div>
 
-## GROMACS Application Benchmark
-
 GROMACS is a versatile package to perform molecular dynamics, i.e. simulate the Newtonian equations of motion for systems with hundreds to millions of particles. It is primarily designed for biochemical molecules like proteins, lipids and nucleic acids that have a lot of complicated bonded interactions, but since GROMACS is extremely fast at calculating the nonbonded interactions (that usually dominate simulations) many groups are also using it for research on non-biological systems, such as polymers.
 
 The files required for this tutorial can be found on the ACE Lab SSH server (ssh.ace.chpc.ac.za) under the `/apps/gromacs` folder. The archive name should be `gromacs_benchmarks.tar.gz`.
 
-### Part 1: Installation
+## Installation
 
 Detailed installation instructions can be found at: http://manual.gromacs.org/current/install-guide/index.html, but here's a general installation overview:
 
@@ -357,11 +442,13 @@ Detailed installation instructions can be found at: http://manual.gromacs.org/cu
 
 <div style="page-break-after: always;"></div>
 
-### Part 2: Benchmark
+## Application Benchmark and System Evaluation
+
+TODO Explain what an application benchmark is here.
 
 You have been provided two **GROMACS** benchmarks. The first benchmark **(adh_cubic)** should complete within a few minutes and has a small memory footprint, it is intended to demonstrate that your installation is working properly. The second benchmark **(1.5M_water)** uses more memory and takes considerably longer to complete. The metric which will be used to assess your performance is the **ns/day** (number of nanoseconds the model is simulated for per day of computation), quoted at the end of the simulation output. **Higher is better**. 
 
-#### Benchmark 1 (adh_cubic):
+### Benchmark 1 (adh_cubic):
 
 Ensure that your GROMACS /**bin** directory is exported to your **PATH**. You should be able to type `gmx_mpi --version` in your terminal and have the application information displayed correctly. The first task is to pre-process the input data into a usable format, using the `grompp` tool:
 
@@ -397,7 +484,7 @@ You may modify the `mpirun` command to optimise performance (significantly) but 
   !!! Please be able to present the instructors with the output of `gmx_mpi --version`. Also be able to present the instructors with your Slurm batch script and `gromacs_log` files for the **adh_cubic** benchmark.
 </span>
 
-#### Benchmark 2 (1.5M_water):
+### Benchmark 2 (1.5M_water):
 
 Pre-process the input data using the `grompp` command
 
@@ -416,54 +503,6 @@ Using a batch script similar to the one above, run the benchmark. You may modify
 </span>
 
 
-### Part 3: Protein Visualisation
-
-> **! >>> You will need to work on your personal computer (or laptop) to complete this section.**
-
-You are able to score bonus points for this tutorial by submitting a visualisation of your **adh_cubic** benchmark run. Follow the instructions below to accomplish this and upload the visualisation.
-
-Download and install the VMD visualization tool by selecting the correct version for your operating system. For example, for a Windows machine with an Nvidia GPU select the “Windows OpenGL, CUDA” option. You may need to register on the website.
-
-```http
-https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD
-```
-
-Use the `WinSCP` application for Windows, or the `scp` command for Linux to copy the output file `confout.gro` of the **adh_cubic** benchmark from your cluster to your PC. Attempting to visualise the larger "1.5M_water" simulation is not necessary and not recommended due to memory limitations of most PCs.
-
-1. Open VMD, select **File** then **New Module...**, click **Browse...** and select your `.gro` file.
-
-2. Ensure the filetype was detected as **Gromacs GRO** then click **Load**. In the main VMD window you will see that 134177 particles have been loaded. You should also see the display window has been populated with your simulation particle data.
-
-    You can manipulate the data with your mouse cursor: zoom with the mouse wheel or rotate it by dragging with the left mouse button held down. This visualisation presents a naturally occurring protein (blue/green) found in the human body, suspended in a solution of water molecules (red/white).
-
-3. From the main VMD window, select **Graphics** then **Representations..**.
-
-4. Under **Selected Atoms**, replace **all** with **not resname SOL** and click **apply**. You will notice the water solution around your protein has been removed, allowing you to better examine the protein.
-
-5. In the same window, select the dropdown **Drawing Method** and try out a few different options. Select **New Cartoon** before moving on.
-
-6. From the main VMD window, once again select **Graphics** then **Colors**. Under **Categories**, select **Display**, then **Background**, followed by **8 white**.
-
-7. Finally, you are ready to render a snapshot of your visualisation. From the main window, select **File** then **Render...**, ensure **Snapshot...** is selected and enter an appropriate filename. Click **Start Rendering**.
-
-Simulations like this are used to to develop and prototype experimental pharmaceutical drug designs. By visualising the output, researchers are able to better interpret simulation results.
-
-<span style="color: #800000">
-  > Copy the resulting `.bmp` file(s) from yout cluster to your local computer or laptop and demonstrate this to your instructors for bonus points.
-</span>
-
-
-This tutorial demonstrates _cluster monitoring_ and _workload scheduling_. These two components are critical to a typical HPC environment. Monitoring is a widely used component in system administration (including enterprise datacentres and corporate networks). Monitoring allows administrators to be aware of what is happening on any system that is being monitored and is useful to proactively identify where any potential issues may be. A workload scheduler ensures that users' jobs are handled properly to fairly balance all scheduled jobs with the resources available at any time.
-
-In this tutorial you will:
-
-- [ ] Install the Zabbix monitoring server on your head node.
-- [ ] Install Zabbix monitoring clients on your compute node(s).
-- [ ] Configure Zabbix in order to monitor your virtual HPC cluster.
-- [ ] Install the Slurm workload manager across your cluster.
-- [ ] Submit a test job to run on your cluster through the newly-configured workload manager.
-
-<div style="page-break-after: always;"></div>
 
 
 <span style="color: #800000">
@@ -472,182 +511,6 @@ In this tutorial you will:
 
 <div style="page-break-after: always;"></div>
 
-## Part 2 - Slurm Workload Manager
+# LAMMPS Application Benchmark
 
-The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource Management), is a free and open-source job scheduler for Linux, used by many of the world's supercomputers/computer clusters. It allows you to manage the resources of a cluster by deciding how users get access for some duration of time so they can perform work. To find out more, please visit the [Slurm Website](https://slurm.schedmd.com/documentation.html).
-
-### Prerequisites
-
-1. Make sure the clocks, i.e. chrony daemons, are synchronized across the cluster.
-
-2. Generate a SLURM and MUNGE user on all of your nodes:
-
-    - **If you have FreeIPA authentication working**
-        - Create the users using the FreeIPA web interface. **Do NOT add them to the sysadmin group**.
-    - **If you do NOT have FreeIPA authentication working**
-       - `useradd slurm`
-       - Ensure that users and groups (UIDs and GIDs) are synchronized across the cluster. Read up on the appropriate [/etc/shadow](https://linuxize.com/post/etc-shadow-file/) and [/etc/password](https://www.cyberciti.biz/faq/understanding-etcpasswd-file-format/) files.
-
-### Server Setup
-
-
-1. Install the [MUNGE](https://dun.github.io/munge/) package. MUNGE is an authentication service that makes sure user credentials are valid and is specifically designed for HPC use.
-
-    First, we will enable the **EPEL** _(Extra Packages for Enterprise Linux)_ repository for `dnf`, which contains extra software that we require for MUNGE and Slurm:
-
-    ```bash
-    [...@headnode ~]$ sudo dnf install epel-release
-    ```
-
-    Then we can install MUNGE, pulling the development source code from the `powertools` repository:
-
-    ```bash
-    [...@headnode ~]$ sudo dnf --enablerepo=powertools install munge munge-libs munge-devel
-    ```
-
-2. Generate a MUNGE key for client authentication:
-
-    ```bash
-    [...@headnode ~]$ sudo /usr/sbin/create-munge-key -r
-    [...@headnode ~]$ sudo chown munge:munge /etc/munge/munge.key
-    [...@headnode ~]$ sudo chmod 600 /etc/munge/munge.key
-    ```
-
-3. Using `scp`, copy the MUNGE key to your compute node to allow it to authenticate:
-
-    1. SSH into your compute node and create the directory `/etc/munge`. Then exit back to the head node.
-
-    2.  `scp /etc/munge/munge.key <compute_node_name_or_ip>:/etc/munge/munge.key`
-
-4. **Start** and **enable** the `munge` service
-
-5. Install dependency packages:
-
-    ```bash
-    [...@headnode ~]$ sudo dnf --enablerepo=powertools install python3 gcc openssl openssl-devel pam-devel numactl \
-                        numactl-devel hwloc lua readline-devel ncurses-devel man2html libibmad libibumad \
-                        rpm-build perl-ExtUtils-MakeMaker rrdtool-devel lua-devel hwloc-devel \
-                        perl-Switch libssh2-devel mariadb-devel
-    [...@headnode ~]$ sudo dnf groupinstall "Development Tools"
-    ```
-
-6. Download the 20.11.9 version of the Slurm source code tarball (.tar.bz2) from https://download.schedmd.com/slurm/. Copy the URL for `slurm-20.11.9.tar.bz2` from your browser and use the `wget` command to easily download files directly to your VM.
-
-7. Environment variables are a convenient way to store a name and value for easier recovery when they're needed. Export the version of the tarball you downloaded to the environment variable VERSION. This will make installation easier as you will see how we reference the environment variable instead of typing out the version number at every instance.
-
-    ```bash
-    [...@headnode ~]$ export VERSION=20.11.9
-    ```
-
-8. Build RPM packages for Slurm for installation
-
-    ```bash
-    [...@headnode ~]$ sudo rpmbuild -ta slurm-$VERSION.tar.bz2
-    ```
-
-    This should successfully generate Slurm RPMs in the directory that you invoked the `rpmbuild` command from.
-    
-9. Copy these RPMs to your compute node to install later, using `scp`.
-
-10. Install Slurm server
-
-    ```bash
-    [...@headnode ~]$ sudo mkdir -p /var/log/slurm /var/spool/slurm/ctld /var/spool/slurm/d
-    [...@headnode ~]$ sudo chown -R slurm:slurm /var/log/slurm /var/spool/slurm/ctld /var/spool/slurm/d
-    [root@headnode ~]$ cd /root/rpmbuild/RPMS/x86_64/
-    [root@headnode ~]$ dnf localinstall slurm-$VERSION*.rpm slurm-devel-$VERSION*.rpm \
-                         slurm-example-configs-$VERSION*.rpm slurm-perlapi-$VERSION*.rpm \
-                         slurm-torque-$VERSION*.rpm slurm-slurmctld-$VERSION*.rpm
-    ```
-
-11. Setup Slurm server
-
-    ```bash
-    [...@headnode ~]$ sudo cp /etc/slurm/slurm.conf.example /etc/slurm/slurm.conf
-    ```
-
-    Edit this file (`/etc/slurm/slurm.conf`) and set appropriate values for:
-
-    ```conf
-    ClusterName=      #Name of your cluster (whatever you want)
-    ControlMachine=   #DNS name of the head node
-    ```
-
-    Populate the nodes and partitions at the bottom with the following two lines:
-
-    ```conf
-    NodeName=<computenode> Sockets=<num_sockets> CoresPerSocket=<num_cpu_cores> \ 
-    ThreadsPerCore=<num_threads_per_core> State=UNKNOWN
-    ```
-
-    ```conf
-    PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
-    ```
-
-    **To check how many cores your compute node has, run `lscpu` on the compute node.** You will get output including `CPU(s)`, `Thread(s) per core`, `Core(s) per socket` and more that will help you determine what to use for the Slurm configuration.
-
-    **Hint: if you overspec your compute resources in the definition file then Slurm will not be able to use the nodes.**
-
-12. **Start** and **enable** the `slurmctld` service on the head node.
-
-### Client Setup
-
-1. Setup MUNGE:
-
-    ```bash
-    [...@computenode ~]$ sudo dnf install munge munge-libs
-    [...@computenode ~]$ sudo chown -R munge:munge /etc/munge/munge.key
-    ```
-
-2. **Start** and **enable** the `munge` service.
-
-3. Test MUNGE to the head node:
-
-    ```bash
-    [...@computenode ~]$ munge -n | ssh headnode.cluster.scc unmunge 
-    [...@computenode ~]$ remunge 
-    ```
-4. The `.rpm` files that were previously created on the head node must be made available to the compute node. Either copy the `.rpm` files to the compute node or move them to an NFS shared directory on your head node so that they are accessible on the compute node. Next, install the Slurm client on the compute node. Once again export the version of your Slurm instance to the environment variable `$VERSION`:
-
-    ```bash
-    [...@computenode ~]$ sudo dnf --enablerepo=powertools install perl-Switch perl-ExtUtils-MakeMaker
-    [...@computenode ~]$ sudo dnf localinstall slurm-$VERSION*.rpm slurm-devel-$VERSION*.rpm  \
-                          slurm-perlapi-$VERSION*.rpm slurm-torque-$VERSION*.rpm \
-                          slurm-example-configs-$VERSION*.rpm slurm-slurmd-$VERSION*.rpm \
-                          slurm-pam_slurm-$VERSION*.rpm
-    ```
-
-5. Create the `/var/spool/slurm/d` directory and make it owned by user and group `slurm`.
-
-6. Copy the `slurm.conf` file you editted on your head node to the same location on your compute node.
-
-7. **Start** and **enable** the `slurmd` service.
-
-
-Return to your head node. To demonstrate that your scheduler is working you can run the following command as your normal user:
-
-```bash
-[...@headnode ~]$ sinfo 
-```
-
-You should see your compute node in an idle state.
-
-Slurm allows for jobs to be submitted in _batch_ (set-and-forget) or _interactive_ (real-time response to the user) modes. Start an interactive session on your compute node via the scheduler with
-
-```bash
-[...@headnode ~]$ srun -N 1 --pty bash 
-```
-
-You should automatically be logged into your compute node. This is done via Slurm. Re-run `sinfo` now and also run the command `squeue`. Here you will see that your compute node is now allocated to this job.
-
-To finish, type `exit` and you'll be placed back on your head node. If you run `squeue` again, you will now see that the list is empty.
-
-<div style="page-break-after: always;"></div>
-
-To confirm that your node configuration is correct, you can run the following command on the head node:
-
-```bash
-[...@headnode ~]$ sinfo -alN
-```
-
-The `S:C:T` column means "sockets, cores, threads" and your numbers for your compute node should match the settings that you made in the `slurm.conf` file.
+# Qiskit Application Benchmark

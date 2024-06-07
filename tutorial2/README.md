@@ -4,47 +4,68 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 # Table of Contents
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+
 1. [Checklist](#checklist)
 1. [Spinning Up a Compute Node in OpenStack](#spinning-up-a-compute-node-in-openstack)
-   1. [Compute Node Considerations](#compute-node-considerations)
+    1. [Compute Node Considerations](#compute-node-considerations)
 1. [Accessing Your Compute Node](#accessing-your-compute-node)
-   1. [IP Addresses and Routing](#ip-addresses-and-routing)
-   1. [Command Line Proxy Jump Directive](#command-line-proxy-jump-directive)
-   1. [Permanent `~/.ssh/config` Configuration](#permanent-sshconfig-configuration)
-   1. [Verifying Networking Setup](#verifying-networking-setup)
-      1. [Head Node](#head-node)
-      1. [Compute Node](#compute-node)
-1. [Configuring a Basic Stateful Firewall NFTABLES](#configuring-a-basic-stateful-firewall-nftables)
+    1. [IP Addresses and Routing](#ip-addresses-and-routing)
+    1. [Command Line Proxy Jump Directive](#command-line-proxy-jump-directive)
+    1. [Manipulating Files and Directories](#manipulating-files-and-directories)
+        1. [List Directory `ls`](#list-directory-ls)
+        1. [Change Directory `cd`](#change-directory-cd)
+        1. [Move File or Directory `mv`](#move-file-or-directory-mv)
+        1. [Make a New Directory `mkdir`](#make-a-new-directory-mkdir)
+        1. [Remove File or Directory `rm`](#remove-file-or-directory-rm)
+        1. [Recommended Project Folder Structure](#recommended-project-folder-structure)
+    1. [Permanent `~/.ssh/config` Configuration](#permanent-sshconfig-configuration)
+    1. [Verifying Networking Setup](#verifying-networking-setup)
+        1. [Head Node](#head-node)
+        1. [Compute Node](#compute-node)
+1. [Understanding the Roles of the Head Node and Compute Node](#understanding-the-roles-of-the-head-node-and-compute-nodes)
+1. [Basic System Monitoring](#basic-system-monitoring)
+1. [Terminal Multiplexers](#terminal-multiplexers)
+1. [Configuring a Simple Stateful Firewall](#configuring-a-simple-stateful-firewall)
+    1. [IPTables](#iptables)
+    1. [NFTables](#nftables)
+    1. [Front-end Firewall Application Managers](#front-end-firewall-application-managers)
 1. [Network Time Protocol](#network-time-protocol)
-   1. [NTP Server (Head Node)](#ntp-server-head-node)
-   1. [NTP Client (Compute Node)](#ntp-client-compute-node)
+    1. [NTP Server (Head Node)](#ntp-server-head-node)
+    1. [NTP Client (Compute Node)](#ntp-client-compute-node)
 1. [Network File System](#network-file-system)
-   1. [NFS Server (Head Node)](#nfs-server-head-node)
-   1. [NFS Client (Compute Node)](#nfs-client-compute-node)
-      1. [Mounting An NFS Mount](#mounting-an-nfs-mount)
-      1. [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
-   1. [Passwordless SSH](#passwordless-ssh)
-1. [User Account Management](#central-user-management)
-   1. [Create Team Captain Account](#create-team-captain-account)
-      1. [Super User Access](#super-user-access)
-   1. [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
-      1. [Example of _BAD_ Users on Nodes]
-      1. [Clean Up](#clean-up)
-   1. [Ansible User Declaration](#ansible-user-declaration)
-      1. [Create Team Member Accounts]()
-1. [WireGuard VPN Cluster Access]()
-   1. [(Delete)FreeIPA <img src="./resources/freeipa.png" width=2.1% />](#deletefreeipa-img-srcresourcesfreeipapng-width21-)
-      1. [FreeIPA Server (Head Node)](#freeipa-server-head-node)
-      1. [FreeIPA Client (Compute Node)](#freeipa-client-compute-node)
-      1. [FreeIPA Web Interface](#freeipa-web-interface)
-         move to tut 4
-         1. [Dynamic SSH Tunnel](#dynamic-ssh-tunnel)
+    1. [NFS Server (Head Node)](#nfs-server-head-node)
+    1. [NFS Client (Compute Node)](#nfs-client-compute-node)
+        1. [Mounting An NFS Mount](#mounting-an-nfs-mount)
+        1. [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
+    1. [Passwordless SSH](#passwordless-ssh)
+1. [User Account Management](#user-account-management)
+    1. [Create Team Captain User Account](#create-team-captain-user-account)
+        1. [Head Node](#head-node-1)
+        1. [Compute Node](#compute-node-1)
+        1. [Super User Access](#super-user-access)
+    1. [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
+        1. [Head Node](#head-node-2)
+        1. [Compute Node](#compute-node-2)
+        1. [Clean Up](#clean-up)
+    1. [Ansible User Declaration](#ansible-user-declaration)
+        1. [Installing and Configuring Ansible](#installing-and-configuring-ansible)
+        1. [Create Team Member Accounts](#create-team-member-accounts)
+1. [Remote Access to Your Cluster and Tunneling](#remote-access-to-your-cluster-and-tunneling)
+    1. [Local Port Forwarding](#local-port-forwarding)
+    1. [Dynamic Port Forwarding](#dynamic-port-forwarding)
+        1. [Web Browser and SOCKS5 Proxy Configuration](#web-browser-and-socks5-proxy-configuration)
+    1. [WirGuard VPN Cluster Access](#wirguard-vpn-cluster-access)
+    1. [ZeroTier](#zerotier)
+    1. [X11 Forwarding](#x111-forwarding)
+    1. [(Delete)FreeIPA <img src="./resources/freeipa.png" width=2.1% />](#deletefreeipa-img-srcresourcesfreeipapng-width21-)
+        1. [FreeIPA Server (Head Node)](#freeipa-server-head-node)
+        1. [FreeIPA Client (Compute Node)](#freeipa-client-compute-node)
+        1. [FreeIPA Web Interface](#freeipa-web-interface)
+            1. [Dynamic SSH Tunnel](#dynamic-ssh-tunnel)
             1. [Firefox and Proxy Configuration](#firefox-and-proxy-configuration)
             1. [Creating a User](#creating-a-user)
-               1. [Creating the Group](#creating-the-group)
-               1. [Creating the Users](#creating-the-users)
-
-TODO: give a primer on shell scripting and history bash etc..
+                1. [Creating the Group](#creating-the-group)
+                1. [Creating the Users](#creating-the-users)
 
 <!-- markdown-toc end -->
 
@@ -99,16 +120,16 @@ Before your access your compute node, we must verify a few details on the head n
 
 
 ## Command Line Proxy Jump Directive
-### Editing Your `~/.ssh/config` File
 ## Manipulating Files and Directories
 ### List Directory `ls`
 ### Change Directory `cd`
 ### Move File or Directory `mv`
 ### Make a New Directory `mkdir`
 ### Remove File or Directory `rm`
+### Recommended Project Folder Structure
 ## Permanent `~/.ssh/config` Configuration
 ## Verifying Networking Setup
-
+### Head Node
 You have been assigned IP addresses for your VMs. To identify these, go to the OpenStack user interface and navigate to `Compute -> Instances`. In the list of virtual machines presented to you, click the name of the virtual machine instance, and navigate to the "**Interfaces**" tab (refer to [Figure 4.1 below](#fig4.1)). This list contains the IP addresses assigned to each of your VM network interfaces.
 
 For example, if you have `enp3s0` and `enp4s0`, then you should see two IP addresses listed in the OpenStack interface, such as `10.128.24.x` and `10.0.0.x`. **You absolutely have to use the correct IP addresses for the correct interfaces, as your network may not work if you do not.**
@@ -195,130 +216,17 @@ _**Please read [what-is-ip-routing](https://study-ccna.com/what-is-ip-routing/) 
 <div style="page-break-after: always;"></div>
 
 
-# Local User Account Management
+# Understanding the Roles of the Head Node and Compute Node
+Networking Diagram
+# Basic System Monitoring 
+# Terminal Multiplexers
+# Configuring a Simple Stateful Firewall
 
-In enterprise systems and HPC, it's common to manage user accounts from one central location. These network accounts are then synchronised to the machines in your fleet via the network. This is done for safely, security and management purposes.
+## IPTables
 
-When creating a user account locally on a Linux operating system, it's provided with a user ID (uid) and a group ID (gid). These are used to tell the operating system which user this is and which groups of permissions they belong to. When you create a user with the default settings of the built-in user creation tools, it will generally increment on from the last UID used. This can be different for different systems. If UID/GID numbers do not match up across the nodes in your cluster, there can be all sorts of headaches for some of the tools and services that we will set up later in this competition.
+## NFTables
 
-We're going to demonstrate some of this.
-
-Right now you have one user: `root`. `root` is the default super-user of Linux operating systems. It is all powerful. It is generally **NOT recommended** to operate as `root` for the majority of things you would do on a system. This is to prevent things from going wrong.
-
-When logged in to the head node or compute node, check the UID and GID of `root` by using the `id` command.
-
-```bash
-~$ id
-```
-
-You should see something like the following:
-
-```bash
-uid=0(root) gid=0(root) groups=0(root) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
-```
-
-This shows that `root` is the user `0` and it's primary group (GID) is group `0`. It also states that it only belongs to one group, which is the `root` group (`0`).
-
-## Create Team User Account
-
-### Head Node
-
-Let us now create a user account on the head node:
-
-1. Log into the head node
-
-2. Use the `adduser` command to create a new user called `centos` and then give it a password.
-
-    ```bash
-    [root@headnode ~]$ adduser -U -m centos
-    [root@headnode ~]$ passwd centos
-    ```
-
-    `-U` tells `adduser` to create a group for the user and `-m` means to create the user home directory.
-
-3. Check the ID of the new user
-
-    ```bash
-    [root@headnode ~]$ id centos
-    ```
-
-    You'll see something like the following:
-
-    ```bash
-    uid=1000(centos) gid=1000(centos) groups=1000(centos)
-    ```
-
-    As you can tell, it has a different ID for the user and group than `root`.
-
-### Compute Node
-
-Log into thetest compute node and try to verify that the `centos` user **does NOT exist** there:
-
-```bash
-[root@computenode ~]$ id centos
-```
-
-You'll be prompted with an error:
-
-```bash
-id: ‘centos’: no such user
-```
-
-We will now create the same user here. Follow the steps above for creating the `centos` user on the compute node.
-
-### Super User Access
-
-The `centos` user will not have the privileges to do anything that modify system files or configurations. Many Linux operating systems come with a program called `sudo` which manages and allows normal user accounts to access `root` privileges.
-
-A user is only able to evoke root privileges if their account has been explicitly added to at least one of the following:
-- the default sudo users group (the actual term of this group varies across Linux variants, such as **wheel** **sudoers** etc.)
-- a newly created sudo users group,
-- or, if the user has been explicitly added as a privileged user directly in the Sudo configuration file.
-
-
-The `sudo` program is controlled by a file located at `/etc/sudoers`. This file specifies which users and/or groups can access superuser privileges. In this file for a default **CentOS 8** installation, it specifies that the user `root` is allowed to run all actions and any user in the `wheel` group is also allowed to:
-
-```ini
-# Allow root to run any commands anywhere
-root	ALL=(ALL) 	ALL
-
-# Allows members of the 'sys' group to run networking, software,
-# service management apps and more.
- %sys ALL = NETWORKING, SOFTWARE, SERVICES, STORAGE, DELEGATING, PROCESSES, LOCATE, DRIVERS
-
-# Allows people in group wheel to run all commands
-%wheel	ALL=(ALL)	ALL
-```
-
-To avoid modifying `/etc/sudoers` directly, we can just add `centos` to the `wheel` group.
-
-**On each of your nodes**, add the `centos` user to the `wheel` group:
-
-```bash
-[root@node ~]$ gpasswd -a centos wheel
-```
-
-Now log out and then log back into your node as `centos`. You can use `sudo` one of two ways:
-
-1. To become the `root` user:
-
-    ```bash
-    [centos@headnode ~]$ sudo su
-    ```
-
-2. To run a command with superuser privileges:
-
-    ```bash
-    [centos@headnode ~]$ sudo <command>
-    ```
-
-`sudo` will prompt you for the `centos` user password when you run it.
-
-> **! >>> From now on, you should use the `centos` user for all the configuration you can and should avoid logging in as the `root` user.**
-
-<div style="page-break-after: always;"></div>
-
-# Configuring a Basic Stateful Firewall NFTABLES
+## Front-end Firewall Application Managers
 
 `Firewalld` is a firewall management daemon (service) available for many Linux distributions which acts as a front-end for the `iptables` packet filtering system provided by the Linux kernel. This daemon manages groups of rules using entities called “zones”. **CentOS 8** comes pre-configured with `firewalld`.
 
@@ -493,7 +401,7 @@ The head node will act as the NFS server and will export the `/home/` directory 
 
 The compute node acts as the client for the NFS, which will mount the directory that was exported from the server (`/home`). Once mounted, the compute node will be able to interact with and modify files that exist on the head node and it will be synchronised between the two.
 
-### Mounting An NFS Mount
+### Mounting an NFS Mount
 
 The `nfs-utils` package needs to be installed before you can do anything NFS related on the compute node. Since the directory we want to mount is the `/home` directory, the user can not be in that directory.
 
@@ -517,7 +425,7 @@ The `nfs-utils` package needs to be installed before you can do anything NFS rel
 
 With this mounted, it effectively replaces the `/home` directory of the compute node with the head node's one until it is unmounted. To verify this, create a file on the compute node's `centos` user home directory (`/home/centos`) and see if it is also automatically on the head node. If not, you may have done something wrong and may need to redo the above steps!
 
-### Making The NFS Mount Permanent
+### Making the NFS Mount Permanent
 
 Using `mount` from the command line will not make the mount permanent. It will not survive a reboot. To make it permanent, we need to edit the `/etc/fstab` file on the compute node. This file contains the mappings for each mount of any drives or network locations on boot of the operating system.
 
@@ -555,7 +463,7 @@ Using `mount` from the command line will not make the mount permanent. It will n
 
 <div style="page-break-after: always;"></div>
 
-# Passwordless SSH
+## Passwordless SSH
 
 When managing a large fleet of machines or even when just logging into a single machine repeatedly, it can become very time consuming to have to enter your password repeatedly. Another issue with passwords is that some services may rely on directly connecting to another computer and can't pass a password during login. To get around this, we can use [public key based authentication](https://www.ssh.com/academy/ssh/public-key-authentication) to replace passwords.
 
@@ -600,7 +508,130 @@ How this works is that you copy the public key to the computer that you want to 
 
 <div style="page-break-after: always;"></div>
 
-# Central User Management
+# User Account Management
+
+In enterprise systems and HPC, it's common to manage user accounts from one central location. These network accounts are then synchronised to the machines in your fleet via the network. This is done for safely, security and management purposes.
+
+When creating a user account locally on a Linux operating system, it's provided with a user ID (uid) and a group ID (gid). These are used to tell the operating system which user this is and which groups of permissions they belong to. When you create a user with the default settings of the built-in user creation tools, it will generally increment on from the last UID used. This can be different for different systems. If UID/GID numbers do not match up across the nodes in your cluster, there can be all sorts of headaches for some of the tools and services that we will set up later in this competition.
+
+We're going to demonstrate some of this.
+
+Right now you have one user: `root`. `root` is the default super-user of Linux operating systems. It is all powerful. It is generally **NOT recommended** to operate as `root` for the majority of things you would do on a system. This is to prevent things from going wrong.
+
+When logged in to the head node or compute node, check the UID and GID of `root` by using the `id` command.
+
+```bash
+~$ id
+```
+
+You should see something like the following:
+
+```bash
+uid=0(root) gid=0(root) groups=0(root) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+```
+
+This shows that `root` is the user `0` and it's primary group (GID) is group `0`. It also states that it only belongs to one group, which is the `root` group (`0`).
+
+## Create Team Captain User Account
+
+### Head Node
+
+Let us now create a user account on the head node:
+
+1. Log into the head node
+
+2. Use the `adduser` command to create a new user called `centos` and then give it a password.
+
+    ```bash
+    [root@headnode ~]$ adduser -U -m centos
+    [root@headnode ~]$ passwd centos
+    ```
+
+    `-U` tells `adduser` to create a group for the user and `-m` means to create the user home directory.
+
+3. Check the ID of the new user
+
+    ```bash
+    [root@headnode ~]$ id centos
+    ```
+
+    You'll see something like the following:
+
+    ```bash
+    uid=1000(centos) gid=1000(centos) groups=1000(centos)
+    ```
+
+    As you can tell, it has a different ID for the user and group than `root`.
+
+### Compute Node
+
+Log into thetest compute node and try to verify that the `centos` user **does NOT exist** there:
+
+```bash
+[root@computenode ~]$ id centos
+```
+
+You'll be prompted with an error:
+
+```bash
+id: ‘centos’: no such user
+```
+
+We will now create the same user here. Follow the steps above for creating the `centos` user on the compute node.
+
+### Super User Access
+
+The `centos` user will not have the privileges to do anything that modify system files or configurations. Many Linux operating systems come with a program called `sudo` which manages and allows normal user accounts to access `root` privileges.
+
+A user is only able to evoke root privileges if their account has been explicitly added to at least one of the following:
+- the default sudo users group (the actual term of this group varies across Linux variants, such as **wheel** **sudoers** etc.)
+- a newly created sudo users group,
+- or, if the user has been explicitly added as a privileged user directly in the Sudo configuration file.
+
+
+The `sudo` program is controlled by a file located at `/etc/sudoers`. This file specifies which users and/or groups can access superuser privileges. In this file for a default **CentOS 8** installation, it specifies that the user `root` is allowed to run all actions and any user in the `wheel` group is also allowed to:
+
+```ini
+# Allow root to run any commands anywhere
+root	ALL=(ALL) 	ALL
+
+# Allows members of the 'sys' group to run networking, software,
+# service management apps and more.
+ %sys ALL = NETWORKING, SOFTWARE, SERVICES, STORAGE, DELEGATING, PROCESSES, LOCATE, DRIVERS
+
+# Allows people in group wheel to run all commands
+%wheel	ALL=(ALL)	ALL
+```
+
+To avoid modifying `/etc/sudoers` directly, we can just add `centos` to the `wheel` group.
+
+**On each of your nodes**, add the `centos` user to the `wheel` group:
+
+```bash
+[root@node ~]$ gpasswd -a centos wheel
+```
+
+Now log out and then log back into your node as `centos`. You can use `sudo` one of two ways:
+
+1. To become the `root` user:
+
+    ```bash
+    [centos@headnode ~]$ sudo su
+    ```
+
+2. To run a command with superuser privileges:
+
+    ```bash
+    [centos@headnode ~]$ sudo <command>
+    ```
+
+`sudo` will prompt you for the `centos` user password when you run it.
+
+> **! >>> From now on, you should use the `centos` user for all the configuration you can and should avoid logging in as the `root` user.**
+
+<div style="page-break-after: always;"></div>
+
+
 
 ## Out-Of-Sync Users and Groups
 
@@ -674,7 +705,25 @@ Do this command for:
 - `unwittinguser` on the compute node.
 - `outofsync` on the compute node.
 
-## Ansible User Declarationx
+## Ansible User Declaration
+
+### Installing and Configuring Ansible
+
+### Create Team Member Accounts
+
+# Remote Access to Your Cluster and Tunneling
+
+## Local Port Forwarding
+
+## Dynamic Port Forwarding
+### Web Browser and SOCKS5 Proxy Configuration
+
+## WirGuard VPN Cluster Access
+
+## ZeroTier
+
+## X11 Forwarding
+
 ## (Delete)FreeIPA <img src="./resources/freeipa.png" width=2.1% />
 
 FreeIPA is a collection of tools that work together to provide central user account management. It provides identity and authentication services for Linux environments. It can also manage DNS and NTP, but we won't use it for that purpose in this tutorial series. Using FreeIPA, you will be able to keep your cluster user account IDs synchronised and manage everything from one central place.
