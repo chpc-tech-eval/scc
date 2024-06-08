@@ -13,6 +13,9 @@ The goal of this tutorial is to introduce you to the competition platform and fa
 1. [Table of Contents](#table-of-contents)
 1. [Structure of the Competition](#structure-of-the-competition)
     1. [Getting Help](#getting-help)
+        1. [GitHub Discussions Page](#github-discussions-page)
+        1. [GitHub Issues Page](#github-issues-page)
+        1. [Using Chat GPT4](#using-chat-gpt4)
     1. [Timetable](#timetable)
     1. [Scoring](#scoring)
     1. [Instructions for Mentors](#instructions-for-mentors)
@@ -21,7 +24,7 @@ The goal of this tutorial is to introduce you to the competition platform and fa
 1. [Deliverables](#deliverables)
     1. [Project](#project)
     1. [Technical Knowledge Assessment](#technical-knowledge-assessment)
-1. [Links to Lecture Recordings](#links-to-lecture-recordings)
+1. [Links to Livestreams and Lecture Recordings](#links-to-livestreams-and-lecture-recordings)
     1. [Day 1 - Welcome, Introduction and Getting Started](#day-1---welcome-introduction-and-getting-started)
     1. [Day 2 - HPC Hardware, HPC Networking and Systems Administration](#day-2---hpc-hardware-hpc-networking-and-systems-administration)
     1. [Day 3 - Benchmarking, Compilation and Parallel Computing](#day-3---benchmarking-compilation-and-parallel-computing)
@@ -44,6 +47,12 @@ The goal of this tutorial is to introduce you to the competition platform and fa
 # Structure of the Competition
 
 ## Getting Help
+
+### GitHub Discussions Page
+
+### GitHub Issues Page
+
+### Using Chat GPT4
 
 ## Timetable
 
@@ -108,7 +117,7 @@ Below is a table with a number of Linux system commands and utilities that you *
 
 ## Technical Knowledge Assessment
 
-# Links to Lecture Recordings
+# Links to Livestreams and Lecture Recordings
 
 ## Day 1 - Welcome, Introduction and Getting Started
 
@@ -143,7 +152,7 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
 1. [Launching your First Open Stack Virtual Machine Instance](tutorial1/README.md#launching-your-first-open-stack-virtual-machine-instance)
     1. [Accessing the NICIS Cloud](tutorial1/README.md#accessing-the-nicis-cloud)
     1. [Verify your Teams' Project Workspace and Available Resources](tutorial1/README.md#verify-your-teams-project-workspace-and-available-resources)
-    1. [Generating SSH Keys](tutorial1/README.md#generating-ssh-keys)
+    1. [Generating SSH Keys](tutorial1/README.md#generating-ssh)
     1. [Launch a New Instance](tutorial1/README.md#launch-a-new-instance)
     1. [Linux Flavors and Distributions](tutorial1/README.md#linux-flavors-and-distributions)
         1. [Desktop Usage vs Server](tutorial1/README.md#desktop-usage-vs-server)
@@ -163,7 +172,7 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
         1. [Dissociating and Releasing Floating IPs](tutorial1/README.md#dissociating-and-releasing-floating-ips)
 1. [Introduction to Basic Linux Administration](tutorial1/README.md#introduction-to-basic-linux-administration)
     1. [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](tutorial1/README.md#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
-        1. [SSH Through a Linux Terminal or Windows PowerShell](tutorial1/README.md#ssh-through-a-linux-terminal-or-windows-powershell)
+        1. [SSH Through a Linux Terminal, MobaXTerm or Windows PowerShell](tutorial1/README.md#ssh-through-a-linux-terminal-mobaxterm-or-windows-powershell)
         1. [Windows PuTTY](tutorial1/README.md#windows-putty)
         1. [Username and Password](tutorial1/README.md#username-and-password)
         1. [Running Basic Networking Commands](tutorial1/README.md#running-basic-networking-commands)
@@ -172,6 +181,7 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
     1. [Redirecting `>>` Console Output to a File](tutorial1/README.md#redirecting--console-output-to-a-file)
     1. [GNU `history` Library](tutorial1/README.md#gnu-history-library)
     1. [Brief Introduction to Text Editors (Vi vs Vim vs Nano)](tutorial1/README.md#brief-introduction-to-text-editors-vi-vs-vim-vs-nano)
+        1. [Your First Chat GPT Query](tutorial1/README.md#your-first-chat-gpt-query)
         1. [Your First Shell Script](tutorial1/README.md#your-first-shell-script)
     1. [Privilege Escalation and `sudo`](tutorial1/README.md#privilege-escalation-and-sudo)
     1. [Linux Services - Understanding `journalctl` and `systemctl`](tutorial1/README.md#linux-services---understanding-journalctl-and-systemctl)
@@ -179,17 +189,17 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
         1. [Resolv.conf](tutorial1/README.md#resolvconf)
         1. [Failed SSH Brute Force Login Attempts](tutorial1/README.md#failed-ssh-brute-force-login-attempts)
     1. [Verifying Instance Hostname and `/etc/hosts` File](tutorial1/README.md#verifying-instance-hostname-and-etchosts-file)
-    1. [Linux Binaries, Libraries and Package Management](tutorial1/README.md#linux-binaries-libraries-and-package-management)
-        1. [User Environment and the `PATH` Variable](tutorial1/README.md#user-environment-and-the-path-variable)
-    1. [Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark](tutorial1/README.md#install-dependencies-and-fetch-source-files-for-high-performance-linpack-hpl-benchmark)
-        1. [Install the GNU Compiler Collection (GCC)](tutorial1/README.md#install-the-gnu-compiler-collection-gcc)
-        1. [Install OpenMPI](tutorial1/README.md#install-openmpi)
-        1. [Install ATLAS Math Library](tutorial1/README.md#install-atlas-math-library)
-        1. [Fetch and Extract the HPC Source Tarball](tutorial1/README.md#fetch-and-extract-the-hpc-source-tarball)
-        1. [Copy and Edit the Makefile for _your_ Target Architecture](tutorial1/README.md#copy-and-edit-the-makefile-for-_your_-target-architecture)
-    1. [Compile the HPL Source Code to Produce an Executable Binary](tutorial1/README.md#compile-the-hpl-source-code-to-produce-an-executable-binary)
-        1. [Editing _your_ PATH Variable](tutorial1/README.md#editing-_your_-path-variable)
-            1. [Dynamic and Static Libraries: Editing _Your_ ATLAS Shared Object Files](tutorial1/README.md#dynamic-and-static-libraries-editing-_your_-atlas-shared-object-files)
+1. [Linux Binaries, Libraries and Package Management](tutorial1/README.md#linux-binaries-libraries-and-package-management)
+    1. [User Environment and the `PATH` Variable](tutorial1/README.md#user-environment-and-the-path-variable)
+1. [Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark](tutorial1/README.md#install-dependencies-and-fetch-source-files-for-high-performance-linpack-hpl-benchmark)
+    1. [Install the GNU Compiler Collection (GCC)](tutorial1/README.md#install-the-gnu-compiler-collection-gcc)
+    1. [Install OpenMPI](tutorial1/README.md#install-openmpi)
+    1. [Install ATLAS Math Library](tutorial1/README.md#install-atlas-math-library)
+    1. [Fetch and Extract the HPC Source Tarball](tutorial1/README.md#fetch-and-extract-the-hpc-source-tarball)
+    1. [Copy and Edit the Makefile for _your_ Target Architecture](tutorial1/README.md#copy-and-edit-the-makefile-for-_your_-target-architecture)
+1. [Compile the HPL Source Code to Produce an Executable Binary](tutorial1/README.md#compile-the-hpl-source-code-to-produce-an-executable-binary)
+    1. [Editing _your_ PATH Variable](tutorial1/README.md#editing-_your_-path-variable)
+        1. [Dynamic and Static Libraries: Editing _Your_ ATLAS Shared Object Files](tutorial1/README.md#dynamic-and-static-libraries-editing-_your_-atlas-shared-object-files)
     1. [Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`](tutorial1/README.md#configuring-_your_-hpldat-file-using-lscpu-and-lsmem)
 
 ## Tutorial 2
@@ -201,17 +211,21 @@ Tutorial 2 deals with reverse proxy access for internal websites, central authen
 1. [Accessing Your Compute Node](tutorial2/README.md#accessing-your-compute-node)
     1. [IP Addresses and Routing](tutorial2/README.md#ip-addresses-and-routing)
     1. [Command Line Proxy Jump Directive](tutorial2/README.md#command-line-proxy-jump-directive)
-    1. [Manipulating Files and Directories](tutorial2/README.md#manipulating-files-and-directories)
-        1. [List Directory `ls`](tutorial2/README.md#list-directory-ls)
-        1. [Change Directory `cd`](tutorial2/README.md#change-directory-cd)
-        1. [Move File or Directory `mv`](tutorial2/README.md#move-file-or-directory-mv)
-        1. [Make a New Directory `mkdir`](tutorial2/README.md#make-a-new-directory-mkdir)
-        1. [Remove File or Directory `rm`](tutorial2/README.md#remove-file-or-directory-rm)
-        1. [Recommended Project Folder Structure](tutorial2/README.md#recommended-project-folder-structure)
+        1. [Setting a Temporary Password on your Compute Node](tutorial2/#setting-a-temporary-passworwd-on-your-compute-node)
+    1. [Generating SSH Keys on Your Head Node](tutorial2/README.md#generating-ssh-keys-on-your-head-node)
+1. [Manipulating Files and Directories](tutorial2/README.md#manipulating-files-and-directories)
+    1. [List Directory `ls`](tutorial2/README.md#list-directory-ls)
+    1. [Change Directory `cd`](tutorial2/README.md#change-directory-cd)
+    1. [Copy File or Directory `cp`](tutorial2/README.md#copy-file-or-directory-cp)
+    1. [Move File or Directory `mv`](tutorial2/README.md#move-file-or-directory-mv)
+    1. [Make a New Directory `mkdir`](tutorial2/README.md#make-a-new-directory-mkdir)
+    1. [Remove File or Directory `rm`](tutorial2/README.md#remove-file-or-directory-rm)
+    1. [Recommended Project Folder Structure](tutorial2/README.md#recommended-project-folder-structure)
+1. [Verifying Networking Setup](tutorial2/README.md#verifying-networking-setup)
+    1. [Head Node](tutorial2/README.md#head-node)
+    1. [Compute Node](tutorial2/README.md#compute-node)
+    1. [Editing `/etc/hosts` File](tutorial2/README.md#editing-etchosts-file)
     1. [Permanent `~/.ssh/config` Configuration](tutorial2/README.md#permanent-sshconfig-configuration)
-    1. [Verifying Networking Setup](tutorial2/README.md#verifying-networking-setup)
-        1. [Head Node](tutorial2/README.md#head-node)
-        1. [Compute Node](tutorial2/README.md#compute-node)
 1. [Understanding the Roles of the Head Node and Compute Node](tutorial2/README.md#understanding-the-roles-of-the-head-node-and-compute-nodes)
 1. [Basic System Monitoring](tutorial2/README.md#basic-system-monitoring)
 1. [Terminal Multiplexers](tutorial2/README.md#terminal-multiplexers)
@@ -228,6 +242,8 @@ Tutorial 2 deals with reverse proxy access for internal websites, central authen
         1. [Mounting An NFS Mount](tutorial2/README.md#mounting-an-nfs-mount)
         1. [Making The NFS Mount Permanent](tutorial2/README.md#making-the-nfs-mount-permanent)
     1. [Passwordless SSH](tutorial2/README.md#passwordless-ssh)
+        1. [Understanding `~/.ssh/authorized_keys`](tutorial2/README.md#understanding-ssh/authorized_keys)
+        1. [User Permissions and Ownership](tutorial2/README.md#user-permissions-and-ownership
 1. [User Account Management](tutorial2/README.md#user-account-management)
     1. [Create Team Captain User Account](tutorial2/README.md#create-team-captain-user-account)
         1. [Head Node](tutorial2/README.md#head-node-1)

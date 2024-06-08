@@ -11,20 +11,24 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 1. [Accessing Your Compute Node](#accessing-your-compute-node)
     1. [IP Addresses and Routing](#ip-addresses-and-routing)
     1. [Command Line Proxy Jump Directive](#command-line-proxy-jump-directive)
-    1. [Manipulating Files and Directories](#manipulating-files-and-directories)
-        1. [List Directory `ls`](#list-directory-ls)
-        1. [Change Directory `cd`](#change-directory-cd)
-        1. [Move File or Directory `mv`](#move-file-or-directory-mv)
-        1. [Make a New Directory `mkdir`](#make-a-new-directory-mkdir)
-        1. [Remove File or Directory `rm`](#remove-file-or-directory-rm)
-        1. [Recommended Project Folder Structure](#recommended-project-folder-structure)
+        1. [Setting a Temporary Password on your Compute Node](#setting-a-temporary-passworwd-on-your-compute-node)
+    1. [Generating SSH Keys on your Head Node](#generating-ssh-keys-on-your-head-node)
+1. [Manipulating Files and Directories](#manipulating-files-and-directories)
+    1. [List Directory `ls`](#list-directory-ls)
+    1. [Change Directory `cd`](#change-directory-cd)
+    1. [Copy File or Directory `cp`](#copy-file-or-directory-cp)
+    1. [Move File or Directory `mv`](#move-file-or-directory-mv)
+    1. [Make a New Directory `mkdir`](#make-a-new-directory-mkdir)
+    1. [Remove File or Directory `rm`](#remove-file-or-directory-rm)
+    1. [Recommended Project Folder Structure](#recommended-project-folder-structure)
+1. [Verifying Networking Setup](#verifying-networking-setup)
+    1. [Head Node](#head-node)
+    1. [Compute Node](#compute-node)
+    1. [Editing `/etc/hosts` File](#editing-etchosts-file)
     1. [Permanent `~/.ssh/config` Configuration](#permanent-sshconfig-configuration)
-    1. [Verifying Networking Setup](#verifying-networking-setup)
-        1. [Head Node](#head-node)
-        1. [Compute Node](#compute-node)
 1. [Understanding the Roles of the Head Node and Compute Node](#understanding-the-roles-of-the-head-node-and-compute-nodes)
-1. [Basic System Monitoring](#basic-system-monitoring)
-1. [Terminal Multiplexers](#terminal-multiplexers)
+    1. [Basic System Monitoring](#basic-system-monitoring)
+    1. [Terminal Multiplexers](#terminal-multiplexers)
 1. [Configuring a Simple Stateful Firewall](#configuring-a-simple-stateful-firewall)
     1. [IPTables](#iptables)
     1. [NFTables](#nftables)
@@ -38,6 +42,8 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
         1. [Mounting An NFS Mount](#mounting-an-nfs-mount)
         1. [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
     1. [Passwordless SSH](#passwordless-ssh)
+        1. [Understanding `~/.ssh/authorized_keys`](#understanding-ssh/authorized_keys)
+        1. [User Permissions and Ownership](#user-permissions-and-ownership)
 1. [User Account Management](#user-account-management)
     1. [Create Team Captain User Account](#create-team-captain-user-account)
         1. [Head Node](#head-node-1)
@@ -118,18 +124,98 @@ Before your access your compute node, we must verify a few details on the head n
 
 <p align="center"><img alt="OpenStack Running State." src="./resources/windows_powershell_firsttime_ssh.png" width=900 /></p>
 
+TODO: High level explanation of OpenStack's automatic network configuration and basically how it creates virtual switch for their private network
+
+TODO: Maybe remove the default routing table on compute node and route through headnode?
 
 ## Command Line Proxy Jump Directive
-## Manipulating Files and Directories
-### List Directory `ls`
-### Change Directory `cd`
-### Move File or Directory `mv`
-### Make a New Directory `mkdir`
-### Remove File or Directory `rm`
-### Recommended Project Folder Structure
-## Permanent `~/.ssh/config` Configuration
-## Verifying Networking Setup
-### Head Node
+
+From you workstation, using either MobaXTerm or Windows Powershell, you can `ssh` directly into your compute node by first making an **ssh** connection too your head node and then establishing a TCP forwarding connection to your compute node. Using this method, the SSH keys for both your head node and compute node must reside on your local workstation:
+
+<details>
+<summary>Head node and compute node deployed with the *SAME* ssh key</summary>
+
+```bash
+ssh -i <path to ssh key> -J <user>@<head node publicly accessible ip> <user>@<compute node private internal ip>
+```
+
+<p align="center"><img alt="SSH into Compute Node." src="./resources/ssh_into_compute_node.png" width=900 /></p>
+
+For example, in the screenshot above, the head node `scc24_arch_hn` and the compute node `scc24_arch_cn` have been created with the same key pair `nlisa at grogu`. The head node has a public facing IP address of **154.114.57.126** and the compute node has an private, internal IP address of **10.100.0.191**, then you would connect to this compute node using:
+
+```bash
+ssh -i ~/.ssh/id_ed25519_sebowa -J arch@154.114.57.126 arch@10.100.0.191
+```
+
+> [!NOTE]
+> Remember to use the **ssh keys**, **usernames** and **ip addresses** corresponding to *your* nodes.
+
+</details>
+
+<details>
+<summary>Head node and compute nods deployed using different key pairs</summary>
+
+```bash
+ssh -o ProxyCommand="ssh -i <path to head node ssh key> -l <user> -W %h:%p <head node ip>" -i <path to  compute node ip> <user>@<compute node ip> 
+```
+
+</details>
+
+### Setting a Temporary Password on your Compute Node
+
+Once you have successfully logged into your compute node, you can set a password for the default user:
+```bash
+sudo passwd <user>
+```
+
+<p align="center"><img alt="Change Compute Node Password." src="./resources/ssh_compute_node_passwd.png" width=900 /></p>
+
+
+## Generating SSH Keys on your Head Node
+
+Just as you did so in the previous tutorial when you generated SSH keys [on your workstation](../tutorial1/README.md#generating-ssh-keys), you're now going to do the same on your head node. You're then going to copy the newly created key onto you head node and test the new SSH connection, by logging into your compute node.
+
+1. Generate an SSH key on your **head node**:
+
+   ```bash
+   ssh-keygen -t ed25519
+   ```
+   
+   - *Enter file in which to save the key* - Press `Enter`,
+   - *Enter passphrase (empty for no passphrase)* - Leave empty and press `Enter`,
+   - *Enter same passphrase again* - Leave empty and press `Enter` again,
+1. Copy the newly created SSH key to your **compute node**:
+
+   ```bash
+   ssh-copy-id ~/.ssh/id_ed25519 <user>@<compute node ip>
+   ```
+   
+1. From your **head node**, SSH into your **compute node**:
+   ```bash
+   
+   ssh <user>@<compute node ip>
+   
+   ```
+1. Once you've successfully logged into your **compute node**, list and examine the contents of the `~/.ssh/authorized_keys` file:
+   ```bash
+   ls -l ~/.ssh/id_ed25519
+   cat ~/.ssh/id_ed25519
+   ```
+
+<p align="center"><img alt="Generate Key and SSH into compute" src="./resources/ssh_keygen_login_compute_node.png" width=900 /></p>
+
+
+# Manipulating Files and Directories
+## List Directory `ls`
+## Change Directory `cd`
+## Copy File or Directory `cp`
+## Move File or Directory `mv`
+## Make a New Directory `mkdir`
+## Remove File or Directory `rm`
+## The `history` Command
+## Recommended Project Folder Structure
+# Verifying Networking Setup
+
 You have been assigned IP addresses for your VMs. To identify these, go to the OpenStack user interface and navigate to `Compute -> Instances`. In the list of virtual machines presented to you, click the name of the virtual machine instance, and navigate to the "**Interfaces**" tab (refer to [Figure 4.1 below](#fig4.1)). This list contains the IP addresses assigned to each of your VM network interfaces.
 
 For example, if you have `enp3s0` and `enp4s0`, then you should see two IP addresses listed in the OpenStack interface, such as `10.128.24.x` and `10.0.0.x`. **You absolutely have to use the correct IP addresses for the correct interfaces, as your network may not work if you do not.**
@@ -148,7 +234,7 @@ You can verify which network interface you are modifying by corroborating the [M
 
 **CentOS 8** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
 
-p### Head Node
+### Head Node
 
 For the **head node**, create a new network definition using the `nmtui` graphical tool using the following steps:
 
@@ -197,7 +283,7 @@ For the **head node**, create a new network definition using the `nmtui` graphic
     - `ip a` will show you the interfaces and their assigned IP addresses.
     - `ip route` will list the interfaces and their assigned routes.
 
-### Compute Node
+## Compute Node
 
 You must also set the static IP addressing for all other nodes in your cluster. In order to explore different options for doing so, please use the `nmcli` command. This is the command-line interface (CLI) for `Network Manager`, which is an alternative to the above `nmtui`, which is simply a graphical wrapper for the CLI.
 
@@ -213,13 +299,16 @@ If you get a timeout, then things are not working. Try to check your network con
 
 _**Please read [what-is-ip-routing](https://study-ccna.com/what-is-ip-routing/) to gain a better understanding of IP routing.**_ This will be impoortant for the rest of this competition and can help your understanding when debugging issues.
 
-<div style="page-break-after: always;"></div>
+## Editing `/etc/hosts` File
 
+## Permanent `~/.ssh/config` Configuration
 
 # Understanding the Roles of the Head Node and Compute Node
-Networking Diagram
-# Basic System Monitoring 
-# Terminal Multiplexers
+Networking Diagram and client server model
+System software need to be installed on both head node and compute nodes
+Do not ssh endlessly between head and compute nodes, one terminal example or multiplexing
+## Basic System Monitoring 
+## Terminal Multiplexers
 # Configuring a Simple Stateful Firewall
 
 ## IPTables
@@ -502,11 +591,13 @@ When managing a large fleet of machines or even when just logging into a single 
 
 6. SSH to your compute node without a password and land on the shared filesystem. If you are prompted with a password it means that something is not set up correctly.
 
-> **! >>> `chmod` and `chown` are Linux permission and ownership modification commands. To learn more about these commands and how they work, please go to the following link: [https://www.unixtutorial.org/difference-between-chmod-and-chown/](https://www.unixtutorial.org/difference-between-chmod-and-chown/).**
+# Understanding `~/.ssh/authorized_keys`
 
 How this works is that you copy the public key to the computer that you want to connect to without a password's `authorized_keys` file. When you SSH to the machine that you copied your public key to, the `ssh` tool will send a challenge that can only be decrypted if the target machine has the public key and the local machine has the private key. If this succeeds, then you are who you say you are to the target computer and you do not require a password. [Please read this for more detailed information](https://www.ssh.com/academy/ssh/public-key-authentication).
 
-<div style="page-break-after: always;"></div>
+# User Permissions and Ownership
+> **! >>> `chmod` and `chown` are Linux permission and ownership modification commands. To learn more about these commands and how they work, please go to the following link: [https://www.unixtutorial.org/difference-between-chmod-and-chown/](https://www.unixtutorial.org/difference-between-chmod-and-chown/).**
+
 
 # User Account Management
 

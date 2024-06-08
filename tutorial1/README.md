@@ -52,7 +52,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
         1. [Dissociating and Releasing Floating IPs](#dissociating-and-releasing-floating-ips)
 1. [Introduction to Basic Linux Administration](#introduction-to-basic-linux-administration)
     1. [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
-        1. [SSH Through a Linux Terminal or Windows PowerShell](#ssh-through-a-linux-terminal-or-windows-powershell)
+        1. [SSH Through a Linux Terminal, MobaXTerm or Windows PowerShell](#ssh-through-a-linux-terminal-mobaxterm-or-windows-powershell)
         1. [Windows PuTTY](#windows-putty)
         1. [Username and Password](#username-and-password)
         1. [Running Basic Networking Commands](#running-basic-networking-commands)
@@ -61,6 +61,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
     1. [Redirecting `>>` Console Output to a File](#redirecting--console-output-to-a-file)
     1. [GNU `history` Library](#gnu-history-library)
     1. [Brief Introduction to Text Editors (Vi vs Vim vs Nano)](#brief-introduction-to-text-editors-vi-vs-vim-vs-nano)
+        1. [Your First Chat GPT Query](your-first-chat-gpt-query)
         1. [Your First Shell Script](#your-first-shell-script)
     1. [Privilege Escalation and `sudo`](#privilege-escalation-and-sudo)
     1. [Linux Services - Understanding `journalctl` and `systemctl`](#linux-services---understanding-journalctl-and-systemctl)
@@ -338,6 +339,9 @@ The following table summarizes a few Linux distros that *may* be available on th
 | Portage                   | [Gentoo](https://www.gentoo.org/)                                                                   |             |                                       |                                      |
 |                           |                                                                                                     |             |                                       |                                      |
 |                           |                                                                                                     |             |                                       |                                      |
+| APK                       | [Alpine Linux]                                                                                      |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
+|                           |                                                                                                     |             |                                       |                                      |
 | Source-Based              | [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/)                                       |             |                                       |                                      |
 |                           |                                                                                                     |             |                                       |                                      |
 
@@ -448,12 +452,15 @@ The VMs are running minimalist, cloud-based operating systems that are not packa
 > [!NOTE]
 > You will require the **PATH** to the private SSH key that you have previously [generated](#generating-ssh-keys), as well as the Floating IP address [associated](#associating-an-externally-Accessible-ip-address) to your VM. Depending on the specific distribution your Team chose to implement for your Head Node, the ***default username** will vary accordingly.
 
-### SSH Through a Linux Terminal or Windows PowerShell
+### SSH Through a Linux Terminal, MobaXTerm or Windows PowerShell
 
-If your workstation or laptop is running a Linux-based or macOS operating system, or a version of Windows with PowerShell, then you may proceed using a terminal. Most Linux and macOS distributions come preshipped with an SSH client included via `OpenSSH`.
+If your workstation or laptop is running a Linux-based or macOS operating system, or a version of Windows with MobaXTerm or Windows PowerShell, then you may proceed using a terminal. Most Linux and macOS distributions come preshipped with an SSH client included via `OpenSSH`.
 
 <details>
+
 <summary>Alma Linux</summary>
+> [!NOTE]
+> In an Alma Linux cloud image, the default login account is **alma**.
 
 ```bash
    ssh -i ~/.ssh/id_ed25519 alma@154.114.57.<YOUR Head Node IP>
@@ -462,6 +469,8 @@ If your workstation or laptop is running a Linux-based or macOS operating system
 
 <details>
 <summary>Arch Linux</summary>
+> [!NOTE]
+> In an Arch Linux cloud image, the default login account is **arch**.
 
 ```bash
    ssh -i ~/.ssh/id_ed25519 arch@154.114.57.<YOUR Head Node IP>
@@ -470,6 +479,8 @@ If your workstation or laptop is running a Linux-based or macOS operating system
 
 <details>
 <summary>CentOS Stream</summary>
+> [!NOTE]
+> In a CentOS Linux cloud image, the default login account is **centos**.
 
 ```bash
    ssh -i ~/.ssh/id_ed25519 centos@154.114.57.<YOUR Head Node IP>
@@ -478,6 +489,8 @@ If your workstation or laptop is running a Linux-based or macOS operating system
 
 <details>
 <summary>Rocky Linux</summary>
+> [!NOTE]
+> In a Rocky Linux cloud image, the default login account is **rocky**.
 
 ```bash
    ssh -i ~/.ssh/id_ed25519 rocky@154.114.57.<YOUR Head Node IP>
@@ -486,6 +499,8 @@ If your workstation or laptop is running a Linux-based or macOS operating system
 
 <details>
 <summary>Ubuntu Server</summary>
+> [!NOTE]
+> In an Ubuntu Linux cloud image, the default login account is **ubuntu**.
 
 ```bash
    ssh -i ~/.ssh/id_ed25519 ubuntu@154.114.57.<YOUR Head Node IP>
@@ -531,6 +546,12 @@ Once logged into your head node, you can now make use of the [previously discuss
 ## Redirecting `>>` Console Output to a File
 ## GNU `history` Library
 ## Brief Introduction to Text Editors (Vi vs Vim vs Nano)
+### Your First Chat GPT Query
+
+<p align="center"><img alt="Chat GPT Query on Text Editors." src="./resources/chatgpt_text_editors.png" width=600 /></p>
+
+<p align="center"><img alt="Chat GPT Query on Installing Nano." src="./resources/chat_install_nano_on_linux.png" width=600 /></p>
+
 ### Your First Shell Script
 ## Privilege Escalation and `sudo`
 ## Linux Services - Understanding `journalctl` and `systemctl`
