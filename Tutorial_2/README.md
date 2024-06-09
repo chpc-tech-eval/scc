@@ -497,21 +497,21 @@ When managing a large fleet of machines or even when just logging into a single 
 
 1. Generate an SSH key-pair for your user. This will create a public and private key for your user in `/home/<username>/.ssh`. The private key is your identity and the public key is what you share with other computers.
 
-    ```bash
+      ```bash
     [rocky@headnode ~]$ ssh-keygen
-    ```
+      ```
     You can hit enter with the defaults/empty for all the prompts.
     Ensure that user password is set on both headnode and computes nodes 
 
       ```bash
     [rocky@headnode ~]$ sudo passwd rocky 
       ```
-      
+
     Use ssh-copy-id to copy the public key generated from one machine to another 
 
-        ```bash
+      ```bash
     [rocky@headnode ~]$ ssh-copy-id rocky@computenode 
-        ```
+      ```
 
 
         Enter password when prompted
