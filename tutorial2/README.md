@@ -13,6 +13,9 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
     1. [Command Line Proxy Jump Directive](#command-line-proxy-jump-directive)
         1. [Setting a Temporary Password on your Compute Node](#setting-a-temporary-passworwd-on-your-compute-node)
     1. [Generating SSH Keys on your Head Node](#generating-ssh-keys-on-your-head-node)
+1. [Understanding the Roles of the Head Node and Compute Nodes](#understanding-the-roles-of-the-head-node-and-compute-nodes)
+    1. [Basic System Monitoring](#basic-system-monitoring)
+    1. [Terminal Multiplexers](#terminal-multiplexers)
 1. [Manipulating Files and Directories](#manipulating-files-and-directories)
     1. [List Directory `ls`](#list-directory-ls)
     1. [Change Directory `cd`](#change-directory-cd)
@@ -26,9 +29,6 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
     1. [Compute Node](#compute-node)
     1. [Editing `/etc/hosts` File](#editing-etchosts-file)
     1. [Permanent `~/.ssh/config` Configuration](#permanent-sshconfig-configuration)
-1. [Understanding the Roles of the Head Node and Compute Node](#understanding-the-roles-of-the-head-node-and-compute-nodes)
-    1. [Basic System Monitoring](#basic-system-monitoring)
-    1. [Terminal Multiplexers](#terminal-multiplexers)
 1. [Configuring a Simple Stateful Firewall](#configuring-a-simple-stateful-firewall)
     1. [IPTables](#iptables)
     1. [NFTables](#nftables)
@@ -202,9 +202,140 @@ Just as you did so in the previous tutorial when you generated SSH keys [on your
    cat ~/.ssh/id_ed25519
    ```
 
-<p align="center"><img alt="Generate Key and SSH into compute" src="./resources/ssh_keygen_login_compute_node.png" width=900 /></p>
+<p align="center"><img alt="Generate Key and SSH into compute" src="./resources/install_tmux.png" width=900 /></p>
 
 
+# Understanding the Roles of the Head Node and Compute Node
+Networking Diagram and client server model
+System software need to be installed on both head node and compute nodes
+Do not ssh endlessly between head and compute nodes, one terminal example or multiplexing
+## Terminal Multiplexers
+
+Discuss GNU Screen and [tmux](https://github.com/tmux/tmux/wiki)
+
+
+
+Install `tmux` on your **head node***:
+
+<details>
+<summary>Installing `tmux` using pacman</summary>
+
+```bash
+sudo pacman -Syu tmux
+```
+</details>
+
+<details>
+<summary>Installing `tmux` using `yum`</summary>
+
+```bash
+sudo yum update
+sudo yum install tmux
+```
+</details>
+
+<details>
+<summary>Installing `tmux` using `dnf`</summary>
+
+```bash
+sudo dnf update
+sudo dnf install tmux
+```
+</details>
+
+<details>
+<summary>Installing `tmux` using `apt-get`</summary>
+```bash
+sudo apt-get update
+sudo apt-get install tmux
+```
+
+<p align="center"><img alt="Install Tmux" src="./resources/ssh_keygen_login_compute_node.png" width=900 /></p>
+
+To start a new `tmux` session on your **head node**:
+
+```bash
+tmux
+```
+
+### Working on your Head Node and Compute Node in Two Adjacent Panes
+
+Once you've started a new `tmux` session or daemon or server, on your head node, there are a number of very useful tools you can utilize.
+
+1. Split the terminal vertically into two separate panes:
+   Press and hold `Ctrl` together with `b`. Then release `Ctrl` + `b` and press `"` (i.e. `Shift` + `'`) . The combination of `Ctrl + b` `"`, is denoted by:
+   
+   ```bash
+   C-b "
+   ```
+1. You can switch between the two panes using `Ctrl` + `b` and `o`:
+
+   ```bash
+   C-b o
+   ```
+1. Install `btop` on your **head node**. Depending on the Linux distribution you chose to install:
+   ```bash
+   sudo dnf install btop
+   ```
+   **OR**
+   ```bash
+   sudo yum install btop
+   ```
+   **OR**
+   ```bash
+   sudo pacman -S btop
+   ```
+   **OR**
+   ```bash
+   sudo apt-get install btop
+   ```
+1. Move to the second pane, and ssh into your **compute node** using `Ctrl` + `b` and `o`.
+   ```bash
+   C-b o
+   ```
+1. Ssh into your **compute node** and install `htop`:
+   ```bash
+   ssh <user>@<compute node ip>
+   
+   ```
+   <p align="center"><img alt="Generate Key and SSH into compute" src="./resources/tmux_btop_htop.png" width=900 /></p>
+   
+1. Create a new window within `tmux` using `Ctrl` + `b` and 'c':
+   ```bash
+   C-b c
+   ```
+1. You can cycle between the two windows using `Ctrl` + `b` and `n`:
+   ```bash
+   # Cycle to the next window
+   C-b n
+   
+   # Or cycle to windows 0 and 1 respectively  
+   C-b 0
+   C-b 1
+   ```
+1. Split the new window pane horizontally using `Ctrl` + `b` and `%`.
+   - Run `btop` on your **head node** on one of your panes.
+   - Ssh into your **compute node*** and run `htop` on the other pane.
+   <p align="center"><img alt="Generate Key and SSH into compute" src="./resources/tmux_ssh_run_tops.png" width=900 /></p>
+   <p align="center"><img alt="Generate Key and SSH into compute" src="./resources/tmux_running_htop_btop.png" width=900 /></p>
+
+1. There are many more utilities available within `tmux`. Check the built-in help documentation using `Ctrl` + `b` and `?` (i.e. `Shift` + `/`):
+   ```bash
+   C-b ?
+   ```
+1. Your team must decide which tool you will be using for basic monitoring of your cluster. Choose between `top`, `htop` and `btop` and make sure your choice of application is installed across your cluster.
+
+### Attaching and Detaching Sessions
+
+Should your terminal application close, or if you relocate from the laboratores... write a schlept about remote sessions and servers here
+
+To connect to an existing `tmux` session on your **head node**:
+
+```bash
+tmux attach
+```
+
+## Basic System Monitoring 
 # Manipulating Files and Directories
 ## List Directory `ls`
 ## Change Directory `cd`
@@ -235,6 +366,8 @@ You can verify which network interface you are modifying by corroborating the [M
 **CentOS 8** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
 
 ### Head Node
+
+replace network manager description and use systemd-networked
 
 For the **head node**, create a new network definition using the `nmtui` graphical tool using the following steps:
 
@@ -303,12 +436,6 @@ _**Please read [what-is-ip-routing](https://study-ccna.com/what-is-ip-routing/) 
 
 ## Permanent `~/.ssh/config` Configuration
 
-# Understanding the Roles of the Head Node and Compute Node
-Networking Diagram and client server model
-System software need to be installed on both head node and compute nodes
-Do not ssh endlessly between head and compute nodes, one terminal example or multiplexing
-## Basic System Monitoring 
-## Terminal Multiplexers
 # Configuring a Simple Stateful Firewall
 
 ## IPTables
@@ -450,7 +577,7 @@ Check `chronyc clients` on the head node to see if the compute node is connected
 
 # Network File System
 
-Network File System (NFS) enables you to easily share files and directories over the network. NFS is a distributed file system protocol that we will use to share files between our nodes across our private network. It has a server-client architecture that treats one machine as a server of directories, and multiple machines (clients) can connect to it.
+[Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System) enables you to easily share files and directories over the network. NFS is a distributed file system protocol that we will use to share files between our nodes across our private network. It has a server-client architecture that treats one machine as a server of directories, and multiple machines (clients) can connect to it.
 
 This tutorial will show you how to export a directory on the head node and mount it through the network on the compute nodes. With the shared file system in place it becomes easy to enable **public key based ssh authentication**, which allows you to ssh into all the computers in your cluster without requiring a password.
 
@@ -458,18 +585,17 @@ This tutorial will show you how to export a directory on the head node and mount
 
 The head node will act as the NFS server and will export the `/home/` directory to the compute node. The `/home/` directory contains the home directories of all the the non-`root` user accounts on most default Linux operating system configurations.
 
-1. Firstly, install the NFS service on the head node:
-
-    ```bash
-    [centos@headnode ~]$ sudo dnf install nfs-utils
-    ```
-
-2. We're going to simplify the configuration of NFS by using the older version, 3. To do so, edit the file (you might need to create it) `/etc/sysconfig/nfs` and add the following:
-
-    ```conf
-    MOUNTD_NFS_V3="yes"
-    RPCNFSDARGS="-N 4"
-    ```
+1. Firstly, install the NFS service on the ***head node**:
+ 
+   ```bash
+   sudo dnf install nfs-utils
+   ```
+   
+   For Arch Linux systems 
+   
+   ```bash
+   sudo pacman -S nfs-utils
+   ```
 
 3. NFS shares (directories on the NFS server) are configured in the `/etc/exports` file. Here you specify the directory you want to share, followed by the IP address or range you want to share to and then the options for sharing. We want to export the `/home` directory, so edit `/etc/exports` and add the following:
 
@@ -477,7 +603,7 @@ The head node will act as the NFS server and will export the `/home/` directory 
     /home    10.0.0.0/24(rw,async,insecure,no_root_squash)
     ```
 
-4. Start and enable the `nfs-server` service using `systemctl`.
+4. Start and enable the `nfs-server` service using `systemctl`. Your may need to restart your head node, if you've updated and the kernel module `nfsd` needs to be reloaded.
 
 5. Since we trust our internal network, for the future of this competition we're going to allow all ports of the internal cluster network to be unblocked. **This is not recommended in production environments!**:
 
@@ -555,6 +681,10 @@ Using `mount` from the command line will not make the mount permanent. It will n
 ## Passwordless SSH
 
 When managing a large fleet of machines or even when just logging into a single machine repeatedly, it can become very time consuming to have to enter your password repeatedly. Another issue with passwords is that some services may rely on directly connecting to another computer and can't pass a password during login. To get around this, we can use [public key based authentication](https://www.ssh.com/academy/ssh/public-key-authentication) to replace passwords.
+
+TODO: This section needs a fix and a tidy up use this image below, also get lock and suitcases image / example:
+
+   <p align="center"><img alt="Generate Key and SSH into compute" src="./resources/nfs_cat_pub_key_authorized.png" width=900 /></p>
 
 1. Generate an SSH key-pair for your user. This will create a public and private key for your user in `/home/<username>/.ssh`. The private key is your identity and the public key is what you share with other computers.
 
