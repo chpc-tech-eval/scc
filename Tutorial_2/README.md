@@ -80,19 +80,19 @@ For the head node, create a new network definition using the nmtui graphical too
 First we must make sure that our network interfaces are managed by Network Manager. By default, this should already be the case. Use the following command to check if the network interfaces are managed:
 
 
-~$ `nmcli dev`
+`~$ nmcli dev`
 
 
 You should see something other than "unmanaged" next to each of the interfaces (excluding lo). If any of your network interfaces (other than lo) say "unmanaged", do the following:
 
 
-~$ `nmcli dev set <interface> managed yes`
+`~$ nmcli dev set <interface> managed yes`
 
 
 The nmtui tool is a console-graphical tool used to set up and manage network connections for Network Manager.
 
 
-~$ nmtui
+`~$ nmtui`
 
 
 You'll be presented with a screen, select Edit a connection, followed by <Add> and then Ethernet.
@@ -102,7 +102,7 @@ For IPv4 CONFIGURATION, change <Automatic> to <Manual>. This tells NM that we wa
 
 Addresses: Hit <Add> and enter the IP address (found in OpenStack) for this interface. After the IP address, add the text "/24" to the end. It should read as <ip_address>/24 with no spaces. The "/24" is the subnet mask of the IP address in CIDR notation.
 
-Gateway: Enter the gateway address here. This will be the ACE Lab gateway for the external network of the head node.
+***Gateway: Enter the gateway address here. This will be the Sebowa gateway for the external network of the head node.
 
 DNS servers: Hit <Add> and enter 8.8.8.8. This is the public DNS server of Google and is used to look up website names. (NB: DNS is explained later!)
 Hit <OK> at the bottom of the screen.
@@ -114,8 +114,8 @@ The networks should now be active. You can confirm this by going <Back> and then
 Your head node should now have the correct IP addresses. Exit nmtui and check the networking setup is correct. To do so, use the following commands:
 
 
-~$ ip a
-~$ ip route
+`~$ ip a`
+`~$ ip route`
 
 
 `ip a` will show you the interfaces and their assigned IP addresses.
@@ -132,7 +132,8 @@ https://www.golinuxcloud.com/set-static-ip-rocky-linux-examples/
   Note that the IP addresses used in this web guide will not be the same as the ones that you need to use for your node(s) and some of the commands may not be relevant to you.
 
 At this point you should test connectivity between your nodes. Using the ping command, you can see whether the nodes can speak to each other via the network. From your head node, try to ping your compute node:
-~$ ping <compute_node_ip>
+
+`~$ ping <compute_node_ip>`
 If you get a timeout, then things are not working. Try to check your network configurations again.
 
 
