@@ -115,11 +115,13 @@ Your head node should now have the correct IP addresses. Exit nmtui and check th
 
 
 `~$ ip a`
+
 `~$ ip route`
 
 
 `ip a` will show you the interfaces and their assigned IP addresses.
 ip route will list the interfaces and their assigned routes.
+
 
 Compute Node (nmcli)
 
@@ -134,6 +136,7 @@ https://www.golinuxcloud.com/set-static-ip-rocky-linux-examples/
 At this point you should test connectivity between your nodes. Using the ping command, you can see whether the nodes can speak to each other via the network. From your head node, try to ping your compute node:
 
 `~$ ping <compute_node_ip>`
+
 If you get a timeout, then things are not working. Try to check your network configurations again.
 
 
