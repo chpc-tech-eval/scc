@@ -79,15 +79,21 @@ For the head node, create a new network definition using the nmtui graphical too
 
 First we must make sure that our network interfaces are managed by Network Manager. By default, this should already be the case. Use the following command to check if the network interfaces are managed:
 
-~$ nmcli dev
+
+~$ `nmcli dev`
+
 
 You should see something other than "unmanaged" next to each of the interfaces (excluding lo). If any of your network interfaces (other than lo) say "unmanaged", do the following:
 
-~$ nmcli dev set <interface> managed yes
+
+~$ `nmcli dev set <interface> managed yes`
+
 
 The nmtui tool is a console-graphical tool used to set up and manage network connections for Network Manager.
 
+
 ~$ nmtui
+
 
 You'll be presented with a screen, select Edit a connection, followed by <Add> and then Ethernet.
 
@@ -107,8 +113,11 @@ The networks should now be active. You can confirm this by going <Back> and then
 
 Your head node should now have the correct IP addresses. Exit nmtui and check the networking setup is correct. To do so, use the following commands:
 
+
 ~$ ip a
 ~$ ip route
+
+
 `ip a` will show you the interfaces and their assigned IP addresses.
 ip route will list the interfaces and their assigned routes.
 
@@ -375,8 +384,8 @@ The head node will act as the NFS server and will export the `/home/` directory 
 
     ```bash
     [rocky@headnode ~]$ sudo cat /proc/fs/nfsd/versions
+                        -2 +3 +4 +4.1 +4.2
     ```
-         -2 +3 +4 +4.1 +4.2
      NFS versions 3 and 4 are enabled by default, and version 2 is disabled. NFSv2 is pretty old and outdated, and hence you can see the -ve sign in front of it.
  
  
