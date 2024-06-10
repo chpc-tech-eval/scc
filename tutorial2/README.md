@@ -249,6 +249,7 @@ sudo dnf install tmux
 sudo apt-get update
 sudo apt-get install tmux
 ```
+</details>
 
 <p align="center"><img alt="Install Tmux" src="./resources/ssh_keygen_login_compute_node.png" width=900 /></p>
 
