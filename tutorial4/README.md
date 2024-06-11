@@ -3,39 +3,38 @@
 ## Table of Contents
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
-1. [Checklist](#checklist)
-    1. [(Delete) - Remote Web Service Access](#delete---remote-web-service-access)
-1. [Prometheus](#prometheus)
-    1. [Edit YML Configuration File](#edit-yml-configuration-file)
-    1. [Configuring Prometheus as a Service](#configuring-prometheus-as-a-service)
-    1. [SSH Port Forwarding](#ssh-port-forwarding)
-    1. [Dynamic SSH Forwarding (SOCKS Proxy)](#dynamic-ssh-forwarding-socks-proxy)
-        1. [Configuring Your Browser](#configuring-your-browser)
-    1. [X11 Forwarding](#x11-forwarding)
-1. [Grafana](#grafana)
-    1. [Configuring Grafana Dashboards](#configuring-grafana-dashboards)
-1. [Node Exporter](#node-exporter)
-    1. [Configuring Node Exporter as a Service](#configuring-node-exporter-as-a-service)
-1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
-    1. [Prerequisites](#prerequisites)
-    1. [Head Node Configuration (Server)](#head-node-configuration-server)
-    1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
-    1. [Configure Grafana Dashboard for Slurm](#configure-grafana-dashboard-for-slurm)
-1. [Using Terraform to Automate the Deployment of your OpenStack Instances](#using-terraform-to-automate-the-deployment-of-your-openstack-instances)
-1. [Using Ansisble to Automate the Configuration of your VMs](#using-ansisble-to-automate-the-configuration-of-your-vms)
-1. [Introduction to Continuous Integration](#introduction-to-continuous-integration)
-    1. [GitHub](#github)
-    1. [TravisCI](#travisci)
-    1. [CircleCI](#circleci)
-1. [GROMACS Protein Visualisation](#gromacs-protein-visualisation)
-1. [Running Qiskit from a Remote Jupyter Notebook Server](#running-qiskit-from-a-remote-jupyter-notebook-server)
+- [Student Cluster Compeititon - Tutorial 4](#student-cluster-compeititon---tutorial-4)
+  - [Table of Contents](#table-of-contents)
+- [Checklist](#checklist)
+  - [(Delete) - Remote Web Service Access](#delete---remote-web-service-access)
+- [Prometheus](#prometheus)
+  - [Edit YML Configuration File](#edit-yml-configuration-file)
+  - [Configuring Prometheus as a Service](#configuring-prometheus-as-a-service)
+  - [SSH Port Forwarding](#ssh-port-forwarding)
+  - [Dynamic SSH Forwarding (SOCKS Proxy)](#dynamic-ssh-forwarding-socks-proxy)
+    - [Configuring Your Browser](#configuring-your-browser)
+  - [X11 Forwarding](#x11-forwarding)
+- [Grafana](#grafana)
+  - [Configuring Grafana Dashboards](#configuring-grafana-dashboards)
+- [Node Exporter](#node-exporter)
+  - [Configuring Node Exporter as a Service](#configuring-node-exporter-as-a-service)
+- [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
+  - [Prerequisites](#prerequisites)
+  - [Head Node Configuration (Server)](#head-node-configuration-server)
+  - [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
+  - [Configure Grafana Dashboard for Slurm](#configure-grafana-dashboard-for-slurm)
+- [Using Terraform to Automate the Deployment of your OpenStack Instances](#using-terraform-to-automate-the-deployment-of-your-openstack-instances)
+- [Using Ansisble to Automate the Configuration of your VMs](#using-ansisble-to-automate-the-configuration-of-your-vms)
+- [Introduction to Continuous Integration](#introduction-to-continuous-integration)
+  - [GitHub](#github)
+  - [TravisCI](#travisci)
+  - [CircleCI](#circleci)
+- [GROMACS Protein Visualisation](#gromacs-protein-visualisation)
+- [Running Qiskit from a Remote Jupyter Notebook Server](#running-qiskit-from-a-remote-jupyter-notebook-server)
 
 <!-- markdown-toc end -->
 
 # Checklist
-
-Tutorial 4 demonstrates environment module manipulation and the compilation and optimisation of HPC benchmark software. This introduces the reader to the concepts of environment management and workspace sanity, as well as compilation of software on Linux.
-
 
 This tutorial demonstrates _cluster monitoring_ and _workload scheduling_. These two components are critical to a typical HPC environment. Monitoring is a widely used component in system administration (including enterprise datacentres and corporate networks). Monitoring allows administrators to be aware of what is happening on any system that is being monitored and is useful to proactively identify where any potential issues may be. A workload scheduler ensures that users' jobs are handled properly to fairly balance all scheduled jobs with the resources available at any time.
 
@@ -194,11 +193,11 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
 
 1. Make sure the clocks, i.e. chrony daemons, are synchronized across the cluster.
 
-2. Generate a SLURM and MUNGE user on all of your nodes:
+2. Generate a **SLURM** and **MUNGE** user on all of your nodes:
 
-    - **If you have FreeIPA authentication working**
-        - Create the users using the FreeIPA web interface. **Do NOT add them to the sysadmin group**.
-    - **If you do NOT have FreeIPA authentication working**
+    - **If you have Ansible User Module working**
+        - Create the users as shown in tutorial 2 **Do NOT add them to the sysadmin group**.
+    - **If you do NOT have your Ansible User Module working**
        - `useradd slurm`
        - Ensure that users and groups (UIDs and GIDs) are synchronized across the cluster. Read up on the appropriate [/etc/shadow](https://linuxize.com/post/etc-shadow-file/) and [/etc/password](https://www.cyberciti.biz/faq/understanding-etcpasswd-file-format/) files.
 
@@ -213,10 +212,11 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
     [...@headnode ~]$ sudo dnf install epel-release
     ```
 
-    Then we can install MUNGE, pulling the development source code from the `powertools` repository:
+    Then we can install MUNGE, pulling the development source code from the `crb` "CodeReady Builder" repository:
 
     ```bash
-    [...@headnode ~]$ sudo dnf --enablerepo=powertools install munge munge-libs munge-devel
+    [...@headnode ~]$ sudo dnf config-manager --set-enabled crb
+    [...@headnode ~]$ sudo dnf install munge munge-libs munge-devel
     ```
 
 2. Generate a MUNGE key for client authentication:
@@ -230,18 +230,29 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
 3. Using `scp`, copy the MUNGE key to your compute node to allow it to authenticate:
 
     1. SSH into your compute node and create the directory `/etc/munge`. Then exit back to the head node.
+   
+    2. Since, munge has not yet been installed on your compute node, first transfer the file to a temporary location
+    ```bash
+     [...@headnode ~]$ sudo cp /etc/munge/munge.key /tmp/munge.key && sudo chown user:user /tmp/munge.key
+    ```
+    **Replace user with the name of the user that you are running these commands as**
 
-    2.  `scp /etc/munge/munge.key <compute_node_name_or_ip>:/etc/munge/munge.key`
+    3. Move the file to your compute node
+    ```bash
+     [...@headnode ~]$ scp /etc/munge/munge.key <compute_node_name_or_ip>:/etc/tmp/munge.key
+    ```
+
+    4. Move the file to the correct location
+    ```bash
+     [...@headnode ~]$ ssh <computenode hostname or ip> 'sudo mv /tmp/munge.key /etc/munge/munge.key' 
+    ```
 
 4. **Start** and **enable** the `munge` service
 
 5. Install dependency packages:
 
     ```bash
-    [...@headnode ~]$ sudo dnf --enablerepo=powertools install python3 gcc openssl openssl-devel pam-devel numactl \
-                        numactl-devel hwloc lua readline-devel ncurses-devel man2html libibmad libibumad \
-                        rpm-build perl-ExtUtils-MakeMaker rrdtool-devel lua-devel hwloc-devel \
-                        perl-Switch libssh2-devel mariadb-devel
+    [...@headnode ~]$  sudo dnf --enablerepo=crb install python3 gcc openssl openssl-devel pam-devel numactl numactl-devel hwloc lua readline-devel ncurses-devel man2html libibmad libibumad rpm-build perl-ExtUtils-MakeMaker rrdtool-devel lua-devel hwloc-devel perl-Switch libssh2-devel mariadb-devel -y
     [...@headnode ~]$ sudo dnf groupinstall "Development Tools"
     ```
 
@@ -261,7 +272,7 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
 
     This should successfully generate Slurm RPMs in the directory that you invoked the `rpmbuild` command from.
     
-9. Copy these RPMs to your compute node to install later, using `scp`.
+9.  Copy these RPMs to your compute node to install later, using `scp`.
 
 10. Install Slurm server
 
