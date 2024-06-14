@@ -34,7 +34,7 @@
       1. [Clean Up](#clean-up)
 1. [Ansible User Declaration]()
 1. [WireGuard VPN Cluster Access]()
-
+ 
 ## Overview
 
 This tutorial will demonstrate how to access web services that are on your virtual cluster via the web browser on your local computer. It will also cover basic authentication and central authentication.
