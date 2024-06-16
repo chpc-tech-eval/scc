@@ -16,8 +16,6 @@ This tutorial will conclude with you downloading, installing and running the Hig
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
-1. [Tutorial 1: Standing Up Your Head Node and Running HPL](#tutorial-1-standing-up-your-head-node-and-running-hpl)
-1. [Table of Contents](#table-of-contents)
 1. [Checklist](#checklist)
 1. [Network Primer](#network-primer)
     1. [Basic Networking Example (WhatIsMyIp.com)](#basic-networking-example-whatismyipcom)

@@ -21,8 +21,8 @@
     1. [Head Node Configuration (Server)](#head-node-configuration-server)
     1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
     1. [Configure Grafana Dashboard for Slurm](#configure-grafana-dashboard-for-slurm)
-1. [Using Terraform to Automate the Deployment of your OpenStack Instances](#using-terraform-to-automate-the-deployment-of-your-openstack-instances)
-1. [Using Ansisble to Automate the Configuration of your VMs](#using-ansisble-to-automate-the-configuration-of-your-vms)
+1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
+1. [Automating the Configuration of your VMs Using Ansisble](#automating-the-configuration-of-your-vms-using-ansible)
 1. [Introduction to Continuous Integration](#introduction-to-continuous-integration)
     1. [GitHub](#github)
     1. [TravisCI](#travisci)
@@ -367,9 +367,11 @@ To confirm that your node configuration is correct, you can run the following co
 The `S:C:T` column means "sockets, cores, threads" and your numbers for your compute node should match the settings that you made in the `slurm.conf` file.
 ## Configure Grafana Dashboard for Slurm
 
-# Using Terraform to Automate the Deployment of your OpenStack Instances
+# Automating the Deployment of your OpenStack Instances Using Terraform
 
-# Using Ansisble to Automate the Configuration of your VMs
+## 
+
+# Automating the Configuration of your VMs Using Ansible
 
 # Introduction to Continuous Integration
 ## GitHub

@@ -339,8 +339,8 @@ Tutorial 2 deals with reverse proxy access for internal websites, central authen
     1. [Head Node Configuration (Server)](#head-node-configuration-server)
     1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
     1. [Configure Grafana Dashboard for Slurm](#configure-grafana-dashboard-for-slurm)
-1. [Using Terraform to Automate the Deployment of your OpenStack Instances](#using-terraform-to-automate-the-deployment-of-your-openstack-instances)
-1. [Using Ansisble to Automate the Configuration of your VMs](#using-ansisble-to-automate-the-configuration-of-your-vms)
+1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
+1. [Automating the Configuration of your VMs Using Ansisble](#automating-the-configuration-of-your-vms-using-ansible)
 1. [Introduction to Continuous Integration](#introduction-to-continuous-integration)
     1. [GitHub](#github)
     1. [TravisCI](#travisci)
@@ -368,7 +368,7 @@ Editing the content directly, will require the use of Git. Using a terminal appl
      <p align="center"><img alt="Adding SSH Keys to GitHub." src="./resources/github_profile_settings_highlight.png" width=900 /></p>
 1. `git clone` a local copy of the repository, to your personal work space.
    <p align="center"><img alt="Adding SSH Keys to GitHub." src="./resources/github_clone.png" width=900 /></p>
-   ```shell
+   ```bash
    git clone git@github.com:chpc-tech-eval/chpc24-scc-nmu.git
    ```
 1. When starting work on a new feature or bug fix, create a feature branch off of the development branch and regularly get updates from `dev` to ensure that you remain consistent with any changes to `dev`:
