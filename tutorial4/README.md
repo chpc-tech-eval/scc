@@ -21,14 +21,14 @@
     1. [Head Node Configuration (Server)](#head-node-configuration-server)
     1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
     1. [Configure Grafana Dashboard for Slurm](#configure-grafana-dashboard-for-slurm)
+1. [GROMACS Protein Visualisation](#gromacs-protein-visualisation)
+1. [Running Qiskit from a Remote Jupyter Notebook Server](#running-qiskit-from-a-remote-jupyter-notebook-server)
 1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
 1. [Automating the Configuration of your VMs Using Ansisble](#automating-the-configuration-of-your-vms-using-ansible)
 1. [Introduction to Continuous Integration](#introduction-to-continuous-integration)
     1. [GitHub](#github)
     1. [TravisCI](#travisci)
     1. [CircleCI](#circleci)
-1. [GROMACS Protein Visualisation](#gromacs-protein-visualisation)
-1. [Running Qiskit from a Remote Jupyter Notebook Server](#running-qiskit-from-a-remote-jupyter-notebook-server)
 
 <!-- markdown-toc end -->
 
@@ -367,17 +367,6 @@ To confirm that your node configuration is correct, you can run the following co
 The `S:C:T` column means "sockets, cores, threads" and your numbers for your compute node should match the settings that you made in the `slurm.conf` file.
 ## Configure Grafana Dashboard for Slurm
 
-# Automating the Deployment of your OpenStack Instances Using Terraform
-
-## 
-
-# Automating the Configuration of your VMs Using Ansible
-
-# Introduction to Continuous Integration
-## GitHub
-## TravisCI
-## CircleCI
-
 # GROMACS Protein Visualisation
 
 > **! >>> You will need to work on your personal computer (or laptop) to complete this section.**
@@ -415,3 +404,15 @@ Simulations like this are used to to develop and prototype experimental pharmace
 </span>
 
 # Running Qiskit from a Remote Jupyter Notebook Server
+
+
+# Automating the Deployment of your OpenStack Instances Using Terraform
+
+## 
+
+# Automating the Configuration of your VMs Using Ansible
+
+# Introduction to Continuous Integration
+## GitHub
+## TravisCI
+## CircleCI

@@ -339,14 +339,14 @@ Tutorial 2 deals with reverse proxy access for internal websites, central authen
     1. [Head Node Configuration (Server)](#head-node-configuration-server)
     1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
     1. [Configure Grafana Dashboard for Slurm](#configure-grafana-dashboard-for-slurm)
+1. [GROMACS Protein Visualisation](#gromacs-protein-visualisation)
+1. [Running Qiskit from a Remote Jupyter Notebook Server](#running-qiskit-from-a-remote-jupyter-notebook-server)
 1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
 1. [Automating the Configuration of your VMs Using Ansisble](#automating-the-configuration-of-your-vms-using-ansible)
 1. [Introduction to Continuous Integration](#introduction-to-continuous-integration)
     1. [GitHub](#github)
     1. [TravisCI](#travisci)
     1. [CircleCI](#circleci)
-1. [GROMACS Protein Visualisation](#gromacs-protein-visualisation)
-1. [Running Qiskit from a Remote Jupyter Notebook Server](#running-qiskit-from-a-remote-jupyter-notebook-server)
 
 # Contributing to the Project
 
