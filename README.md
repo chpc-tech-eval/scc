@@ -3,44 +3,42 @@ CHPC 2024 Student Cluster Competition
 
 Welcome the **Center for High Performance Computing (CHPC)'s Student Cluster Competition (SCC)** - Team Selection Round. This round requires each team to build a **prototype multi-node compute cluster** within the National Integrated Cyber Infrastructure Systems (NICIS) **virtual compute cloud** (described below).
 
-The goal of this tutorial is to introduce you to the competition platform and familiarise you with some Linux and systems administration concepts. This competition provides you with a fixed set of virtual resources, that you will use to initialize a set a set of virtual machines instances based on your choice _or flavor_ of **
+The goal of this document is to introduce you to the competition platform and familiarise you with some Linux and systems administration concepts. This competition provides you with a fixed set of virtual resources, that you will use to initialize a set a set of virtual machines instances based on your choice _or flavor_ of **
 
 # Table of Contents
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
-1. [CHPC 2024 Student Cluster Competition](#chpc-2024-student-cluster-competition)
-1. [Table of Contents](#table-of-contents)
 1. [Structure of the Competition](#structure-of-the-competition)
-    1. [Getting Help](#getting-help)
-        1. [GitHub Discussions Page](#github-discussions-page)
-        1. [GitHub Issues Page](#github-issues-page)
-        1. [Using Chat GPT4](#using-chat-gpt4)
-    1. [Timetable](#timetable)
-    1. [Scoring](#scoring)
-    1. [Instructions for Mentors](#instructions-for-mentors)
-        1. [Hands-Off Rule *(You may not touch the keyboard)*](#hands-off-rule-you-may-not-touch-the-keyboard)
-    1. [Cheat Sheet](#cheat-sheet)
+  1. [Getting Help](#getting-help)
+    1. [GitHub Discussions Page](#github-discussions-page)
+    1. [GitHub Issues Page](#github-issues-page)
+    1. [Using Chat GPT4](#using-chat-gpt4)
+  1. [Timetable](#timetable)
+  1. [Scoring](#scoring)
+  1. [Instructions for Mentors](#instructions-for-mentors)
+    1. [Hands-Off Rule *(You may not touch the keyboard)*](#hands-off-rule-you-may-not-touch-the-keyboard)
+  1. [Cheat Sheet](#cheat-sheet)
 1. [Deliverables](#deliverables)
-    1. [Project](#project)
-    1. [Technical Knowledge Assessment](#technical-knowledge-assessment)
+  1. [Project](#project)
+  1. [Technical Knowledge Assessment](#technical-knowledge-assessment)
 1. [Links to Livestreams and Lecture Recordings](#links-to-livestreams-and-lecture-recordings)
-    1. [Day 1 - Welcome, Introduction and Getting Started](#day-1---welcome-introduction-and-getting-started)
-    1. [Day 2 - HPC Hardware, HPC Networking and Systems Administration](#day-2---hpc-hardware-hpc-networking-and-systems-administration)
-    1. [Day 3 - Benchmarking, Compilation and Parallel Computing](#day-3---benchmarking-compilation-and-parallel-computing)
-    1. [Day 4 - HPC Administration and Application Visualization](#day-4---hpc-administration-and-application-visualization)
-    1. [Day 5 - Career Guidance](#day-5---career-guidance)
+  1. [Day 1 - Welcome, Introduction and Getting Started](#day-1---welcome-introduction-and-getting-started)
+  1. [Day 2 - HPC Hardware, HPC Networking and Systems Administration](#day-2---hpc-hardware-hpc-networking-and-systems-administration)
+  1. [Day 3 - Benchmarking, Compilation and Parallel Computing](#day-3---benchmarking-compilation-and-parallel-computing)
+  1. [Day 4 - HPC Administration and Application Visualization](#day-4---hpc-administration-and-application-visualization)
+  1. [Day 5 - Career Guidance](#day-5---career-guidance)
 1. [Tutorial Glossary and Section Overview](#tutorial-glossary-and-section-overview)
-    1. [Tutorial 1](#tutorial-1)
-    1. [Tutorial 2](#tutorial-2)
-    1. [Tutorial 3](#tutorial-3)
-    1. [Tutorial 4](#tutorial-4)
+  1. [Tutorial 1](#tutorial-1)
+  1. [Tutorial 2](#tutorial-2)
+  1. [Tutorial 3](#tutorial-3)
+  1. [Tutorial 4](#tutorial-4)
 1. [Contributing to the Project](#contributing-to-the-project)
-    1. [Steps to follow when editing existing content](#steps-to-follow-when-editing-existing-content)
-    1. [Syntax and Style](#syntax-and-style)
+  1. [Steps to follow when editing existing content](#steps-to-follow-when-editing-existing-content)
+  1. [Syntax and Style](#syntax-and-style)
 1. [Collaborating with your Team and Storing you Progress on GitHub](#collaborating-with-your-team-and-storing-you-progress-on-github)
-    1. [Forking the Tutorials into Your Own Team's Private GitHub Repository](#forking-the-tutorials-into-your-own-teams-private-github-repository)
-    1. [Editing the Git Markdown Files to Track Your Team's Progress](#editing-the-git-markdown-files-to-track-your-teams-progress)
+  1. [Forking the Tutorials into Your Own Team's Private GitHub Repository](#forking-the-tutorials-into-your-own-teams-private-github-repository)
+  1. [Editing the Git Markdown Files to Track Your Team's Progress](#editing-the-git-markdown-files-to-track-your-teams-progress)
 
 <!-- markdown-toc end -->
 
@@ -204,7 +202,7 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
 
 ## Tutorial 2
 
-Tutorial 2 deals with reverse proxy access for internal websites, central authentication and shared file systems.
+Tutorial 2 deals with understaning the roles of the head and compute nodes, adding a compute node to create your cluster, configuring linux services such as the firewall, time server.
 1. [Checklist](tutorial2/README.md#checklist)
 1. [Spinning Up a Compute Node in OpenStack](tutorial2/README.md#spinning-up-a-compute-node-in-openstack)
     1. [Compute Node Considerations](tutorial2/README.md#compute-node-considerations)
@@ -212,7 +210,6 @@ Tutorial 2 deals with reverse proxy access for internal websites, central authen
     1. [IP Addresses and Routing](tutorial2/README.md#ip-addresses-and-routing)
     1. [Command Line Proxy Jump Directive](tutorial2/README.md#command-line-proxy-jump-directive)
         1. [Setting a Temporary Password on your Compute Node](tutorial2/#setting-a-temporary-passworwd-on-your-compute-node)
-    1. [Generating SSH Keys on Your Head Node](tutorial2/README.md#generating-ssh-keys-on-your-head-node)
 1. [Understanding the Roles of the Head Node and Compute Nodes](tutorial2/README.md#understanding-the-roles-of-the-head-node-and-compute-nodes)
    1. [Basic System Monitoring](tutorial2/README.md#basic-system-monitoring)
    1. [Terminal Multiplexers](tutorial2/README.md#terminal-multiplexers)
@@ -242,6 +239,7 @@ Tutorial 2 deals with reverse proxy access for internal websites, central authen
         1. [Mounting An NFS Mount](tutorial2/README.md#mounting-an-nfs-mount)
         1. [Making The NFS Mount Permanent](tutorial2/README.md#making-the-nfs-mount-permanent)
     1. [Passwordless SSH](tutorial2/README.md#passwordless-ssh)
+        1. [Generating SSH Keys on Your Head Node](tutorial2/README.md#generating-ssh-keys-on-your-head-node)
         1. [Understanding `~/.ssh/authorized_keys`](tutorial2/README.md#understanding-ssh/authorized_keys)
         1. [User Permissions and Ownership](tutorial2/README.md#user-permissions-and-ownership)
 1. [User Account Management](tutorial2/README.md#user-account-management)
@@ -357,7 +355,7 @@ You are strongly encouraged to contribute and improve the project by [Opening an
 In order to effectively manage the various workflows and stages of development, testing and deployment, the project is comprised of three primary branches:
 * `main`: *Stable* and production-ready deployment branch of the project.
 * `stag`: *Staging* branch which mirrors production and is used for integration testing of new features.
-* `dev`: *Development* branch fore incorporating new features and bug fixes.
+* `dev`: *Development* branch for incorporating new features and bug fixes.
 
 Editing the content directly, will require the use of Git. Using a terminal application or [Git for Windows PowerShell](https://git-scm.com/book/en/v2/Appendix-A:-Git-in-Other-Environments-Git-in-PowerShell) or [Git for MobaXTerm](https://www.geeksforgeeks.org/how-to-install-git-on-mobaxterm/).
 
