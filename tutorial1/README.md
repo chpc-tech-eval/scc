@@ -523,7 +523,7 @@ If your workstation or laptop is running Windows, then you may proceed using eit
 
 ### Username and Password
 
-Once you've successfully logged into your head node VM, you are encouraged to change your password so that you may access your head node through the OpenStack VNC console interface.
+Once you've successfully logged into your head node VM, you are encouraged to setup your password login as a fail safe incase your ssh keys are giving issue, you may also access your head node through the OpenStack VNC console interface.
 
 ```bash
    sudo passwd <username>
@@ -539,10 +539,75 @@ Once logged into your head node, you can now make use of the [previously discuss
 
 <p align="center"><img alt="Verifying head node basic networking configuration." src="./resources/head_node_basic_networking_commands.png" width=900 /></p>
 
-## Manual Pages `man`, Reading Documents `cat` and the `-h` Switch
-## Piping `|` Through `grep`, `more` or `less`
-## Redirecting `>>` Console Output to a File
+## Manual Pages `man`
+In linux every information about all linux commands is found in a linux built in manual page document. This doncument is accessible via a command called `man` short term for manual page. Run the ff commands to understand what each command mean, scroll up and down then press `q` to exit the page, these are some of the commands you will use throught the week. 
+
+```bash
+   man sudo
+   man ping 
+   man tracepath
+   man ls 
+   man cat 
+   
+```
+<p align="center"><img alt="manual page for `sudo` command" src="./resources/man_sudo_feedback.png" width=900 /></p>
+
+
+## the `-h` Switch
+If you don't want to use the `man` command to learn about each command and related options, you can use the `--help or -h` flag to see which options are available for a specific command. run the ff command to learn about available options each command has.
+
+```bash
+
+   sudo -h 
+   ifconfig -h 
+   ping -h 
+   ssh-keygen --help 
+   grep --help 
+   
+```
+
+<p align="center"><img alt="manual page for `sudo` command" src="./resources/sudo_with-h_flag.png" width=900 /></p>
+
+
+## Reading Documents
+you will be reading a lof of files throughout the week and the ff commands can be used to read files with ease, use `man` to learn about each command. All the following command are used to read the content of a file `staff_list.txt`
+
+```bash
+less staff_list.txt
+more staff_list.txt
+cat staff_list.txt
+vi staff_list.txt
+nana staff_list.txt
+
+   
+```
+
+<p align="center"><img alt="cat prints the content of file on screen" src="./resources/cat_command.png" width=900 /></p>
+
+<p align="center"><img alt="read the content of the file with `less` command " src="./resources/less_command.png" width=900 /></p>
+
+## Piping 
+
+`|` Through `grep` is used when searching the content of the file, if it exist it will be printed on the screen, if the search does not exist nothing will show on the screen.
+
+<p align="center"><img alt="search the file with `grep` command " src="./resources/search_commands_grep.png" width=400 /></p>
+
+## Console Output to a File
+
+`>`  replaces the content of an output file with all input content
+`>>` appends the input content to the end of the output file.
+
+<p align="center"><img alt="appends james at the endo of staff_list.txt file" src="./resources/append.png" width=900 /></p>
+
+<p align="center"><img alt="replaces the content of staff_list.txt file with james"  src="./resources/replaces.png" width=900 /></p>
+
 ## GNU `history` Library
+`history` command shows all commands you have executed so far, the feedback is numbered, use `!14` to rerun the 20th command  
+ 
+ <p align="center"><img alt="history command "  src="./resources/history_command.png" width=900 /></p>
+ 
+ <p align="center"><img alt="rerun commands from history "  src="./resources/rerun_command_from_history.png" width=900 /></p>
+
 ## Brief Introduction to Text Editors (Vi vs Vim vs Nano)
 ### Your First Chat GPT Query
 

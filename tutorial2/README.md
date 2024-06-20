@@ -93,9 +93,12 @@ This tutorial will demonstrate how to access web services that are on your virtu
 
 # Spinning Up a Compute Node in OpenStack
 
-play around
 
-scripting and automation to test out differnet configurations
+# Manually from openstack dashboard 
+To launch your compute node vm, go to `Compute-> Instances` click `launch instance` and follow the headnode vm launch process on Tutorial 1. **remember** to use `compute` flavors and `local_team_keys`  used when launching the headnode on Tutorial 1.
+
+
+# scripting and automation to test out differnet configurations
 
 As previously discussed in [Tutorial 1: OpenStack Flavors](../tutorial1/README.md#openstack-instance-flavors), an important aspect of system administration is resource monitoring, management and utilization. Once you have successfully stood up your head node, your team will need to plan and manage the resources remaining which will be available for your compute node(s).
 
@@ -112,7 +115,7 @@ Sensible default instance flavors have already been identified and configured fo
 
 One important distinction between your head node and compute node(s), is that the compute nodes will **not** have a floating IP associated to them. Your head node will act as a ***Gateway*** for your Compute Node(s), and ***Route*** traffic between the internet and your cluster, using a method referred to as ***Network Address Translation (NAT)***, which was discussed in the [WiFi Hotspot Example](../tutorial1/README.md#wifi-hotspot-example).
 
-The final important consideration that must be made for your compute node is that you must not forget to configure an SSH key, so that you may access it after it has successfully launched. For ease of access and to simplify your configuration, you are *strongly* advised to use the same SSH key that you'd [previously generated](../tutorial1/README.md#generating-ssh-keys).
+The final important consideration that must be made for your compute node is that you must not forget to configure an SSH key, so that you may access it after it has successfully launched. For ease of access and to simplify your configuration, you are *strongly* advised to use the same SSH key that you'd [previously generated](../tutorial1/README.md#generating-ssh-keys) on your local machine/laptop.
 
 # Accessing Your Compute Node
 
@@ -128,7 +131,7 @@ TODO: High level explanation of OpenStack's automatic network configuration and 
 
 TODO: Maybe remove the default routing table on compute node and route through headnode?
 
-## Command Line Proxy Jump Directive
+## Command Line Proxy Jump Directive 
 
 From you workstation, using either MobaXTerm or Windows Powershell, you can `ssh` directly into your compute node by first making an **ssh** connection too your head node and then establishing a TCP forwarding connection to your compute node. Using this method, the SSH keys for both your head node and compute node must reside on your local workstation:
 
@@ -207,8 +210,11 @@ Just as you did so in the previous tutorial when you generated SSH keys [on your
 
 # Understanding the Roles of the Head Node and Compute Node
 Networking Diagram and client server model
+headnode (hd) and compute node (cn) relationship follow a server (hd) - client (cn) relations, the headnode carries the systems services and compute node does all the computations
 System software need to be installed on both head node and compute nodes
-Do not ssh endlessly between head and compute nodes, one terminal example or multiplexing
+Do not ssh endlessly between head and compute nodes, one terminal example or multiplexing (screen sessions via `tmux`)
+
+
 ## Terminal Multiplexers
 
 Discuss GNU Screen and [tmux](https://github.com/tmux/tmux/wiki)
@@ -256,7 +262,7 @@ sudo apt-get install tmux
 To start a new `tmux` session on your **head node**:
 
 ```bash
-tmux
+tmux new -s session_name 
 ```
 
 ### Working on your Head Node and Compute Node in Two Adjacent Panes
@@ -333,18 +339,169 @@ Should your terminal application close, or if you relocate from the laboratores.
 To connect to an existing `tmux` session on your **head node**:
 
 ```bash
-tmux attach
+tmux a -t session_name 
 ```
 
-## Basic System Monitoring 
-# Manipulating Files and Directories
-## List Directory `ls`
-## Change Directory `cd`
-## Copy File or Directory `cp`
-## Move File or Directory `mv`
-## Make a New Directory `mkdir`
-## Remove File or Directory `rm`
-## The `history` Command
+
+## Basic Linux commands   
+
+# Basic System Monitoring  
+`top` `htop` are system built commands used to monitor server resource suage. for `htop` first install epel source repository then install htop 
+https://docs.rockylinux.org/gemstones/htop/ 
+
+```bash
+sudo dnf -y install epel-release
+sudo dnf makecache
+sudo dnf -y install htop
+htop 
+
+```
+
+<p align="center"><img alt="htop output" src="./resources/htopcommand.png" width=900 /></p>
+
+
+
+# Print current working space 
+If you are lost and don't know where you currently working use `pwd` (print working directory), it will show you your current woring space 
+
+```bash
+pwd 
+```
+
+
+## Manipulating Files and Directories
+
+# Make a New Directory 
+
+`mkdir` command is used to create folders or directories, the `-p` flag means create the directory path `mnu/2024` if it does not exits before creating `SCC` directory. 
+
+```bash
+mkdir SCC
+mkdir -p mnu/2024/SCC
+```
+
+
+
+# creating new Files 
+The following commands are used to create and edit files 
+`touch` create a new file(s) 
+
+`vi, vim, nano ` file editor commands and are used to edit existing files, but if a file does not exist it will create the file and open it for editing. 
+
+
+```bash
+touch file
+
+vi file1
+```
+
+
+
+# List Directory 
+`ls` (list) command used to list the content of directory/folder.
+
+```bash
+ls 
+
+ls mnu/2024/SCC
+```
+
+`ls` list or prints the content of the current directory 
+`ls mnu/2024/SCC`  list or print the content of the last `SCC` directory 
+
+
+
+# Change Directory 
+
+`cd` commad allow you move from directory to directory 
+
+```bash
+
+cd mnu/2024/SCC
+
+```
+
+`cd mnu/2024/SCC` means moving to `SCC`  directory, you can verify your current working directory by `pwd` command 
+
+ <p align="center"><img alt="change from current to SCC directory" src="./resources/cdexample.png" width=700 /></p>
+
+
+
+
+# Copy File or Directory 
+
+`cp` copy files/directories from source to destinations, it works like windows `copy and paste`. 
+
+```bash
+mkdir -p mnu/2024/team
+cp -r mnu/2024/SCC mnu/2024/team/
+
+```
+
+`mkdir -p mnu/2024/team` creates a team directory/folder under mnu/2024 directoy path
+`cp -r mnu/2024/SCC mnu/2024/team/` will recursilvely copy the `SCC` directory and it content to `mnu/2024/team/` directory. 
+
+ <p align="center"><img alt="creating the SCC directory" src="./resources/cpexamble.png" width=700 /></p>
+
+
+
+
+# Move File or Directory 
+
+`mv` command literally moves files/directories from source to destinations, it work like windows `cut and paste`. 
+
+
+```bash
+mv staff_list.txt mnu/2024/team/SCC
+
+```
+
+`staff_list.txt` file is being moved to SCC directory 
+
+ <p align="center"><img alt="moving staff list file to SCC directory" src="./resources/mvcommandexample.png" width=700 /></p>
+
+
+
+
+# Remove File or Directory 
+
+`rm` remove command used to delete files, directory with `-r` flag
+
+```bash
+rm  mnu/2024/team/SCC/staff_list.txt
+rm -r mnu/2024/team/SCC
+
+```
+
+<p align="center"><img alt="moving staff list file to SCC directory" src="./resources/rmcommand.png" width=700 /></p>
+<p align="center"><img alt="moving staff list file to SCC directory" src="./resources/rmcommandexample.png" width=700 /></p>
+
+
+
+
+# The history Command
+
+`history` command shows all commands you have executed so far, the feedback is numbered, use `!14` to rerun the 20th command  
+ 
+ <p align="center"><img alt="history command "  src="./resources/history_command.png" width=900 /></p>
+ <p align="center"><img alt="rerun commands from history "  src="./resources/rerun_command_from_history.png" width=900 /></p>
+
+
+
+
+# The virtual environment Command 
+
+`virtualenv` command helps you run multiple services with conflicting packages without any problems. each virtual enviroment is treated as an independant entity. 
+Below is how you create and source or access a virtual enviroment then deactivate to exit, ensure to use sensible names.
+https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-programming-environment-on-rocky-linux-9 
+
+```bash
+python -m venv env
+source env/bin/activate
+deactivate 
+
+```
+
 ## Recommended Project Folder Structure
 # Verifying Networking Setup
 
