@@ -586,11 +586,13 @@ nana staff_list.txt
 
 <p align="center"><img alt="read the content of the file with `less` command " src="./resources/less_command.png" width=900 /></p>
 
+
 ## Piping 
 
 `|` Through `grep` is used when searching the content of the file, if it exist it will be printed on the screen, if the search does not exist nothing will show on the screen.
 
 <p align="center"><img alt="search the file with `grep` command " src="./resources/search_commands_grep.png" width=400 /></p>
+
 
 ## Console Output to a File
 
@@ -600,6 +602,7 @@ nana staff_list.txt
 <p align="center"><img alt="appends james at the endo of staff_list.txt file" src="./resources/append.png" width=900 /></p>
 
 <p align="center"><img alt="replaces the content of staff_list.txt file with james"  src="./resources/replaces.png" width=900 /></p>
+
 
 ## GNU `history` Library
 `history` command shows all commands you have executed so far, the feedback is numbered, use `!14` to rerun the 20th command  
