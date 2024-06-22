@@ -75,7 +75,7 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 
 <!-- markdown-toc end -->
 
-# Checklist
+## Checklist
 
 TODO: Fix checklist
 
@@ -91,14 +91,14 @@ This tutorial will demonstrate how to access web services that are on your virtu
 - [ ] Connect to machines without a password using public key based authentication.
 - [ ] Install and use central authentication.
 
-# Spinning Up a Compute Node in OpenStack
 
+## Spinning Up a Compute Node in OpenStack
 
-# Manually from openstack dashboard 
+### Manually from openstack dashboard 
 To launch your compute node vm, go to `Compute-> Instances` click `launch instance` and follow the headnode vm launch process on Tutorial 1. **remember** to use `compute` flavors and `local_team_keys`  used when launching the headnode on Tutorial 1.
 
 
-# scripting and automation to test out differnet configurations
+### scripting and automation to test out differnet configurations
 
 As previously discussed in [Tutorial 1: OpenStack Flavors](../tutorial1/README.md#openstack-instance-flavors), an important aspect of system administration is resource monitoring, management and utilization. Once you have successfully stood up your head node, your team will need to plan and manage the resources remaining which will be available for your compute node(s).
 
@@ -107,7 +107,7 @@ You would have seen in [Tutorial: Head Node Resource Allocations](../tutorial1/R
 > [!TIP]
 > You are encourage to **strongly** encouraged to automate the deployment, installation and configuration of your cluster nodes through the use of either at least basic shell scripts or more advanced Ansible playbooks. This will allow you to rapidly experiment with and test the performance of different configurations in order to determine an optimum cluster for the applications you're required to evaluate.
 
-## Compute Node Considerations
+### Compute Node Considerations
 
 While the head node is responsible for administrative and management related tasks, such as authenticating user logins into the cluster, managing services, hosting a network file system, workload management and load balancing, while compute nodes are responsible executing compute intensive tasks.
 
@@ -117,11 +117,11 @@ One important distinction between your head node and compute node(s), is that th
 
 The final important consideration that must be made for your compute node is that you must not forget to configure an SSH key, so that you may access it after it has successfully launched. For ease of access and to simplify your configuration, you are *strongly* advised to use the same SSH key that you'd [previously generated](../tutorial1/README.md#generating-ssh-keys) on your local machine/laptop.
 
-# Accessing Your Compute Node
+### Accessing Your Compute Node
 
 After you have successfully [Launched Your Second OpenStack VM Instance](../tutorial1/README.md#launching-your-first-openstack-virtual-machine-instance), you can SSH into your new compute node VM instance using your head node as a [Jump Box](https://goteleport.com/blog/ssh-proxyjump-ssh-proxycommand/).
 
-## IP Addresses and Routing
+### IP Addresses and Routing
 
 Before your access your compute node, we must verify a few details on the head node. Your will already be familiar with many of these commands.
 
@@ -131,7 +131,7 @@ TODO: High level explanation of OpenStack's automatic network configuration and 
 
 TODO: Maybe remove the default routing table on compute node and route through headnode?
 
-## Command Line Proxy Jump Directive 
+### Command Line Proxy Jump Directive 
 
 From you workstation, using either MobaXTerm or Windows Powershell, you can `ssh` directly into your compute node by first making an **ssh** connection too your head node and then establishing a TCP forwarding connection to your compute node. Using this method, the SSH keys for both your head node and compute node must reside on your local workstation:
 
@@ -174,7 +174,7 @@ sudo passwd <user>
 <p align="center"><img alt="Change Compute Node Password." src="./resources/ssh_compute_node_passwd.png" width=900 /></p>
 
 
-## Generating SSH Keys on your Head Node
+### Generating SSH Keys on your Head Node
 
 Just as you did so in the previous tutorial when you generated SSH keys [on your workstation](../tutorial1/README.md#generating-ssh-keys), you're now going to do the same on your head node. You're then going to copy the newly created key onto you head node and test the new SSH connection, by logging into your compute node.
 
@@ -208,14 +208,14 @@ Just as you did so in the previous tutorial when you generated SSH keys [on your
 <p align="center"><img alt="Generate Key and SSH into compute" src="./resources/install_tmux.png" width=900 /></p>
 
 
-# Understanding the Roles of the Head Node and Compute Node
+### Understanding the Roles of the Head Node and Compute Node
 Networking Diagram and client server model
 headnode (hd) and compute node (cn) relationship follow a server (hd) - client (cn) relations, the headnode carries the systems services and compute node does all the computations
 System software need to be installed on both head node and compute nodes
 Do not ssh endlessly between head and compute nodes, one terminal example or multiplexing (screen sessions via `tmux`)
 
 
-## Terminal Multiplexers
+### Terminal Multiplexers
 
 Discuss GNU Screen and [tmux](https://github.com/tmux/tmux/wiki)
 
@@ -265,7 +265,7 @@ To start a new `tmux` session on your **head node**:
 tmux new -s session_name 
 ```
 
-### Working on your Head Node and Compute Node in Two Adjacent Panes
+#### Working on your Head Node and Compute Node in Two Adjacent Panes
 
 Once you've started a new `tmux` session or daemon or server, on your head node, there are a number of very useful tools you can utilize.
 
@@ -332,7 +332,7 @@ Once you've started a new `tmux` session or daemon or server, on your head node,
    ```
 1. Your team must decide which tool you will be using for basic monitoring of your cluster. Choose between `top`, `htop` and `btop` and make sure your choice of application is installed across your cluster.
 
-### Attaching and Detaching Sessions
+#### Attaching and Detaching Sessions
 
 Should your terminal application close, or if you relocate from the laboratores... write a schlept about remote sessions and servers here
 
@@ -341,6 +341,7 @@ To connect to an existing `tmux` session on your **head node**:
 ```bash
 tmux a -t session_name 
 ```
+
 
 
 ## Basic Linux commands   
@@ -368,7 +369,8 @@ pwd
 ```
 
 
-## Manipulating Files and Directories
+
+### Manipulating Files and Directories
 
 #### Make a New Directory 
 
@@ -378,6 +380,7 @@ pwd
 mkdir SCC
 mkdir -p mnu/2024/SCC
 ```
+
 
 
 #### creating new Files 
@@ -394,16 +397,15 @@ vi file1
 
 
 
+
 #### List Directory 
 `ls` (list) command used to list the content of directory/folder.
 
 ```bash
-ls 
-
 ls mnu/2024/SCC
 ```
 
-`ls` list or prints the content of the current directory 
+`ls` list or prints the content of the current working directory 
 `ls mnu/2024/SCC`  list or print the content of the last `SCC` directory 
 
 
@@ -419,7 +421,7 @@ cd mnu/2024/SCC
 
 `cd mnu/2024/SCC` means moving to `SCC`  directory, you can verify your current working directory by `pwd` command 
 
- <p align="center"><img alt="change from current to SCC directory" src="./resources/cdexample.png" width=900 /></p>
+<p align="center"><img alt="change from current to SCC directory" src="./resources/cdexample.png" width=500 /></p>
 
 
 
@@ -438,7 +440,7 @@ cp -r mnu/2024/SCC mnu/2024/team/
 `cp -r mnu/2024/SCC mnu/2024/team/` will recursilvely copy the `SCC` directory and it content to `mnu/2024/team/` directory. 
 
 
- <p align="center"><img alt="creating the SCC directory" src="./resources/cpexamble.png" width=900 /></p>
+<p align="center"><img alt="creating the SCC directory" src="./resources/cpexamble.png" width=700 /></p>
 
 
 
@@ -454,7 +456,7 @@ mv staff_list.txt mnu/2024/team/SCC
 `staff_list.txt` file is being moved to SCC directory 
 
 
- <p align="center"><img alt="moving staff list file to SCC directory" src="./resources/mvcommandexample.png" width=900 /></p>
+ <p align="center"><img alt="moving staff list file to SCC directory" src="./resources/mvcommandexample.png" width=700 /></p>
 
 
 
@@ -469,9 +471,9 @@ rm -r mnu/2024/team/SCC
 ```
 
 
-<p align="center"><img alt="moving staff list file to SCC directory" src="./resources/rmcommand.png" width=900 /></p>
+<p align="center"><img alt="moving staff list file to SCC directory" src="./resources/rmcommand.png" width=700 /></p>
 
-<p align="center"><img alt="moving staff list file to SCC directory" src="./resources/rmcommandexample.png" width=900 /></p>
+<p align="center"><img alt="moving staff list file to SCC directory" src="./resources/rmcommandexample.png" width=700 /></p>
 
 
 
@@ -481,9 +483,10 @@ rm -r mnu/2024/team/SCC
 `history` command shows all commands you have executed so far, the feedback is numbered, use `!14` to rerun the 20th command  
  
 
- <p align="center"><img alt="history command "  src="./resources/history_command.png" width=900 /></p>
+ <p align="center"><img alt="history command "  src="./resources/history_command.png" width=500 /></p>
 
- <p align="center"><img alt="rerun commands from history "  src="./resources/rerun_command_from_history.png" width=900 /></p>
+
+ <p align="center"><img alt="rerun commands from history "  src="./resources/rerun_command_from_history.png" width=9000 /></p>
 
 
 
@@ -525,7 +528,7 @@ https://docs.rockylinux.org/guides/network/basic_network_configuration/
 
 
 
-##### Head Node (`nmtui`)
+#### Head Node (`nmtui`)
 
 For the **head node**, create a new network definition using the `nmtui` graphical tool using the following steps:
 
@@ -659,7 +662,7 @@ sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 ```
 
 
-### NFTables `nftables` 
+#### NFTables `nftables` 
 Successor to iptables, designed to replace iptables.  It integrates all the functionalities provided by the separate iptables tools into a single framework, streamlining the process of configuring tables, chains, and rules. 
 
 - Here's how you can use nftables to control network traffic:
@@ -685,7 +688,7 @@ sudo nft add rule ip filter input tcp dport 22 accept
 *** It's important to note that while nftables is the future, iptables is still widely used and supported, so understanding both is beneficial.**
 
 
-###  Dynamic Front-end Firewall Application Managers `firewalld`
+####  Dynamic Front-end Firewall Application Managers `firewalld`
 
 `firewalld` is a firewall management daemon (service) available for many Linux distributions which acts as a front-end for the `iptables` packet filtering system provided by the Linux kernel. This daemon manages groups of rules using entities called “zones”.  Read more : https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-using-firewalld-on-rocky-linux-9 
 
@@ -835,7 +838,7 @@ This will show empty until ntp client (compute nodes) are configured
 <p align="center"><img alt="enabling ntp traffic, showing ntp clients " src="./resources/ntp.png" width=900 /></p>
 
 
-#### NTP Client (Compute Node)
+### NTP Client (Compute Node)
 
 1. Install the Chrony software package as shwon on headnode.
 
@@ -992,7 +995,7 @@ For the description of nfs options listed above see the link: https://cheatograp
 
 
 
-## Passwordless SSH
+### Passwordless SSH
 
 When managing a large fleet of machines or even when just logging into a single machine repeatedly, it can become very time consuming to have to enter your password repeatedly. Another issue with passwords is that some services may rely on directly connecting to another computer and can't pass a password during login. To get around this, we can use [public key based authentication](https://www.ssh.com/academy/ssh/public-key-authentication) for passwordless login.
 
@@ -1067,9 +1070,9 @@ This shows that `root` is the user `0` and it's primary group (GID) is group `0`
 
 
 
-## Create Team Captain User Account
+### Create Team Captain User Account
 
-### Head Node
+#### Head Node
 
 Let us now create a user account on the head node:
 
@@ -1093,7 +1096,7 @@ uid=1000(captain) gid=1000(captain) groups=1000(captain)
 
 As you can tell, it has a different ID for the user and group than `root`.
 
-### Compute Node
+#### Compute Node
 
 Log into the compute node and try to verify that the `captain` user **does NOT exist** there:
 
@@ -1109,7 +1112,7 @@ id: ‘captain’: no such user
 
 We will now create the same user here. Follow the steps above for creating the `captain` user on the compute node.
 
-### Super User Access
+#### Super User Access
 
 The `captain` user will not have the privileges to do anything that modify system files or configurations. Many Linux operating systems come with a program called `sudo` which manages and allows normal user accounts to access `root` privileges.
 
@@ -1162,7 +1165,7 @@ Now log out and then log back into your node as `captain`. You can use `sudo` on
 
 
 
-## Out-Of-Sync Users and Groups
+### Out-Of-Sync Users and Groups
 
 When managing a large cluster of machines, it gets really complicated to manage user ID and group ID mappings. With things like shared file systems (e.g. NFS), if user account names are the same, but IDs don't match across machines then we get permission problems. 
 
@@ -1186,7 +1189,7 @@ These do not match, so if Alice wants to create a file on the head node and acce
 
 User- and group- names do not matter to Linux, only the numerical IDs. Let us demonstrate this now.
 
-### Head Node
+#### Head Node
 
 1. Create a new user on the head node, let's call it `outofsync`. If you check it's IDs with `id outofsync`, you should see it belongs to UID/GID `1001`. 
 
@@ -1194,7 +1197,7 @@ User- and group- names do not matter to Linux, only the numerical IDs. Let us de
 
 3. Create a file in the home directory of `outofsync` (`/home/outofsync`) called `testfile.txt` and put some words in it.
 
-### Compute Node
+#### Compute Node
 
 1. Create a new user on the compute node called `unwittinguser`. If you check the ID of this user, you will see that `unwittinguser` has UID/GID of `1001`.
 
@@ -1218,7 +1221,7 @@ Check `ls -ln /home/outofsync` on the **head node** and you'll see that the `tes
     margin-right: auto; width: 45%;"><i>Figure 3: The head node's `testfile.txt` is owned by user 1001, which is user `outofsync` on the head node.</i></span>
 </span>
 
-### Clean Up
+#### Clean Up
 
 **Before proceeding, you must delete the users that you have created on the machines.**
 
