@@ -344,7 +344,7 @@ tmux a -t session_name
 
 
 
-## Basic Linux commands   
+### Basic Linux commands   
 
 #### Basic System Monitoring  
 `top` `htop` are system built commands used to monitor server resource suage. for `htop` first install epel source repository then install htop 
