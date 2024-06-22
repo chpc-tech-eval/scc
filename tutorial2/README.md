@@ -345,7 +345,7 @@ tmux a -t session_name
 
 ## Basic Linux commands   
 
-# Basic System Monitoring  
+#### Basic System Monitoring  
 `top` `htop` are system built commands used to monitor server resource suage. for `htop` first install epel source repository then install htop 
 https://docs.rockylinux.org/gemstones/htop/ 
 
@@ -354,14 +354,13 @@ sudo dnf -y install epel-release
 sudo dnf makecache
 sudo dnf -y install htop
 htop 
-
 ```
 
 <p align="center"><img alt="htop output" src="./resources/htopcommand.png" width=900 /></p>
 
 
 
-# Print current working space 
+#### Print current working space 
 If you are lost and don't know where you currently working use `pwd` (print working directory), it will show you your current woring space 
 
 ```bash
@@ -371,7 +370,7 @@ pwd
 
 ## Manipulating Files and Directories
 
-# Make a New Directory 
+#### Make a New Directory 
 
 `mkdir` command is used to create folders or directories, the `-p` flag means create the directory path `mnu/2024` if it does not exits before creating `SCC` directory. 
 
@@ -381,8 +380,7 @@ mkdir -p mnu/2024/SCC
 ```
 
 
-
-# creating new Files 
+#### creating new Files 
 The following commands are used to create and edit files 
 `touch` create a new file(s) 
 
@@ -391,13 +389,12 @@ The following commands are used to create and edit files
 
 ```bash
 touch file
-
 vi file1
 ```
 
 
 
-# List Directory 
+#### List Directory 
 `ls` (list) command used to list the content of directory/folder.
 
 ```bash
@@ -411,23 +408,22 @@ ls mnu/2024/SCC
 
 
 
-# Change Directory 
+#### Change Directory 
 
 `cd` commad allow you move from directory to directory 
 
 ```bash
 
 cd mnu/2024/SCC
-
 ```
 
 `cd mnu/2024/SCC` means moving to `SCC`  directory, you can verify your current working directory by `pwd` command 
 
- <p align="center"><img alt="change from current to SCC directory" src="./resources/cdexample.png" width=700 /></p>
+ <p align="center"><img alt="change from current to SCC directory" src="./resources/cdexample.png" width=900 /></p>
 
 
 
-# Copy File or Directory 
+#### Copy File or Directory 
 
 `cp` copy files/directories from source to destinations, it works like windows `copy and paste`. 
 
@@ -437,30 +433,32 @@ cp -r mnu/2024/SCC mnu/2024/team/
 
 ```
 
-`mkdir -p mnu/2024/team` creates a team directory/folder under mnu/2024 directoy path
+`mkdir -p mnu/2024/team` creates a team directory/folder under mnu/2024 directoy path. 
+
 `cp -r mnu/2024/SCC mnu/2024/team/` will recursilvely copy the `SCC` directory and it content to `mnu/2024/team/` directory. 
 
- <p align="center"><img alt="creating the SCC directory" src="./resources/cpexamble.png" width=700 /></p>
+
+ <p align="center"><img alt="creating the SCC directory" src="./resources/cpexamble.png" width=900 /></p>
 
 
 
-# Move File or Directory 
+#### Move File or Directory 
 
 `mv` command literally moves files/directories from source to destinations, it work like windows `cut and paste`. 
 
 
 ```bash
 mv staff_list.txt mnu/2024/team/SCC
-
 ```
 
 `staff_list.txt` file is being moved to SCC directory 
 
- <p align="center"><img alt="moving staff list file to SCC directory" src="./resources/mvcommandexample.png" width=700 /></p>
+
+ <p align="center"><img alt="moving staff list file to SCC directory" src="./resources/mvcommandexample.png" width=900 /></p>
 
 
 
-# Remove File or Directory 
+#### Remove File or Directory 
 
 `rm` remove command used to delete files, directory with `-r` flag
 
@@ -470,21 +468,27 @@ rm -r mnu/2024/team/SCC
 
 ```
 
-<p align="center"><img alt="moving staff list file to SCC directory" src="./resources/rmcommand.png" width=700 /></p>
-<p align="center"><img alt="moving staff list file to SCC directory" src="./resources/rmcommandexample.png" width=700 /></p>
+
+<p align="center"><img alt="moving staff list file to SCC directory" src="./resources/rmcommand.png" width=900 /></p>
+
+<p align="center"><img alt="moving staff list file to SCC directory" src="./resources/rmcommandexample.png" width=900 /></p>
 
 
 
-# The history Command
+
+#### The history Command
 
 `history` command shows all commands you have executed so far, the feedback is numbered, use `!14` to rerun the 20th command  
  
+
  <p align="center"><img alt="history command "  src="./resources/history_command.png" width=900 /></p>
+
  <p align="center"><img alt="rerun commands from history "  src="./resources/rerun_command_from_history.png" width=900 /></p>
 
 
 
-# The virtual environment Command 
+
+#### The virtual environment Command 
 
 `virtualenv` command helps you run multiple services with conflicting packages without any problems. each virtual enviroment is treated as an independant entity. 
 Below is how you create and source or access a virtual enviroment then deactivate to exit, ensure to use sensible names.
@@ -494,11 +498,11 @@ https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set
 python -m venv env
 source env/bin/activate
 deactivate 
-
 ```
 
+
 ## Recommended Project Folder Structure
-# Verifying Networking Setup
+#### Verifying Networking Setup
 
 Your VMs have been assigned IP addresses,to identify these, navigate to `Compute -> Instances` on your openstack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for the headnode) and one IP address (for compute node) with their respective networks  
 
@@ -506,7 +510,8 @@ The headnode IP addresses will look like `10.100.50.x` and `154.114.57.x` where 
 
 You can check your network interfaces by using the `ip a` command after logging in to your headnode or commpute node. 
 
- <p align="center"><img alt="`ip a` to show `eth0` interface for internal IPs" src="./resources/ipaforeth0interface.png" width=700 /></p>
+
+ <p align="center"><img alt="`ip a` to show `eth0` interface for internal IPs" src="./resources/ipaforeth0interface.png" width=900 /></p>
 
 
 **Rocky 9.3** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
@@ -516,10 +521,9 @@ https://docs.rockylinux.org/gemstones/network/RL9_network_manager/
 https://docs.rockylinux.org/guides/network/basic_network_configuration/ 
 
 
-**CentOS 8** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
+**Rocky 9** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
 
 
-### Head Node
 
 ##### Head Node (`nmtui`)
 
@@ -527,21 +531,23 @@ For the **head node**, create a new network definition using the `nmtui` graphic
 
 First we must make sure that our network interfaces are managed by Network Manager. By default, this should already be the case. Use the following command to check if the network interfaces are managed:
 
-    ```bash
-       nmcli dev
-    ```
+```bash
+nmcli dev
+```
 
 You should see something other than "unmanaged" next to each of the interfaces (excluding lo). If any of your network interfaces (other than lo) say "unmanaged", do the following:
 
-    ```bash
-       nmcli dev set <interface> managed yes
-    ```
+```bash
+nmcli dev set <interface> managed yes
+
+```
 
 The `nmtui` tool is a console-graphical tool used to set up and manage network connections for Network Manager.
 
-    ```bash
-       sudo nmtui
-    ```
+```bash
+sudo nmtui
+
+```
 
 You'll be presented with a screen, select Edit a connection, followed by <Add> and then Ethernet.
 
@@ -561,16 +567,16 @@ The networks should now be active. You can confirm this by going <Back> and then
 
 Your head node should now have the correct IP addresses. Exit `nmtui` and check the networking setup is correct. To do so, use the following commands:
 
-    ```bash
-    ip a
-    ip route
-    ```
+```bash
+ip a
+ip route
+```
 
- - `ip a` will show you the interfaces and their assigned IP addresses.
+- `ip a` will show you the interfaces and their assigned IP addresses.
 - `ip route` will list the interfaces and their assigned routes.
 
 
-### Compute Node
+#### Compute Node
 
 You must also set the static IP addressing for all other nodes in your cluster. You can explore different options for doing so, use the `nmcli` command. This is the command-line interface (CLI) for Network Manager, which is an alternative to the above nmtui, which is simply a graphical wrapper for the CLI.
 
@@ -583,10 +589,10 @@ https://www.golinuxcloud.com/set-static-ip-rocky-linux-examples/
 
 At this point you should test connectivity between your nodes. Using the ping command, you can see whether the nodes can speak to each other via the network. From your head node, try to ping your compute node:
 
-    ```bash
-  ping <compute_node_ip>
+```bash
+ping <compute_node_ip>
 
-    ```
+```
 
 
 If you get a timeout, then things are not working. Try to check your network configurations again.
@@ -594,64 +600,71 @@ If you get a timeout, then things are not working. Try to check your network con
 
 _**Please read [what-is-ip-routing](https://study-ccna.com/what-is-ip-routing/) to gain a better understanding of IP routing.**_ This will be impoortant for the rest of this competition and can help your understanding when debugging issues.
 
-## Editing `/etc/hosts` File
+#### Editing `/etc/hosts` File
 
 In the absence of a DNS server for translation IP address into hostnames and vice versa.
 we can archive the same result by editing the `/etc/hosts`.
 first check the current hostname then change it to headnode and computend for headnode and compute node respectively 
 
-    ```bash
-   #get current hostname 
- nmcli general hostname
+```bash
+#get current hostname 
+nmcli general hostname
 
-   #change hostname to headnode
- sudo nmcli general hostname headnode
+#change hostname to headnode
+sudo nmcli general hostname headnode
 
-  #verify 
- nmcli general hostname
+#verify 
+nmcli general hostname
 
- #edit /etc/hosts file for permanent setting
+#edit /etc/hosts file for permanent setting
 sudo vi /etc/hosts 
 
-  # refresh changes 
+# refresh changes 
 sudo systemctl restart systemd-hostnamed
-    ```
-<p align="center"><img alt="change hostname using `nmcli`" src="./resources/hostnamechange.png" width=700 /></p>
 
-<p align="center"><img alt="edit `/etc/hosts` " src="./resources/etchost.png" width=700 /></p>
+```
 
 
+<p align="center"><img alt="change hostname using `nmcli`" src="./resources/hostnamechange.png" width=900 /></p>
+
+<p align="center"><img alt="edit `/etc/hosts` " src="./resources/etchost.png" width=900 /></p>
+
+
+#### permanent Configuration with `~/.ssh/config`
 you can explore `~/.ssh/config` permanent Configuration: 
 https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix/ 
 
 
 
-# Configuring a Simple Stateful Firewall
+## Configuring a Simple Stateful Firewall
 In the realm of network security, shielding your system against unauthorized access and ensuring data integrity are paramount. the below  tools `iptables, nftables and firewalld` serves as a system's gatekeepers, managing incoming and outgoing traffic.
 
 
-## IPTables `iptables`
+#### IPTables `iptables`
 
 legacy tool that works by setting up rules in different tables. To secure your network with iptables, you would typically manipulate the following tables:
 
-`Filter`: The default table for managing general packet filtering rules.
-`NAT`: For network address translation, crucial when dealing with private network address ranges.
-`Mangle`: Allows alteration of packet headers. Used for specialized packet handling.
+- `Filter`: The default table for managing general packet filtering rules.
+- `NAT`: For network address translation, crucial when dealing with private network address ranges.
+- `Mangle`: Allows alteration of packet headers. Used for specialized packet handling.
 
-    ```bash
- # Block a specific IP address
+
+```bash
+# Block a specific IP address
 sudo iptables -A INPUT -s 10.50.100.8 -j DROP
 
 # Allow all incoming SSH traffic
 sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
-    ```
+
+```
 
 
-## NFTables `nftables` 
+### NFTables `nftables` 
 Successor to iptables, designed to replace iptables.  It integrates all the functionalities provided by the separate iptables tools into a single framework, streamlining the process of configuring tables, chains, and rules. 
-Here's how you can use nftables to control network traffic:
 
-    ```bash
+- Here's how you can use nftables to control network traffic:
+
+```bash
 # Add a table
 sudo nft add table ip filter
 
@@ -663,16 +676,16 @@ sudo nft add rule ip filter input ip saddr 10.50.100.8 drop
 
 # Allow incoming SSH connections
 sudo nft add rule ip filter input tcp dport 22 accept
-    ```
+```
 
-`ip`: Matches only IPv4 packets. This is the default if you do not specify an address family.
-`ip6`: Matches only IPv6 packets.
-`inet`: Matches both IPv4 and IPv6 packets.
+- `ip`: Matches only IPv4 packets. This is the default if you do not specify an address family.
+- `ip6`: Matches only IPv6 packets.
+- `inet`: Matches both IPv4 and IPv6 packets.
 
 *** It's important to note that while nftables is the future, iptables is still widely used and supported, so understanding both is beneficial.**
 
 
-##  Dynamic Front-end Firewall Application Managers `firewalld`
+###  Dynamic Front-end Firewall Application Managers `firewalld`
 
 `firewalld` is a firewall management daemon (service) available for many Linux distributions which acts as a front-end for the `iptables` packet filtering system provided by the Linux kernel. This daemon manages groups of rules using entities called “zones”.  Read more : https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-using-firewalld-on-rocky-linux-9 
 
@@ -746,9 +759,7 @@ If your NAT is working correctly and your compute node's DNS was set correctly w
 <div style="page-break-after: always;"></div>
 
 
-## Routing your Compute Nodes Exclusively Through Your Head Node
-
-# Network Time Protocol
+## Network Time Protocol
 
 **NTP** or **network time protocol** enables you to synchronise the time across all the computers in your network. This is important for HPC clusters as some applications require that system time be accurate between different nodes (imagine receiving a message 'before' it was sent).
 
@@ -765,7 +776,7 @@ ping google.com
 ```
 
 
-## NTP Server (Head Node)
+### NTP Server (Head Node)
 
 1. Install the Chrony software package using the Rocky package manager, `dnf`:
 
@@ -783,14 +794,11 @@ ping google.com
 
 
 ```bash
+#start service 
 sudo systemctl restart chronyd 
+#enable service
+ sudo systemctl enable chronyd
 ```
-
-    Ensure that the chrony service is set to start automatically the next time your system boots:
-
-        ```bash
-        sudo systemctl enable chronyd
-        ```
 
 
 6. Ensure `firewalld` is installed and enabled 
@@ -824,10 +832,10 @@ sudo chronyc tracking
 This will show empty until ntp client (compute nodes) are configured
 
 
-<p align="center"><img alt="enabling ntp traffic, showing ntp clients " src="./resources/ntp.png" width=700 /></p>
+<p align="center"><img alt="enabling ntp traffic, showing ntp clients " src="./resources/ntp.png" width=900 /></p>
 
 
-## NTP Client (Compute Node)
+#### NTP Client (Compute Node)
 
 1. Install the Chrony software package as shwon on headnode.
 
@@ -843,11 +851,12 @@ server <headnode_ip>
 
 Check `chronyc clients` on the head node to see if the compute node is connected and getting information from the head node.
 
+
 ***add picture of ntp clients on headnode*** 
 
 
 
-# Network File System
+## Network File System
 
 Network File System (NFS) enables you to easily share files and directories over the network. NFS is a distributed file system protocol that we will use to share files between our nodes across our private network. It has a server-client architecture that treats one machine as a server of directories, and multiple machines (clients) can connect to it.
 
@@ -886,31 +895,30 @@ sudo cat /proc/fs/nfsd/versions
  *** NFS versions 3 and 4 are enabled by default, and version 2 is disabled. NFSv2 is pretty old and outdated, and hence you can see the -ve sign in front of it.** 
  
  
+5. NFS shares (directories on the NFS server) are configured in the `/etc/exports` file. Here you specify the directory you want to share, followed by the IP address or range you want to share to and then the options for sharing. We want to export the `/home` directory, so edit `/etc/exports` and add the following:
 
-3. NFS shares (directories on the NFS server) are configured in the `/etc/exports` file. Here you specify the directory you want to share, followed by the IP address or range you want to share to and then the options for sharing. We want to export the `/home` directory, so edit `/etc/exports` and add the following:
+```conf
+ /home    10.100.50.0/24(rw,async,no_subtree_check,no_root_squash) 
+```
 
- ```conf
-        /home    10.100.50.0/24(rw,async,no_subtree_check,no_root_squash) 
- ```
 
     Let us go through all the options for NFS exports.
-        rw - gives the client machine read and write access on the NFS volume.
+       - rw - gives the client machine read and write access on the NFS volume.
+        - async - this option forces NFS to write changes to the disk before replying. This option is considered more reliable. However, it also reduces the speed of file operations.
 
-        async - this option forces NFS to write changes to the disk before replying. This option is considered more reliable. However, it also reduces the speed of file operations.
+        - no_subtree_check - this option prevents subtree checking, a process where the host must check whether the file is available along with permissions for every request. It can also cause issues when a file is renamed on the host while still open on the client. Disabling it improves the reliability of NFS.
 
-        no_subtree_check - this option prevents subtree checking, a process where the host must check whether the file is available along with permissions for every request. It can also cause issues when a file is renamed on the host while still open on the client. Disabling it improves the reliability of NFS.
-
-        no_root_squash - By default, NFS translates requests from a root user on the client into a non-privileged user on the host. This option disables that behavior and should be used carefully to allow the client to gain access to the host.
+        - no_root_squash - By default, NFS translates requests from a root user on the client into a non-privileged user on the host. This option disables that behavior and should be used carefully to allow the client to gain access to the host.
 
 
-4. Start and enable the `nfs-server` service using `systemctl`.
+6. Start and enable the `nfs-server` service using `systemctl`.
 
 ```bash
    sudo systemctl enable --now nfs-server rpcbind
 ```
 
 
-5. NFS on Rocky Linux makes use of three different services, and they all need to be allowed through your firewall. You can add these rules with firewall-cmd:
+7. NFS on Rocky Linux makes use of three different services, and they all need to be allowed through your firewall. You can add these rules with firewall-cmd:
 
 ```bash
    sudo firewall-cmd --add-service={nfs,mountd,rpc-bind} --permanent
@@ -966,15 +974,15 @@ Using `mount` from the command line will not make the mount permanent. It will n
    headnode.cluster.scc:/home    /home     nfs auto,nofail,noatime,nolock,tcp,actimeo=1800,intr    0 0
 ```
 
-    The structure is: `<host>:<filesystem_dir> <local_location> <filesystem_type> <filesystem_options> 0 0`. The last two digits are not important for this competition and can be left at 0 0.
+ The structure is: `<host>:<filesystem_dir> <local_location> <filesystem_type> <filesystem_options> 0 0`. The last two digits are not important for this competition and can be left at 0 0.
 
-    For the description of nfs options listed above see the link: https://cheatography.com/baa/cheat-sheets/fstab-nfs/#google_vignette
+For the description of nfs options listed above see the link: https://cheatography.com/baa/cheat-sheets/fstab-nfs/#google_vignette
 
 3. With this done, we can mount the new `/etc/fstab` entry:
 
 ```bash
  sudo mount -a 
- ```
+```
 
 4. Once again, you can verify that the `/home` directory of the head node is mounted by using `df -h`:
 
@@ -996,7 +1004,7 @@ When managing a large fleet of machines or even when just logging into a single 
    #press enter on all prompt
 ```
 
-<p align="center"><img alt="generating ssh keys with `ssh-keygen` " src="./resources/sshkeygen.png" width=700 /></p>
+<p align="center"><img alt="generating ssh keys with `ssh-keygen` " src="./resources/sshkeygen.png" width=900 /></p>
 
 2. Copy the public key generated by `ssh-keygen` into the `authorized_keys` file in the same directory.
 
@@ -1026,16 +1034,16 @@ run the following command:
 6. You can do the same thing for passwordless login from compute node to headnode 
 
 
-# Understanding `~/.ssh/authorized_keys`
+### Understanding `~/.ssh/authorized_keys`
 
 How this works is that you copy the public key to the computer that you want to connect to without a password `authorized_keys` file. When you SSH to the machine that you copied your public key to, the `ssh` tool will send a challenge that can only be decrypted if the target machine has the public key and the local machine has the private key. If this succeeds, then you are who you say you are to the target computer and you do not require a password. [Please read this for more detailed information](https://www.ssh.com/academy/ssh/public-key-authentication).
 
-# User Permissions and Ownership
+### User Permissions and Ownership
 > **! >>> `chmod` and `chown` are Linux permission and ownership modification commands. To learn more about these commands and how they work, please go to the following link: [https://www.unixtutorial.org/difference-between-chmod-and-chown/](https://www.unixtutorial.org/difference-between-chmod-and-chown/).**
 
 
 
-# User Account Management
+## User Account Management
 
 In enterprise systems and HPC, it's common to manage user accounts from one central location. These network accounts are then synchronised to the machines in your fleet via the network. This is done for safely, security and management purposes.
 
@@ -1052,15 +1060,12 @@ When logged in to the head node or compute node, check the UID and GID of `root`
 sudo su
 
  id
-```
-
-You should see something like the following:
-
-```bash
 uid=0(root) gid=0(root) groups=0(root) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
 ```
 
 This shows that `root` is the user `0` and it's primary group (GID) is group `0`. It also states that it only belongs to one group, which is the `root` group (`0`).
+
+
 
 ## Create Team Captain User Account
 
@@ -1077,25 +1082,20 @@ Let us now create a user account on the head node:
     [root@headnode ~]$ passwd captain
 ```
 
-    `-U` tells `adduser` to create a group for the user and `-m` means to create the user home directory.
+`-U` tells `adduser` to create a group for the user and `-m` means to create the user home directory.
 
 3. Check the ID of the new user
 
- ```bash
-    [root@headnode ~]$ id captain
+```bash
+[root@headnode ~]$ id captain
+uid=1000(captain) gid=1000(captain) groups=1000(captain)
 ```
 
-    You'll see something like the following:
-
-    ```bash
-    uid=1000(captain) gid=1000(captain) groups=1000(captain)
-    ```
-
-    As you can tell, it has a different ID for the user and group than `root`.
+As you can tell, it has a different ID for the user and group than `root`.
 
 ### Compute Node
 
-Log into thetest compute node and try to verify that the `captain` user **does NOT exist** there:
+Log into the compute node and try to verify that the `captain` user **does NOT exist** there:
 
 ```bash
 [root@computenode ~]$ id captain
@@ -1311,11 +1311,11 @@ ansible -m ping compute
 #run command on hosts 
 ansible -m shell -a 'free -m' compute
 ```
-<p align="center"><img alt="ansible testing hosts client connection " src="./resources/ansible_ping_servers.png" width=700 /></p>
+<p align="center"><img alt="ansible testing hosts client connection " src="./resources/ansible_ping_servers.png" width=900 /></p>
 
-<p align="center"><img alt="ansible testing individual host client connection " src="./resources/ansible_individual_host_access.png" width=700 /></p>
+<p align="center"><img alt="ansible testing individual host client connection " src="./resources/ansible_individual_host_access.png" width=900 /></p>
 
-<p align="center"><img alt="run command on ansible clients" src="./resources/ansible_run_command_on_hosts.png" width=700 /></p>
+<p align="center"><img alt="run command on ansible clients" src="./resources/ansible_run_command_on_hosts.png" width=900 /></p>
 
 
 ### Create Team Member Accounts
@@ -1381,11 +1381,11 @@ Run the playbook script
 ansible-playbook /home/rocky/ansible/playbooks/sudo_users.yml -l servers
 ```
 
-<p align="center"><img alt=" run the sudo_user playbook " src="./resources/ansible_create_user_run_result.png" width=700 /></p>
+<p align="center"><img alt=" run the sudo_user playbook " src="./resources/ansible_create_user_run_result.png" width=900 /></p>
 
 Verify user `team_lead` was created and on compute node and it on wheel group 
 
-<p align="center"><img alt=" user team lead exist on ansible client " src="./resources/ansible_team_lead_user_verification.png" width=700 /></p>
+<p align="center"><img alt=" user team lead exist on ansible client " src="./resources/ansible_team_lead_user_verification.png" width=900 /></p>
 
 
 # Remote Access to Your Cluster and Tunneling
