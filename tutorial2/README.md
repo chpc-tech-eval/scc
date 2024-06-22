@@ -851,11 +851,18 @@ server <headnode_ip>
 3. Restart the chronyd service as above.
 
 4. Enable the chronyd service as above.
+5. verify the sources of the NTP server  
 
-Check `chronyc clients` on the head node to see if the compute node is connected and getting information from the head node.
+```bash
+sudo chronyc sources
+```
+
+<p align="center"><img alt=" compute node NTP server source" src="./resources/ntp_source_for_compute_node.png" width=900 /></p>
 
 
-***add picture of ntp clients on headnode*** 
+Run `chronyc clients` on the headnode to see ntp clients 
+
+<p align="center"><img alt=" chronyc clients after client config" src="./resources/ntp_clients.png" width=900 /></p>
 
 
 
@@ -1391,18 +1398,18 @@ Verify user `team_lead` was created and on compute node and it on wheel group
 <p align="center"><img alt=" user team lead exist on ansible client " src="./resources/ansible_team_lead_user_verification.png" width=900 /></p>
 
 
-# Remote Access to Your Cluster and Tunneling
+## Remote Access to Your Cluster and Tunneling
 
-## Local Port Forwarding
+### Local Port Forwarding
 
-## Dynamic Port Forwarding
+### Dynamic Port Forwarding
 ### Web Browser and SOCKS5 Proxy Configuration
 
-## WirGuard VPN Cluster Access
+### WirGuard VPN Cluster Access
 
-## ZeroTier
+### ZeroTier
 
-## X11 Forwarding
+### X11 Forwarding
 
 
 #### Dynamic SSH Tunnel
