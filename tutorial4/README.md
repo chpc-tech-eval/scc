@@ -417,7 +417,35 @@ Simulations like this are used to to develop and prototype experimental pharmace
 
 # Automating the Deployment of your OpenStack Instances Using Terraform
 
-## 
+Terraform is a piece of software that allows one to write out their cloud infrastructure and deployments as code, [IaC](https://en.wikipedia.org/wiki/Infrastructure_as_code). This allows the deployments of your cloud virtual machine instances to be shared, iterated, automated as needed and for software development practices to be applied to your infrastructure.
+
+## Install and Initialize Terraform
+
+1. Use your operating system's package manager to install Terraform
+   This could be your workstation or one of your VMs. The machine must be connected to the internet and have access to your
+   ```bash
+   sudo pacman -S terraform
+   ```
+
+1. Create a Terraform directory, descend into it and Edit the `providers.tf` file
+   In order to efficiently manage your 
+   ```bash
+   mkdir terraform
+   cd terraform
+   vim providers.tf
+   ```
+
+1. Add the following to the `providers.tf` file be
+   ```conf
+   terraform {
+     required_providers {
+       openstack = {
+         source = "terraform-provider-openstack/openstack"
+         version = "1.46.0"
+       }
+     }
+   }
+   ```
 
 # Automating the Configuration of your VMs Using Ansible
 
