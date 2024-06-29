@@ -1491,7 +1491,7 @@ Select `SOCKS v5` and **tick on** `Proxy DNS when using SOCKS v5`.
 Now click `OK` and open a new tab in Firefox.
 
 
-<p align="center"><img alt=" socks 5 settings" src="./resources/sock5proxysettings.png" width=300 /></p>
+<p align="center"><img alt=" socks 5 settings" src="./resources/sock5proxysettings.png" width=400 /></p>
 
 
 Now you can enter `http://headnode_ip:1235` in your browser and you'll get access to the software tool interface.
