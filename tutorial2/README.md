@@ -1491,7 +1491,6 @@ Select `SOCKS v5` and **tick on** `Proxy DNS when using SOCKS v5`.
 Now click `OK` and open a new tab in Firefox.
 
 
-
 <p align="center"><img alt=" socks 5 settings" src="./resources/sock5proxysettings.png" width=400 /></p>
 
 
