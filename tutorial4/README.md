@@ -442,7 +442,7 @@ In this section of the tutorial, you will be deploying an additional compute nod
        openstack = {
          source = "terraform-provider-openstack/openstack"
          version = "1.46.0"
-}
+       g}
      }
    }
    ```
@@ -455,7 +455,7 @@ In this section of the tutorial, you will be deploying an additional compute nod
    <p align="center"><img alt="Terraform install and initialize." src="./resources/terraform_install_init.png" width=900 /></p>
    
 1. Generate OpenStack API Credentials
-   From _your_ team's Sebowa workspace, navigate to `Identity` \rarr `Application Credentials`, and generate a set of OpenStack credentials in order to allow you to access and authenticate against your workspace.
+   From _your_ team's Sebowa workspace, navigate to `Identity` &rarr; `Application Credentials`, and generate a set of OpenStack credentials in order to allow you to access and authenticate against your workspace.
    
    <p align="center"><img alt="OpenStack Application Credentials." src="./resources/openstack_application_creds.png" width=900 /></p>
    
@@ -502,8 +502,8 @@ In this section of the tutorial, you will be deploying an additional compute nod
    }
    ```
    
-   > [!NOTE]
-   > You must specify your own variables for `name`, `image_id`, `flavor_id`, `key_pair` and `network.name`.
+> [!NOTE]
+> You must specify your own variables for `name`, `image_id`, `flavor_id`, `key_pair` and `network.name`.
 
 1. Generate and Deploy Terraform Plan
    Create a Terraform plan based on the current configuration. This plan will be used to implement changes to your Sebowa OpenStack cloud workspace, and can be reviewed before applying those changes.
@@ -522,7 +522,7 @@ In this section of the tutorial, you will be deploying an additional compute nod
    <p align="center"><img alt="Terraform Apply." src="./resources/terraform_install_init.png" width=900 /></p>
    
 1. Verify New Instance Successfully Created by Terraform
-   Finally confirm that your new instance has been successfully created. On your Sebowa OpenStack workspace, navigate to `Project` \rarr `Compute` \rarr `Instances`.
+   Finally confirm that your new instance has been successfully created. On your Sebowa OpenStack workspace, navigate to `Project` &rarr; `Compute` &rarr; `Instances`.
 
 > [!TIP]
 > To avoid losing your team's progress, it would be a good idea to create a GitHub repo in order for you to commit and push your changes.
@@ -543,8 +543,8 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
    
    If you haven't already done so, add your SSH key to your GitHub account by following the instructions from [Steps to follow when editing existing content](../README.md#steps-to-follow-when-editing-existing-content).
    
-   > [!TIP]
-   > You will be using your head node to orchestrate and configure your infrastructure. Pay careful attention to ensure that you copy over your **head node**'s public SSH key. Administrating and managing your compute nodes in this manner requires you to think about them as "cattle" and not "pets".
+> [!TIP]
+> You will be using your head node to orchestrate and configure your infrastructure. Pay careful attention to ensure that you copy over your **head node**'s public SSH key. Administrating and managing your compute nodes in this manner requires you to think about them as "cattle" and not "pets".
 
 1. Reuse `providers.tf` and `main.tf` Terraform Configurations
    
