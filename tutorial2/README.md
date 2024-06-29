@@ -1465,6 +1465,7 @@ http://headnode:1235 or http://headnode_ip:1235
 We'll need to use a **dynamic SSH tunnel** ([SOCKS proxy](https://en.wikipedia.org/wiki/SOCKS)) to allows SSH to forward **ALL remote (target) port traffic** to and from a port on your local machine, and can include remote DNS.
 
 
+
 ###### Firefox and Proxy Configuration
 
 The Firefox browser will allow the easiest proxy configuration. Please download and install Firefox from here: [https://www.mozilla.org/en-US/firefox/download/](https://www.mozilla.org/en-US/firefox/download/).
