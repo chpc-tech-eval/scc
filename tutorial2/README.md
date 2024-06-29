@@ -509,7 +509,7 @@ deactivate
 
 Your VMs have been assigned IP addresses,to identify these, navigate to `Compute -> Instances` on your openstack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for the headnode) and one IP address (for compute node) with their respective networks  
 
-The headnode IP addresses will look like `10.100.50.x` and `154.114.57.x` where `x` is your specific vm address number. `10.100.50.x` network is for internal use and `154.114.57.x` is for public facing usage. 
+The headnode IP addresses will look like `10.100.50.x` and `154.114.72.x` where `x` is your specific vm address number. `10.100.50.x` network is for internal use and `154.114.72.x` is for public facing usage. 
 
 You can check your network interfaces by using the `ip a` command after logging in to your headnode or commpute node. 
 
@@ -1393,55 +1393,79 @@ ansible-playbook /home/rocky/ansible/playbooks/sudo_users.yml -l servers
 
 <p align="center"><img alt=" run the sudo_user playbook " src="./resources/ansible_create_user_run_result.png" width=900 /></p>
 
-Verify user `team_lead` was created and on compute node and it on wheel group 
+Verify user `team_lead` was created on compute node and it on a `wheel` group 
 
 <p align="center"><img alt=" user team lead exist on ansible client " src="./resources/ansible_team_lead_user_verification.png" width=900 /></p>
 
 
-## Remote Access to Your Cluster and Tunneling
+### Remote Access to Your Cluster and Tunneling
+Tunneling is a way of accessing software tools running privately in a server somewhere publicly. You want to access these tools publicly. There are multiple ways you can go about and we'll discuss 2 in this tutorial.
 
-### Local Port Forwarding
-
-### Dynamic Port Forwarding
-### Web Browser and SOCKS5 Proxy Configuration
-
-### WirGuard VPN Cluster Access
-
-### ZeroTier
-
-### X11 Forwarding
+   1. Local port forwarding
+   2. dynamic port forwarding 
 
 
-#### Dynamic SSH Tunnel
 
-The FreeIPA web interface is hosted on the head node and available on port `443 (https)`. You won't be able to access this interface using the SSH Tunnel technique described in [Part 1](#part-1---remote-web-service-access)), as when you enter the address to access the forwarded port (something like http://127.0.0.1:1234) FreeIPA's web interface will automatically redirect you to `https://headnode.cluster.scc`. Since `headnode.cluster.scc` (or whatever your head node name is), does not exist on your local network at home, this will result in your browser telling you that it can't find that server.
+#### 1. Local Port Forwarding
+This method uses `SSH` to forward/direct traffic from remote server to local machine. run `man SSH` then read `-L` flag for more details. 
 
-We'll need to use a **dynamic SSH tunnel** ([SOCKS proxy](https://en.wikipedia.org/wiki/SOCKS)) to get around this. This allows SSH to forward **ALL remote (target) port traffic** to and from a port on your local machine, and can include remote DNS.
+the syntax goes as follows:
 
-0. First, open two terminals on your personal computer.
+***ssh -L <localhost_port:target_host:target_host_port> <username>@<remote_host>***
 
-1. In terminal one, type:
+***localhost_port*** is your local machine port
+***target_host*** remote server (IP/domain name) that runs the software tools
 
-    ```bash
-    ssh -L 1234:<headnode_ip>:22 <team_name>@ssh.ace.chpc.ac.za
-    ```
+***target_host_port***  port that the software tools uses on the remote server
 
-    And sign in with your team password.
+***<username>@<remote_host>***  login server/node/machine, the login server and target host can be the same machine/server
 
-2. Leave that terminal open, go to the second terminal and type:
 
-    ```bash
-    ssh -p 1234 -D 1235 centos@127.0.0.1
-    ```
+The ***-L*** specifies that you want to create a port forward to/from your <localhost_port> to the <target_host_port> of the <target_host>.
 
-    The `-p 1234` tells `ssh` to use `1234` as the SSH port instead of the default `22`.
-    The `-D 1235` tells `ssh` to open `1235` on your local computer for sending and receiving all port traffic to and from the target machine (`127.0.0.1:1234`, which in this case is `<headnode_ip>:22` because of the `-L`.)
+In this tutorial there will be software tools (running on port 8080) you will need to use tunneling to access from your headnode to your local machine 
 
-You are essentially **hopping through** `ssh.ace.chpc.ac.za` into your head node directly.
+```bash
+#on your terminal run 
+ssh -L 9090:headnode:8080 username@headnode 
 
-**Windows user with PuTTY, please read the following PDF: https://webdevolutions.blob.core.windows.net/blog/pdf/how-to-configure-an-ssh-tunnel-on-putty.pdf. Please refer to Step 4.**
+#on the web browser type the below to access your software tool
+http://localhost:9090  or  http://127.0.0.1:9090 
+```
 
-#### Firefox and Proxy Configuration
+
+
+#### 2. Dynamic Port Forwarding 
+This method uses `SSH` to forward/direct traffic from remote server to local machine. run `man SSH` then read `-D` flag for more details. 
+
+syntax: 
+
+***ssh -D local_port username@target_host***
+
+To use the Dynamic Port Forwarding 
+1. on your terminal run the below command, keep the terminal open
+```bash
+
+ssh -D 1235 username@headnode
+```
+
+ **The `-D 1235` tells `ssh` to open `1235` on your local computer for sending and receiving all port traffic to and from the target_host machine ( which in this case is the `headnode` or `headnode_ip`.)**
+
+2. follow the Web Browser and SOCKS5 Proxy Configuration sectiom to configure `socks` protocol
+
+3. on the web browser type the below after the Web Browser and SOCKS5 Proxy Configuration to access your software tool 
+
+```bash
+http://headnode:1235 or http://headnode_ip:1235 
+```
+
+
+##### Web Browser and SOCKS5 Proxy Configuration
+
+We'll need to use a **dynamic SSH tunnel** ([SOCKS proxy](https://en.wikipedia.org/wiki/SOCKS)) to allows SSH to forward **ALL remote (target) port traffic** to and from a port on your local machine, and can include remote DNS.
+
+
+###### Firefox and Proxy Configuration
 
 The Firefox browser will allow the easiest proxy configuration. Please download and install Firefox from here: [https://www.mozilla.org/en-US/firefox/download/](https://www.mozilla.org/en-US/firefox/download/).
 
@@ -1461,62 +1485,15 @@ Select `SOCKS v5` and **tick on** `Proxy DNS when using SOCKS v5`.
 
 Now click `OK` and open a new tab in Firefox.
 
-Now you can enter https://headnode.cluster.scc/ipa/ui in your browser and you'll get access to the FreeIPA Web interface. With this, you can log in using the FreeIPA admin user and password.
+Now you can enter `http://headnode_ip:1235` in your browser and you'll get access to the software tool interface.
 
-> **! >>> Keep both of the SSH sessions open while you use the proxy on Firefox**
+> **! >>> Keep the SSH sessions open while you use the proxy on Firefox**
 
 > **! >>> Remember to set your proxy settings back to `No Proxy` if you want to use your own local internet on Firefox.**
 
-#### Creating a User
 
-With the proxy up and set in Firefox, go to https://headnode.cluster.scc/ipa/ui and log in with the `admin` user and the password you set up for **IPA admin password**.
+### WirGuard VPN Cluster Access
 
-Once logged in, you'll see that by default there is an `admin` user with some UID assigned to it. We can ignore this user for now. 
+### ZeroTier
 
-We need to do two things here:
-
-- Create a group and give it superuser permissions.
-- Create a user to replace the `centos` user.
-- Add the new user to the above mentioned group.
-
-##### Creating the Group
-
-1. In the main menu, click "Groups".
-
-2. Under "User Groups", click "+ Add" and name the group "sysadmin" (short for systems administrator, that's what you are!).
-
-3. Click "Add" at the bottom.
-
-4. Now at the top, click the "Policy" button and go to the "Sudo" -> "Sudo Rules" section.
-
-5. Click "+ Add", name it "sysadmin sudo" and click "Add and Edit".
-
-6. Click "+ Add" next to "User Groups" under **"Who"**, tick the "sysadmin" group, click the `>` arrow and click "Add".
-
-7. 8. Click the "Any Host" button under **"Run Commands"**.
-
-
-8. Click the "Any Command" button under **"Run Commands"**.
-
-9. Click the "Anyone" and "Any Group" buttons under **"As Whom"**.
-
-10. Click the "Save" button at the top of the page (under "Settings").
-
-##### Creating the Users
-
-Make sure that you go back to the main menu by clicking the "Identity" button.
-
-1. In the main menu, click the "+ Add" button on the top right.
-
-2. Create a user account for each of your team members (one at a time).
-    - Give the user a user name (User login). Make it the first letter of their first name followed by the full surname. As an example: if your name is Bob John, you could make it bjohn.
-    - Enter the first and last name in the boxes.
-    - Specify a new password and repeat that in the "verify password" box (this is a temporary password and you will be requested to change it on login.)
-    - Leave everything else empty.
-    - Click "Add and Edit" at the bottom.
-
-3. Click User Groups, "+ Add" and add the "sysadmin" group to the user. Click "Add". 
-
-4. Repeat the above 1-3 for each user in your team.
-
-You should now be able able to log into your user accounts and access root. Please use your own account when interacting with the cluster going forward. **You may need to repeat the ssh keypair-based authentication for your users in order to log in to the compute node without a password, test it first.**
+### X11 Forwarding
