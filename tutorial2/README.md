@@ -75,7 +75,7 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 
 <!-- markdown-toc end -->
 
-# Checklist
+## Checklist
 
 TODO: Fix checklist
 
@@ -91,11 +91,14 @@ This tutorial will demonstrate how to access web services that are on your virtu
 - [ ] Connect to machines without a password using public key based authentication.
 - [ ] Install and use central authentication.
 
-# Spinning Up a Compute Node in OpenStack
 
-play around
+## Spinning Up a Compute Node in OpenStack
 
-scripting and automation to test out differnet configurations
+### Manually from openstack dashboard 
+To launch your compute node vm, go to `Compute-> Instances` click `launch instance` and follow the headnode vm launch process on Tutorial 1. **remember** to use `compute` flavors and `local_team_keys`  used when launching the headnode on Tutorial 1.
+
+
+### scripting and automation to test out differnet configurations
 
 As previously discussed in [Tutorial 1: OpenStack Flavors](../tutorial1/README.md#openstack-instance-flavors), an important aspect of system administration is resource monitoring, management and utilization. Once you have successfully stood up your head node, your team will need to plan and manage the resources remaining which will be available for your compute node(s).
 
@@ -104,7 +107,7 @@ You would have seen in [Tutorial: Head Node Resource Allocations](../tutorial1/R
 > [!TIP]
 > You are encourage to **strongly** encouraged to automate the deployment, installation and configuration of your cluster nodes through the use of either at least basic shell scripts or more advanced Ansible playbooks. This will allow you to rapidly experiment with and test the performance of different configurations in order to determine an optimum cluster for the applications you're required to evaluate.
 
-## Compute Node Considerations
+### Compute Node Considerations
 
 While the head node is responsible for administrative and management related tasks, such as authenticating user logins into the cluster, managing services, hosting a network file system, workload management and load balancing, while compute nodes are responsible executing compute intensive tasks.
 
@@ -112,13 +115,13 @@ Sensible default instance flavors have already been identified and configured fo
 
 One important distinction between your head node and compute node(s), is that the compute nodes will **not** have a floating IP associated to them. Your head node will act as a ***Gateway*** for your Compute Node(s), and ***Route*** traffic between the internet and your cluster, using a method referred to as ***Network Address Translation (NAT)***, which was discussed in the [WiFi Hotspot Example](../tutorial1/README.md#wifi-hotspot-example).
 
-The final important consideration that must be made for your compute node is that you must not forget to configure an SSH key, so that you may access it after it has successfully launched. For ease of access and to simplify your configuration, you are *strongly* advised to use the same SSH key that you'd [previously generated](../tutorial1/README.md#generating-ssh-keys).
+The final important consideration that must be made for your compute node is that you must not forget to configure an SSH key, so that you may access it after it has successfully launched. For ease of access and to simplify your configuration, you are *strongly* advised to use the same SSH key that you'd [previously generated](../tutorial1/README.md#generating-ssh-keys) on your local machine/laptop.
 
-# Accessing Your Compute Node
+### Accessing Your Compute Node
 
 After you have successfully [Launched Your Second OpenStack VM Instance](../tutorial1/README.md#launching-your-first-openstack-virtual-machine-instance), you can SSH into your new compute node VM instance using your head node as a [Jump Box](https://goteleport.com/blog/ssh-proxyjump-ssh-proxycommand/).
 
-## IP Addresses and Routing
+### IP Addresses and Routing
 
 Before your access your compute node, we must verify a few details on the head node. Your will already be familiar with many of these commands.
 
@@ -128,7 +131,7 @@ TODO: High level explanation of OpenStack's automatic network configuration and 
 
 TODO: Maybe remove the default routing table on compute node and route through headnode?
 
-## Command Line Proxy Jump Directive
+### Command Line Proxy Jump Directive 
 
 From you workstation, using either MobaXTerm or Windows Powershell, you can `ssh` directly into your compute node by first making an **ssh** connection too your head node and then establishing a TCP forwarding connection to your compute node. Using this method, the SSH keys for both your head node and compute node must reside on your local workstation:
 
@@ -171,7 +174,7 @@ sudo passwd <user>
 <p align="center"><img alt="Change Compute Node Password." src="./resources/ssh_compute_node_passwd.png" width=900 /></p>
 
 
-## Generating SSH Keys on your Head Node
+### Generating SSH Keys on your Head Node
 
 Just as you did so in the previous tutorial when you generated SSH keys [on your workstation](../tutorial1/README.md#generating-ssh-keys), you're now going to do the same on your head node. You're then going to copy the newly created key onto you head node and test the new SSH connection, by logging into your compute node.
 
@@ -205,11 +208,14 @@ Just as you did so in the previous tutorial when you generated SSH keys [on your
 <p align="center"><img alt="Generate Key and SSH into compute" src="./resources/install_tmux.png" width=900 /></p>
 
 
-# Understanding the Roles of the Head Node and Compute Node
+### Understanding the Roles of the Head Node and Compute Node
 Networking Diagram and client server model
+headnode (hd) and compute node (cn) relationship follow a server (hd) - client (cn) relations, the headnode carries the systems services and compute node does all the computations
 System software need to be installed on both head node and compute nodes
-Do not ssh endlessly between head and compute nodes, one terminal example or multiplexing
-## Terminal Multiplexers
+Do not ssh endlessly between head and compute nodes, one terminal example or multiplexing (screen sessions via `tmux`)
+
+
+### Terminal Multiplexers
 
 Discuss GNU Screen and [tmux](https://github.com/tmux/tmux/wiki)
 
@@ -256,10 +262,10 @@ sudo apt-get install tmux
 To start a new `tmux` session on your **head node**:
 
 ```bash
-tmux
+tmux new -s session_name 
 ```
 
-### Working on your Head Node and Compute Node in Two Adjacent Panes
+#### Working on your Head Node and Compute Node in Two Adjacent Panes
 
 Once you've started a new `tmux` session or daemon or server, on your head node, there are a number of very useful tools you can utilize.
 
@@ -326,176 +332,427 @@ Once you've started a new `tmux` session or daemon or server, on your head node,
    ```
 1. Your team must decide which tool you will be using for basic monitoring of your cluster. Choose between `top`, `htop` and `btop` and make sure your choice of application is installed across your cluster.
 
-### Attaching and Detaching Sessions
+#### Attaching and Detaching Sessions
 
 Should your terminal application close, or if you relocate from the laboratores... write a schlept about remote sessions and servers here
 
 To connect to an existing `tmux` session on your **head node**:
 
 ```bash
-tmux attach
+tmux a -t session_name 
 ```
 
-## Basic System Monitoring 
-# Manipulating Files and Directories
-## List Directory `ls`
-## Change Directory `cd`
-## Copy File or Directory `cp`
-## Move File or Directory `mv`
-## Make a New Directory `mkdir`
-## Remove File or Directory `rm`
-## The `history` Command
+
+
+### Basic Linux commands   
+
+#### Basic System Monitoring  
+`top` `htop` are system built commands used to monitor server resource suage. for `htop` first install epel source repository then install htop 
+https://docs.rockylinux.org/gemstones/htop/ 
+
+```bash
+sudo dnf -y install epel-release
+sudo dnf makecache
+sudo dnf -y install htop
+htop 
+```
+
+<p align="center"><img alt="htop output" src="./resources/htopcommand.png" width=900 /></p>
+
+
+
+#### Print current working space 
+If you are lost and don't know where you currently working use `pwd` (print working directory), it will show you your current woring space 
+
+```bash
+pwd 
+```
+
+
+
+### Manipulating Files and Directories
+
+#### Make a New Directory 
+
+`mkdir` command is used to create folders or directories, the `-p` flag means create the directory path `mnu/2024` if it does not exits before creating `SCC` directory. 
+
+```bash
+mkdir SCC
+mkdir -p mnu/2024/SCC
+```
+
+
+
+#### creating new Files 
+The following commands are used to create and edit files 
+`touch` create a new file(s) 
+
+`vi, vim, nano ` file editor commands and are used to edit existing files, but if a file does not exist it will create the file and open it for editing. 
+
+
+```bash
+touch file
+vi file1
+```
+
+
+
+
+#### List Directory 
+`ls` (list) command used to list the content of directory/folder.
+
+```bash
+ls mnu/2024/SCC
+```
+
+`ls` list or prints the content of the current working directory 
+`ls mnu/2024/SCC`  list or print the content of the last `SCC` directory 
+
+
+
+#### Change Directory 
+
+`cd` commad allow you move from directory to directory 
+
+```bash
+
+cd mnu/2024/SCC
+```
+
+`cd mnu/2024/SCC` means moving to `SCC`  directory, you can verify your current working directory by `pwd` command 
+
+<p align="center"><img alt="change from current to SCC directory" src="./resources/cdexample.png" width=500 /></p>
+
+
+
+#### Copy File or Directory 
+
+`cp` copy files/directories from source to destinations, it works like windows `copy and paste`. 
+
+```bash
+mkdir -p mnu/2024/team
+cp -r mnu/2024/SCC mnu/2024/team/
+
+```
+
+`mkdir -p mnu/2024/team` creates a team directory/folder under mnu/2024 directoy path. 
+
+`cp -r mnu/2024/SCC mnu/2024/team/` will recursilvely copy the `SCC` directory and it content to `mnu/2024/team/` directory. 
+
+
+<p align="center"><img alt="creating the SCC directory" src="./resources/cpexamble.png" width=700 /></p>
+
+
+
+#### Move File or Directory 
+
+`mv` command literally moves files/directories from source to destinations, it work like windows `cut and paste`. 
+
+
+```bash
+mv staff_list.txt mnu/2024/team/SCC
+```
+
+`staff_list.txt` file is being moved to SCC directory 
+
+
+ <p align="center"><img alt="moving staff list file to SCC directory" src="./resources/mvcommandexample.png" width=700 /></p>
+
+
+
+#### Remove File or Directory 
+
+`rm` remove command used to delete files, directory with `-r` flag
+
+```bash
+rm  mnu/2024/team/SCC/staff_list.txt
+rm -r mnu/2024/team/SCC
+
+```
+
+
+<p align="center"><img alt="moving staff list file to SCC directory" src="./resources/rmcommand.png" width=700 /></p>
+
+<p align="center"><img alt="moving staff list file to SCC directory" src="./resources/rmcommandexample.png" width=700 /></p>
+
+
+
+
+#### The history Command
+
+`history` command shows all commands you have executed so far, the feedback is numbered, use `!14` to rerun the 20th command  
+ 
+
+ <p align="center"><img alt="history command "  src="./resources/history_command.png" width=500 /></p>
+
+
+ <p align="center"><img alt="rerun commands from history "  src="./resources/rerun_command_from_history.png" width=9000 /></p>
+
+
+
+
+#### The virtual environment Command 
+
+`virtualenv` command helps you run multiple services with conflicting packages without any problems. each virtual enviroment is treated as an independant entity. 
+Below is how you create and source or access a virtual enviroment then deactivate to exit, ensure to use sensible names.
+https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-programming-environment-on-rocky-linux-9 
+
+```bash
+python -m venv env
+source env/bin/activate
+deactivate 
+```
+
+
 ## Recommended Project Folder Structure
-# Verifying Networking Setup
+#### Verifying Networking Setup
 
-You have been assigned IP addresses for your VMs. To identify these, go to the OpenStack user interface and navigate to `Compute -> Instances`. In the list of virtual machines presented to you, click the name of the virtual machine instance, and navigate to the "**Interfaces**" tab (refer to [Figure 4.1 below](#fig4.1)). This list contains the IP addresses assigned to each of your VM network interfaces.
+Your VMs have been assigned IP addresses,to identify these, navigate to `Compute -> Instances` on your openstack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for the headnode) and one IP address (for compute node) with their respective networks  
 
-For example, if you have `enp3s0` and `enp4s0`, then you should see two IP addresses listed in the OpenStack interface, such as `10.128.24.x` and `10.0.0.x`. **You absolutely have to use the correct IP addresses for the correct interfaces, as your network may not work if you do not.**
+The headnode IP addresses will look like `10.100.50.x` and `154.114.57.x` where `x` is your specific vm address number. `10.100.50.x` network is for internal use and `154.114.57.x` is for public facing usage. 
 
-<span id="fig4.1" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="test" src="./resources/ips_openstack.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 4.1: The IP addresses assigned to your interfaces for inside of your VM.</i></span>
-</span>
+You can check your network interfaces by using the `ip a` command after logging in to your headnode or commpute node. 
 
-You can verify which network interface you are modifying by corroborating the [MAC-Address](https://en.wikipedia.org/wiki/MAC_address) from the `ip a` command (in your VM instances) and from those listed in OpenStack (refer to [Figure 4.2 below](#fig4.2)).
 
-<span id="fig4.2" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="test" src="./resources/mac_openstack.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;"><i>Figure 4.2: The MAC addresses assigned to your interfaces for inside of your VM.</i></span>
-</span>
+ <p align="center"><img alt="`ip a` to show `eth0` interface for internal IPs" src="./resources/ipaforeth0interface.png" width=900 /></p>
 
-**CentOS 8** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
 
-### Head Node
+**Rocky 9.3** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
 
-replace network manager description and use systemd-networked
+You can read the ff links for more information or better understanding: 
+https://docs.rockylinux.org/gemstones/network/RL9_network_manager/  
+https://docs.rockylinux.org/guides/network/basic_network_configuration/ 
+
+
+**Rocky 9** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
+
+
+
+#### Head Node (`nmtui`)
 
 For the **head node**, create a new network definition using the `nmtui` graphical tool using the following steps:
 
-0. First we must make sure that our network interfaces are managed by `Network Manager`. By default, this should already be the case. Use the following command to check if the network interfaces are managed:
-
-    ```bash
-    ~$ nmcli dev
-    ```
-
-    You should see something **other than "unmanaged"** next to each of the interfaces (excluding `lo`). If any of your network interfaces (other than `lo`) say "unmanaged", do the following:
-
-
-    ```bash
-   ~$ nmcli dev set <interface> managed yes
-    ```
-
-1. The `nmtui` tool is a console-graphical tool used to set up and manage network connections for `Network Manager`.
-
-    ```bash
-    ~$ nmtui
-    ```
-
-2. You'll be presented with a screen, select `Edit a connection`, followed by `<Add>` and then `Ethernet`.
-
-3. For **Profile Name**, type the name of the interface you want to assign an IP address to, like `enp3s0` or `enp4s0`, and type the same thing for **Device** (in this instance, **Device** means **interface**).
-
-4. For **IPv4 CONFIGURATION**, change `<Automatic>` to `<Manual>`. This tells NM that we want to assign a static IP address to the connection. Hit enter on `<Show>` to the right of **IPv4 CONFIGURATION** and enter the following information:
-
-    - **Addresses**: Hit `<Add>` and enter the IP address (found in OpenStack) for this interface. After the IP address, add the text "/24" to the end. It should read as `<ip_address>/24` with no spaces. The "/24" is the subnet mask of the IP address in [CIDR notation](#part-1---accessing-the-cloud).
-    - **Gateway**: Enter the gateway address here. This will be the ACE Lab gateway for the external network of the head node.
-    - **DNS servers**: Hit `<Add>` and enter `8.8.8.8`. This is the public DNS server of Google and is used to look up website names. (**NB: DNS is explained later!**)
-
-5. Hit `<OK>` at the bottom of the screen.
-
-6. _Repeat the above processes for any other network interface you want to give an IP address to, if there are more on your machine (you can use `ip a` to check how many there are)._
-
-7. The networks should now be active. You can confirm this by going `<Back>` and then to `Activate a connection`. If you see stars to the left of each of the networks that you have created, then the networks are active. If not, hit enter on the selected network to active it.
-
-8. Your **head node** should now have the correct IP addresses. Exit `nmtui` and check the networking setup is correct. To do so, use the following commands:
-
-    ```bash
-    ~$ ip a
-    ~$ ip route
-    ```
-
-    - `ip a` will show you the interfaces and their assigned IP addresses.
-    - `ip route` will list the interfaces and their assigned routes.
-
-## Compute Node
-
-You must also set the static IP addressing for all other nodes in your cluster. In order to explore different options for doing so, please use the `nmcli` command. This is the command-line interface (CLI) for `Network Manager`, which is an alternative to the above `nmtui`, which is simply a graphical wrapper for the CLI.
-
-Please look at the following website in order to get the commands that you will need to create a static IP address network connection using the CLI: [https://docs.fedoraproject.org/en-US/Fedora/25/html/Networking_Guide/sec-Connecting_to_a_Network_Using_nmcli.html](https://docs.fedoraproject.org/en-US/Fedora/25/html/Networking_Guide/sec-Connecting_to_a_Network_Using_nmcli.html). Follow the **Adding a Static Ethernet Connection** section. **Note that the IP addresses used in this web guide will not be the same as the ones that you need to use for your node(s) and some of the commands may not be relevant to you.**
-
-At this point you should test connectivity between your nodes. Using the `ping` command, you can see whether the nodes can speak to each other via the network. From your head node, try to ping your compute node:
+First we must make sure that our network interfaces are managed by Network Manager. By default, this should already be the case. Use the following command to check if the network interfaces are managed:
 
 ```bash
-~$ ping <compute_node_ip>
+nmcli dev
 ```
+
+You should see something other than "unmanaged" next to each of the interfaces (excluding lo). If any of your network interfaces (other than lo) say "unmanaged", do the following:
+
+```bash
+nmcli dev set <interface> managed yes
+
+```
+
+The `nmtui` tool is a console-graphical tool used to set up and manage network connections for Network Manager.
+
+```bash
+sudo nmtui
+
+```
+
+You'll be presented with a screen, select Edit a connection, followed by <Add> and then Ethernet.
+
+For Profile Name, type the name of the interface you want to assign an IP address to, like `eth0` or `ens3`, and type the same thing for Device (in this instance, Device means interface).
+For IPv4 CONFIGURATION, change <Automatic> to <Manual>. This tells NM that we want to assign a static IP address to the connection. Hit enter on <Show> to the right of IPv4 CONFIGURATION and enter the following information:
+
+Addresses: Hit <Add> and enter the IP address (found in OpenStack) for this interface. After the IP address, add the text "/24" to the end. It should read as <ip_address>/24 with no spaces. The "/24" is the subnet mask of the IP address in CIDR notation.
+
+***Gateway***: Enter the gateway address here. This will be either the internal network (10.100.50.x) gateway or external network (154.114.57.x) of the head node gateway.
+
+DNS servers: Hit <Add> and enter 8.8.8.8. This is the public DNS server of Google and is used to look up website names. (NB: DNS is explained later!)
+Hit <OK> at the bottom of the screen.
+
+Repeat the above processes for any other network interface you want to give an IP address to, if there are more on your machine (you can use `ip a` to check how many there are).
+
+The networks should now be active. You can confirm this by going <Back> and then to Activate a connection. If you see stars to the left of each of the networks that you have created, then the networks are active. If not, hit enter on the selected network to active it.
+
+Your head node should now have the correct IP addresses. Exit `nmtui` and check the networking setup is correct. To do so, use the following commands:
+
+```bash
+ip a
+ip route
+```
+
+- `ip a` will show you the interfaces and their assigned IP addresses.
+- `ip route` will list the interfaces and their assigned routes.
+
+
+#### Compute Node
+
+You must also set the static IP addressing for all other nodes in your cluster. You can explore different options for doing so, use the `nmcli` command. This is the command-line interface (CLI) for Network Manager, which is an alternative to the above nmtui, which is simply a graphical wrapper for the CLI.
+
+Open and read the following link on `Method-6: Set Static IP Address using NMCLI on Rocky Linux` comandline steps:
+
+https://www.golinuxcloud.com/set-static-ip-rocky-linux-examples/  
+
+
+  Note that the IP addresses used in this web guide will not be the same as the ones that you need to use for your node(s) and some of the commands may not be relevant to you.
+
+At this point you should test connectivity between your nodes. Using the ping command, you can see whether the nodes can speak to each other via the network. From your head node, try to ping your compute node:
+
+```bash
+ping <compute_node_ip>
+
+```
+
 
 If you get a timeout, then things are not working. Try to check your network configurations again.
 
+
 _**Please read [what-is-ip-routing](https://study-ccna.com/what-is-ip-routing/) to gain a better understanding of IP routing.**_ This will be impoortant for the rest of this competition and can help your understanding when debugging issues.
 
-## Editing `/etc/hosts` File
+#### Editing `/etc/hosts` File
 
-## Permanent `~/.ssh/config` Configuration
+In the absence of a DNS server for translation IP address into hostnames and vice versa.
+we can archive the same result by editing the `/etc/hosts`.
+first check the current hostname then change it to headnode and computend for headnode and compute node respectively 
 
-# Configuring a Simple Stateful Firewall
+```bash
+#get current hostname 
+nmcli general hostname
 
-## IPTables
+#change hostname to headnode
+sudo nmcli general hostname headnode
 
-## NFTables
+#verify 
+nmcli general hostname
 
-## Front-end Firewall Application Managers
+#edit /etc/hosts file for permanent setting
+sudo vi /etc/hosts 
 
-`Firewalld` is a firewall management daemon (service) available for many Linux distributions which acts as a front-end for the `iptables` packet filtering system provided by the Linux kernel. This daemon manages groups of rules using entities called “zones”. **CentOS 8** comes pre-configured with `firewalld`.
+# refresh changes 
+sudo systemctl restart systemd-hostnamed
 
-**NOTE:** Only your head node has an interface (on the `10.128.24.0/24` network) that can access the internet. Therefore, you will need to **setup NAT on your head node** to allow your compute node to access the internet via your head node (this effectively treats your head node as a router). Please note that the "external" zone on `firewalld` is configured for **IP masquerading** ([click here to learn more about IP masquerading](https://tldp.org/HOWTO/IP-Masquerade-HOWTO/ipmasq-background2.1.html)) so that your internal network remains private but reachable.
+```
+
+
+<p align="center"><img alt="change hostname using `nmcli`" src="./resources/hostnamechange.png" width=900 /></p>
+
+<p align="center"><img alt="edit `/etc/hosts` " src="./resources/etchost.png" width=900 /></p>
+
+
+#### permanent Configuration with `~/.ssh/config`
+you can explore `~/.ssh/config` permanent Configuration: 
+https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix/ 
+
+
+
+## Configuring a Simple Stateful Firewall
+In the realm of network security, shielding your system against unauthorized access and ensuring data integrity are paramount. the below  tools `iptables, nftables and firewalld` serves as a system's gatekeepers, managing incoming and outgoing traffic.
+
+
+#### IPTables `iptables`
+
+legacy tool that works by setting up rules in different tables. To secure your network with iptables, you would typically manipulate the following tables:
+
+- `Filter`: The default table for managing general packet filtering rules.
+- `NAT`: For network address translation, crucial when dealing with private network address ranges.
+- `Mangle`: Allows alteration of packet headers. Used for specialized packet handling.
+
+
+```bash
+# Block a specific IP address
+sudo iptables -A INPUT -s 10.50.100.8 -j DROP
+
+# Allow all incoming SSH traffic
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+```
+
+
+#### NFTables `nftables` 
+Successor to iptables, designed to replace iptables.  It integrates all the functionalities provided by the separate iptables tools into a single framework, streamlining the process of configuring tables, chains, and rules. 
+
+- Here's how you can use nftables to control network traffic:
+
+```bash
+# Add a table
+sudo nft add table ip filter
+
+# Add a chain
+sudo nft add chain ip filter input { type filter hook input priority 0 \; }
+
+# Add a rule to block an IP address
+sudo nft add rule ip filter input ip saddr 10.50.100.8 drop
+
+# Allow incoming SSH connections
+sudo nft add rule ip filter input tcp dport 22 accept
+```
+
+- `ip`: Matches only IPv4 packets. This is the default if you do not specify an address family.
+- `ip6`: Matches only IPv6 packets.
+- `inet`: Matches both IPv4 and IPv6 packets.
+
+*** It's important to note that while nftables is the future, iptables is still widely used and supported, so understanding both is beneficial.**
+
+
+####  Dynamic Front-end Firewall Application Managers `firewalld`
+
+`firewalld` is a firewall management daemon (service) available for many Linux distributions which acts as a front-end for the `iptables` packet filtering system provided by the Linux kernel. This daemon manages groups of rules using entities called “zones”.  Read more : https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-using-firewalld-on-rocky-linux-9 
+
+**NOTE:** Only your head node has an interface (on the `154.114.57.0/24` network) that can access the internet. Sebowa comes with  ***NAT already setup on your head node** to allow your compute node to access the internet via your head node (this effectively treats your head node as a router). No need to set it up but it is important to learn how to setup NAT because for the next round (in Decmeber) you will need to set it up. 
+
+Please note that the "external" zone on `firewalld` is configured for **IP masquerading** ([click here to learn more about IP masquerading](https://tldp.org/HOWTO/IP-Masquerade-HOWTO/ipmasq-background2.1.html)) so that your internal network remains private but reachable.
+
 
 **On the head node**, ensure your **external interface** is assigned to the appropriate zone:
 
 ```bash
-~$ nmcli c mod <external_interface> connection.zone external
+nmcli c mod <external_interface> connection.zone external
 ```
 
 Then do the same for the internal interface:
 
 ```bash
-~$ nmcli c mod <internal_interface> connection.zone internal
+nmcli c mod <internal_interface> connection.zone internal
 ```
 
-You can now use `firewalld` to allow the head node to act as a router for the compute node.
+You can now use `firewalld` to allow the head node to act as a router for the compute node. 
+
+To use `firewalld` on **rocky 9** you will need to install it, start and enable the services to start after a reboot 
 
 ```bash
-~$ firewall-cmd --zone=external --add-masquerade --permanent
-~$ firewall-cmd --reload
+ sudo dnf install firewalld 
+ sudo systemctl start firewalld
+ sudo systemctl enable firewalld
+```
+
+allow the head node to act as a router for the compute node
+
+```bash
+firewall-cmd --zone=external --add-masquerade --permanent
+firewall-cmd --reload
 ```
 
 Confirm that **IP forwarding** is enabled on the head node with the following:
 
 ```bash
-~$ cat /proc/sys/net/ipv4/ip_forward
+cat /proc/sys/net/ipv4/ip_forward
 ```
 It should return a `1`.
 
 You can then add the individual firewall rules needed:
 
 ```bash
-~$ firewall-cmd --permanent --direct --add-rule ipv4 nat POSTROUTING 0 -o <external_interface> -j MASQUERADE
-~$ firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i <internal_interface> -o <external_interface> \
+firewall-cmd --permanent --direct --add-rule ipv4 nat POSTROUTING 0 -o <external_interface> -j MASQUERADE
+firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i <internal_interface> -o <external_interface> \
       -j ACCEPT
-~$ firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i <external_interface> -o <internal_interface> \ 
+firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i <external_interface> -o <internal_interface> \ 
       -m state --state RELATED,ESTABLISHED -j ACCEPT
 ```
 
-To validate that your **NAT** rules are working properly, **log into your compute node** and test if you can `ping` the ACE Lab gateway and an external server on the internet.
+To validate that your **NAT** rules are working properly, **log into your compute node** and test if you can `ping` an external server like google public DNS on the internet.
 
 ```bash
-~$ ping 10.128.24.1   ACE Lab gateway IP address
-~$ ping 8.8.8.8       Google external DNS server
+ping 8.8.8.8   
 ```
 
 Once you can ping the servers by their IPs, try ping by name - using Domain Name System (DNS) resolution.
 
 ```bash
-~$ ping google.com
+ping google.com
 ```
 
 If your NAT is working correctly and your compute node's DNS was set correctly with `Network Manager`, you should now be able to ping external servers/websites using their names on all nodes.
@@ -503,234 +760,300 @@ If your NAT is working correctly and your compute node's DNS was set correctly w
 > **! >>> Without access to a working DNS server you won't be able to install packages on your compute node (or head node for that matter), even if the internet is otherwise working.**
 
 <div style="page-break-after: always;"></div>
-## Routing your Compute Nodes Exclusively Through Your Head Node
 
-# Network Time Protocol
+
+## Network Time Protocol
 
 **NTP** or **network time protocol** enables you to synchronise the time across all the computers in your network. This is important for HPC clusters as some applications require that system time be accurate between different nodes (imagine receiving a message 'before' it was sent).
 
-It is also important that your timezones are also consistent across your machines. Time actions on **CentOS 8** can be controlled by a tool called `timedatectl`. For example, if you wanted to change the timezone that your system is in, you could use `timedatectl list-timezones`, find the one you want and then set it by using `timedatectl set-timezone <timezone>`. `timedatectl` can also set the current time on a local machine and more.
+It is also important that your timezones are also consistent across your machines. Time actions on **rocky 9** can be controlled by a tool called `timedatectl`. For example, if you wanted to change the timezone that your system is in, you could use `timedatectl list-timezones`, find the one you want and then set it by using `timedatectl set-timezone <timezone>`. `timedatectl` can also set the current time on a local machine and more.
 
 You will now **setup the NTP service** (through the `chronyd` implementation) on your head node and then connect your compute nodes to it.
 
-## NTP Server (Head Node)
+Compute nodes need to access the internet for package installation.
+To test if your compute node can access the internet, you can ping google DNS by IP and domain name.
 
-1. Install the Chrony software package using the CentOS package manager, `dnf`:
+```bash
+ping 8.8.8.8      # Google external DNS server
+ping google.com
+```
 
-    ```bash
-    [root@headnode ~]$ dnf install chrony
-    ```
+
+### NTP Server (Head Node)
+
+1. Install the Chrony software package using the Rocky package manager, `dnf`:
+
+```bash
+ sudo dnf install chrony 
+```
 
 2. Edit the file `/etc/chrony.conf` and modify the `allow` declaration to include the internal subnet of your cluster (uncomment or remove the "#" in front of `allow` if it's there, otherwise this is ignored).
 
-    ```conf
-    allow 10.0.0.0/24
-    ```
+```bash
+ allow 10.50.100.0/24
+```
 
 3. Chrony runs as a service (daemon) and  is included with CentOS 8 so it likely is already running. Restart the chrony daemon with `systemctl`. This will also start it if it was not yet started:
 
-    ```bash
-    [root@headnode ~]$ systemctl restart chronyd
-    ```
-
-    Ensure that the chrony service is set to start automatically the next time CentOS boots:
-
-    ```bash
-    [root@headnode ~]$ systemctl enable chronyd
-    ```
-
-4. Add chrony to the firewall exclusion list:
-
-    ```bash
-    [root@headnode ~]$ firewall-cmd --zone=internal --permanent --add-service=ntp
-    [root@headnode ~]$ firewall-cmd --reload
-    ```
-
-You can view the clients that are connected to the chrony server on the head node by using the following command on the head node:
 
 ```bash
-[root@headnode ~]$ chronyc clients
+#start service 
+sudo systemctl restart chronyd 
+#enable service
+ sudo systemctl enable chronyd
 ```
 
-This will show empty until you do the steps below.
 
-## NTP Client (Compute Node)
+6. Ensure `firewalld` is installed and enabled 
 
-1. Install the Chrony software package the same way as the head node.
+```bash
+sudo dnf install firewalld -y
+sudo systemctl start firewalld
+sudo systemctl enable firewalld
+```
+
+5. Add chrony to the firewall exclusion list:
+
+
+```bash
+sudo firewall-cmd --zone=internal --permanent --add-service=ntp
+sudo firewall-cmd --reload
+```
+
+5. You can view the clients that are connected to the chrony server on the head node by using the following command on the head node:
+
+```bash
+sudo chronyc clients
+```
+
+6. Confirm the NTP synchronization status.
+
+```bash
+sudo chronyc tracking
+```
+
+This will show empty until ntp client (compute nodes) are configured
+
+
+<p align="center"><img alt="enabling ntp traffic, showing ntp clients " src="./resources/ntp.png" width=900 /></p>
+
+
+### NTP Client (Compute Node)
+
+1. Install the Chrony software package as shwon on headnode.
 
 2. Edit the file `/etc/chrony.conf`, comment out (add a "#" in front of) all the `pool` and `server` declarations and add this new line to the file:
 
-    ```conf
-    server <head_node_ip>
-    ```
+```bash
+server <headnode_ip>
+```
 
 3. Restart the chronyd service as above.
 
 4. Enable the chronyd service as above.
+5. verify the sources of the NTP server  
 
-Check `chronyc clients` on the head node to see if the compute node is connected and getting information from the head node.
+```bash
+sudo chronyc sources
+```
 
-<span id="fig5" class="img_container center" style="font-size:8px;margin-bottom:20px; display: block;">
-    <img alt="test" src="./resources/chrony_clients.png" style="display:block; margin-left: auto; margin-right: auto;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center;margin-top:5px;margin-top:5px;"><i>Figure 5: The compute node (chrony client) is a client of the head node (chrony server).</i></span>
-</span>
+<p align="center"><img alt=" compute node NTP server source" src="./resources/ntp_source_for_compute_node.png" width=900 /></p>
 
 
-# Network File System
+Run `chronyc clients` on the headnode to see ntp clients 
 
-[Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System) enables you to easily share files and directories over the network. NFS is a distributed file system protocol that we will use to share files between our nodes across our private network. It has a server-client architecture that treats one machine as a server of directories, and multiple machines (clients) can connect to it.
+<p align="center"><img alt=" chronyc clients after client config" src="./resources/ntp_clients.png" width=900 /></p>
+
+
+
+## Network File System
+
+Network File System (NFS) enables you to easily share files and directories over the network. NFS is a distributed file system protocol that we will use to share files between our nodes across our private network. It has a server-client architecture that treats one machine as a server of directories, and multiple machines (clients) can connect to it.
 
 This tutorial will show you how to export a directory on the head node and mount it through the network on the compute nodes. With the shared file system in place it becomes easy to enable **public key based ssh authentication**, which allows you to ssh into all the computers in your cluster without requiring a password.
 
-## NFS Server (Head Node)
+### NFS Server (Head Node)
 
-The head node will act as the NFS server and will export the `/home/` directory to the compute node. The `/home/` directory contains the home directories of all the the non-`root` user accounts on most default Linux operating system configurations.
+The head node will act as the NFS server and will export the `/home/` directory to the compute node. The `/home/` directory contains the home directories of all the the non-`root` user accounts on most default Linux operating system configurations. For more information read the this link https://docs.rockylinux.org/guides/file_sharing/nfsserver/  
 
-1. Firstly, install the NFS service on the ***head node**:
+
+1. NFS requires two services to function:
+        The network service (of course)
+        The rpcbind service
+
+2. Install the NFS service on the head node:
+
+```bash
+sudo dnf install nfs-utils
+```
+
+
+3. Check the status of the rpcbind services:
+
+```bash
+sudo sudo systemctl status rpcbind
+```
+
+
+ 4. Verify the version of NFS installation.
+
+```bash
+sudo cat /proc/fs/nfsd/versions 
+ -2 +3 +4 +4.1 +4.2
+```
+
+ *** NFS versions 3 and 4 are enabled by default, and version 2 is disabled. NFSv2 is pretty old and outdated, and hence you can see the -ve sign in front of it.** 
  
-   ```bash
-   sudo dnf install nfs-utils
-   ```
-   
-   For Arch Linux systems 
-   
-   ```bash
-   sudo pacman -S nfs-utils
-   ```
+ 
+5. NFS shares (directories on the NFS server) are configured in the `/etc/exports` file. Here you specify the directory you want to share, followed by the IP address or range you want to share to and then the options for sharing. We want to export the `/home` directory, so edit `/etc/exports` and add the following:
 
-3. NFS shares (directories on the NFS server) are configured in the `/etc/exports` file. Here you specify the directory you want to share, followed by the IP address or range you want to share to and then the options for sharing. We want to export the `/home` directory, so edit `/etc/exports` and add the following:
+```conf
+ /home    10.100.50.0/24(rw,async,no_subtree_check,no_root_squash) 
+```
 
-    ```conf
-    /home    10.0.0.0/24(rw,async,insecure,no_root_squash)
-    ```
 
-4. Start and enable the `nfs-server` service using `systemctl`. Your may need to restart your head node, if you've updated and the kernel module `nfsd` needs to be reloaded.
+    Let us go through all the options for NFS exports.
+       - rw - gives the client machine read and write access on the NFS volume.
+        - async - this option forces NFS to write changes to the disk before replying. This option is considered more reliable. However, it also reduces the speed of file operations.
 
-5. Since we trust our internal network, for the future of this competition we're going to allow all ports of the internal cluster network to be unblocked. **This is not recommended in production environments!**:
+        - no_subtree_check - this option prevents subtree checking, a process where the host must check whether the file is available along with permissions for every request. It can also cause issues when a file is renamed on the host while still open on the client. Disabling it improves the reliability of NFS.
 
-    ```bash
-    [centos@headnode ~]$ sudo firewall-cmd --permanent --zone=internal --set-target=ACCEPT
-    [centos@headnode ~]$ sudo firewall-cmd --reload
-    ```
+        - no_root_squash - By default, NFS translates requests from a root user on the client into a non-privileged user on the host. This option disables that behavior and should be used carefully to allow the client to gain access to the host.
 
-## NFS Client (Compute Node)
+
+6. Start and enable the `nfs-server` service using `systemctl`.
+
+```bash
+   sudo systemctl enable --now nfs-server rpcbind
+```
+
+
+7. NFS on Rocky Linux makes use of three different services, and they all need to be allowed through your firewall. You can add these rules with firewall-cmd:
+
+```bash
+   sudo firewall-cmd --add-service={nfs,mountd,rpc-bind} --permanent
+   sudo firewall-cmd --reload
+ ```
+
+
+
+### NFS Client (Compute Node)
 
 The compute node acts as the client for the NFS, which will mount the directory that was exported from the server (`/home`). Once mounted, the compute node will be able to interact with and modify files that exist on the head node and it will be synchronised between the two.
 
-### Mounting an NFS Mount
+#### Mounting An NFS Mount
 
-The `nfs-utils` package needs to be installed before you can do anything NFS related on the compute node. Since the directory we want to mount is the `/home` directory, the user can not be in that directory.
+The `nfs-utils, nfs4-acl-tools` packages need to be installed before you can do anything NFS related on the compute node. 
 
-1. Once installed, mount the /home directory from the head node using the `mount` command:
+```bash
+  sudo dnf install nfs-utils nfs4-acl-tools
+ ```
 
-    ```bash
-    [centos@computenode ~]$ sudo mount -t nfs <headnode_ip_or_hostname>:/home /home
-    ```
+Since the directory we want to mount is the `/home` directory, the user can not be in that directory.
+
+
+1. Mount the /home directory from the head node using the `mount` command:
+
+ ```bash
+   sudo mount -t nfs <headnode_ip_or_hostname>:/home /home
+ ```
 
 2. Once done, you can verify that the `/home` directory of the head node is mounted by using `df -h`:
 
-    ```bash
-    [centos@computenode ~]$ df -h
-    ```
+```bash
+    df -h
+```
 
-<span id="fig1" class="img_container center" style="font-size:8px;margin-bottom:0px; display: block;">
-    <img alt="webserver" src="./resources/home_dir_mounted.png" style="display:block; margin-left: auto; margin-right: auto; width: 50%;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center; margin-left: auto;
-    margin-right: auto; width: 45%;"><i>Figure 2: The output of the `df -h` command shows that the `/home` directory of the head node is mounted on the `/home` directory of the compute node.</i></span>
-</span>
 
-With this mounted, it effectively replaces the `/home` directory of the compute node with the head node's one until it is unmounted. To verify this, create a file on the compute node's `centos` user home directory (`/home/centos`) and see if it is also automatically on the head node. If not, you may have done something wrong and may need to redo the above steps!
+With this mounted, it effectively replaces the `/home` directory of the compute node with the head node's one until it is unmounted. To verify this, create a file on the compute node's `rocky` user home directory (`/home/rocky`) and see if it is also automatically on the head node. If not, you may have done something wrong and may need to redo the above steps!
 
-### Making the NFS Mount Permanent
+#### Making The NFS Mount Permanent
 
 Using `mount` from the command line will not make the mount permanent. It will not survive a reboot. To make it permanent, we need to edit the `/etc/fstab` file on the compute node. This file contains the mappings for each mount of any drives or network locations on boot of the operating system.
 
 1. First we need to unmount the mount we made:
 
-    ```bash
-    [centos@computenode ~]$ sudo umount /home
-    ```
+```bash
+     sudo umount /home
+```
 
 2. Now we need to edit the `/etc/fstab` file and add this new line to it (be careful not to modify the existing lines!):
 
-    ```text
-    headnode.cluster.scc:/home    /home     nfs    vers=3,_netdev,intr    0 0
-    ```
 
-    The structure is: `<host>:<filesystem_dir> <local_location> <filesystem_type> <filesystem_options> 0 0`. The last two digits are not important for this competition and can be left at 0 0.
+```bash
+   headnode.cluster.scc:/home    /home     nfs auto,nofail,noatime,nolock,tcp,actimeo=1800,intr    0 0
+```
 
-    For the nfs options listed above:
+ The structure is: `<host>:<filesystem_dir> <local_location> <filesystem_type> <filesystem_options> 0 0`. The last two digits are not important for this competition and can be left at 0 0.
 
-    - `vers=3` means that we want to force NFSv3.
-    - `_netdev` tells the operating system to only mount the device once network has been established (it's a network device).
-    - `intr` allows NFS operations to be interrupted in the case that the server is unreachable.
+For the description of nfs options listed above see the link: https://cheatography.com/baa/cheat-sheets/fstab-nfs/#google_vignette
 
 3. With this done, we can mount the new `/etc/fstab` entry:
 
-    ```bash
-    [centos@computenode ~]$ sudo mount -a 
-    ```
+```bash
+ sudo mount -a 
+```
 
 4. Once again, you can verify that the `/home` directory of the head node is mounted by using `df -h`:
 
-    ```bash
-    [centos@computenode ~]$ df -h
-    ```
+```bash
+    df -h
+```
 
-<div style="page-break-after: always;"></div>
 
-## Passwordless SSH
 
-When managing a large fleet of machines or even when just logging into a single machine repeatedly, it can become very time consuming to have to enter your password repeatedly. Another issue with passwords is that some services may rely on directly connecting to another computer and can't pass a password during login. To get around this, we can use [public key based authentication](https://www.ssh.com/academy/ssh/public-key-authentication) to replace passwords.
+### Passwordless SSH
 
-TODO: This section needs a fix and a tidy up use this image below, also get lock and suitcases image / example:
+When managing a large fleet of machines or even when just logging into a single machine repeatedly, it can become very time consuming to have to enter your password repeatedly. Another issue with passwords is that some services may rely on directly connecting to another computer and can't pass a password during login. To get around this, we can use [public key based authentication](https://www.ssh.com/academy/ssh/public-key-authentication) for passwordless login.
 
-   <p align="center"><img alt="Generate Key and SSH into compute" src="./resources/nfs_cat_pub_key_authorized.png" width=900 /></p>
 
 1. Generate an SSH key-pair for your user. This will create a public and private key for your user in `/home/<username>/.ssh`. The private key is your identity and the public key is what you share with other computers.
 
-    ```bash
-    [centos@headnode ~]$ ssh-keygen
-    ```
+```bash
+   ssh-keygen
+   #press enter on all prompt
+```
 
-    You can hit enter with the defaults/empty for all the prompts.
+<p align="center"><img alt="generating ssh keys with `ssh-keygen` " src="./resources/sshkeygen.png" width=900 /></p>
 
 2. Copy the public key generated by `ssh-keygen` into the `authorized_keys` file in the same directory.
 
-    ```bash
-    [centos@headnode ~]$ cd ~/.ssh
-    [centos@headnode .ssh]$ cat id_rsa.pub > authorized_keys
-    ```
+```bash
+    [rocky@headnode ~]$ cd ~/.ssh
+    [rocky@headnode .ssh]$ cat id_rsa.pub > authorized_keys
+```
 
-    Since your `/home` directory is shared with your compute node, this will look the same on the compute node.
+Since your `/home` directory is shared with your compute node, this will look the same on the compute node.
 
-3. SELinux, the security engine that **CentOS 8** uses, may complain about permissions for this directory if you try to use public key authentication now. To fix this, run the following commands:
+3. SELinux, the security engine, may complain about permissions for this directory if you try to use public key authentication now. To fix this, run the following commands:
 
-    ```bash
-    [centos@headnode ~]$ chmod 700 ~/.ssh/
-    [centos@headnode ~]$ chmod 600 ~/.ssh/authorized_keys
-    [centos@headnode ~]$ sudo restorecon -R -v ~/.ssh
-    ```
+ ```bash
+    [rocky@headnode ~]$ chmod 700 ~/.ssh/
+    [rocky@headnode ~]$ chmod 600 ~/.ssh/authorized_keys
+    [rocky@headnode ~]$ sudo restorecon -R -v ~/.ssh
+```
 
-4. SSH to the **compute node** and run the following command:
+4. SSH to the **compute node** passwordless If you are prompted with a password it means that something is not set up correctly. 
+run the following command:
 
-    ```bash
-    [centos@computenode ~]$ sudo setsebool -P use_nfs_home_dirs 1
-    ```
+```bash
+    [rocky@computenode ~]$ sudo setsebool -P use_nfs_home_dirs 1
+```
 
 5. Exit **back to the head node**
+6. You can do the same thing for passwordless login from compute node to headnode 
 
-6. SSH to your compute node without a password and land on the shared filesystem. If you are prompted with a password it means that something is not set up correctly.
 
-# Understanding `~/.ssh/authorized_keys`
+### Understanding `~/.ssh/authorized_keys`
 
-How this works is that you copy the public key to the computer that you want to connect to without a password's `authorized_keys` file. When you SSH to the machine that you copied your public key to, the `ssh` tool will send a challenge that can only be decrypted if the target machine has the public key and the local machine has the private key. If this succeeds, then you are who you say you are to the target computer and you do not require a password. [Please read this for more detailed information](https://www.ssh.com/academy/ssh/public-key-authentication).
+How this works is that you copy the public key to the computer that you want to connect to without a password `authorized_keys` file. When you SSH to the machine that you copied your public key to, the `ssh` tool will send a challenge that can only be decrypted if the target machine has the public key and the local machine has the private key. If this succeeds, then you are who you say you are to the target computer and you do not require a password. [Please read this for more detailed information](https://www.ssh.com/academy/ssh/public-key-authentication).
 
-# User Permissions and Ownership
+### User Permissions and Ownership
 > **! >>> `chmod` and `chown` are Linux permission and ownership modification commands. To learn more about these commands and how they work, please go to the following link: [https://www.unixtutorial.org/difference-between-chmod-and-chown/](https://www.unixtutorial.org/difference-between-chmod-and-chown/).**
 
 
-# User Account Management
+
+## User Account Management
 
 In enterprise systems and HPC, it's common to manage user accounts from one central location. These network accounts are then synchronised to the machines in your fleet via the network. This is done for safely, security and management purposes.
 
@@ -743,67 +1066,62 @@ Right now you have one user: `root`. `root` is the default super-user of Linux o
 When logged in to the head node or compute node, check the UID and GID of `root` by using the `id` command.
 
 ```bash
-~$ id
-```
+#change to root
+sudo su
 
-You should see something like the following:
-
-```bash
+ id
 uid=0(root) gid=0(root) groups=0(root) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
 ```
 
 This shows that `root` is the user `0` and it's primary group (GID) is group `0`. It also states that it only belongs to one group, which is the `root` group (`0`).
 
-## Create Team Captain User Account
 
-### Head Node
+
+### Create Team Captain User Account
+
+#### Head Node
 
 Let us now create a user account on the head node:
 
 1. Log into the head node
 
-2. Use the `adduser` command to create a new user called `centos` and then give it a password.
+2. Use the `adduser` command to create a new user called `captain` and then give it a password.
 
-    ```bash
-    [root@headnode ~]$ adduser -U -m centos
-    [root@headnode ~]$ passwd centos
-    ```
+ ```bash
+    [root@headnode ~]$ adduser -U -m captain
+    [root@headnode ~]$ passwd captain
+```
 
-    `-U` tells `adduser` to create a group for the user and `-m` means to create the user home directory.
+`-U` tells `adduser` to create a group for the user and `-m` means to create the user home directory.
 
 3. Check the ID of the new user
 
-    ```bash
-    [root@headnode ~]$ id centos
-    ```
+```bash
+[root@headnode ~]$ id captain
+uid=1000(captain) gid=1000(captain) groups=1000(captain)
+```
 
-    You'll see something like the following:
+As you can tell, it has a different ID for the user and group than `root`.
 
-    ```bash
-    uid=1000(centos) gid=1000(centos) groups=1000(centos)
-    ```
+#### Compute Node
 
-    As you can tell, it has a different ID for the user and group than `root`.
-
-### Compute Node
-
-Log into thetest compute node and try to verify that the `centos` user **does NOT exist** there:
+Log into the compute node and try to verify that the `captain` user **does NOT exist** there:
 
 ```bash
-[root@computenode ~]$ id centos
+[root@computenode ~]$ id captain
 ```
 
 You'll be prompted with an error:
 
 ```bash
-id: ‘centos’: no such user
+id: ‘captain’: no such user
 ```
 
-We will now create the same user here. Follow the steps above for creating the `centos` user on the compute node.
+We will now create the same user here. Follow the steps above for creating the `captain` user on the compute node.
 
-### Super User Access
+#### Super User Access
 
-The `centos` user will not have the privileges to do anything that modify system files or configurations. Many Linux operating systems come with a program called `sudo` which manages and allows normal user accounts to access `root` privileges.
+The `captain` user will not have the privileges to do anything that modify system files or configurations. Many Linux operating systems come with a program called `sudo` which manages and allows normal user accounts to access `root` privileges.
 
 A user is only able to evoke root privileges if their account has been explicitly added to at least one of the following:
 - the default sudo users group (the actual term of this group varies across Linux variants, such as **wheel** **sudoers** etc.)
@@ -811,7 +1129,7 @@ A user is only able to evoke root privileges if their account has been explicitl
 - or, if the user has been explicitly added as a privileged user directly in the Sudo configuration file.
 
 
-The `sudo` program is controlled by a file located at `/etc/sudoers`. This file specifies which users and/or groups can access superuser privileges. In this file for a default **CentOS 8** installation, it specifies that the user `root` is allowed to run all actions and any user in the `wheel` group is also allowed to:
+The `sudo` program is controlled by a file located at `/etc/sudoers`. This file specifies which users and/or groups can access superuser privileges. It specifies that the user `root` is allowed to run all actions and any user in the `wheel` group is also allowed to:
 
 ```ini
 # Allow root to run any commands anywhere
@@ -821,41 +1139,40 @@ root	ALL=(ALL) 	ALL
 # service management apps and more.
  %sys ALL = NETWORKING, SOFTWARE, SERVICES, STORAGE, DELEGATING, PROCESSES, LOCATE, DRIVERS
 
-# Allows people in group wheel to run all commands
-%wheel	ALL=(ALL)	ALL
+# Allows people in group wheel to run all commands without a password
+%wheel	ALL=(ALL)	ALL  NOPASSWD: ALL
 ```
 
-To avoid modifying `/etc/sudoers` directly, we can just add `centos` to the `wheel` group.
+To avoid modifying `/etc/sudoers` directly, we can just add `captain` to the `wheel` group.
 
-**On each of your nodes**, add the `centos` user to the `wheel` group:
+**On each of your nodes**, add the `captain` user to the `wheel` group:
 
 ```bash
-[root@node ~]$ gpasswd -a centos wheel
+ [root@node ~]$  usermod -aG wheel captain 
 ```
 
-Now log out and then log back into your node as `centos`. You can use `sudo` one of two ways:
+Now log out and then log back into your node as `captain`. You can use `sudo` one of two ways:
 
-1. To become the `root` user:
+1. To become a `root` user:
 
-    ```bash
+```bash
     [centos@headnode ~]$ sudo su
-    ```
+```
 
 2. To run a command with superuser privileges:
 
-    ```bash
+ ```bash
     [centos@headnode ~]$ sudo <command>
-    ```
+```
 
-`sudo` will prompt you for the `centos` user password when you run it.
-
-> **! >>> From now on, you should use the `centos` user for all the configuration you can and should avoid logging in as the `root` user.**
+> **! >>> From now on, you should use the `captain` user for all the configuration you can and should avoid logging in as the `root` user.**
 
 <div style="page-break-after: always;"></div>
 
 
 
-## Out-Of-Sync Users and Groups
+
+### Out-Of-Sync Users and Groups
 
 When managing a large cluster of machines, it gets really complicated to manage user ID and group ID mappings. With things like shared file systems (e.g. NFS), if user account names are the same, but IDs don't match across machines then we get permission problems. 
 
@@ -879,7 +1196,7 @@ These do not match, so if Alice wants to create a file on the head node and acce
 
 User- and group- names do not matter to Linux, only the numerical IDs. Let us demonstrate this now.
 
-### Head Node
+#### Head Node
 
 1. Create a new user on the head node, let's call it `outofsync`. If you check it's IDs with `id outofsync`, you should see it belongs to UID/GID `1001`. 
 
@@ -887,7 +1204,7 @@ User- and group- names do not matter to Linux, only the numerical IDs. Let us de
 
 3. Create a file in the home directory of `outofsync` (`/home/outofsync`) called `testfile.txt` and put some words in it.
 
-### Compute Node
+#### Compute Node
 
 1. Create a new user on the compute node called `unwittinguser`. If you check the ID of this user, you will see that `unwittinguser` has UID/GID of `1001`.
 
@@ -911,14 +1228,14 @@ Check `ls -ln /home/outofsync` on the **head node** and you'll see that the `tes
     margin-right: auto; width: 45%;"><i>Figure 3: The head node's `testfile.txt` is owned by user 1001, which is user `outofsync` on the head node.</i></span>
 </span>
 
-### Clean Up
+#### Clean Up
 
 **Before proceeding, you must delete the users that you have created on the machines.**
 
 To delete a user you can use the command below:
 
 ```bash
-~$ sudo userdel -r <username>
+sudo userdel -r <username>
 ```
 
 Do this command for:
@@ -927,117 +1244,173 @@ Do this command for:
 - `unwittinguser` on the compute node.
 - `outofsync` on the compute node.
 
+
+
+
 ## Ansible User Declaration
 
+Ansible is a powerful configuration management tool used for automating the deployment, configuration, and management of software systems. It allows you to control many different systems from one central location. 
+
+In this tutorial we will install ansible and use it to automate the creation of user accounts as well a other system task 
+
 ### Installing and Configuring Ansible
+Prerequisites :
+ 1. ansible control host should be able connect to ansible clients over SSH preferably passwordless,
+ 2. via a user account with sudo or root privileges 
+ 3. atleast one ansible client
+
+#### Installing ansible 
+1. Ensure that the Rocky Linux 9 EPEL repository is installed using `dnf`:
+
+```bash
+sudo dnf install epel-release
+```
+
+2. Once the repository is install ansible 
+
+```bash
+sudo dnf install ansible
+```
+
+#### configuring ansible 
+
+1. setup ansible host file  with hosts/client machines ansible should connect to, add all hosts to `/etc/ansible/hosts` file. The file has a lot of example to help you learn ansible configurations 
+
+```bash
+#open ansible host file 
+sudo vi /etc/ansible/hosts
+
+#add ansible hosts/clients under servers group
+[servers]
+compute1 ansible_ssh_host=10.100.50.5
+compute2 ansible_ssh_host=10.100.50.10
+
+```
+The servers is a group_name tag that lets you refer to any host (ansible clients) listed under it with one word. 
+
+2. setup a ansible user with sudo or root privileges that ansible will use to execute ansible tasks and connect with other ansible clients, the user must also exist on all ansible clients on ansible hosts under `servers` group
+
+create a directory `group_vars` under ansible configuration structure `/etc/ansible` for creating YAML-formatted config files for each group you want to configure  
+
+```bash
+sudo mkdir /etc/ansible/group_vars
+
+#create a servers file for configuring servers in the ansible hosts file 
+vi mkdir /etc/ansible/group_vars/servers
+```
+
+Add the following code to the file. YAML files start with ---
+
+```text
+---
+ansible_ssh_user: ansibe_user
+```
+
+save and exit the file. In vi, you can do this by pressing ESC and then :x.
+If the user you are currenlty logged in as has sudo privileges and exists on all ansible hosts then there no need to do number 2.  
+
+3. test ansible if ansible control host can access all clients hosts under group servers in the ansible host file 
+
+```bash
+#access as a group 
+ansible -m ping servers 
+
+#access as an individual host
+ansible -m ping compute
+
+#run command on hosts 
+ansible -m shell -a 'free -m' compute
+```
+<p align="center"><img alt="ansible testing hosts client connection " src="./resources/ansible_ping_servers.png" width=900 /></p>
+
+<p align="center"><img alt="ansible testing individual host client connection " src="./resources/ansible_individual_host_access.png" width=900 /></p>
+
+<p align="center"><img alt="run command on ansible clients" src="./resources/ansible_run_command_on_hosts.png" width=900 /></p>
+
 
 ### Create Team Member Accounts
+We will use ansible to create user accounts on remote ansible clients, to achive this we need to create ansible YML scripts called `ansible playbooks` used for automating admin tasks. 
 
-# Remote Access to Your Cluster and Tunneling
+In this section you will learn to:
+Create a playbook that will perform the following actions on all Ansible hosts/clients:
+    1. Create a new sudo user and granting sudo priviledges.
+    2. Copy a local SSH public key and include it in the `authorized_keys` file for the new administrative user on the remote host.
 
-## Local Port Forwarding
 
-## Dynamic Port Forwarding
+1. Create an ansible working directory in your `/home/rocky`, this is where all ansible playbooks will reside.
+
+```bash
+#create the ansible playbooks directory
+sudo mkdir -p /home/rocky/ansible/playbooks
+
+#creating the sudo users ansible playbook script, 
+vi /home/rocky/ansible/playbooks/sudo_users.yml
+
+# add the below content
+---
+- hosts: all
+  become: true
+  vars:
+    created_username: team_lead
+
+```
+
+The above says in `all hosts` create user team_lead, `become` states whether commands are done with sudo priviledges. `var` stores data in variables so that you only edit that line when you decide to change 
+
+Granting user team_lead with sudo privileges by adding:
+
+```bash
+
+# create user team_lead, execute tasks to grand sudo priviledge 
+---
+- hosts: all
+  become: true
+  vars:
+    created_username: team_lead
+  
+  tasks:
+    - name: create user with sudo priviledges 
+      user: 
+        name: "{{ created_username }}"
+        state: present 
+        groups: wheel
+        append: true
+        create_home: true 
+    
+    - name: Set authorized key for remote user
+      ansible.posix.authorized_key:
+        user: "{{ created_username }}"
+        state: present
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+     
+```
+
+Run the playbook script 
+
+```bash
+ansible-playbook /home/rocky/ansible/playbooks/sudo_users.yml -l servers
+```
+
+<p align="center"><img alt=" run the sudo_user playbook " src="./resources/ansible_create_user_run_result.png" width=900 /></p>
+
+Verify user `team_lead` was created and on compute node and it on wheel group 
+
+<p align="center"><img alt=" user team lead exist on ansible client " src="./resources/ansible_team_lead_user_verification.png" width=900 /></p>
+
+
+## Remote Access to Your Cluster and Tunneling
+
+### Local Port Forwarding
+
+### Dynamic Port Forwarding
 ### Web Browser and SOCKS5 Proxy Configuration
 
-## WirGuard VPN Cluster Access
+### WirGuard VPN Cluster Access
 
-## ZeroTier
+### ZeroTier
 
-## X11 Forwarding
+### X11 Forwarding
 
-## (Delete)FreeIPA <img src="./resources/freeipa.png" width=2.1% />
-
-FreeIPA is a collection of tools that work together to provide central user account management. It provides identity and authentication services for Linux environments. It can also manage DNS and NTP, but we won't use it for that purpose in this tutorial series. Using FreeIPA, you will be able to keep your cluster user account IDs synchronised and manage everything from one central place.
-
-> **! >>> Learn about LDAP, Kerberos and other authentication tools which make up FreeIPA here: [https://www.freeipa.org/page/About](https://www.freeipa.org/page/About).**
-
-### FreeIPA Server (Head Node)
-
-> **! >>> It is recommended to run the commands below in a `screen` or `tmux` session as some of them run for extended periods of time.**
-
-The FreeIPA server is provided via the "Identity Management DL1" module of **CentOS 8** AppStream. To enable that, use the command below:
-
-```bash
-[centos@headnode ~]$ sudo dnf module enable idm:DL1
-```
-
-You can now install the FreeIPA server:
-
-```bash
-[centos@headnode ~]$ sudo dnf install ipa-server
-```
-
-Once the software is installed, we can initialise the FreeIPA server.
-
-<div style="page-break-after: always;"></div>
-
-```bash
-[centos@headnode ~]$ sudo ipa-server-install --mkhomedir --no-ntp --no-dns-sshfp --no-host-dns
-```
-
-You'll be asked a couple of questions, for them answer as follows:
-
-| Prompt  | Your Answer  |
-|---|---|
-| Do you want to configure integrated DNS (BIND)? | no |
-| Enter the fully qualified domain name of the computer... | `headnode.cluster.scc` |
-| Please confirm the domain name | `cluster.scc` |
-| Please provide a realm name | `CLUSTER.SCC` |
-| Directory Manager password | `<choose_your_own>` |
-| IPA admin password | `<choose_your_own>` |
-
-Confirm the details that pop up in the summary screen. If you are happy, type `yes` for `Continue to configure the system with these values?`.
-
-The setup will now take some time. Please be patient and do not cancel it.
-
-Once done, you will be prompted to provide the `centos` user with an admin kerberos ticket. A user needs an administrative kerberos ticket to have the ability to manage FreeIPA. This allows the given user to address FreeIPA via the command line. However, the more interesting way of managing FreeIPA is with the web interface which is discussed later.
-
-If you are not prompted by the installer automatically, you can manually initialise this step afterwards by running the following command:
-
-```bash
-[centos@headnode ~]$ kinit admin
-```
-
-Lastly, run the following command:
-
-```bash
-[centos@headnode ~]$ ipa config-mod --defaultshell=/bin/bash
-```
-
-### FreeIPA Client (Compute Node)
-
-> **! >>> It is recommended to run the commands below in a `screen` or `tmux` session as some of them run for extended periods of time.**
-
-The FreeIPA client is provided via the "Identity Management client" module of **CentOS 8** AppStream. To enable that, use the command below:
-
-```bash
-[centos@computenode ~]$ sudo dnf module enable idm:client
-```
-
-Install the FreeIPA client packages.
-
-```bash
-[centos@computenode ~]$ sudo dnf install ipa-client
-```
-
-Now, to add this compute node to the FreeIPA server you need to run the `ipa-client-install` tool with some parameters related to your server.
-
-```bash
-[centos@computenode ~]$ sudo ipa-client-install --principal=admin --domain=cluster.scc \
-                        --server=headnode.cluster.scc --realm=CLUSTER.SCC -W --mkhomedir \
-                        --ntp-server=headnode.cluster.scc --no-dns-sshfp
-```
-
-You will be prompted with a question "**Proceed with fixed values and no DNS discovery?**. Type `yes` and hit enter.
-
-Verify that the information is correct in the next prompt. If so, type `yes` and hit enter.
-
-When prompted with the password for `admin@CLUSTER.SCC`, enter the **IPA admin password** and hit enter. After the install is successful, verify that it is working bu running `id admin`. You should see the user admin that belongs to the admins group.
-
-**Congratulations!** You've just configured central authentication. The user `admin` exists on the head node and the compute node as managed by FreeIPA.
-
-### FreeIPA Web Interface
 
 #### Dynamic SSH Tunnel
 
