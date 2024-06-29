@@ -1489,7 +1489,6 @@ Now you can enter `http://headnode_ip:1235` in your browser and you'll get acces
 
 > **! >>> Remember to set your proxy settings back to `No Proxy` if you want to use your own local internet on Firefox.**
 
-
 ### WirGuard VPN Cluster Access
 
 ### ZeroTier
