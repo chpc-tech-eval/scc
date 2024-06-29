@@ -1405,7 +1405,6 @@ Tunneling is a way of accessing software tools running privately in a server som
    2. dynamic port forwarding 
 
 
-
 #### 1. Local Port Forwarding
 This method uses `SSH` to forward/direct traffic from remote server to local machine. run `man SSH` then read `-L` flag for more details. 
 
@@ -1432,7 +1431,6 @@ ssh -L 9090:headnode:8080 username@headnode
 #on the web browser type the below to access your software tool
 http://localhost:9090  or  http://127.0.0.1:9090 
 ```
-
 
 
 #### 2. Dynamic Port Forwarding 
