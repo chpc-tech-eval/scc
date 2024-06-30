@@ -29,11 +29,9 @@
     1. [Compiler](#compiler)
     1. [OpenMPI](#openmpi)
     1. [BLAS Library](#blas-library)
-1. [Intel OneAPI Toolkit and Compiler Suite](#intel-oneapi-toolkit-and-compiler-suite)
-    1. [Fetch and Unpack Intel OneAPI Toolkit Sourcefiles](#fetch-and-unpack-intel-oneapi-toolkit-sourcefiles)
-    1. [Configure and Install Intel OneAPI Toolkit](#configure-and-install-intel-oneapi-toolkit)
-    1. [Configure LMOD Environment Modulefile](#configure-lmod-environment-modulefile)
-    1. [Configuring and Running HPL with Intel OneAPI Toolkit and MKL](#configuring-and-running-hpl-with-intel-oneapi-toolkit-and-mkl)
+1. [Intel oneAPI Toolkit and Compiler Suite](#intel-oneapi-toolkit-and-compiler-suite)
+    1. [Configure and Install Intel oneAPI Base and HPC Toolkits](#configure-and-install-intel-oneapi-base-and-hpc-toolkit)
+    1. [Configuring and Running HPL with Intel oneAPI Toolkit and MKL](#configuring-and-running-hpl-with-intel-oneapi-toolkit-and-mkl)
 1. [LinPACK Theoretical Peak Performance](#linpack-theoretical-peak-performance)
     1. [Top500 List](#top500-list)
     1. [Plot a Graph of Your HPL Benchmark Results](#plot-a-graph-of-your-hpl-benchmark-results)
@@ -44,6 +42,7 @@
         1. [Benchmark 1 (adh_cubic):](#benchmark-1-adh_cubic)
 1. [LAMMPS Application Benchmark](#lammps-application-benchmark)
 1. [Qiskit Application Benchmark](#qiskit-application-benchmark)
+
 
 <!-- markdown-toc end -->
 
@@ -296,35 +295,6 @@ We need to install the dynamic libraries that HPL expects to have, as well as th
     [...@headnode ~]$ mpirun -np <cores> ./xhpl
     ```
 
-10. Create a SLURM submission script to run your benchmark on your compute node. The script should look as follows:
-
-    ```bash
-    #!/bin/bash 
-    #SBATCH --ntasks <MPI_RANKS>
-    #SBATCH -N <NODES>
-    #SBATCH -t 02:00:00
-    #SBATCH --export=ALL
-    #SBATCH --job-name=hpl_benchmark
-    
-    mpirun /path/to/xhpl
-    ```
-
-    SLURM will populate the appropriate MPI parameters based on the resources you requested, so specifying ranks (-np) is not required.
-
-11. Make sure your MPI environment is loaded, and then submit your job to SLURM:
-
-    ```bash
-    [...@headnode ~]$ sbatch <script>
-    ```
-
-12. Check the state of your job with
-
-    ```bash
-    [...@headnode ~]$ squeue
-    ```
-
-    By default, SLURM will store the job output to a log file `slurm-<job_id>.out`, on the compute node (Slurm writes the output file on the first node that the job has been allocated to by default). Since your home directory is shared via NFS, you should be able to check the output on any of your nodes.
-
 # Spinning Up a Second Compute Node
 
 ## Cluster Considerations
@@ -332,11 +302,6 @@ We need to install the dynamic libraries that HPL expects to have, as well as th
 ## Using a Snapshot
 
 At this point you are ready to run HPL on your cluster with two compute nodes. It's time to deploy a second compute node in Open Stack.
-
-<span style="color: #800000">
-  !!! Have the output **log file** `slurm-<job_id>.out` AND `Make.<architecture>` **configuration file** ready for instructors to view on request.
-</span>
-
 
 Pay careful attention to the hostname, network and other configuration settings that may be specific to and may conflict with your initial node. Once your two compute nodes have been successfully deployed, are accessible from the head node and added to SLURM, you can continue with running HPL across multiple nodes.
 
@@ -356,6 +321,18 @@ As a sanity check repeat Steps 10-12 of the previous task: [Message Passing Inte
 > You are advised to skip this section if you have fallen behind the pace recommended by the course coordinators. Skipping this section will *NOT* stop you from completing the remainder of the tutorials.
 >
 > Do **NOT** attempt this section if your have not properly configured Lmod.
+
+You now have a functioning HPL benchmark and a compute cluster. However, using math libraries (BLAS, LAPACK, **ATLAS**) from a repository (`dnf`) **will not yield optimum performance**, because these repositories **contain generic code compiled to work on all x86 hardware**.
+
+Code compiled specifically for HPC hardware can use instruction sets like **AVX**, **AVX2** and **AVX512** (if available) to make better use of the CPU. A (much) higher HPL result is possible if you compile your math library (such as ATLAS, GOTOBLAS, OpenBLAS or Intel MKL) from source code on the hardware you intend to run the code on.
+
+The VMs that make up your cluster are not necessarily the same architecture, since they run on a variety of hardware in the ACE Lab. In order to compile high performance codes for your compute nodes, you need to perform the following steps on your compute nodes:
+
+1. Download a math library's source code and compile it.
+
+2. Recompile HPL using this new library implementation (edit `LAdir` in the `Makefile`). This has to be done for the target machines that you intend to run HPL on (think: NOT just the head node, since that just schedules the jobs to be run).
+
+3. Re-run HPL on your cluster.
 
 ## Compiler
 
@@ -430,18 +407,6 @@ You will be making use of the **2024-2** versions of the Intel oneAPI and HPC To
       
 ## Configuring and Running HPL with Intel OneAPI Toolkit and MKL
 
-You now have a functioning HPL benchmark and a compute cluster. However, using math libraries (BLAS, LAPACK, **ATLAS**) from a repository (`dnf`) **will not yield optimum performance**, because these repositories **contain generic code compiled to work on all x86 hardware**.
-
-Code compiled specifically for HPC hardware can use instruction sets like **AVX**, **AVX2** and **AVX512** (if available) to make better use of the CPU. A (much) higher HPL result is possible if you compile your math library (such as ATLAS, GOTOBLAS, OpenBLAS or Intel MKL) from source code on the hardware you intend to run the code on.
-
-The VMs that make up your cluster are not necessarily the same architecture, since they run on a variety of hardware in the ACE Lab. In order to compile high performance codes for your compute nodes, you need to perform the following steps on your compute nodes:
-
-1. Download a math library's source code and compile it.
-
-2. Recompile HPL using this new library implementation (edit `LAdir` in the `Makefile`). This has to be done for the target machines that you intend to run HPL on (think: NOT just the head node, since that just schedules the jobs to be run).
-
-3. Re-run HPL on your cluster.
-
 # LinPACK Theoretical Peak Performance
 
 It is useful to know what the theoretical FLOPS performance (RPeak) of your hardware is when trying to obtain the highest benchmark result (RMax). RPeak can be derived from the formula:
@@ -464,7 +429,7 @@ Newer CPU architectures allow for 'wider' instruction sets which execute multipl
 You can determine your CPU model as well as the instruction extensions supported on your **compute node(s)** with the command:
 
 ```bash
-[...@computenode ~]$ cat /proc/cpuinfo | grep -Ei "processor|model name|flags"
+cat /proc/cpuinfo | grep -Ei "processor|model name|flags"
 ```
 
 For model name, you should see something like "... Intel Xeon E5-26.....". If instead you see "QEMU...", please notify the course Instructors to assist you.
@@ -582,33 +547,12 @@ You may modify the `mpirun` command to optimise performance (significantly) but 
   !!! Please be able to present the instructors with the output of `gmx_mpi --version`. Also be able to present the instructors with your Slurm batch script and `gromacs_log` files for the **adh_cubic** benchmark.
 </span>
 
-### Benchmark 2 (1.5M_water):
-
-Pre-process the input data using the `grompp` command
-
-```bash
-[...@node ~]$ gmx_mpi grompp -f pme_verlet.mdp -c out.gro -p topol.top -o md_0_1.tpr
-```
-
-Using a batch script similar to the one above, run the benchmark. You may modify the mpirun command to optimise performance (significantly) but in order to produce a valid result, the simulation must run for 5,000 steps. Quoted in the output as:
-
-```text
-"5000 steps,     10.0 ps."
-```
-
-<span style="color: #800000">
-  !!! Please be ready to present the `gromacs_log` files for the **1.5M_water** benchmark to the instructors.
-</span>
-
-
-
-
-<span style="color: #800000">
-  !!! Take a Screenshot of this, save it in `png` format and upload it into your teams private Gitlab repository under the `Zabbix` folder.
-</span>
-
-<div style="page-break-after: always;"></div>
 
 # LAMMPS Application Benchmark
 
 # Qiskit Application Benchmark
+
+*Qiskit* is an open-source *Software Development Kit (SDK)* for working with quantum computers at the level of circuits, pulses, and algorithms. It provides tools for creating and manipulating quantum programs and running them on prototype quantum devices on IBM Quantum Platform or on simulators on a local computer.
+
+*Qiskit-Aer* is an extension to the Qiskit SDK for using high performance computing resources to simulate quantum computers and programs. It provides interfaces to run quantum circuits with or without noise using a number of various simulation methods. *Qiskit-Aer* supports leveraging *MPI* to improve the performance of simulation.
+
