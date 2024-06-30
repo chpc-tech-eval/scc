@@ -3,31 +3,24 @@
 ## Table of Contents
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
-1. [Checklist](#checklist)
-    1. [(Delete) - Remote Web Service Access](#delete---remote-web-service-access)
-1. [Prometheus](#prometheus)
-    1. [Edit YML Configuration File](#edit-yml-configuration-file)
-    1. [Configuring Prometheus as a Service](#configuring-prometheus-as-a-service)
-    1. [SSH Port Forwarding](#ssh-port-forwarding)
-    1. [Dynamic SSH Forwarding (SOCKS Proxy)](#dynamic-ssh-forwarding-socks-proxy)
-        1. [Configuring Your Browser](#configuring-your-browser)
-    1. [X11 Forwarding](#x11-forwarding)
-1. [Grafana](#grafana)
-    1. [Configuring Grafana Dashboards](#configuring-grafana-dashboards)
-1. [Node Exporter](#node-exporter)
-    1. [Configuring Node Exporter as a Service](#configuring-node-exporter-as-a-service)
-1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
-    1. [Prerequisites](#prerequisites)
-    1. [Head Node Configuration (Server)](#head-node-configuration-server)
-    1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
-    1. [Configure Grafana Dashboard for Slurm](#configure-grafana-dashboard-for-slurm)
-1. [GROMACS Application Benchmark](#gromacs-protein-visualisation)
-    1. [Protein Visualisation](#gromacs-protein-visualisation)
-    1. [Benchmark 2 (1.5M_water)](#benchmark-2-15m_water)
-1. [Running Qiskit from a Remote Jupyter Notebook Server](#running-qiskit-from-a-remote-jupyter-notebook-server)
-1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
-1. [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
-1. [Automating the Configuration of your VMs Using Ansisble](#automating-the-configuration-of-your-vms-using-ansible)
+- [Student Cluster Compeititon - Tutorial 4](#student-cluster-compeititon---tutorial-4)
+  - [Table of Contents](#table-of-contents)
+- [Checklist](#checklist)
+  - [(Delete) - Remote Web Service Access](#delete---remote-web-service-access)
+- [Prometheus](#prometheus)
+  - [Prometheus](#prometheus-1)
+  - [Node Exporter](#node-exporter)
+  - [Grafana](#grafana)
+- [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
+  - [Prerequisites](#prerequisites)
+  - [Head Node Configuration (Server)](#head-node-configuration-server)
+  - [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
+  - [Configure Grafana Dashboard for Slurm](#configure-grafana-dashboard-for-slurm)
+- [GROMACS Protein Visualisation](#gromacs-protein-visualisation)
+- [Running Qiskit from a Remote Jupyter Notebook Server](#running-qiskit-from-a-remote-jupyter-notebook-server)
+- [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
+- [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
+- [Automating the Configuration of your VMs Using Ansible](#automating-the-configuration-of-your-vms-using-ansible)
 
 <!-- markdown-toc end -->
 
@@ -37,9 +30,9 @@ This tutorial demonstrates _cluster monitoring_ and _workload scheduling_. These
 
 In this tutorial you will:
 
-- [ ] Install the Zabbix monitoring server on your head node.
-- [ ] Install Zabbix monitoring clients on your compute node(s).
-- [ ] Configure Zabbix in order to monitor your virtual HPC cluster.
+- [ ] Install Prometheus on your head node.
+- [ ] Install Node Exporter on your compute node(s).
+- [ ] Install and configure Grafana on your headnode.
 - [ ] Install the Slurm workload manager across your cluster.
 - [ ] Submit a test job to run on your cluster through the newly-configured workload manager.
 
@@ -157,30 +150,214 @@ The `-L 8080:10.128.24.XX:80` tells the `ssh` client that you want to map your l
 
 
 # Prometheus
+Prometheus is an open-source monitoring and alerting toolkit designed for reliability and scalability. It collects metrics from various endpoints at specified intervals, storing the data in a time-series database. With its powerful query language, PromQL, Prometheus enables the analysis of these metrics. Additionally, Prometheus can trigger alerts based on predefined conditions using its Alertmanager component. This makes it a comprehensive tool for monitoring and alerting, suitable for various environments and applications. Prometheus can be [installed](https://prometheus.io/docs/prometheus/latest/installation/) using either pre-compiled binaries, source, docker containers or from configuration management systems such as Ansible or Puppet.
 
-Prometheus can be [installed](https://prometheus.io/docs/prometheus/latest/installation/) using either pre-compiled binaries, source, docker containers or from configuration management systems such as Ansible or Puppet.
+For this tutorial we will install from pre-complied binaries.
 
-From the [Pre-Compiled Binaries Download Page](https://prometheus.io/download/), 
+## Prometheus
+The installation and the configuration of Prometheus should be done on your headnode.
 
-## Edit YML Configuration File
+1. Create a Prometheus user without login access, this will be done manually as shown below:
+ ```bash
+    sudo useradd --no-create-home --shell /sbin/nologin prometheus
+ ```
+2. Download the latest stable version of Prometheus from the official site using `wget`
+ ```bash
+  wget https://github.com/prometheus/prometheus/releases/download/v2.33.1/prometheus-2.33.1.linux-amd64.tar.gz 
+ ```
+3. Long list file to verify Prometheus was downloaded 
+ ```bash
+    ll
+ ```
+4. Extract the downloaded archive and move prometheus binaries to the /usr/local/bin directory.
+ [Unit] 
+Description=Prometheus Monitoring 
+Wants=network-online.target 
+After=network-online.target 
+[Service] 
+User=prometheus 
+Group=prometheus 
+Type=simple 
+ExecStart=/usr/local/bin/prometheus \ 
+  --config.file=/etc/prometheus/prometheus.yml \ 
+  --storage.tsdb.path=/var/lib/prometheus/ \ 
+  --web.console.templates=/etc/prometheus/consoles \ 
+  --web.console.libraries=/etc/prometheus/console_libraries 
+[Install] 
+WantedBy=multi-user.target
+5. Move back to the home directory, create directorise for prometheus.
+ ```bash
+    cd ~
+    sudo mkdir /etc/prometheus 
+    sudo mkdir /var/lib/prometheus 
+ ```
+6. Set the correct ownership for the prometheus directories
+ ```bash
+    sudo chown prometheus:prometheus /etc/prometheus/ 
+    sudo chown prometheus:prometheus /var/lib/prometheus
+ ```
+7. Move the configuration file and set the correct permissions 
+ ```bash
+    cd prometheus-2.33.1.linux-amd64 
+    sudo mv consoles/ console_libraries/ prometheus.yml /etc/prometheus/ 
+    sudo chown -R prometheus:prometheus /etc/prometheus/ 
+ ```
+8. Configure Prometheus
+  Edit the `/etc/prometheus/prometheus.yml` file to configure your targets (compute node):
+```yaml
+global:
+  scrape_interval: 15s
 
-## Configuring Prometheus as a Service
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: 'compute_node'
+    static_configs:
+      - targets: ['<compute_node_ip>:9100']
+```
+9.  Create a service file to manage Prometheus with `systemctl`, the file can be created with the text editor `vim` (Can use any text editor of your choice)
+ ```bash
+    sudo vim /etc/systemd/system/prometheus.service
+ ```
+ ```plaintext
+  [Unit] 
+  Description=Prometheus Monitoring 
+  Wants=network-online.target 
+  After=network-online.target 
 
-## SSH Port Forwarding
-Starting a browser on the remote server
-## Dynamic SSH Forwarding (SOCKS Proxy)
+  [Service] 
+  User=prometheus 
+  Group=prometheus 
+  Type=simple 
+  Restart=on-failure 
+  RestartSec=5s
+  ExecStart=/usr/local/bin/prometheus \ 
+    --config.file=/etc/prometheus/prometheus.yml \ 
+    --storage.tsdb.path=/var/lib/prometheus/ \ 
+    --web.console.templates=/etc/prometheus/consoles \ 
+    --web.console.libraries=/etc/prometheus/console_libraries
+    --web.listen-address=0.0.0.0:9090 \ 
+    --web.enable-lifecycle \ 
+    --log.level=info
 
-### Configuring Your Browser
+  [Install] 
+  WantedBy=multi-user.target
+```
+10. Reload the systemd daemon, start and enable the service
+ ```bash
+  sudo systemctl deamon-reload
+  sudo systemctl enable prometheus 
+  sudo systemctl start prometheus
+ ```
 
-## X11 Forwarding
+11. Check that your service is active by checking the status
+  ```bash
+  sudo systemctl status prometheus
+  ``` 
 
-# Grafana
+> [!TIP]
+> If when you check the status and find that the service is not running, ensure SELinux or AppArmor is not restricting Prometheus from running. Try disabling SELinux/AppArmor temporarily to see if it resolves the issue:
+> 
+> ```bash
+> sudo setenforce 0
+> ```
+> 
+> Then repeat steps 10 and 11.
+>
+> If the prometheus service still fails to start properly, run the command journalctl –u 	prometheus -f --no-pager and review the output for errors.
 
-## Configuring Grafana Dashboards 
+## Node Exporter
+Node Exporter is a Prometheus exporter specifically designed for hardware and OS metrics exposed by Unix-like kernels. It collects detailed system metrics such as CPU usage, memory usage, disk I/O, and network statistics. These metrics are exposed via an HTTP endpoint, typically accessible at `<node_ip>:9100/metrics`. The primary role of Node Exporter is to provide a source of system-level metrics that Prometheus can scrape and store. This exporter is crucial for gaining insights into the health and performance of individual nodes within a network.
 
-# Node Exporter
+The installation and the configuration node exporter will be done on the compute node/s
 
-## Configuring Node Exporter as a Service
+1. Create a Node Exporter User
+ ```bash
+  sudo useradd --no-create-home --shell /bin/false node_exporter
+```
+2. Download and Install Node Exporter, this is done using `wget` as done before
+ ```bash
+  cd /tmp
+  wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+  tar xvf node_exporter-1.6.1.linux-amd64.tar.gz
+```
+3. Copy the installation file to the correct location and create the onwership of the file
+```bash
+  sudo cp node_exporter-1.6.1.linux-amd64/node_exporter /usr/local/bin/
+  sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
+``` 
+4.  Create a service file to manage Node Exporter with `systemctl`, the file can be created with the text editor `vim` (Can use any text editor of your choice)
+ ```bash
+    sudo vim /etc/systemd/system/node_exporter.service
+ ```
+ ```plaintext
+  [Unit] 
+  Description=Node Exporter
+  Wants=network-online.target
+  After=network-online.target
+
+  [Service] 
+  User=node_exporter
+  Group=node_exporter
+  Type=simple
+  ExecStart=/usr/bin/node_exporter \ 
+  --web.listen-address=:9100
+
+  [Install] 
+  WantedBy=multi-user.target
+```
+> [!IMPORTANT]
+> If firewalld is enabled and running, add a rule for port 9100 
+> 
+> ```bash
+> sudo firewall-cmd --permanent --zone=public --add-port=9100/tcp
+> sudo firewall-cmd --reload 
+> ```
+
+5.  Reload the systemd daemon, start and enable the service
+ ```bash
+  sudo systemctl deamon-reload
+  sudo systemctl enable node_exporter 
+  sudo systemctl start node_exporter
+ ```
+6. Check that your service is active by checking the status
+  ```bash
+  sudo systemctl status node_exporter
+  ``` 
+
+
+## Grafana
+Grafana is an open-source platform for monitoring and observability, known for its capability to create interactive and customizable dashboards. It integrates seamlessly with various data sources, including Prometheus. Through its user-friendly interface, Grafana allows users to build and execute queries to visualize data effectively. Beyond visualization, Grafana also supports alerting based on the visualized data, enabling users to set up notifications for specific conditions. This makes Grafana a powerful tool for both real-time monitoring and historical analysis of system performance.
+
+Now we go back to the headnode for the installation and the configuration of Grafana
+ 1. Add the Grafana Repository, by adding the following directives in this file:
+```bash
+  sudo vim /etc/yum.repos.d/grafana.repo
+```
+ ```plaintext
+  [grafana] 
+  name=grafana 
+  baseurl=https://rpm.grafana.com 
+  repo_gpgcheck=1 
+  enabled=1 
+  gpgcheck=1 
+  gpgkey=https://rpm.grafana.com/gpg.key 
+  sslverify=1 
+  sslcacert=/etc/pki/tls/certs/ca-bundle.crt 
+  exclude=*beta*
+```
+
+2. Install Grafana
+ ```bash
+   sudo dnf install grafana -y 
+```
+
+3. Start and Enable Grafana 
+ ```bash
+  sudo systemctl start grafana-server
+  sudo systemctl enable grafana-server
+```
 
 # Slurm Scheduler and Workload Manager
 
@@ -206,22 +383,22 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
     First, we will enable the **EPEL** _(Extra Packages for Enterprise Linux)_ repository for `dnf`, which contains extra software that we require for MUNGE and Slurm:
 
     ```bash
-    [...@headnode ~]$ sudo dnf install epel-release
+      sudo dnf install epel-release
     ```
 
     Then we can install MUNGE, pulling the development source code from the `crb` "CodeReady Builder" repository:
 
     ```bash
-    [...@headnode ~]$ sudo dnf config-manager --set-enabled crb
-    [...@headnode ~]$ sudo dnf install munge munge-libs munge-devel
+      sudo dnf config-manager --set-enabled crb
+      sudo dnf install munge munge-libs munge-devel
     ```
 
 2. Generate a MUNGE key for client authentication:
 
     ```bash
-    [...@headnode ~]$ sudo /usr/sbin/create-munge-key -r
-    [...@headnode ~]$ sudo chown munge:munge /etc/munge/munge.key
-    [...@headnode ~]$ sudo chmod 600 /etc/munge/munge.key
+      sudo /usr/sbin/create-munge-key -r
+      sudo chown munge:munge /etc/munge/munge.key
+      sudo chmod 600 /etc/munge/munge.key
     ```
 
 3. Using `scp`, copy the MUNGE key to your compute node to allow it to authenticate:
@@ -230,18 +407,18 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
    
     2. Since, munge has not yet been installed on your compute node, first transfer the file to a temporary location
     ```bash
-     [...@headnode ~]$ sudo cp /etc/munge/munge.key /tmp/munge.key && sudo chown user:user /tmp/munge.key
+      sudo cp /etc/munge/munge.key /tmp/munge.key && sudo chown user:user /tmp/munge.key
     ```
     **Replace user with the name of the user that you are running these commands as**
 
     3. Move the file to your compute node
     ```bash
-     [...@headnode ~]$ scp /etc/munge/munge.key <compute_node_name_or_ip>:/etc/tmp/munge.key
+      scp /etc/munge/munge.key <compute_node_name_or_ip>:/etc/tmp/munge.key
     ```
 
     4. Move the file to the correct location
     ```bash
-     [...@headnode ~]$ ssh <computenode hostname or ip> 'sudo mv /tmp/munge.key /etc/munge/munge.key' 
+      ssh <computenode hostname or ip> 'sudo mv /tmp/munge.key /etc/munge/munge.key' 
     ```
 
 4. **Start** and **enable** the `munge` service
@@ -249,8 +426,7 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
 5. Install dependency packages:
 
     ```bash
-    [...@headnode ~]$  sudo dnf --enablerepo=crb install python3 gcc openssl openssl-devel pam-devel numactl numactl-devel hwloc lua readline-devel ncurses-devel man2html libibmad libibumad rpm-build perl-ExtUtils-MakeMaker rrdtool-devel lua-devel hwloc-devel perl-Switch libssh2-devel mariadb-devel -y
-    [...@headnode ~]$ sudo dnf groupinstall "Development Tools"
+    sudo dnf install gcc openssl openssl-devel pam-devel numactl numactl-devel hwloc lua readline-devel ncurses-devel man2html libibmad libibumad rpm-build perl-Switch libssh2-devel mariadb-devel perl-ExtUtils-MakeMaker rrdtool-devel lua-devel hwloc-devel
     ```
 
 6. Download the 20.11.9 version of the Slurm source code tarball (.tar.bz2) from https://download.schedmd.com/slurm/. Copy the URL for `slurm-20.11.9.tar.bz2` from your browser and use the `wget` command to easily download files directly to your VM.
@@ -258,13 +434,13 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
 7. Environment variables are a convenient way to store a name and value for easier recovery when they're needed. Export the version of the tarball you downloaded to the environment variable VERSION. This will make installation easier as you will see how we reference the environment variable instead of typing out the version number at every instance.
 
     ```bash
-    [...@headnode ~]$ export VERSION=20.11.9
+      export VERSION=20.11.9
     ```
 
 8. Build RPM packages for Slurm for installation
 
     ```bash
-    [...@headnode ~]$ sudo rpmbuild -ta slurm-$VERSION.tar.bz2
+      sudo rpmbuild -ta slurm-$VERSION.tar.bz2
     ```
 
     This should successfully generate Slurm RPMs in the directory that you invoked the `rpmbuild` command from.
@@ -274,18 +450,17 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
 10. Install Slurm server
 
     ```bash
-    [...@headnode ~]$ sudo mkdir -p /var/log/slurm /var/spool/slurm/ctld /var/spool/slurm/d
-    [...@headnode ~]$ sudo chown -R slurm:slurm /var/log/slurm /var/spool/slurm/ctld /var/spool/slurm/d
-    [root@headnode ~]$ cd /root/rpmbuild/RPMS/x86_64/
-    [root@headnode ~]$ dnf localinstall slurm-$VERSION*.rpm slurm-devel-$VERSION*.rpm \
-                         slurm-example-configs-$VERSION*.rpm slurm-perlapi-$VERSION*.rpm \
-                         slurm-torque-$VERSION*.rpm slurm-slurmctld-$VERSION*.rpm
+      sudo dnf localinstall ~/rpmbuild/RPMS/x86_64/slurm-$VERSION*.rpm \
+                            ~/rpmbuild/RPMS/x86_64/slurm-devel-$VERSION*.rpm \
+                            ~/rpmbuild/RPMS/x86_64/slurm-example-configs-$VERSION*.rpm \
+                            ~/rpmbuild/RPMS/x86_64/slurm-perlapi-$VERSION*.rpm \
+                            ~/rpmbuild/RPMS/x86_64/slurm-slurmctld-$VERSION*.rpm
     ```
 
 11. Setup Slurm server
 
     ```bash
-    [...@headnode ~]$ sudo cp /etc/slurm/slurm.conf.example /etc/slurm/slurm.conf
+      sudo cp /etc/slurm/slurm.conf.example /etc/slurm/slurm.conf
     ```
 
     Edit this file (`/etc/slurm/slurm.conf`) and set appropriate values for:
@@ -310,46 +485,46 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
 
     **Hint: if you overspec your compute resources in the definition file then Slurm will not be able to use the nodes.**
 
-12. **Start** and **enable** the `slurmctld` service on the head node.
+12. Create Necessary Directories and Set Permissions:
+  ```bash
+    sudo mkdir -p /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
+    sudo chown -R slurm:slurm /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
+  ```
+
+13. **Start** and **enable** the `slurmctld` service on the head node.
 
 ## Compute Node Configuration (Clients)
 
 1. Setup MUNGE:
 
     ```bash
-    [...@computenode ~]$ sudo dnf install munge munge-libs
-    [...@computenode ~]$ sudo chown -R munge:munge /etc/munge/munge.key
-    ```
+     sudo dnf install munge munge-libs
+      sudo scp /etc/munge/munge.key <compute_node_name_or_ip>:/etc/munge/munge.key
+      sudo chown munge:munge /etc/munge/munge.key
+      sudo chmod 400 /etc/munge/munge.key
+     ```
 
-2. **Start** and **enable** the `munge` service.
+2. Install Slurm Client
+  ```bash
+    sudo dnf localinstall ~/rpmbuild/RPMS/x86_64/slurm-$VERSION*.rpm \
+                     ~/rpmbuild/RPMS/x86_64/slurm-slurmd-$VERSION*.rpm \
+                     ~/rpmbuild/RPMS/x86_64/slurm-pam_slurm-$VERSION*.rpm
+  ```
 
-3. Test MUNGE to the head node:
+3. Copy `/etc/slurm/slurm.conf` from head node to compute node.
 
+4. Create necessary directories:
     ```bash
-    [...@computenode ~]$ munge -n | ssh headnode.cluster.scc unmunge 
-    [...@computenode ~]$ remunge 
-    ```
-4. The `.rpm` files that were previously created on the head node must be made available to the compute node. Either copy the `.rpm` files to the compute node or move them to an NFS shared directory on your head node so that they are accessible on the compute node. Next, install the Slurm client on the compute node. Once again export the version of your Slurm instance to the environment variable `$VERSION`:
-
-    ```bash
-    [...@computenode ~]$ sudo dnf --enablerepo=powertools install perl-Switch perl-ExtUtils-MakeMaker
-    [...@computenode ~]$ sudo dnf localinstall slurm-$VERSION*.rpm slurm-devel-$VERSION*.rpm  \
-                          slurm-perlapi-$VERSION*.rpm slurm-torque-$VERSION*.rpm \
-                          slurm-example-configs-$VERSION*.rpm slurm-slurmd-$VERSION*.rpm \
-                          slurm-pam_slurm-$VERSION*.rpm
+    sudo mkdir -p /var/spool/slurm/d
+    sudo chown slurm:slurm /var/spool/slurm/d
     ```
 
-5. Create the `/var/spool/slurm/d` directory and make it owned by user and group `slurm`.
-
-6. Copy the `slurm.conf` file you editted on your head node to the same location on your compute node.
-
-7. **Start** and **enable** the `slurmd` service.
-
+5. **Start** and **enable** the `slurmd` service.
 
 Return to your head node. To demonstrate that your scheduler is working you can run the following command as your normal user:
 
 ```bash
-[...@headnode ~]$ sinfo 
+  sinfo 
 ```
 
 You should see your compute node in an idle state.
@@ -357,7 +532,7 @@ You should see your compute node in an idle state.
 Slurm allows for jobs to be submitted in _batch_ (set-and-forget) or _interactive_ (real-time response to the user) modes. Start an interactive session on your compute node via the scheduler with
 
 ```bash
-[...@headnode ~]$ srun -N 1 --pty bash 
+  srun -N 1 --pty bash 
 ```
 
 You should automatically be logged into your compute node. This is done via Slurm. Re-run `sinfo` now and also run the command `squeue`. Here you will see that your compute node is now allocated to this job.
@@ -373,6 +548,7 @@ To confirm that your node configuration is correct, you can run the following co
 ```
 
 The `S:C:T` column means "sockets, cores, threads" and your numbers for your compute node should match the settings that you made in the `slurm.conf` file.
+
 ## Configure Grafana Dashboard for Slurm
 
 # GROMACS Protein Visualisation
