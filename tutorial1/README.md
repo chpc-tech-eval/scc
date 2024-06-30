@@ -233,7 +233,7 @@ From the `Start` menu, open the Windows `PowerShell` application:
 
    <p align="center"><img alt="Windows Powershell SSH Keygen." src="./resources/windows_powershell_sshkeygen.png" width=900 /></p>
 
-></details>
+</details>
 
 <details>
 <summary>Windows PuTTY</summary>
@@ -454,59 +454,67 @@ The VMs are running minimalist, cloud-based operating systems that are not packa
 
 If your workstation or laptop is running a Linux-based or macOS operating system, or a version of Windows with MobaXTerm or Windows PowerShell, then you may proceed using a terminal. Most Linux and macOS distributions come preshipped with an SSH client included via `OpenSSH`.
 
-<details>
-
-<summary>Alma Linux</summary>
 > [!NOTE]
 > In an Alma Linux cloud image, the default login account is **alma**.
 
 ```bash
    ssh -i ~/.ssh/id_ed25519 alma@154.114.57.<YOUR Head Node IP>
 ```
-</details>
 
-<details>
-<summary>Arch Linux</summary>
 > [!NOTE]
 > In an Arch Linux cloud image, the default login account is **arch**.
 
 ```bash
    ssh -i ~/.ssh/id_ed25519 arch@154.114.57.<YOUR Head Node IP>
 ```
-</details>
 
-<details>
-<summary>CentOS Stream</summary>
 > [!NOTE]
 > In a CentOS Linux cloud image, the default login account is **centos**.
 
 ```bash
    ssh -i ~/.ssh/id_ed25519 centos@154.114.57.<YOUR Head Node IP>
 ```
-</details>
 
-<details>
-<summary>Rocky Linux</summary>
 > [!NOTE]
 > In a Rocky Linux cloud image, the default login account is **rocky**.
 
 ```bash
    ssh -i ~/.ssh/id_ed25519 rocky@154.114.57.<YOUR Head Node IP>
 ```
-</details>
 
-<details>
-<summary>Ubuntu Server</summary>
 > [!NOTE]
 > In an Ubuntu Linux cloud image, the default login account is **ubuntu**.
 
 ```bash
    ssh -i ~/.ssh/id_ed25519 ubuntu@154.114.57.<YOUR Head Node IP>
 ```
-</details>
 
 > [!TIP]
 > The "~" in `~/.ssh/id_ed25519` is a shortcut for `/home/<username>`. Secondly, the first time you connect to a new SSH server, you will be prompted to confirm the authenticity of the host. Type 'yes' and hit 'Enter'
+
+From this point onward, you're going to need to pay extra attention to the commands that have been issued and you must ensure that they correspond to the distribution that you are using.
+
+```bash
+# RPM-based (RHEL, Alma, Rocky, Centos, etc)
+# You are strongly recommended to use one of the distros mentioned above.
+# This will always be the frist example use case given for any scenario and the recommended approach to follow
+
+sudo dnf install <PACKAGE_NAME>
+
+# APT-based systems (Ubuntu)
+# Another really good choice and strong recommendation to adopt is Ubuntu.
+# Ubuntu has many users, and many first time Linux users, start their journeys into Linux through APT (or Ubuntu) based distros.
+# Moreover Ubuntu has it's origins in South Africa...
+
+sudo apt-get install <PACKAGE_NAME>
+
+# Pacman-based systems (Arch-Like Linux)
+# Arch Linux is one of the most "flexible and succinct" Linux distros available today.
+# It popularity stems not only from the fact that is has excellent documentation, but it's "keep it straight and simple" approach.
+# Not recommend for beginners, unless you have previous Linux expertise or unless you are looking for a challenge.
+
+sudo pacman -S <PACKAGE_NAME>
+```
 
 <p align="center"><img alt="OpenStack Running State." src="./resources/windows_powershell_firsttime_ssh.png" width=900 /></p>
 
