@@ -9,14 +9,9 @@
     1. [NFS Mounted Shared `home` folder and the `PATH` Variable](#nfs-mounted-shared-home-folder-and-the-path-variable)
     1. [System Software Across Multiple Nodes](#system-software-across-multiple-nodes)
     1. [Environment Modules](#environment-modules)
-    1. [Install Lmod](#install-lmod)
+1. [Install Lmod](#install-lmod)
     1. [Lmod Usage](#lmod-usage)
     1. [Adding Modules to Lmod](#adding-modules-to-lmod)
-1. [Lmod Modulefiles](#lmod-modulefiles)
-    1. [Install Git Using the System Package Manager](#install-git-using-the-system-package-manager)
-    1. [Install a Different Version of Git from Source](#install-a-different-version-of-git-from-source)
-    1. [Writing a Lmod Modulefile](#writing-a-lmod-modulefile)
-    1. [Verifying and Using Different Versions of Git](#verifying-and-using-different-versions-of-git)
 1. [Running the High Performance LINPACK (HPL) Benchmark on Your Compute Node](#running-the-high-performance-linpack-hpl-benchmark-on-your-compute-node)
     1. [System Libraries](#system-libraries)
         1. [Static Libraries](#static-libraries)
@@ -27,18 +22,13 @@
 1. [Spinning Up a Second Compute Node](#spinning-up-a-second-compute-node)
     1. [Cluster Considerations](#cluster-considerations)
     1. [Using a Snapshot](#using-a-snapshot)
-    1. [Running HPC Across Multiple Nodes](#running-hpc-across-multiple-nodes)
+    1. [Running HPL Across Multiple Nodes](#running-hpl-across-multiple-nodes)
         1. [Configuring OpenMPI Hosts File](#configuring-openmpi-hosts-file)
         1. [Runtime Configuration Options for `mpirun`](#runtime-configuration-options-for-mpirun)
 1. [Building and Compiling GCC, OpenMPI and BLAS Libraries from Source](#building-and-compiling-gcc-openmpi-and-blas-libraries-from-source)
     1. [Compiler](#compiler)
     1. [OpenMPI](#openmpi)
     1. [BLAS Library](#blas-library)
-        1. [OpenBLAS](#openblas)
-        1. [ATLAS](#atlas)
-        1. [GotoBLAS](#gotoblas)
-        1. [BLIS](#blis)
-        1. [GSL](#gsl)
 1. [Intel OneAPI Toolkit and Compiler Suite](#intel-oneapi-toolkit-and-compiler-suite)
     1. [Fetch and Unpack Intel OneAPI Toolkit Sourcefiles](#fetch-and-unpack-intel-oneapi-toolkit-sourcefiles)
     1. [Configure and Install Intel OneAPI Toolkit](#configure-and-install-intel-oneapi-toolkit)
@@ -52,7 +42,6 @@
     1. [Installation](#installation)
     1. [Application Benchmark and System Evaluation](#application-benchmark-and-system-evaluation)
         1. [Benchmark 1 (adh_cubic):](#benchmark-1-adh_cubic)
-        1. [Benchmark 2 (1.5M_water):](#benchmark-2-15m_water)
 1. [LAMMPS Application Benchmark](#lammps-application-benchmark)
 1. [Qiskit Application Benchmark](#qiskit-application-benchmark)
 
@@ -60,47 +49,111 @@
 
 # Checklist
 
-Tutorial 4 demonstrates environment module manipulation and the compilation and optimisation of HPC benchmark software. This introduces the reader to the concepts of environment management and workspace sanity, as well as compilation of software on Linux.
+Tutorial 3 demonstrates environment module manipulation and the compilation and optimization of HPC benchmark software. This introduces the reader to the concepts of environment management and workspace sanity, as well as compilation of software on Linux.
+
+I this tutorial, you will also be _spinning up and connecting a second compute node_ in order to further extend the capabilities of your small VM cluster. More importantly, you will given detailed specifics on exactly how to go about running application benchmarks across multiple nodes.
 
 In this tutorial you will:
 
+- [ ] Understand the importance of having a consistent environment across your cluster.
+   - [ ] Understand the difference between system software and user _(local to the user's `home` directory)_ installed software.
 - [ ] Install and configure Lmod on your head node.
+- [ ] Learn how to use Lmod and write a module file for Git.
 - [ ] Download and compile the High Performance LINPACK (HPL) benchmark.
-- [ ] Create Slurm batch scripts to submit jobs for your benchmark runs.
-- [ ] Optimise HPL.
+- [ ] Standup and Configure a Second Compute Node.
+- [ ] Compile, Configure and Run HPL across two nodes.
+- [ ] Understand some of the fundamental considerations around optimizing HPL.
+   - [ ] Understand the pros and cons of compiling libraries from Source.
+- [ ] Install and make use of Intel's OneAPI framework to run HPL.
+- [ ] Understand theoretical system peak performance.
+   - [ ] Appreciate the significance of the Top500 list.
+   - [ ] Compare you preliminary benchmarking results
 - [ ] Download and compile the High Performance Computing Challenge (HPCC) benchmark.
+- [ ] Run applications across your cluster.
+   - [ ] Understand that scientific computer applications are used as benchmarks to access system performance.
+   - [ ] Understand that scientific computer applications are primarily used to conduct scientific research.
 
 <div style="page-break-after: always;"></div>
 
 # Managing Your Environment
 
+One of the most central and fundamental problems that you and your team will need to tackle, will be that of managing you environment. When you run an application, there are a number of locations that are searched to determine the binary to execute.
+
+For example, if you wanted to know _"which"_ GNU C Compiler your VM's are using by default:
+```bash
+which gcc
+/usr/bin/gcc
+```
+We see that for this particular system, the `gcc` that will be invoked by default is located in the directory `/usr/bin/`.
+
 ## NFS Mounted Shared `home` folder and the `PATH` Variable
+
+You will recall that you were required to configure an [NFS Mounted home dir](../tutorial2/README.md#network-file-system). This means that any software that you install into your `/home/<USER_DIRECTORY>` on your head node, will also automatically be available on your compute nodes.
+
+In order for this to work as expected, there are two important conditions that must be satisfied:
+* Firstly, you must ensure that you're `PATH` variable is correctly configured on your head node and must similarly have a corresponding configuration on your compute node(s). For example, to see a list of directories that are searched whenever you execute a binary:
+ ```bash
+ echo $PATH
+ /usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
+
+ ```
+* Secondly, you must ensure that any system dependencies are correctly installed on **each** of your nodes.
 
 ## System Software Across Multiple Nodes
 
-Software on one node will not automatically be installed across all nodes, friend installs whatsapp, you don't magically get whatapp on your phone
+Software on one node will not automatically be installed across all nodes. For example, if you want to monitor the system performance of your head node, you must install and run `top # or htop or btop` on your head node. Similarly if you want to do this for your compute node(s), you must install and run the application on all of your compute node(s).
+
+In the next few sections you will be installing and deploying Lmod across your cluster. You will be configuring, building and compiling Lmod from a directory in your `/home/<USER>` directory. This will mean that the Lmod binary will be available across your cluster, however in order to run on your compute nodes for example, you must ensure that all Lua system dependencies are installed across all you nodes.
 
 ## Environment Modules
 
-Environment Modules provide a convenient way to dynamically change a user's environment through _modulefiles_ to simplify software and library use when there are multiple versions of a particular software package (e.g. Python2.7 and Python 3.x) installed on the system. Environment Module parameters typically involve, among other things, modifying the PATH environment variable for locating a particular package (such as dynamically changing the path to Python from `/usr/local/bin/python2.7` to `/usr/local/bin/python3`).
+Environment Modules provide a convenient way to dynamically change a user's environment through _modulefiles_ to simplify software and library use when there are multiple versions of a particular software package (e.g. Python2.7 and Python 3.x) installed on the system. Environment Module parameters typically involve, among other things, modifying the `PATH` environment variable for locating a particular package (such as dynamically changing the path to Python from `/usr/local/bin/python2.7` to `/usr/local/bin/python3`).
 
 Lmod is a Lua-based environment module tool for users to easily manipulate their HPC software environment and is used on thousands of HPC systems around the world.
 
-## Install Lmod
+# Install Lmod
 
-To install Lmod on **CentOS 8**, make sure that you have the **EPEL** repository enabled:
+In this section, you are going to be building and compiling Lmod from source. Carefully follow these instructions, as there are prerequisites and dependencies that are required to build Lmod, which are slightly different to those required to execute the Lmod binary.
 
-```bash
-[...@headnode ~]$ sudo dnf install epel-release
-```
+> [!IMPORTANT]
+> You can build Lmod on either your head node or one of your compute nodes. Since your compute node(s), _will generally speaking_ have **more compute CPUs**, they will typically be able to build and compile applications much much faster than your administrative (or login) _head node_.
 
-This will enable additional software to be made available to the CentOS package manager. With this done, install the Lmod packages:
-
-```bash
-[...@headnode ~]$ sudo dnf --enablerepo=powertools install Lmod
-```
-
-Now log out and back into your session.
+1. Install prerequisites required to build Lmod:
+   From one of your **compute nodes**, install the following dependencies
+   ```bash
+   # Rocky (or similar RPM based systems: RHEL, Alma, CentOS Stream)
+   sudo dnf install -y epel-release
+   sudo dnf install -y git gcc make tcl tcl-devel lua lua-posix
+   
+   # Ubuntu (or similar APT based systems)
+   sudo apt update
+   sudo apt install -y git gcc make tcl tcl-dev lua5.3 lua-posix
+   
+   # Arch
+   sudo pacman -S git gcc make lua lua-filesystem lua-posix
+   ```
+1. Compile, Build and Install Lmod
+   The following instructions will be the same regardless of the system you are using. You will be using the Lmod repo from the Texas Advanced Computing Center at the University of Texas, to build and compile Lmod from source into your own `home` directory:
+   ```bash
+   # Clone the repository
+   git clone https://github.com/TACC/Lmod.git
+   
+   # Navigate into the Lmod directory
+   cd Lmod
+   
+   # Run the configuration script and install into you home directory
+   ./configure --prefix=$HOME/lmod
+   
+   # Build and install Lmod
+   make -j$(nproc)
+   make install
+   ```
+   
+   * `--prefix`: This directive instructs the `./configure` command, to install Lmod into a specific directory, where the `$HOME` variable is used as a shortcut for `/home/<user>`.
+   * `-j$(nproc)`: This directive instructs the `make` command to build and compile use the maximum number of processors on the system.
+   
+> [!TIP]
+> You and your team are **STRONGLY** encouraged to review and make sure you understand the Compile, Build and Installation instructions for Lmod as these steps will apply to virtually all application benchmarks you will encounter in this competition.
 
 ## Lmod Usage
 
@@ -115,29 +168,19 @@ With Lmod installed, you'll now have some new commands on the terminal. Namely, 
 
 Lmod also features a shortcut command `ml` which can perform all of the above commands:
 
-| Command             | Operation                                        |
-|-------------------- |--------------------------------------------------|
-| `ml`                | Same as `module list`                            |
-| `ml avail`          | Same as `module avail`                           |
-| `ml <module_name>`  | Same as `module load <module_name>`              |
-| `ml -<module_name>` | Same as `module unload <module_name>`            | 
-| `ml foo`       | Same as `module load foo`                        | 
-| `ml foo -bar`       | Same as `module load foo` and `module unload bar`|
+| Command             | Operation                                         |
+|---------------------|---------------------------------------------------|
+| `ml`                | Same as `module list`                             |
+| `ml avail`          | Same as `module avail`                            |
+| `ml <module_name>`  | Same as `module load <module_name>`               |
+| `ml -<module_name>` | Same as `module unload <module_name>`             |
+| `ml foo`            | Same as `module load foo`                         |
+| `ml foo -bar`       | Same as `module load foo` and `module unload bar` |
 
 
 ## Adding Modules to Lmod
 
 Some installed packages will automatically add environment modules to the Lmod system, while others will not and will require you to manually add definitions for them. For example, the `openmpi` package that we will install with `dnf` later in this tutorial will automatically add a module file to the system for loading via Lmod.
-
-# Lmod Modulefiles
-
-## Install Git Using the System Package Manager
-
-## Install a Different Version of Git from Source
-
-## Writing a Lmod Modulefile
-
-## Verifying and Using Different Versions of Git
 
 # Running the High Performance LINPACK (HPL) Benchmark on Your Compute Node
 
