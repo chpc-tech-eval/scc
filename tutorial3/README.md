@@ -338,12 +338,11 @@ At this point you are ready to run HPL on your cluster with two compute nodes. I
 </span>
 
 
-
 Pay careful attention to the hostname, network and other configuration settings that may be specific to and may conflict with your initial node. Once your two compute nodes have been successfully deployed, are accessible from the head node and added to SLURM, you can continue with running HPL across multiple nodes.
 
 As a sanity check repeat Steps 10-12 of the previous task: [Message Passing Interface (MPI)](#message-passing-interface-mpi), but this time do it for **two** compute nodes and check the new results of your benchmark.
 
-## Running HPC Across Multiple Nodes
+## Running HPL Across Multiple Nodes
 
 ### Configuring OpenMPI Hosts File
 
@@ -351,28 +350,84 @@ As a sanity check repeat Steps 10-12 of the previous task: [Message Passing Inte
 
 # Building and Compiling GCC, OpenMPI and BLAS Libraries from Source
 
+> [!CAUTION]
+> Compiling your entire application stack and tool-chains from source, can provide you with a tremendous performance improvement. Compiling applications from source _'can'_ take a very long time and can also be a very tricky process.
+>
+> You are advised to skip this section if you have fallen behind the pace recommended by the course coordinators. Skipping this section will *NOT* stop you from completing the remainder of the tutorials.
+>
+> Do **NOT** attempt this section if your have not properly configured Lmod.
+
 ## Compiler
 
 ## OpenMPI
 
 ## BLAS Library
-
-### OpenBLAS
-### ATLAS
-### GotoBLAS
-### BLIS
-### GSL
+OpenBLAS ATLAS GotoBLAS BLIS GSL
 
 mention folder and module structure
 
-# Intel OneAPI Toolkit and Compiler Suite
+# Intel OneAPI Toolkits and Compiler Suite
 
-## Fetch and Unpack Intel OneAPI Toolkit Sourcefiles 
+Intel OneAPI Toolkits provide a comprehensive suite of development tools that span various programming models and architectures. These toolkits help developers optimize their applications for performance across CPUs, GPUs, FPGAs, and other accelerators, visit [Intel OneAPI Toolkits](https://www.intel.com/content/www/us/en/developer/tools/oneapi/toolkits.html) for more information.
 
-## Configure and Install Intel OneAPI Toolkit
+## Configure and Install Intel oneAPI Base and HPC Toolkits
 
-## Configure LMOD Environment Modulefile
+> [!CAUTION]
+> The Intel oneAPI Base and HPC Toolkits can provide considerable improvements of your benchmarking results. However, they can be tricky to install and configure. You are advised to skip this section if you have fallen behind the pace recommended by the course coordinators. Skipping this section will *NOT* stop you from completing the remainder of the tutorials.
 
+You will need to install and configure Intel's oneAPI Base Toolkit which includes Intel's optimized Math Kernel Libraries and Intel's C/C++ Compilers. Additionally, you will also need to install Intel's HPC Toolkit which extends the functionality of the oneAPI Base Toolkit and includes Intel's optimized FORTRAN and MPI Compilers.
+
+You will be making use of the **2024-2** versions of the Intel oneAPI and HPC Toolkits.
+
+1. Download the offline installers into your home directory
+   ```bash
+   wget https://registrationcenter-download.intel.com/akdlm/IRC_NAS/9a98af19-1c68-46ce-9fdd-e249240c7c42/l_BaseKit_p_2024.2.0.634_offline.sh
+   
+   wget https://registrationcenter-download.intel.com/akdlm/IRC_NAS/d4e49548-1492-45c9-b678-8268cb0f1b05/l_HPCKit_p_2024.2.0.635_offline.sh
+   
+   ```
+1. Use `chmod` to make the scripts executable
+   ```bash
+   chmod +x l_BaseKit_p_2024.2.0.634_offline.sh
+   chmod +x l_HPCKit_p_2024.2.0.635_offline.sh
+   ```
+1. Run the installation script using the following command line parameters:
+   * `-a`: List of arguments to follow...
+   * `--cli`: Executing the installer on a Command Line Interface.
+   * `--eula accept`: Agree to accept the end user license agreement.
+   More details about the [Command Line Arguments](https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2024-2/install-with-command-line.html) can be found within Intel's installation guide.
+   ```bash
+   # These must be run separately and you will need to navigate
+   # through a number of CLI text prompts
+   ./l_BaseKit_p_2024.2.0.634_offline.sh -a --cli --eula accept
+   
+   # Should there be any missing dependencies, use your systems'
+   # Package manager to install them
+   ./l_HPCKit_p_2024.2.0.635_offline.sh -a --cli --eula accept
+   ```
+1. Configure you Environment to use Intel oneAPI Toolkits
+   You can either use the `setvars.sh` configuration script or modulefiles:
+   1. To have your environment automaticaly prepared for use with Intel's oneAPI Toolkit append the following line to your `/etc/profile` `.bashrc` or run the command everytime you login to your node
+      ```bash
+      source ~/intel/oneapi/setvars.sh
+      ```
+   1. If you managed to successfully configure Lmod, then you can make use of Intel oneAPI modulefile configuration script:
+      ```bash
+      # Navigate to the location of your Intel oneAPI installation
+      cd ~/intel/oneapi/
+      
+      # Execute the modulefiles setup script
+      ./modulefiles-setup.sh
+      
+      # Return to the top level of your $HOME directory and
+      # configure Lmod to make use of the newly created modules
+      # Alternatively, this line can be appended to /etc/profile or your .bashrc
+      ml use $HOME/modulefiles
+      
+      # Make sure the newly created modules are available to use and have been correclty configured
+      ml avail
+      ```
+      
 ## Configuring and Running HPL with Intel OneAPI Toolkit and MKL
 
 You now have a functioning HPL benchmark and a compute cluster. However, using math libraries (BLAS, LAPACK, **ATLAS**) from a repository (`dnf`) **will not yield optimum performance**, because these repositories **contain generic code compiled to work on all x86 hardware**.
