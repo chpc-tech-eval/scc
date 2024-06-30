@@ -11,7 +11,6 @@ Once your team has successfully launched your instances you'll login to your VM'
 
 This tutorial will conclude with you downloading, installing and running the High Performance LinPACK benchmark on your newly created VM's.
 
-
 # Table of Contents
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->

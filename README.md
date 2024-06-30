@@ -270,7 +270,7 @@ Tutorial 2 deals with understaning the roles of the head and compute nodes, addi
     1. [NFS Mounted Shared `home` folder and the `PATH` Variable](tutorial3/README.md#nfs-mounted-shared-home-folder-and-the-path-variable)
     1. [System Software Across Multiple Nodes](tutorial3/README.md#system-software-across-multiple-nodes)
     1. [Environment Modules](tutorial3/README.md#environment-modules)
-    1. [Install Lmod](tutorial3/README.md#install-lmod)
+1. [Install Lmod](tutorial3/README.md#install-lmod)
     1. [Lmod Usage](tutorial3/README.md#lmod-usage)
     1. [Adding Modules to Lmod](tutorial3/README.md#adding-modules-to-lmod)
 1. [Lmod Modulefiles](tutorial3/README.md#lmod-modulefiles)
@@ -362,8 +362,12 @@ Editing the content directly, will require the use of Git. Using a terminal appl
    - Navigate to your *'Profile'* and go to *'Settings'*.
    - Under *'Access'*, navigate to *'SSH and GPG Keys'*
      <p align="center"><img alt="Adding SSH Keys to GitHub." src="./resources/github_profile_settings_highlight.png" width=900 /></p>
+     
 1. `git clone` a local copy of the repository, to your personal work space.
    <p align="center"><img alt="Adding SSH Keys to GitHub." src="./resources/github_clone.png" width=900 /></p>
+   
+   You can copy the command from GitHub itself.
+   
    ```bash
    git clone git@github.com:chpc-tech-eval/chpc24-scc-nmu.git
    ```
