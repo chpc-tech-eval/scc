@@ -11,9 +11,6 @@ The goal of this document is to introduce you to the competition platform and fa
 
 1. [Structure of the Competition](#structure-of-the-competition)
     1. [Getting Help](#getting-help)
-        1. [GitHub Discussions Page](#github-discussions-page)
-        1. [GitHub Issues Page](#github-issues-page)
-        1. [Using Chat GPT4](#using-chat-gpt4)
     1. [Timetable](#timetable)
     1. [Scoring](#scoring)
     1. [Instructions for Mentors](#instructions-for-mentors)
@@ -46,11 +43,9 @@ The goal of this document is to introduce you to the competition platform and fa
 
 ## Getting Help
 
-### GitHub Discussions Page
+You are strongly encouraged to contribute and improve the project by [Opening and Participating in Discussions](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions), [Raising, Addressing and Resolving Issues](https://github.com/chpc-tech-eval/chpc24-scc-nmu/issues).
 
-### GitHub Issues Page
-
-### Using Chat GPT4
+> [!TIP] Active participation in the student discussions and issues is an easy way to separate yourself from the rest of the competition and make it easy for the instructors to notice you!
 
 ## Timetable
 
@@ -142,11 +137,6 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
         1. [Local WiFi Network](tutorial1/README.md#local-wifi-network)
         1. [External Cellular Network](tutorial1/README.md#external-cellular-network)
         1. [WiFi Hotspot Example](tutorial1/README.md#wifi-hotspot-example)
-    1. [Terminal, Windows MobaXTerm and PowerShell Commands](tutorial1/README.md#terminal-windows-mobaxterm-and-powershell-commands)
-        1. [`ip a` or `ipconfig`](tutorial1/README.md#ip-a-or-ipconfig)
-        1. [`ping 8.8.8.8`](tutorial1/README.md#ping-8888)
-        1. [`ip route` or `route print`](tutorial1/README.md#ip-route-or-route-print)
-        1. [`tracepath` or `tracert`](tutorial1/README.md#tracepath-or-tracert)
 1. [Launching your First Open Stack Virtual Machine Instance](tutorial1/README.md#launching-your-first-open-stack-virtual-machine-instance)
     1. [Accessing the NICIS Cloud](tutorial1/README.md#accessing-the-nicis-cloud)
     1. [Verify your Teams' Project Workspace and Available Resources](tutorial1/README.md#verify-your-teams-project-workspace-and-available-resources)
@@ -156,10 +146,6 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
         1. [Desktop Usage vs Server](tutorial1/README.md#desktop-usage-vs-server)
         1. [Table of Linux Distributions](tutorial1/README.md#table-of-linux-distributions)
     1. [OpenStack Instance Flavors](tutorial1/README.md#openstack-instance-flavors)
-        1. [Compute (vCPUs)](tutorial1/README.md#compute-vcpus)
-        1. [Memory (RAM)](tutorial1/README.md#memory-ram)
-        1. [Storage (DISK)](tutorial1/README.md#storage-disk)
-        1. [Head Node Resource Allocations](tutorial1/README.md#head-node-resource-allocations)
     1. [Networks, Ports, Services and Security Groups](tutorial1/README.md#networks-ports-services-and-security-groups)
     1. [Key Pair](tutorial1/README.md#key-pair)
     1. [Verify that your Instance was Successfully Deployed and Launched](tutorial1/README.md#verify-that-your-instance-was-successfully-deployed-and-launched)
@@ -170,25 +156,9 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
         1. [Dissociating and Releasing Floating IPs](tutorial1/README.md#dissociating-and-releasing-floating-ips)
 1. [Introduction to Basic Linux Administration](tutorial1/README.md#introduction-to-basic-linux-administration)
     1. [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](tutorial1/README.md#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
-        1. [SSH Through a Linux Terminal, MobaXTerm or Windows PowerShell](tutorial1/README.md#ssh-through-a-linux-terminal-mobaxterm-or-windows-powershell)
-        1. [Windows PuTTY](tutorial1/README.md#windows-putty)
-        1. [Username and Password](tutorial1/README.md#username-and-password)
-        1. [Running Basic Networking Commands](tutorial1/README.md#running-basic-networking-commands)
-    1. [Manual Pages `man`, Reading Documents `cat` and the `-h` Switch](tutorial1/README.md#manual-pages-man-reading-documents-cat-and-the--h-switch)
-    1. [Piping `|` Through `grep`, `more` or `less`](tutorial1/README.md#piping--through-grep-more-or-less)
-    1. [Redirecting `>>` Console Output to a File](tutorial1/README.md#redirecting--console-output-to-a-file)
-    1. [GNU `history` Library](tutorial1/README.md#gnu-history-library)
-    1. [Brief Introduction to Text Editors (Vi vs Vim vs Nano)](tutorial1/README.md#brief-introduction-to-text-editors-vi-vs-vim-vs-nano)
-        1. [Your First Chat GPT Query](tutorial1/README.md#your-first-chat-gpt-query)
-        1. [Your First Shell Script](tutorial1/README.md#your-first-shell-script)
-    1. [Privilege Escalation and `sudo`](tutorial1/README.md#privilege-escalation-and-sudo)
-    1. [Linux Services - Understanding `journalctl` and `systemctl`](tutorial1/README.md#linux-services---understanding-journalctl-and-systemctl)
-        1. [Networking](tutorial1/README.md#networking)
-        1. [Resolv.conf](tutorial1/README.md#resolvconf)
-        1. [Failed SSH Brute Force Login Attempts](tutorial1/README.md#failed-ssh-brute-force-login-attempts)
+    1. [Basic Linux Commands and Linux Services](tutorial1/README.md#linux-services---understanding-journalctl-and-systemctl)
     1. [Verifying Instance Hostname and `/etc/hosts` File](tutorial1/README.md#verifying-instance-hostname-and-etchosts-file)
 1. [Linux Binaries, Libraries and Package Management](tutorial1/README.md#linux-binaries-libraries-and-package-management)
-    1. [User Environment and the `PATH` Variable](tutorial1/README.md#user-environment-and-the-path-variable)
 1. [Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark](tutorial1/README.md#install-dependencies-and-fetch-source-files-for-high-performance-linpack-hpl-benchmark)
     1. [Install the GNU Compiler Collection (GCC)](tutorial1/README.md#install-the-gnu-compiler-collection-gcc)
     1. [Install OpenMPI](tutorial1/README.md#install-openmpi)
@@ -197,7 +167,6 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
     1. [Copy and Edit the Makefile for _your_ Target Architecture](tutorial1/README.md#copy-and-edit-the-makefile-for-_your_-target-architecture)
 1. [Compile the HPL Source Code to Produce an Executable Binary](tutorial1/README.md#compile-the-hpl-source-code-to-produce-an-executable-binary)
     1. [Editing _your_ PATH Variable](tutorial1/README.md#editing-_your_-path-variable)
-        1. [Dynamic and Static Libraries: Editing _Your_ ATLAS Shared Object Files](tutorial1/README.md#dynamic-and-static-libraries-editing-_your_-atlas-shared-object-files)
     1. [Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`](tutorial1/README.md#configuring-_your_-hpldat-file-using-lscpu-and-lsmem)
 
 ## Tutorial 2
@@ -326,7 +295,9 @@ Tutorial 2 deals with understaning the roles of the head and compute nodes, addi
 
 # Contributing to the Project
 
-You are strongly encouraged to contribute and improve the project by [Opening and Participating in Discussions](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions), [Raising, Addressing and Resolving Issues](https://github.com/chpc-tech-eval/chpc24-scc-nmu/issues) and editing the course content directly. The following guide describes [How to clone, push, and pull with git (beginners GitHub tutorial)](https://youtu.be/yxvqLBHZfXk?si=jFFdP1XafscVX9BF).
+> [!IMPORTANT] While we value your feedback, the following sections are primarily targeted as _Contributors to the Project_. As a student participating in the competition, do **NOT** spend your time working through any of the material below.
+
+You are strongly encouraged to contribute and improve the project by [Opening and Participating in Discussions](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions), [Raising, Addressing and Resolving Issues](https://github.com/chpc-tech-eval/chpc24-scc-nmu/issues). The following guide describes [How to clone, push, and pull with git (beginners GitHub tutorial)](https://youtu.be/yxvqLBHZfXk?si=jFFdP1XafscVX9BF).
 
 ## Steps to follow when editing existing content
 
