@@ -1398,7 +1398,7 @@ Verify user `team_lead` was created on compute node and it on a `wheel` group
 <p align="center"><img alt=" user team lead exist on ansible client " src="./resources/ansible_team_lead_user_verification.png" width=900 /></p>
 
 
-### Remote Access to Your Cluster and Tunneling
+## Remote Access to Your Cluster and Tunneling
 Tunneling is a way of accessing software tools running privately in a server somewhere publicly. You want to access these tools publicly. There are multiple ways you can go about and we'll discuss 2 in this tutorial.
 
    1. Local port forwarding
@@ -1406,7 +1406,7 @@ Tunneling is a way of accessing software tools running privately in a server som
 
 
 
-#### 1. Local Port Forwarding
+### 1. Local Port Forwarding
 This method uses `SSH` to forward/direct traffic from remote server to local machine. run `man SSH` then read `-L` flag for more details. 
 
 the syntax goes as follows:
@@ -1435,7 +1435,7 @@ http://localhost:9090  or  http://127.0.0.1:9090
 
 
 
-#### 2. Dynamic Port Forwarding 
+### 2. Dynamic Port Forwarding 
 This method uses `SSH` to forward/direct traffic from remote server to local machine. run `man SSH` then read `-D` flag for more details. 
 
 syntax: 
@@ -1451,7 +1451,7 @@ ssh -D 1235 username@headnode
 
  **The `-D 1235` tells `ssh` to open `1235` on your local computer for sending and receiving all port traffic to and from the target_host machine ( which in this case is the `headnode` or `headnode_ip`.)**
 
-2. follow the Web Browser and SOCKS5 Proxy Configuration sectiom to configure `socks` protocol
+2. follow the **Web Browser and SOCKS5 Proxy Configuration** section to configure `socks` protocol
 
 3. on the web browser type the below after the Web Browser and SOCKS5 Proxy Configuration to access your software tool 
 
@@ -1460,22 +1460,27 @@ http://headnode:1235 or http://headnode_ip:1235
 ```
 
 
-##### Web Browser and SOCKS5 Proxy Configuration
+#### Web Browser and SOCKS5 Proxy Configuration
 
 We'll need to use a **dynamic SSH tunnel** ([SOCKS proxy](https://en.wikipedia.org/wiki/SOCKS)) to allows SSH to forward **ALL remote (target) port traffic** to and from a port on your local machine, and can include remote DNS.
 
 
-###### Firefox and Proxy Configuration
+##### Firefox and Proxy Configurations
 
 The Firefox browser will allow the easiest proxy configuration. Please download and install Firefox from here: [https://www.mozilla.org/en-US/firefox/download/](https://www.mozilla.org/en-US/firefox/download/).
 
-Once downloaded and opened, go to the `three line menu` at the top right and click on `Preferences`. In the `Find in Preferences` search bar type "proxy" and click `Settings` next to the **Network Settings** option.
+
+Once downloaded and opened, go to the `three line menu` at the top right and click on `Settings`. In the `Find in Settings` search bar type "proxy" and click `Settings` next to the **Network Settings** option.
 
 <span id="fig1" class="img_container center" style="font-size:8px;margin-bottom:0px; display: block;">
     <img alt="webserver" src="./resources/firefox_proxy_option.png" style="display:block; margin-left: auto; margin-right: auto; width: 50%;" title="caption" />
     <span class="img_caption" style="display: block; text-align: center; margin-left: auto;
-    margin-right: auto; width: 45%;"><i>Figure 4: The Network Settings section of the Firefox Preferences.</i></span>
+    margin-right: auto; width: 45%;">
+
+<i> The Network Settings section of the Firefox Preferences.</i></span>
 </span>
+
+
 
 In this pop-up, change The proxy setting to `Manual Proxy Configuration` and delete `HTTP Proxy`, `HTTPS Proxy` and `FTP Proxy` and set their port numbers to `0`. 
 
@@ -1484,6 +1489,10 @@ In `SOCKS Host` enter `127.0.0.1` and for the port enter `1235`.
 Select `SOCKS v5` and **tick on** `Proxy DNS when using SOCKS v5`.
 
 Now click `OK` and open a new tab in Firefox.
+
+
+<p align="center"><img alt=" socks 5 settings" src="./resources/sock5proxysettings.png" width=400 /></p>
+
 
 Now you can enter `http://headnode_ip:1235` in your browser and you'll get access to the software tool interface.
 
