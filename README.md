@@ -316,7 +316,7 @@ Tutorial 2 deals with understaning the roles of the head and compute nodes, addi
     1. [Head Node Configuration (Server)](tutorial4/README.md#head-node-configuration-server)
     1. [Compute Node Configuration (Clients)](tutorial4/README.md#compute-node-configuration-clients)
     1. [Configure Grafana Dashboard for Slurm](tutorial4/README.md#configure-grafana-dashboard-for-slurm)
-1. [GROMACS Application Benchmark]
+1. [GROMACS Application Benchmark](tutorial4/README.md#gromacs-application-benchmark)
     1. [Protein Visualisation](tutorial4/README.md#gromacs-protein-visualisation)
     1. [Benchmark 2 (1.5M_water)](tutorial4/README.md#benchmark-2-15m_water)
 1. [Running Qiskit from a Remote Jupyter Notebook Server](tutorial4/README.md#running-qiskit-from-a-remote-jupyter-notebook-server)
