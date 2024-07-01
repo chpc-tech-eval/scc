@@ -519,7 +519,7 @@ If your workstation or laptop is running Windows, then you may proceed using eit
   cat students.txt
   vi students.txt
   nano students.txt
-```
+  ```
 
 * GNU `history` Library
   `history` command shows all commands you have executed so far, the feedback is numbered, use `!14` to rerun the 14th command
