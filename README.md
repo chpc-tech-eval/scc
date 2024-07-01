@@ -150,9 +150,9 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
     1. [Success State, Resource Management and Troubleshooting](#success-state-resource-management-and-troubleshooting)
 1. [Introduction to Basic Linux Administration](#introduction-to-basic-linux-administration)
     1. [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
-    1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
-        1. [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
-    1. [Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark](#install-dependencies-and-fetch-source-files-for-high-performance-linpack-hpl-benchmark)
+1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
+    1. [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
+1. [Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark](#install-dependencies-and-fetch-source-files-for-high-performance-linpack-hpl-benchmark)
     1. [Compile the HPL Source Code to Produce an Executable Binary](#compile-the-hpl-source-code-to-produce-an-executable-binary)
     1. [Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`](#configuring-_your_-hpldat-file-using-lscpu-and-lsmem)
 
