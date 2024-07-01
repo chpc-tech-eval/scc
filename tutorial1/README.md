@@ -447,7 +447,7 @@ sudo pacman -S <PACKAGE_NAME>
 <p align="center"><img alt="OpenStack Running State." src="./resources/windows_powershell_firsttime_ssh.png" width=900 /></p>
 
 <details>
-<summary>Windows PuTTY<summary>
+<summary>Windows PuTTY</summary>
 
 If your workstation or laptop is running Windows, then you may proceed using either Windows PowerShell above *(preferred)* or PuTTY. Use PuTTY only if Windows PowerShell is not available on your current system.
 
