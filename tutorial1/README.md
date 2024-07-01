@@ -34,9 +34,10 @@ This tutorial will conclude with you downloading, installing and running the Hig
     1. [Success State, Resource Management and Troubleshooting](#success-state-resource-management-and-troubleshooting)
 1. [Introduction to Basic Linux Administration](#introduction-to-basic-linux-administration)
     1. [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
-    1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
-        1. [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
-    1. [Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark](#install-dependencies-and-fetch-source-files-for-high-performance-linpack-hpl-benchmark)
+    1. [Running Basic Linux Commands and Services](#running-basic-linux-commands-and-services)
+1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
+    1. [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
+1. [Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark](#install-dependencies-and-fetch-source-files-for-high-performance-linpack-hpl-benchmark)
     1. [Compile the HPL Source Code to Produce an Executable Binary](#compile-the-hpl-source-code-to-produce-an-executable-binary)
     1. [Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`](#configuring-_your_-hpldat-file-using-lscpu-and-lsmem)
 
@@ -459,7 +460,7 @@ If your workstation or laptop is running Windows, then you may proceed using eit
 > [!CAUTION]
 > Setting up a password for any user *- especially the default user -* will make your VM's vulnerable to [Brute Force SSH Attacks](https://helpcenter.trendmicro.com/en-us/article/tmka-19689)!
 
-* Running Basic Networking Commands
+## Running Basic Linux Commands and Services
 
   Once logged into your head node, you can now make use of the [previously discussed basic networking commands](#terminal-mobaxterm-and-windows-powershell-commands): `ip a`, `ping`, `ip route` and `tracepath`, refer to [Discussion on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/48) for example out, and to also post your screenshots as comments.
 
@@ -525,12 +526,12 @@ If your workstation or laptop is running Windows, then you may proceed using eit
 > [!CAUTION]
 > It is **CRITICAL** that you are always aware and sure which node or server your are working on. As you can see in the examples above, you can run *similar* commands in a Linux terminal on your workstation, on the console prompt of your headnode, and as you will see later, on the console prompt of your compute node.
 
-## Linux Binaries, Libraries and Package Management
-### User Environment and the `PATH` Variable
+# Linux Binaries, Libraries and Package Management
+## User Environment and the `PATH` Variable
 hostname and etc/hosts
 At this point your VMs and network should be correctly configured and you can continue with setting up some important Linux services.
 
-## Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark
+# Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark
 1. Install the GNU Compiler Collection (GCC)
 1. Install OpenMPI
 1. Install ATLAS Math Library
