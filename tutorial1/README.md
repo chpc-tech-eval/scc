@@ -146,6 +146,7 @@ You should familiarize yourself with a few basic networking commands that can be
    The ip route command is used to display or manipulate the routing table on a Linux system. It shows the kernel's routing table, which dictates how packets should be routed through the network. This includes the default gateway, subnet routes, and any other custom routing rules.
    
 * `tracepath` or `tracert`
+
    The tracepath command is used to trace the network path to a destination, showing the route that packets take to reach it. Unlike traceroute, tracepath does not require root privileges and is often easier to use. It provides details about each hop along the route, including the IP address and round-trip time.
    
 > [!TIP]
@@ -257,17 +258,27 @@ The following list provides a few examples of Linux distros that *may* be availa
 > [!TIP]
 > You do not need to decide right now which Linux Flavor you and your team will be installing on you personal / school laptop and desktop computers. The list and corresponding links are provided for later reference, however for the time being you are strongly encouraged to proceed with **Rocky 9.2 image**. If you are already using or familiar with Linux, discuss this with the instructors who will advise you on how to proceed.
 
-* RPM
+* **RPM**
+
   RPM Package Manager is a free and open-source package management system. The name RPM refers to the.rpm file format and the package manager program itself. Examples include [Red Hat Enterprise Linux](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux), [Rocky Linux](https://rockylinux.org/), [Alma Linux](https://almalinux.org/), [CentOS Stream](https://www.centos.org/centos-stream/), [Fedora](https://fedoraproject.org/) and [OpenSUSE](https://www.opensuse.org/). you can't go wrong with choose of either Red Hat, Alma, ***Rocky*** or CentOS Stream for the competition.
-* PkgTool
+  
+* **PkgTool**
+
   pkgtool is a menu-driven package maintenance tool provided with the [Slackware Linux distribution](http://www.slackware.com/). Listed here for interest, not recommended for beginners.
-* APT
+* **APT**
+
   In Debian-based distributions, the installation and removal of software are generally managed through the package management system known as the Advanced Package Tool (APT). Examples include [Debian](https://www.debian.org/), [Ubuntu](https://ubuntu.com/), [Linux Mint](https://linuxmint.com/), [Pop! OS](https://pop.system76.com/) and [Kali Linux](https://www.kali.org/)
-* Pacman
+
+* **Pacman**
+
   Pacman is a package manager that is used in the [Arch Linux](https://archlinux.org/) distribution and its derivatives such as [Manjaro](https://manjaro.org/). Not recommended for beginners.
-* Portage
+
+* **Portage**
+
   Portage is a package management system originally created for and used by  [Gentoo Linux](https://www.gentoo.org/) and also by ChromeOS. Definitely not recommended for beginners.
-* Source-Based
+
+* **Source-Based**
+
   [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/) is a project that teaches you how to create your own Linux system from source code. Learn how to install, configure and customize LFS and BLFS, and use tools for automation and management. Once you are **very** familiar with Linux, LFS is an excellent medium term side project that you peruse in you own time. Definitely not recommended for beginners.
 
 ## OpenStack Instance Flavors
