@@ -3,23 +3,26 @@
 ## Table of Contents
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
-1. [Checklist](#checklist)
-1. [Cluster Monitoring](#cluster-monitoring)
-    1. [Prometheus](#prometheus)
-    1. [Node Exporter](#node-exporter)
-    1. [Grafana](#grafana)
-1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
-    1. [Prerequisites](#prerequisites)
-    1. [Head Node Configuration (Server) ](#head-node-configuration-server)
-    1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
-    1. [Configure Grafana Dashboard for Slurm](#configure-grafana-dashboard-for-slurm)
-1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
-    1. [Protein Visualisation](#protein-visualisation)
-    1. [Benchmark 2 (1.5M Water)](#benchmark-2-15m-water)
-1. [Running Qiskit from a Remote Jupyter Notebook Server](#running-qiskit-from-a-remote-jupyter-notebook-server)
-1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
-1. [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
-1. [Automating the Configuration of your VMs Using Ansible](#automating-the-configuration-of-your-vms-using-ansible)
+- [Student Cluster Compeititon - Tutorial 4](#student-cluster-compeititon---tutorial-4)
+  - [Table of Contents](#table-of-contents)
+- [Checklist](#checklist)
+- [Cluster Monitoring](#cluster-monitoring)
+  - [Prometheus](#prometheus)
+  - [Node Exporter](#node-exporter)
+    - [SSH Tunneling](#ssh-tunneling)
+  - [Grafana](#grafana)
+- [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
+  - [Prerequisites](#prerequisites)
+  - [Head Node Configuration (Server)](#head-node-configuration-server)
+  - [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
+  - [Configure Grafana Dashboard for Slurm](#configure-grafana-dashboard-for-slurm)
+- [GROMACS Application Benchmark](#gromacs-application-benchmark)
+  - [Protein Visualisation](#protein-visualisation)
+  - [Benchmark 2 (1.5M Water)](#benchmark-2-15m-water)
+- [Running Qiskit from a Remote Jupyter Notebook Server](#running-qiskit-from-a-remote-jupyter-notebook-server)
+- [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
+- [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
+- [Automating the Configuration of your VMs Using Ansible](#automating-the-configuration-of-your-vms-using-ansible)
 
 <!-- markdown-toc end -->
 
@@ -57,96 +60,86 @@ The installation and the configuration of Prometheus should be done on your head
 
 1. Create a Prometheus user without login access, this will be done manually as shown below:
  ```bash
-    sudo useradd --no-create-home --shell /sbin/nologin prometheus
+sudo useradd --no-create-home --shell /sbin/nologin prometheus
  ```
 2. Download the latest stable version of Prometheus from the official site using `wget`
  ```bash
-  wget https://github.com/prometheus/prometheus/releases/download/v2.33.1/prometheus-2.33.1.linux-amd64.tar.gz 
+wget https://github.com/prometheus/prometheus/releases/download/v2.33.1/prometheus-2.33.1.linux-amd64.tar.gz
  ```
 3. Long list file to verify Prometheus was downloaded 
  ```bash
-    ll
+ll
  ```
 4. Extract the downloaded archive and move prometheus binaries to the /usr/local/bin directory.
- [Unit] 
-Description=Prometheus Monitoring 
-Wants=network-online.target 
-After=network-online.target 
-[Service] 
-User=prometheus 
-Group=prometheus 
-Type=simple 
-ExecStart=/usr/local/bin/prometheus \ 
-  --config.file=/etc/prometheus/prometheus.yml \ 
-  --storage.tsdb.path=/var/lib/prometheus/ \ 
-  --web.console.templates=/etc/prometheus/consoles \ 
-  --web.console.libraries=/etc/prometheus/console_libraries 
-[Install] 
-WantedBy=multi-user.target
+```bash
+tar -xvzf prometheus-2.33.1.linux-amd64.tar.gz
+cd prometheus-2.33.1.linux-amd64
+sudo mv prometheus promtool /usr/local/bin/ 
+```
 5. Move back to the home directory, create directorise for prometheus.
  ```bash
-    cd ~
-    sudo mkdir /etc/prometheus 
-    sudo mkdir /var/lib/prometheus 
+cd ~
+sudo mkdir /etc/prometheus 
+sudo mkdir /var/lib/prometheus 
  ```
 6. Set the correct ownership for the prometheus directories
  ```bash
-    sudo chown prometheus:prometheus /etc/prometheus/ 
-    sudo chown prometheus:prometheus /var/lib/prometheus
+sudo chown prometheus:prometheus /etc/prometheus/ 
+sudo chown prometheus:prometheus /var/lib/prometheus
  ```
 7. Move the configuration file and set the correct permissions 
  ```bash
-    cd prometheus-2.33.1.linux-amd64 
-    sudo mv consoles/ console_libraries/ prometheus.yml /etc/prometheus/ 
-    sudo chown -R prometheus:prometheus /etc/prometheus/ 
+cd prometheus-2.33.1.linux-amd64 
+sudo mv consoles/ console_libraries/ prometheus.yml /etc/prometheus/ 
+sudo chown -R prometheus:prometheus /etc/prometheus/ 
  ```
-8. Configure Prometheus
-  Edit the `/etc/prometheus/prometheus.yml` file to configure your targets (compute node):
+8. Configure Prometheus \
+  Edit the `/etc/prometheus/prometheus.yml` file to configure your targets(compute node) 
+
+    *Hint : Add the job configuration for the compute_node in the scrape_configs section of your Prometheus YAML configuration file. Ensure that all necessary configurations for this job are correctly placed within the relevant sections of the YAML file.*:
+
 ```yaml
 global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'prometheus'
+  - job_name: "prometheus"
     static_configs:
-      - targets: ['localhost:9090']
-  - job_name: 'compute_node'
+      - targets: ["localhost:9090"]
+  - job_name: "compute_node"
     static_configs:
-      - targets: ['<compute_node_ip>:9100']
+      - targets: ["<compute_node_ip>:9100"]
 ```
-9.  Create a service file to manage Prometheus with `systemctl`, the file can be created with the text editor `vim` (Can use any text editor of your choice)
+9.  Create a service file to manage Prometheus with `systemctl`, the file can be created with the text editor `nano` (Can use any text editor of your choice)
  ```bash
-    sudo vim /etc/systemd/system/prometheus.service
+sudo nano /etc/systemd/system/prometheus.service
  ```
  ```plaintext
-  [Unit] 
-  Description=Prometheus Monitoring 
-  Wants=network-online.target 
-  After=network-online.target 
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
 
-  [Service] 
-  User=prometheus 
-  Group=prometheus 
-  Type=simple 
-  Restart=on-failure 
-  RestartSec=5s
-  ExecStart=/usr/local/bin/prometheus \ 
-    --config.file=/etc/prometheus/prometheus.yml \ 
-    --storage.tsdb.path=/var/lib/prometheus/ \ 
-    --web.console.templates=/etc/prometheus/consoles \ 
-    --web.console.libraries=/etc/prometheus/console_libraries
-    --web.listen-address=0.0.0.0:9090 \ 
-    --web.enable-lifecycle \ 
-    --log.level=info
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/local/bin/prometheus \
+  --config.file=/etc/prometheus/prometheus.yml \
+  --storage.tsdb.path=/var/lib/prometheus/ \
+  --web.console.templates=/etc/prometheus/consoles \
+  --web.console.libraries=/etc/prometheus/console_libraries
 
-  [Install] 
-  WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
 ```
 10. Reload the systemd daemon, start and enable the service
  ```bash
-  sudo systemctl deamon-reload
-  sudo systemctl enable prometheus 
-  sudo systemctl start prometheus
+sudo systemctl daemon-reload
+sudo systemctl enable prometheus 
+sudo systemctl start prometheus
  ```
 
 11. Check that your service is active by checking the status
@@ -163,47 +156,56 @@ scrape_configs:
 > 
 > Then repeat steps 10 and 11.
 >
-> If the prometheus service still fails to start properly, run the command journalctl –u 	prometheus -f --no-pager and review the output for errors.
+> If the prometheus service still fails to start properly, run the command `journalctl –u prometheus -f --no-pager` and review the output for errors.
+
+> [!IMPORTANT]
+> If firewalld is enabled and running, add a rule for port 9090
+> 
+> ```bash
+> sudo firewall-cmd --permanent --zone=public --add-port=9090/tcp
+> sudo firewall-cmd --reload 
+> ```
+
+Verify that your prometheus configuration is working navigating to `http://<headnode_ip>:9090` in your web browser, access prometheus web interface. Ensure that the `headnode_ip` is the public facing ip.
 
 ## Node Exporter
 Node Exporter is a Prometheus exporter specifically designed for hardware and OS metrics exposed by Unix-like kernels. It collects detailed system metrics such as CPU usage, memory usage, disk I/O, and network statistics. These metrics are exposed via an HTTP endpoint, typically accessible at `<node_ip>:9100/metrics`. The primary role of Node Exporter is to provide a source of system-level metrics that Prometheus can scrape and store. This exporter is crucial for gaining insights into the health and performance of individual nodes within a network.
 
-The installation and the configuration node exporter will be done on the compute node/s
+The installation and the configuration node exporter will be done on the **compute node/s**
 
 1. Create a Node Exporter User
  ```bash
-  sudo useradd --no-create-home --shell /bin/false node_exporter
+sudo adduser -M -r -s /sbin/nologin node_exporter
 ```
 2. Download and Install Node Exporter, this is done using `wget` as done before
  ```bash
-  cd /tmp
-  wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
-  tar xvf node_exporter-1.6.1.linux-amd64.tar.gz
+cd /usr/src/
+
+sudo wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+
+sudo tar xvf node_exporter-1.6.1.linux-amd64.tar.gz
 ```
-3. Copy the installation file to the correct location and create the onwership of the file
+3. Next, move the node exporter binary file to the directory '/usr/local/bin' using the following command
 ```bash
-  sudo cp node_exporter-1.6.1.linux-amd64/node_exporter /usr/local/bin/
-  sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
+mv node_exporter-*/node_exporter /usr/local/bin
 ``` 
-4.  Create a service file to manage Node Exporter with `systemctl`, the file can be created with the text editor `vim` (Can use any text editor of your choice)
+4.  Create a service file to manage Node Exporter with `systemctl`, the file can be created with the text editor `nano` (Can use any text editor of your choice)
  ```bash
-    sudo vim /etc/systemd/system/node_exporter.service
+sudo nano /etc/systemd/system/node_exporter.service
  ```
  ```plaintext
-  [Unit] 
-  Description=Node Exporter
-  Wants=network-online.target
-  After=network-online.target
+[Unit]
+Description=Node Exporter
+After=network.target
 
-  [Service] 
-  User=node_exporter
-  Group=node_exporter
-  Type=simple
-  ExecStart=/usr/bin/node_exporter \ 
-  --web.listen-address=:9100
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter
 
-  [Install] 
-  WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
 ```
 > [!IMPORTANT]
 > If firewalld is enabled and running, add a rule for port 9100 
@@ -215,14 +217,39 @@ The installation and the configuration node exporter will be done on the compute
 
 5.  Reload the systemd daemon, start and enable the service
  ```bash
-  sudo systemctl deamon-reload
-  sudo systemctl enable node_exporter 
-  sudo systemctl start node_exporter
+sudo systemctl daemon-reload
+sudo systemctl enable node_exporter 
+sudo systemctl start node_exporter
  ```
 6. Check that your service is active by checking the status
   ```bash
   sudo systemctl status node_exporter
   ``` 
+### SSH Tunneling
+In order to verify that node exporter is set up correctly we need to access `<node_ip>:9100/metrics`. This can only been done by simply going to your broswer and putting it in as we did with Prometheus, we need to use a SSH tunnel.
+
+**What is SSH Tunneling?** \
+SSH tunneling, also known as SSH port forwarding, is a method of securely forwarding network traffic from one network node to another via an encrypted SSH connection. It allows you to securely transmit data over untrusted networks by encrypting the traffic.
+
+**Why Use SSH Tunneling in This Scenario?** \
+In this setup, the compute node has only a private IP and is not directly accessible from the internet. The headnode, however, has both a public IP (accessible from the internet) and a private IP (in the same network as the compute node).
+
+Using SSH tunneling allows us to:
+
+- Access Restricted Nodes: Since the compute node is only reachable from the headnode, we can create an SSH tunnel through the headnode to access the compute node.
+- Secure Transmission: The tunnel encrypts the traffic between your local machine and the compute node, ensuring that any data sent through this tunnel is secure.
+- Simplify Access: By tunneling the Node Exporter port (9100) from the compute node to your local machine, you can access the metrics as if they were running locally, making it easier to monitor and manage the compute node.
+
+  1. Set Up SSH Tunnel on Your Local Machine
+```bash
+ssh -L 9100:compute_node_ip:9100 user@headnode_ip -N
+```
+- ssh -L: This option specifies local port forwarding. It maps a port on your local machine (first 9100) to a port on a remote machine (second 9100 on compute_node_ip) via the SSH server (headnode).
+- compute_node_ip:9100: The target address and port on the compute node where Node Exporter is running.
+user@headnode_ip: The SSH connection details for the headnode.
+- -N: Tells SSH to not execute any commands, just set up the tunnel.
+
+  2. By navigating to http://localhost:9100/metrics in your web browser, you can access the Node Exporter metrics from the compute node as if the service were running locally on your machine.
 
 
 ## Grafana
@@ -231,7 +258,7 @@ Grafana is an open-source platform for monitoring and observability, known for i
 Now we go back to the headnode for the installation and the configuration of Grafana
  1. Add the Grafana Repository, by adding the following directives in this file:
 ```bash
-  sudo vim /etc/yum.repos.d/grafana.repo
+sudo nano /etc/yum.repos.d/grafana.repo
 ```
  ```plaintext
   [grafana] 
@@ -248,14 +275,29 @@ Now we go back to the headnode for the installation and the configuration of Gra
 
 2. Install Grafana
  ```bash
-   sudo dnf install grafana -y 
+sudo dnf install grafana -y 
 ```
 
 3. Start and Enable Grafana 
  ```bash
-  sudo systemctl start grafana-server
-  sudo systemctl enable grafana-server
+sudo systemctl start grafana-server
+sudo systemctl enable grafana-server
 ```
+
+4. Check the status of grafana-server
+```bash
+sudo systemctl status grafana-server
+```
+> [!IMPORTANT]
+> If firewalld is enabled and running, add a rule for port 9100 
+> 
+> ```bash
+> sudo firewall-cmd --permanent --zone=public --add-port=3000/tcp
+> sudo firewall-cmd --reload 
+> ```
+
+
+Verify that your prometheus configuration is working navigating to `http://<headnode_ip>:3000` in your web browser, access prometheus web interface. Ensure that the `headnode_ip` is the public facing ip.
 
 # Slurm Scheduler and Workload Manager
 
