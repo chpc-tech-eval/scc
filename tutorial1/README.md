@@ -5,9 +5,7 @@ This tutorial will help you become familiar with Cloud Computing and will also s
 
 You will then login into the CHPC's Cloud Computing Platform and launch your own OpenStack virtual machine instances. Here you will need to make a decision on choice of Linux distribution that you will use as well as how your team will allocate your limited cloud computing resources.
 
-such as navigating and configuring your hosts and network on the terminal. If you are new to Linux and need help getting more comfortable, please check out the resources tab on the learning system.
-
-Once your team has successfully launched your instances you'll login to your VM's to do some basic Linux administration.
+Once your team has successfully launched your instances you'll login to your VM's to do some basic Linux administration, such as navigating and configuring your hosts and network on the terminal. If you are new to Linux and need help getting more comfortable, please check out the resources tab on the learning system.
 
 This tutorial will conclude with you downloading, installing and running the High Performance LinPACK benchmark on your newly created VM's.
 
@@ -15,6 +13,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
+1. [Table of Contents](#table-of-contents)
 1. [Checklist](#checklist)
 1. [Network Primer](#network-primer)
     1. [Basic Networking Example (WhatIsMyIp.com)](#basic-networking-example-whatismyipcom)
@@ -37,9 +36,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
     1. [Running Basic Linux Commands and Services](#running-basic-linux-commands-and-services)
 1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
     1. [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
-1. [Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark](#install-dependencies-and-fetch-source-files-for-high-performance-linpack-hpl-benchmark)
-    1. [Compile the HPL Source Code to Produce an Executable Binary](#compile-the-hpl-source-code-to-produce-an-executable-binary)
-    1. [Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`](#configuring-_your_-hpldat-file-using-lscpu-and-lsmem)
+1. [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](#install-compile-and-run-high-performance-linpack-hpl-benchmark)
 
 <!-- markdown-toc end -->
 
@@ -74,7 +71,7 @@ At the core of High Performance Computing (HPC) is networking. Something as simp
 
 When you enter this address into your browser, one of the first things that will happen is that a [Domain Name Service (DNS)](https://en.wikipedia.org/wiki/Domain_Name_System) will translate the URL [google.co.za] into it's corresponding [Internet Protocol (IP) Address](https://en.wikipedia.org/wiki/IP_address) [142.251.216.67].
 
-A number of [routing](https://en.wikipedia.org/wiki/Router_(computing)) lookup tables will be utilized to determine an available, _and preferably optimal_ path to the resource that you'd requested, thereafter a number of routers or gateway devices will be used to exchange packets between your workstation, through all of the intermediary networks, and finally the target resource. 
+A number of [routing](https://en.wikipedia.org/wiki/Router_(computing)) lookup tables will be utilized to determine an available, _and preferably optimal_ path to the resource that you'd requested, thereafter a number of routers or gateway devices will be used to exchange packets between your workstation, through all of the intermediary networks, and finally the target resource.
 
 At this point it is important to note that even though packets and network traffic are being exchanged between your local workstation and the Google servers, at no point is the private IP Address of your workstation exposed to the external Google Servers. Your workstation would have been assigned a private internal IP Address based on the computer laboratory. Traffic is then routed between the computer laboratory's private internal network and the rest of the university's networks through routers and gateway devices. All the internal computers and components across the campus will appear to the outside as though they have a single public IP address. This is accomplished through a process known as [Network address Translation (NAT)](https://en.wikipedia.org/wiki/Network_address_translation).
 
@@ -136,19 +133,18 @@ From the _"Network Details"_ section of your own device, you should see similar 
 
 You should familiarize yourself with a few basic networking commands that can be utilized on your local shell, as well as your compute nodes. These commands are useful as a first step in debugging network related connection issues.
 
-* `ip a` or `ipconfig`
+* `ip a` or `ipconfig`:
    The ip a command (short for ip addr) is used to display all IP addresses assigned to all network interfaces on a Linux system. It provides detailed information about the state of the network interfaces, including the IP address, broadcast address, subnet mask, and other relevant details.
-   
-* `ping 8.8.8.8`
-   The ping command is used to test the reachability of a host on an IP network. The 8.8.8.8 is a well-known public DNS server provided by Google. By sending ICMP Echo Request messages to 8.8.8.8, you can determine if the server is reachable and measure the round-trip time of the packets.
-   
-* `ip route` or `route print`
-   The ip route command is used to display or manipulate the routing table on a Linux system. It shows the kernel's routing table, which dictates how packets should be routed through the network. This includes the default gateway, subnet routes, and any other custom routing rules.
-   
-* `tracepath` or `tracert`
 
+* `ping 8.8.8.8`:
+   The ping command is used to test the reachability of a host on an IP network. The 8.8.8.8 is a well-known public DNS server provided by Google. By sending ICMP Echo Request messages to 8.8.8.8, you can determine if the server is reachable and measure the round-trip time of the packets.
+
+* `ip route` or `route print`:
+   The ip route command is used to display or manipulate the routing table on a Linux system. It shows the kernel's routing table, which dictates how packets should be routed through the network. This includes the default gateway, subnet routes, and any other custom routing rules.
+
+* `tracepath` or `tracert`:
    The tracepath command is used to trace the network path to a destination, showing the route that packets take to reach it. Unlike traceroute, tracepath does not require root privileges and is often easier to use. It provides details about each hop along the route, including the IP address and round-trip time.
-   
+
 > [!TIP]
 > Refer to the [Q&A Discussion on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/48) for an example. Post a similar screenshot of your team executing these commands as a comment to that discussion.
 
@@ -185,10 +181,8 @@ Over the course of the lecture content and the tutorials, you will be making ext
 From the `Start` menu, open the Windows `PowerShell` application:
 These commands are the same if you are commenting from a Linux, Unix or MacOS Terminal, and Moba XTerm.
 1. Generate an SSH key pair:
-   ```shell
-   
+   ```bash
    ssh-keygen -t ed25519
-   
    ```
 1. When prompted to _"Enter file in which to save the key"_, press `Enter`,
 1. When prompted to _"Enter a passphrase"_, press `Enter`, and `Enter` again to verify it.
@@ -231,7 +225,7 @@ After configuring your new VM name under instance details, you will need to sele
 1. *Delete Volume on Instance Delete* is `No`, and
 1. *Volume Size (GB)* will be set when you configure the instance flavor.
 
-There are a number of considerations that must be taken into account when selecting a Linux Distribution that will be appropriate for your requirements and needs. [Since June 2017](https://www.top500.org/statistics/details/osfam/1/) **all** of the systems on the Top500 list make use of a Linux-based Operating System. Familiarity and proficiency with Linux-based operating systems and their derivatives is a mandatory requirement for gaining expertise in Software Development, Systems Administration and Networking.
+There are a number of considerations that must be taken into account when selecting a Linux distribution that will be appropriate for your requirements and needs. [Since June 2017](https://www.top500.org/statistics/details/osfam/1/) **all** of the systems on the Top500 list make use of a Linux-based Operating System. Familiarity and proficiency with Linux-based operating systems and their derivatives is a mandatory requirement for gaining expertise in Software Development, Systems Administration and Networking.
 
 An argument could be made, that the best way to acquire Linux systems administration skills, is to make daily use of a Linux Distribution by running it on your personal laptop, desktop or workstation at home / school.
 
@@ -258,28 +252,19 @@ The following list provides a few examples of Linux distros that *may* be availa
 > [!TIP]
 > You do not need to decide right now which Linux Flavor you and your team will be installing on you personal / school laptop and desktop computers. The list and corresponding links are provided for later reference, however for the time being you are strongly encouraged to proceed with **Rocky 9.2 image**. If you are already using or familiar with Linux, discuss this with the instructors who will advise you on how to proceed.
 
-* **RPM**
+* **RPM** or Red Hat Package Manager is a free and open-source package management system. The name RPM refers to the `.rpm` file format and the package manager program itself. Examples include [Red Hat Enterprise Linux](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux), [Rocky Linux](https://rockylinux.org/), [Alma Linux](https://almalinux.org/), [CentOS Stream](https://www.centos.org/centos-stream/) and [Fedora](https://fedoraproject.org/). You can't go wrong with choose of either Red Hat, Alma, ***Rocky*** or CentoS Stream for the competition. You manage packages through tools such at `yum` (Yellowdog Updater, Modified) and / or `dnf` (Dandified YUM).
 
-  RPM Package Manager is a free and open-source package management system. The name RPM refers to the.rpm file format and the package manager program itself. Examples include [Red Hat Enterprise Linux](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux), [Rocky Linux](https://rockylinux.org/), [Alma Linux](https://almalinux.org/), [CentOS Stream](https://www.centos.org/centos-stream/), [Fedora](https://fedoraproject.org/) and [OpenSUSE](https://www.opensuse.org/). you can't go wrong with choose of either Red Hat, Alma, ***Rocky*** or CentOS Stream for the competition.
-  
-* **PkgTool**
+* **Zypper** is the package manager used by [openSUSE](https://www.opensuse.org/), [SUSE Linux Enterprise (SLE)](https://www.suse.com/), and related distributions. This is another good choice for beginners, however openSUSE is not available as an image for the competition.
 
-  pkgtool is a menu-driven package maintenance tool provided with the [Slackware Linux distribution](http://www.slackware.com/). Listed here for interest, not recommended for beginners.
-* **APT**
+* **APT**: In Debian-based distributions, the installation and removal of software are generally managed through the package management system known as the Advanced Package Tool (APT). Examples include [Debian](https://www.debian.org/), [Ubuntu](https://ubuntu.com/), [Linux Mint](https://linuxmint.com/), [Pop! OS](https://pop.system76.com/) and [Kali Linux](https://www.kali.org/). Debian or Ubuntu Based Linux distributions are fantastic options for beginners. If one of your team members are already using such a system, then you are advised to use the provided Ubuntu image for the competition.
 
-  In Debian-based distributions, the installation and removal of software are generally managed through the package management system known as the Advanced Package Tool (APT). Examples include [Debian](https://www.debian.org/), [Ubuntu](https://ubuntu.com/), [Linux Mint](https://linuxmint.com/), [Pop! OS](https://pop.system76.com/) and [Kali Linux](https://www.kali.org/)
+* **PkgTool** is a menu-driven package maintenance tool provided with the [Slackware Linux distribution](http://www.slackware.com/). Listed here for interest, not recommended for beginners.
 
-* **Pacman**
+* **Pacman** is a package manager that is used in the [Arch Linux](https://archlinux.org/) distribution and its derivatives such as [Manjaro](https://manjaro.org/). Not recommended for beginners.
 
-  Pacman is a package manager that is used in the [Arch Linux](https://archlinux.org/) distribution and its derivatives such as [Manjaro](https://manjaro.org/). Not recommended for beginners.
+* **Portage** is a package management system originally created for and used by  [Gentoo Linux](https://www.gentoo.org/) and also by ChromeOS. Definitely not recommended for beginners.
 
-* **Portage**
-
-  Portage is a package management system originally created for and used by  [Gentoo Linux](https://www.gentoo.org/) and also by ChromeOS. Definitely not recommended for beginners.
-
-* **Source-Based**
-
-  [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/) is a project that teaches you how to create your own Linux system from source code. Learn how to install, configure and customize LFS and BLFS, and use tools for automation and management. Once you are **very** familiar with Linux, LFS is an excellent medium term side project that you peruse in you own time. Definitely not recommended for beginners.
+* **Source-Based**: [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/) is a project that teaches you how to create your own Linux system from source code, using another Linux system. Learn how to install, configure and customize LFS and BLFS, and use tools for automation and management. Once you are **very** familiar with Linux, LFS is an excellent medium term side project that you peruse in you own time. Definitely not recommended for beginners.
 
 ## OpenStack Instance Flavors
 
@@ -305,25 +290,25 @@ An important aspect of system administration is resource monitoring, management 
 
 The following table summarizes the various permutations and allocations that can be used for designing your clusters within your Team's Project Workspace on Sebowa's OpenStack cloud platform.
 
-| Cluster Configurations     | Instance Flavor   | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
-|----------------------------|:-----------------:|:---------------:|:------------:|:--------------:|
-|                            |                   |                 |              |                |
-| Dedicated Head Node        | scc24.C2.M4.S60   | 2               | 4 GB         | 60 GB          |
-| Compute Node 01            | scc24.C8.M16.S10  | 8               | 16 GB        | 10 GB          |
-| Compute Node 02            | scc24.C8.M16.S10  | 8               | 16 GB        | 10 GB          |
-|                            |                   |                 |              |                |
-|                            |                   |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C6.M12.S60  | 6               | 12 GB        | 60 GB          |
-| Compute Node 01            | scc24.C6.M12.S10  | 6               | 12 GB        | 10 GB          |
-| Compute Node 02            | scc24.C6.M12.S10  | 6               | 12 GB        | 10 GB          |
-|                            |                   |                 |              |                |
-|                            |                   |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C10.M20.S60 | 10              | 20 GB        | 60 GB          |
-| Compute Node 01            | scc24.C8.M16.S10  | 8               | 16 GB        | 10 GB          |
-|                            |                   |                 |              |                |
+| Cluster Configurations     | Instance Flavor | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
+|----------------------------|:---------------:|:---------------:|:------------:|:--------------:|
+|                            |                 |                 |              |                |
+| Dedicated Head Node        | scc24.C2.S60    | 2               | 4 GB         | 60 GB          |
+| Compute Node 01            | scc24.C8.S10    | 8               | 16 GB        | 10 GB          |
+| Compute Node 02            | scc24.C8.S10    | 8               | 16 GB        | 10 GB          |
+|                            |                 |                 |              |                |
+|                            |                 |                 |              |                |
+| Hybrid Head / Compute Node | scc24.C6.S60    | 6               | 12 GB        | 60 GB          |
+| Compute Node 01            | scc24.C6.S10    | 6               | 12 GB        | 10 GB          |
+| Compute Node 02            | scc24.C6.S10    | 6               | 12 GB        | 10 GB          |
+|                            |                 |                 |              |                |
+|                            |                 |                 |              |                |
+| Hybrid Head / Compute Node | scc24.C10.S60   | 10              | 20 GB        | 60 GB          |
+| Compute Node 01            | scc24.C8.S10    | 8               | 16 GB        | 10 GB          |
+|                            |                 |                 |              |                |
 
 > [!TIP]
-> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of starting with this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the **scc24.C2.M4.S60** flavor with *2 vCPUs* and *4 GB RAM*.
+> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of starting with this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the **scc24.C2.S60** flavor with *2 vCPUs* and *4 GB RAM*.
 
 ## Networks, Ports, Services and Security Groups
 
@@ -420,30 +405,6 @@ If your workstation or laptop is running a Linux-based or macOS operating system
 > [!TIP]
 > The "~" in `~/.ssh/id_ed25519` is a shortcut for `/home/<username>`. Secondly, the first time you connect to a new SSH server, you will be prompted to confirm the authenticity of the host. Type 'yes' and hit 'Enter'
 
-From this point onward, you're going to need to pay extra attention to the commands that have been issued and you must ensure that they correspond to the distribution that you are using.
-
-```bash
-# RPM-based (RHEL, Alma, Rocky, Centos, etc)
-# You are strongly recommended to use one of the distros mentioned above.
-# This will always be the frist example use case given for any scenario and the recommended approach to follow
-
-sudo dnf install <PACKAGE_NAME>
-
-# APT-based systems (Ubuntu)
-# Another really good choice and strong recommendation to adopt is Ubuntu.
-# Ubuntu has many users, and many first time Linux users, start their journeys into Linux through APT (or Ubuntu) based distros.
-# Moreover Ubuntu has it's origins in South Africa...
-
-sudo apt-get install <PACKAGE_NAME>
-
-# Pacman-based systems (Arch-Like Linux)
-# Arch Linux is one of the most "flexible and succinct" Linux distros available today.
-# It popularity stems not only from the fact that is has excellent documentation, but it's "keep it straight and simple" approach.
-# Not recommend for beginners, unless you have previous Linux expertise or unless you are looking for a challenge.
-
-sudo pacman -S <PACKAGE_NAME>
-```
-
 <p align="center"><img alt="OpenStack Running State." src="./resources/windows_powershell_firsttime_ssh.png" width=900 /></p>
 
 <details>
@@ -473,12 +434,15 @@ If your workstation or laptop is running Windows, then you may proceed using eit
 
 ## Running Basic Linux Commands and Services
 
-  Once logged into your head node, you can now make use of the [previously discussed basic networking commands](#terminal-mobaxterm-and-windows-powershell-commands): `ip a`, `ping`, `ip route` and `tracepath`, refer to [Discussion on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/48) for example out, and to also post your screenshots as comments.
+Once logged into your head node, you can now make use of the [previously discussed basic networking commands](#terminal-mobaxterm-and-windows-powershell-commands): `ip a`, `ping`, `ip route` and `tracepath`, refer to [Discussion on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/48) for example out, and to also post your screenshots as comments.
 
 * Manual Pages `man`
+
   On Linux systems, information about commands can be found in a manual page. This doncument is accessible via a command called `man` short term for manual page. Run the following commands to understand what each does, scroll up and down then press `q` to exit the page. Familiarize yourself with these, as they are some of the commands you will use throught the week.
 
    ```bash
+   # Review the man pages of a number of different Linux utilities.
+   # Remember you can exit the man page documentation by pressing  `q`.
    man sudo
    man ping
    man tracepath
@@ -487,9 +451,11 @@ If your workstation or laptop is running Windows, then you may proceed using eit
    ```
 
 * the `-h` Switch
+
   If you don't want to use the `man` command to learn about each command and related options, you can use the `--help or -h` flag to see which options are available for a specific command. run the ff command to learn about available options each command has.
 
    ```bash
+   # Check the help pages of a command using the `--help or -h` switch.
    sudo -h
    ifconfig -h
    ping -h
@@ -498,58 +464,244 @@ If your workstation or laptop is running Windows, then you may proceed using eit
    ```
 
 * Piping and Console Redirection
+
   `>`  replaces the content of an output file with all input content
   `>>` appends the input content to the end of the output file.
 
   For example to create a file called `students.txt` and add a name to the file, use:
   ```bash
+  # You can create new files using the `touch` command or the `>` redirect.
   touch students.txt
-  echo "zama" > students.txt
+  echo "zama" >> students.txt
+  echo "<TEAM_CAPTAIN>" >> students.txt
+  echo "zama lecturer" >> students.txt
+  echo "<TEAM_MEMBERS" >> students.txt
   ```
 
   Pipe `|` through `grep` is used when searching the content of the file, if it exist it will be printed on the screen, if the search does not exist nothing will show on the screen.
+  ```bash
+  cat students.txt
+  cat students.txt | grep "zama"
+  ```
 
+* Reading and Editing Documents
 
-* Reading Documents
   You will be reading a lof of files throughout the week and the following commands can be used to read files with ease, use `man` to learn about each command. All the following command are used to read the content of a file `students.txt`
 
   ```bash
+  # Press `q` to exit from `more` or `less` text dumps.
+  # You may need to install utilities like `nano` before using them.
   less students.txt
   more students.txt
   cat students.txt
   vi students.txt
-  nano students.txt
   ```
 
 * GNU `history` Library
-  `history` command shows all commands you have executed so far, the feedback is numbered, use `!14` to rerun the 14th command
+
+  The `history` command shows all commands you have executed so far, the feedback is numbered, use `!14` to rerun the 14th command:
+  ```bash
+  history
+  !14
+  ```
+Make sure that you try these commands to familiarize yourself and become comfortable with the Linux terminal shell and command line. You can find sample outputs and are strongly encouraged to post your teams screenshots of at least one of the above commands on the [Discussion Page on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/49).
 
 * Understanding `journalctl` and `systemctl`
-  `journalctl` and `systemctl` are two powerful command-line utilities used to manage and view system logs and services on Linux systems, respectively. Both are part of the systemd suite, which is used for system and service management.
+
+  Both `journalctl` and `systemctl` are two powerful command-line utilities used to manage and view system logs and services on Linux systems, respectively. Both are part of the systemd suite, which is used for system and service management.
   * `journalctl` is used to query and display logs from the journal, which is a component of systemd that provides a centralized location for logging messages generated by the `system` and services.
   * `systemctl` is used to examine and control the `systemd` system and service manager. It provides commands to start, stop, restart, enable, disable, and check the status of services, among other functionalities.
 
   For example to query the status of the `systemd-networkd` daemon / service, use:
   ```bash
-      sudo systemctl statis systemd-networkd
+      sudo systemctl status systemd-networkd
   ```
 
+Verify some of your system's configuration settings and post a screenshot as a comment to this [Discussion Page on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/56).
+
 > [!CAUTION]
-> It is **CRITICAL** that you are always aware and sure which node or server your are working on. As you can see in the examples above, you can run *similar* commands in a Linux terminal on your workstation, on the console prompt of your headnode, and as you will see later, on the console prompt of your compute node.
+> It is **CRITICAL** that you are always aware and sure which node or server your are working on. As you can see in the examples above, you can run *similar* commands in a Linux terminal on your workstation, on the console prompt of your head node, and as you will see later, on the console prompt of your compute node.
 
 # Linux Binaries, Libraries and Package Management
-## User Environment and the `PATH` Variable
-hostname and etc/hosts
-At this point your VMs and network should be correctly configured and you can continue with setting up some important Linux services.
 
-# Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark
-1. Install the GNU Compiler Collection (GCC)
-1. Install OpenMPI
-1. Install ATLAS Math Library
-Automatically Tuned Linear Algebra Software
-1. Fetch and Extract the HPC Source Tarball
-## Compile the HPL Source Code to Produce an Executable Binary
-1. Copy and Edit the Makefile for _your_ Target Architecture
-1. Editing _your_ PATH Variable
-1. Dynamic and Static Libraries: Editing _Your_ ATLAS Shared Object Files
-## Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`
+Understanding Linux binaries, libraries, and package managers is crucial for effective software development and system management on Linux systems.
+
+> [!NOTE]
+> The following discussion around the concepts of binaries and libraries does not need to be fully understood at this stage and will be covered in more detail in later tutorials and lectures. 
+
+* **Binaries** are executable files created from source code, often written in languages like C or C++, through a process called compilation. These files contain machine code that the operating system can execute directly.
+  * **Executable Files**: These are typically found in directories like `/bin`, `/sbin`, `/usr/bin`, and `/usr/sbin`.
+  * **Shared Libraries**: These are files containing code that can be shared by multiple programs. They usually have extensions like `.so` (shared object) and are found in directories like `/lib` and `/usr/lib`.
+
+* **Libraries** provide a way to share code among multiple programs to avoid redundancy and ease maintenance. They come in two main types:
+  * **Static Libraries (`.a` files)** are linked into the executable at compile time, resulting in a larger binary. Do not require the library to be present at runtime.
+  * **Shared (Dynamic) Libraries (.so files)** are linked at runtime, reducing the binary size. The executable will need the shared library to be present on the system at runtime.
+
+* **Package Managers**
+
+Package Managers are tools that automate the process of installing, updating, configuring, and removing software packages. They handle dependencies and ensure that software components are properly integrated into the system.
+    * **Repositories** are online servers storing software packages. Package managers download packages from these repositories.
+    * **Dependencies** are binaries, libraries or other packages that software depends on to function correctly. Package managers resolve, install and remove dependencies automatically.
+
+From this point onward, you're going to need to pay extra attention to the commands that have been issued and you must ensure that they correspond to the distribution that you are using.
+
+> [!WARNING]
+> To not try to type the following arbitrary commands into your head node's terminal. They are merely included here for illustration purposes.
+
+```bash
+# DNF / YUM (RHEL, Alma, Rocky, Centos, etc)
+# You are strongly recommended to use one of the distros mentioned above.
+# This will always be the frist example use case given for any scenario and
+# the recommended approach to follow
+
+sudo dnf update
+sudo dnf install <PACKAGE_NAME>
+sudo dnf remove <PACKAGE_NAME>
+
+# APT-based systems (Ubuntu)
+# Another really good choice and strong recommendation to adopt is Ubuntu.
+# Ubuntu has many users, and many first time Linux users, start their
+# journeys into Linux through APT (or Ubuntu) based distros.
+# Moreover Ubuntu has it's origins in South Africa...
+
+sudo apt update
+sudo apt upgrade
+sudo apt install <PACKAGE_NAME>
+sudo apt remove <PACKAGE_NAME>
+
+# Pacman-based systems (Arch-Like Linux)
+# Arch Linux is one of the most "flexible and succinct" Linux distros
+# available today. It popularity stems not only from the fact that is has
+# excellent documentation, but it's "keep it straight and simple" approach.
+# Not recommend for beginners, unless you have previous Linux expertise or
+# unless you are looking for a challenge.
+
+sudo pacman -Syu
+sudo pacman -S <PACKAGE_NAME>
+sudo pacman -R <PACKAGE_NAME>
+```
+
+## User Environment and the `PATH` Variable
+
+Understanding the user environment and the `PATH` variable is crucial for effective command-line operations and software management on Linux systems. The user environment in Linux refers to the collection of settings and variables that define how the system behaves for a user. These settings include environment variables, configuration files, and shell settings.
+```bash
+# For example, to view the `USER` and `HOME` variables
+echo $USER
+echo $HOME
+```
+
+The `PATH` variable is one of the most important environment variables. It specifies a list of directories that the shell searches to find executable files for commands. When you type a command in the terminal, the shell looks for an executable file with that name in the directories listed in `PATH`.
+```
+# View the contents of your PATH variable
+echo $PATH
+
+# List the contents of your HOME directory
+ls $HOME
+
+# Find the location of the ls command
+which ls
+```
+
+# Install, Compile and Run High Performance LinPACK (HPL) Benchmark
+
+HPL is a crucial tool in the HPC community for benchmarking and comparing the performance of supercomputing systems. The benchmark is a software package designed to solve a dense system of linear equations using double-precision floating-point arithmetic. It is commonly used to measure the performance of supercomputers, providing a standardized way to assess their computational power.
+
+You will now install and run HPL on your head node.
+
+1. Update the system and install dependencies
+   You are going to be installing tools that will allow you to compile applications using the `make` command. You will also be installing a maths library to compute matrix multiplications, and an `mpi` library for communication between processes, in this case mapped to CPU cores.
+   ```bash
+   # DNF / YUM (RHEL, Rocky, Alma, Centos)
+   sudo dnf update -y
+   sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
+   sudo dnf install wget nano vim -y
+   # APT (Ubuntu)
+   
+   # Pacman (Arch)
+   sudo pacman -Syu
+   sudo pacman -S base-devel openblas openmpi wget
+   ```
+1. Fetch the HPL source files
+   You will download the HPL source files. This is why you installed `wget` in the previous step.
+   ```bash
+   # Download the source files
+   wget http://www.netlib.org/benchmark/hpl/hpl-2.3.tar.gz
+   
+   # Extract the files from the tarball
+   tar -xzf hpl-2.3.tar.gz
+   
+   # Move and go into the newly extracted folder
+   mv hpl-2.3 ~/hpl
+   cd ~/hpl
+   
+   # list the contents of the folder
+   ls
+   ```
+1. Configure HPL
+   Copy and edit your own `Make.<TEAM_NAME>` file in the `hpl` directory to suit your system configuration.
+   ```bash
+   cp setup/Make.Linux_PII_CBLAS_gm Make.<TEAM_NAME>
+   nano Make.<TEAM_NAME>
+   ```
+   
+   You need to carefully edit your `Make.<TEAM_NAME>` file, ensuring that you make the following changes:
+   ```conf
+   ARCH               = <TEAM_NAME>
+   
+   MPdir              = /usr/lib64/openmpi
+   
+   LAdir              = /usr/lib64/atlas
+   LAlib              = $(LAdir)/libtatlas.so $(LAdir)/libsatlas.so
+   
+   CC                 = mpicc
+   
+   LINKER             = mpicc
+   ```
+1. Temporarily edit your `PATH` variable
+   You are almost ready to compile HPL, you will need to modify your path variable in order for your MPI C Compiler `mpicc` to be a recognized binary.
+   Check to see if `mpicc` is currently detected:
+   ```bash
+   # The following command will return a command not found error.
+   which mpicc
+   
+   # Temporarily append openmpi binary path to your PATH variable
+   # These settings will reset after you logout and re-login again.
+   export PATH=/usr/lib64/openmpi/bin:$PATH
+   
+   # Rerun the which command to confirm that the `mpicc` binary is found
+   which mpicc
+   ```
+1. Compile HPL
+   You are finally ready to compile HPL. Should you encounter any errors and need to make adjustments and changes, first run a `make clean arch=<TEAM_NAME>`.
+   ```bash
+   make arch=<TEAM_NAME>
+   
+   # Confirm that your `xhpl` binary has been successfully built
+   ls bin/<TEAM_NAME>
+   ```
+   
+> [!TIP]
+> Note that when you want to configure and recompile HPL for different architectures, compilers and systems, adapt and the Make.<NEW_CONFIG> and recompile that architecture or configuration.
+
+1. Configure your `HPL.dat`
+   Make the following changes to your `HPL.dat` file:
+   ```bash
+   cd bin/<TEAM_NAME>
+   nano HPL.dat
+   ```
+   
+   Carefully edit you `HPL.dat` file and verify the following changes:
+   ```conf
+   1            # of process grids (P x Q)
+   1            Ps
+   1            Qs
+   ```
+1. Running HPL on a Single CPU
+   For now, you will be running HPL on your head node, on a single CPU. Later you will learn how to run HPL over multiple CPUs, each with multiple cores, across multiple nodes...
+   ```bash
+   # Excute the HPL binary
+   ./xhpl
+   ```
+Congratulations!
+
+You have successfully completed you first HPL benchmark.
