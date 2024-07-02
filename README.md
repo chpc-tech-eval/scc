@@ -153,9 +153,7 @@ Tutorial 1 deals with introducing concepts to users and getting them started wit
     1. [Running Basic Linux Commands and Services](tutorial1/README.md#running-basic-linux-commands-and-services)
 1. [Linux Binaries, Libraries and Package Management](tutorial1/README.md#linux-binaries-libraries-and-package-management)
     1. [User Environment and the `PATH` Variable](tutorial1/README.md#user-environment-and-the-path-variable)
-1. [Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark](tutorial1/README.md#install-dependencies-and-fetch-source-files-for-high-performance-linpack-hpl-benchmark)
-    1. [Compile the HPL Source Code to Produce an Executable Binary](tutorial1/README.md#compile-the-hpl-source-code-to-produce-an-executable-binary)
-    1. [Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`](tutorial1/README.md#configuring-_your_-hpldat-file-using-lscpu-and-lsmem)
+1. [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](tutorial1/README.md#install-compile-and-run-high-performance-linpack-hpl-benchmark)
 
 ## Tutorial 2
 

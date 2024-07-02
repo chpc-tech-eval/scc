@@ -13,6 +13,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
+1. [Table of Contents](#table-of-contents)
 1. [Checklist](#checklist)
 1. [Network Primer](#network-primer)
     1. [Basic Networking Example (WhatIsMyIp.com)](#basic-networking-example-whatismyipcom)
@@ -35,9 +36,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
     1. [Running Basic Linux Commands and Services](#running-basic-linux-commands-and-services)
 1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
     1. [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
-1. [Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark](#install-dependencies-and-fetch-source-files-for-high-performance-linpack-hpl-benchmark)
-    1. [Compile the HPL Source Code to Produce an Executable Binary](#compile-the-hpl-source-code-to-produce-an-executable-binary)
-    1. [Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`](#configuring-_your_-hpldat-file-using-lscpu-and-lsmem)
+1. [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](#install-compile-and-run-high-performance-linpack-hpl-benchmark)
 
 <!-- markdown-toc end -->
 
@@ -603,7 +602,7 @@ ls $HOME
 which ls
 ```
 
-# Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark
+# Install, Compile and Run High Performance LinPACK (HPL) Benchmark
 
 HPL is a crucial tool in the HPC community for benchmarking and comparing the performance of supercomputing systems. The benchmark is a software package designed to solve a dense system of linear equations using double-precision floating-point arithmetic. It is commonly used to measure the performance of supercomputers, providing a standardized way to assess their computational power.
 
