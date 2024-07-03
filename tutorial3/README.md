@@ -605,9 +605,13 @@ You may modify the `mpirun` command to optimise performance (significantly) but 
 
 ## Qiskit (Quantum Volume)
 
-[IBM's Qiskit](https://www.ibm.com/quantum/qiskit) is an open-source *Software Development Kit (SDK)* for working with quantum computers at the level of circuits, pulses, and algorithms. It provides tools for creating and manipulating quantum programs and running them on prototype quantum devices on IBM Quantum Platform or on simulators on a local computer.
+IBM's Qiskit is an open-source [Software Development Kit (SDK)](https://www.ibm.com/quantum/qiskit) for working with quantum computers at the level of circuits, pulses, and algorithms. It provides tools for creating and manipulating quantum programs and running them on prototype quantum devices on IBM Quantum Platform or on simulators on a local computer.
 
 *Qiskit-Aer* is an extension to the Qiskit SDK for using high performance computing resources to simulate quantum computers and programs. It provides interfaces to run quantum circuits with or without noise using a number of various simulation methods. *Qiskit-Aer* supports leveraging *MPI* to improve the performance of simulation.
+
+**Quantum Volume (QV)** is a single-number metric that can be measured using a concrete protocol on near-term quantum computers of modest size. The QV method quantifies the largest random circuit of equal width and depth that the computer successfully implements. Quantum computing systems with high-fidelity operations, high connectivity, large calibrated gate sets, and circuit rewriting tool chains are expected to have higher quantum volumes. Simply put, Quantum Volume is a single number meant to encapsulate the performance of today’s quantum computers, like a classical computer’s transistor count.
+
+For this benchmark, we will be providing you with the details of the script that you will need to write yourself, or [download from the competition GitHub repository](https://github.com/chpc-tech-eval/chpc24-scc-nmu/blob/main/tutorial3/qv_experiment.py) in order to successfully conduct the (Quantum Volume Experiment)(https://qiskit.org/ecosystem/experiments/dev/manuals/verification/quantum_volume.html).
 
 1. Configure and install dependencies
    You will be using [Python Pip - PyPI](https://pypi.org/project/pip/) to configure and install Qiskit. `pip` is the official tool for installing and using Python packages from various indexes.
@@ -633,37 +637,37 @@ You may modify the `mpirun` command to optimise performance (significantly) but 
    pip install qiskit-aer
    ```
 
-**Quantum Volume (QV)** is a single-number metric that can be measured using a concrete protocol on near-term quantum computers of modest size. The QV method quantifies the largest random circuit of equal width and depth that the computer successfully implements. Quantum computing systems with high-fidelity operations, high connectivity, large calibrated gate sets, and circuit rewriting tool chains are expected to have higher quantum volumes. Simply put, Quantum Volume is a single number meant to encapsulate the performance of today’s quantum computers, like a classical computer’s transistor count.
+1. Save the following in a Python script `qv_experiment.py`:
 
-For this benchmark, we will be providing you with the details of the script that you will need to write in order to successfully conduct the (Quantum Volume Experiment)(https://qiskit.org/ecosystem/experiments/dev/manuals/verification/quantum_volume.html). Save the following in a Python script `qv_experiment.py`:
+   ```python
+   from qiskit import *
+   from qiskit.circuit.library import *
+   from qiskit_aer import *
+   import time
+   import numpy as np
+   def quant_vol(qubits=15, depth=10):
+     sim = AerSimulator(method='statevector', device='CPU')
+     circuit = QuantumVolume(qubits, depth, seed=0)
+     circuit.measure_all()
+     circuit = transpile(circuit, sim)
 
-```python
-from qiskit import *
-from qiskit.circuit.library import *
-from qiskit_aer import *
-import time
-import numpy as np
-def quant_vol(qubits=15, depth=10):
-  sim = AerSimulator(method='statevector', device='CPU')
-  circuit = QuantumVolume(qubits, depth, seed=0)
-  circuit.measure_all()
-  circuit = transpile(circuit, sim)
+     start = time.time()
+     result = sim.run(circuit, shots=1, seed_simulator=12345).result()
+     time_val = time.time() - start
 
-  start = time.time()
-  result = sim.run(circuit, shots=1, seed_simulator=12345).result()
-  time_val = time.time() - start
-  # Optionally return and print result for debugging
-  # Bonus marks available for reading the simulation time directly from `result`
-  return time_val
-```
+     # Optionally return and print result for debugging
+     # Bonus marks available for reading the simulation time directly from `result`
+   return time_val
+   ```
 
-To run the QV experiment, you'll need to parameterize the following variables, in order to generate the QV circuits and run them on a backend and on an ideal simulator:
-* `qubits`: number or list of physical qubits to be simulated for the experiment,
-* `depth`: meaning the number of discrete time steps during which the circuit can run gates before the qubits decohere.
-* `shots`: used for sampling statistics, number of repetitions of each circuit.
+* Parameterize the following variables for the QV experiment
 
+  You'll need to parameterize the following variables, in order to generate the QV circuits and run them on a backend and on an ideal simulator:
+  * `qubits`: number or list of physical qubits to be simulated for the experiment,
+  * `depth`: meaning the number of discrete time steps during which the circuit can run gates before the qubits decohere.
+  * `shots`: used for sampling statistics, number of repetitions of each circuit.
 
-Run the benchmark by executing the script you've just written:
-```bash
-$ python qv_experiment.py
-```
+1. Run the benchmark by executing the script you've just written:
+   ```bash
+   $ python qv_experiment.py
+   ```
