@@ -685,10 +685,10 @@ You will now install and run HPL on your **head node**.
    ls bin/<TEAM_NAME>
    ```
 
-> [!TIP]
-> Note that when you want to configure and recompile HPL for different architectures, compilers and systems, adapt and the `Make.<NEW_CONFIG>` and recompile that architecture or configuration.
->
-> If you compile fails and you would like to try to fix your errors and recompile, you must ensure that you reset to a clean start with `make clean`.
+   > [!TIP]
+   > Note that when you want to configure and recompile HPL for different architectures, compilers and systems, adapt and the `Make.<NEW_CONFIG>` and recompile that architecture or configuration.
+   >
+   > If you compile fails and you would like to try to fix your errors and recompile, you must ensure that you reset to a clean start with `make clean`.
 
 1. Configure your `HPL.dat`
    Make the following changes to your `HPL.dat` file:
