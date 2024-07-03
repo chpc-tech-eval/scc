@@ -38,22 +38,16 @@ In this tutorial, you will also be _spinning up and connecting a second compute 
 In this tutorial you will:
 
 - [ ] Understand the importance of having a consistent environment across your cluster.
-   - [ ] Understand the difference between system software and user _(local to the user's `home` directory)_ installed software.
-- [ ] Install and configure Lmod.
-   - [ ] Learn how to use Lmod.
-- [ ] Download and compile the High Performance LINPACK (HPL) benchmark.
+- [ ] Understand the difference between system software and user _(local to the user's `home` directory)_ installed software.
+- [ ] Install, configure and use Lmod.
 - [ ] Understand some of the fundamental considerations around optimizing HPL.
-   - [ ] Understand the pros and cons of compiling libraries from source.
+- [ ] Understand the pros and cons of compiling libraries from source.
 - [ ] Install and make use of Intel's OneAPI framework to run HPL.
 - [ ] Understand theoretical system peak performance.
-   - [ ] Appreciate the significance of the Top500 list.
-   - [ ] Compare your preliminary benchmarking results.
-- [ ] Standup and Configure a Second Compute Node.
-   - [ ] Compile, Configure and Run HPL across two nodes.
+- [ ] Appreciate the significance of the Top500 list and bencmarking.
+- [ ] Standup and Configure a Second Compute Node, and running applications across a cluster.
 - [ ] Download and compile the High Performance Computing Challenge (HPCC) benchmark.
-- [ ] Run applications across your cluster.
-   - [ ] Understand that scientific computer applications are primarily used to conduct scientific research.
-   - [ ] Understand that scientific computer applications are used as benchmarks to access system performance.
+- [ ] Understand that scientific computer applications are primarily used to conduct scientific research, and can also evaluate system performance.
 
 # Managing Your Environment
 

@@ -61,9 +61,8 @@ This tutorial will conclude with you downloading, installing and running the Hig
   - [ ] Understand how to satisfy Linux Package Dependencies,
   - [ ] Download and unpack files using a terminal,
   - [ ] Editing Makefiles,
-  - [ ] Compiling Sourcefiles to produce an Executable Binary,
-  - [ ] Understanding the basics of the Linux Shell Environment, and
-  - [ ] Understanding the basic tuning required to successfully run a benchmark in your environment.
+  - [ ] Compiling Sourcefiles to produce an Executable Binary, and
+  - [ ] Understanding the basics of the Linux Shell Environment.
 
 # Network Primer
 
