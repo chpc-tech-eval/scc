@@ -556,7 +556,62 @@ Using a batch script similar to the one above, run the benchmark. You may modify
 
 # Running Qiskit from a Remote Jupyter Notebook Server
 
+TODO: WORK IN PROGRESS WILL NEATEN UP 03/07/24
 
+add jupyter notebook details
+
+1. Append the following to your `qv_experiment.py` script:
+
+```python
+# number of qubits, for your system see how much higher that 30 your can go...
+num_qubits = np.arrange(10, 30)
+
+# QV Depth
+qv_depth = 10
+
+# For bonus points submit results with up to 20 or even 30 shots
+# Note that this will be more demanding on your system
+num_shots = 10
+
+# Array for storing the output results
+result_array = [[], []]
+
+# iterate over qv depth and number of qubits
+for i in num_qubits:
+  result_array[i] = quant_vol(qubits=i, shots=num_shots, depth=qv_depth)
+  # for debugging purposes you can optionally print the output
+  print(i, result_array[i])
+
+```
+
+1. Run the benchmark by executing the script you've just written:
+```bash
+$ python qv_experiment.py
+```
+
+1. Append the following to your `qv_experiment.py` script:
+
+```python
+# number of qubits, for your system see how much higher that 30 your can go...
+num_qubits = np.arrange(10, 30)
+
+# QV Depth
+qv_depth = 10
+
+# For bonus points submit results with up to 20 or even 30 shots
+# Note that this will be more demanding on your system
+num_shots = 10
+
+# Array for storing the output results
+result_array = [[], []]
+
+# iterate over qv depth and number of qubits
+for i in num_qubits:
+  result_array[i] = quant_vol(qubits=i, shots=num_shots, depth=qv_depth)
+  # for debugging purposes you can optionally print the output
+  print(i, result_array[i])
+
+```
 # Automating the Deployment of your OpenStack Instances Using Terraform
 
 Terraform is a piece of software that allows one to write out their cloud infrastructure and deployments as code, [IaC](https://en.wikipedia.org/wiki/Infrastructure_as_code). This allows the deployments of your cloud virtual machine instances to be shared, iterated, automated as needed and for software development practices to be applied to your infrastructure.
