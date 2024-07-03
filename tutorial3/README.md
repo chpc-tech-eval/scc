@@ -70,18 +70,20 @@ We see that for this particular system, the `gcc` that will be invoked by defaul
 You will recall that you were required to configure an [NFS Mounted home dir](../tutorial2/README.md#network-file-system). This means that any software that you install into your `/home/<USER_DIRECTORY>` on your head node, will also automatically be available on your compute nodes.
 
 In order for this to work as expected, there are two important conditions that must be satisfied:
-* Firstly, you must ensure that you're `PATH` variable is correctly configured on your head node and must similarly have a corresponding configuration on your compute node(s). For example, to see a colon (`:`) separated list of directories that are searched whenever you execute a binary:
+1. Firstly, you must ensure that you're `PATH` variable is correctly configured on your head node and must similarly have a corresponding configuration on your compute node(s). For example, to see a colon (`:`) separated list of directories that are searched whenever you execute a binary:
  ```bash
  echo $PATH
  ```
-* Secondly, you must ensure that any system dependencies are correctly installed on **each** of your nodes. For example, this would be a good time to install `gcc` on your **compute node**:
+1. Secondly, you must ensure that any system dependencies are correctly installed on **each** of your nodes. For example, this would be a good time to install `gcc` on your **compute node**:
   ```bash
   # DNF / YUM (RHEL, Rocky, Alma, CentOS Stream)
   sudo dnf install gcc
 
   # APT
+  sudo apt install gcc
 
   # Pacman
+  sudo pacman -S gcc
 
   ```
 > [!IMPORTANT]
@@ -96,7 +98,7 @@ Environment Modules provide a convenient way to dynamically change a user's envi
 In this section, you are going to be building and compiling Lmod from source. Lmod is a Lua-based environment module tool for users to easily manipulate their HPC software environment and is used on thousands of HPC systems around the world. Carefully follow these instructions, as there are prerequisites and dependencies that are required to build Lmod, which are slightly different to those required to execute the Lmod binary.
 
 > [!IMPORTANT]
-> You can build Lmod on either your head node or one of your compute nodes. Since your compute node(s), _will generally speaking_ have **more compute CPUs**, they will typically be able to build and compile applications much much faster than your administrative (or login) _head node_.
+> You can build Lmod on either your head node or one of your compute nodes. Since your compute node(s), _will generally speaking_ have **more CPUs for compute**, they will typically be able to build and compile applications much much faster than your administrative (or login) _head node_.
 
 1. Install prerequisites required to build Lmod:
    From one of your **compute nodes**, install the following dependencies
@@ -158,7 +160,7 @@ Lmod also features a shortcut command `ml` which can perform all of the above co
 | `ml foo -bar`       | Same as `module load foo` and `module unload bar` |
 
 > [!NOTE]
-> Some installed packages will automatically add environment modules to the Lmod system, while others will not and will require you to manually add definitions for them. For example, the `openmpi` package that we will install with `dnf` later in this tutorial will automatically add a module file to the system for loading via Lmod.
+> Some installed packages will automatically add environment modules to the Lmod system, while others will not and will require you to manually add definitions for them. For example, the `Intel oneAPI Toolkits` package that we will install from source later in this tutorial will have automatic configuration scripts to add module files to the system for loading via Lmod.
 
 # Running the High Performance LINPACK (HPL) Benchmark on Your Compute Node
 
@@ -170,26 +172,26 @@ A library is a collection of pre-compiled code that provides functionality to ot
 
 * Static Libraries
 
-Static libraries are embedded into the binary that you create when you compile your software. In essence, it copies the library that exists on your computer into the executable that gets created at **compilation time**. This means that the resulting program binary is self-contained and can operate on multiple systems without them needing the libraries installed first. Static libraries are normally files that end with the `.a` extension, for "archive".
+  Static libraries are embedded into the binary that you create when you compile your software. In essence, it copies the library that exists on your computer into the executable that gets created at **compilation time**. This means that the resulting program binary is self-contained and can operate on multiple systems without them needing the libraries installed first. Static libraries are normally files that end with the `.a` extension, for "archive".
 
-Advantages here are that the program can potentially be faster, as it has direct access to the required libraries without having to query the operating system first, but disadavanges include the file size being larger and updating the library requires recompiling (and linking the updated library) the software.
+  Advantages here are that the program can potentially be faster, as it has direct access to the required libraries without having to query the operating system first, but disadavanges include the file size being larger and updating the library requires recompiling (and linking the updated library) the software.
 
 * Dynamic Libraries
 
-Dynamic libraries are loaded into a compiled program at **runtime**, meaning that the library that the program needs is **not** embedded into the executable program binary at compilation time. Dynamic libraries are files that normally end with the `.so` extension, for "shared object".
+  Dynamic libraries are loaded into a compiled program at **runtime**, meaning that the library that the program needs is **not** embedded into the executable program binary at compilation time. Dynamic libraries are files that normally end with the `.so` extension, for "shared object".
 
-Advantages here are that the file size can be much smaller and the application doesn't need to be recompiled (linked) when using a different version of the library (as long as there weren't fundamental changes in the library). However, it requires the library to be installed and made available to the program on the operating system.
+  Advantages here are that the file size can be much smaller and the application doesn't need to be recompiled (linked) when using a different version of the library (as long as there weren't fundamental changes in the library). However, it requires the library to be installed and made available to the program on the operating system.
 
 > [!NOTE]
-> HPL uses dynamic libraries for its math and MPI communication, as mentioned above.
+> Applications (such as HPL) can be configured to use static or dynamic libraries for its math and MPI communication, as mentioned above.
 
 * Message Passing Interface (MPI)
 
-MPI is a message-passing standard used for parallel software communication. It allows for software to send messages between multiple processes. These processes could be on the local computer (think multiple cores of a CPU or multiple CPUs) as well as on networked computers. MPI is a cornerstone of HPC. There are many implementations of MPI in software such as OpenMPI, MPICH, MVAPICH2 and so forth. To find out more about MPI, please read the following: [https://www.linuxtoday.com/blog/mpi-in-thirty-minutes.html](https://www.linuxtoday.com/blog/mpi-in-thirty-minutes.html)
+  MPI is a message-passing standard used for parallel software communication. It allows for software to send messages between multiple processes. These processes could be on the local computer (think multiple cores of a CPU or multiple CPUs) as well as on networked computers. MPI is a cornerstone of HPC. There are many implementations of MPI in software such as OpenMPI, MPICH, MVAPICH2 and so forth. To find out more about MPI, please read the following: [https://www.linuxtoday.com/blog/mpi-in-thirty-minutes.html](https://www.linuxtoday.com/blog/mpi-in-thirty-minutes.html)
 
 * Basic Linear Algebra Subprograms Libraries
 
-Basic Linear Algebra Subprograms (BLAS) libraries provide low-level routines for performing common linear algebra operations such as vector and matrix multiplication. These libraries are highly optimized for performance on various hardware architectures and are a fundamental building block in many numerical computing applications.
+  Basic Linear Algebra Subprograms (BLAS) libraries provide low-level routines for performing common linear algebra operations such as vector and matrix multiplication. These libraries are highly optimized for performance on various hardware architectures and are a fundamental building block in many numerical computing applications.
 
 ## Configure and Run HPL on Compute Node
 
@@ -304,14 +306,16 @@ Code compiled specifically for HPC hardware can use instruction sets like `AVX`,
    ```
 
 1. Compile and Configure HPL
-   Copy the Makefile `Make.<TEAM_NAME>` that you'd previously prepared and customize it to utilize the OpenBLAS and OpenMPI libraries that you have just compiled.
    ```bash
+   # Copy the Makefile `Make.<TEAM_NAME>` that you'd previously prepared
+   # and customize it to utilize the OpenBLAS and OpenMPI libraries that
+   # you have just compiled.
    cd ~/hpl
    cp Make.<TEAM_NAME> Make.compile_BLAS_MPI
    nano Make.compile_BLAS_MPI
    ```
 
-   Edit the platform identifier (architecture), MPI and BLAS paths, and add compiler optimization flags:
+1. Edit the platform identifier (architecture), MPI and BLAS paths, and add compiler optimization flags:
    ```conf
    ARCH         = compile_BLAS_MPI
 
@@ -330,7 +334,7 @@ Code compiled specifically for HPC hardware can use instruction sets like `AVX`,
    LINKER       = $(CC)
    ```
 
-   You can now compile your new HPL:
+1. You can now compile your new HPL:
    ```bash
    # You will also need to temporarily export the following environment
    # variables to make OpenMPI available on the system.
@@ -344,6 +348,7 @@ Code compiled specifically for HPC hardware can use instruction sets like `AVX`,
 
    make arch=compile_BLAS_MPI
    ```
+
 1. Run HPL with Custom Compiled MPI and Math Library
    Verify that a `xhpl` executable binary was in fact produced and configure your `HPL.dat` file with reference to the [Official HPL Tuning Guide](https://netlib.org/benchmark/hpl/tuning.html):
    ```bash
@@ -355,9 +360,9 @@ Code compiled specifically for HPC hardware can use instruction sets like `AVX`,
    ```
 
    Finally, you can run your `xhpl` binary with custom compiled libraries.
-   
+
 > [!TIP]
-> Remember to open a new ssh session to your compute node and run either `top # preferably htop / btop`. Better yet, if you are running `tmux` in your current session, open a new tmux window using `C-b c` then ssh to your compute node from there, and you can cycle between the two sessions using `C-b n`.
+> Remember to open a new ssh session to your compute node and run either `top # preferably htop / btop`. Better yet, if you are running `tmux` in your current session, open a new tmux window using `C-b c` then ssh to your compute node from there, and you can cycle between the two tmux windows using `C-b n`.
 
 # Intel OneAPI Toolkits and Compiler Suite
 
