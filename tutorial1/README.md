@@ -264,7 +264,7 @@ The following list provides a few examples of Linux distros that *may* be availa
 
 * **Portage** is a package management system originally created for and used by  [Gentoo Linux](https://www.gentoo.org/) and also by ChromeOS. Definitely not recommended for beginners.
 
-* **Source-Based**: [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/) is a project that teaches you how to create your own Linux system from source code, using another Linux system. Learn how to install, configure and customize LFS and BLFS, and use tools for automation and management. Once you are **very** familiar with Linux, LFS is an excellent medium term side project that you peruse in you own time. Definitely not recommended for beginners.
+* **Source-Based**: [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/) is a project that teaches you how to create your own Linux system from source code, using another Linux system. Learn how to install, configure and customize LFS and BLFS, and use tools for automation and management. Once you are **very** familiar with Linux, LFS is an excellent medium term side project that you peruse in you own time. Only Linux experts need apply.
 
 ## OpenStack Instance Flavors
 
@@ -537,21 +537,19 @@ Understanding Linux binaries, libraries, and package managers is crucial for eff
   * **Static Libraries (`.a` files)** are linked into the executable at compile time, resulting in a larger binary. Do not require the library to be present at runtime.
   * **Shared (Dynamic) Libraries (.so files)** are linked at runtime, reducing the binary size. The executable will need the shared library to be present on the system at runtime.
 
-* **Package Managers**
-
-Package Managers are tools that automate the process of installing, updating, configuring, and removing software packages. They handle dependencies and ensure that software components are properly integrated into the system.
+* **Package Managers** are tools that automate the process of installing, updating, configuring, and removing software packages. They handle dependencies and ensure that software components are properly integrated into the system.
     * **Repositories** are online servers storing software packages. Package managers download packages from these repositories.
     * **Dependencies** are binaries, libraries or other packages that software depends on to function correctly. Package managers resolve, install and remove dependencies automatically.
 
 From this point onward, you're going to need to pay extra attention to the commands that have been issued and you must ensure that they correspond to the distribution that you are using.
 
 > [!WARNING]
-> To not try to type the following arbitrary commands into your head node's terminal. They are merely included here for illustration purposes.
+> Do not try to type the following arbitrary commands into your head node's terminal. They are merely included here for illustration purposes.
 
 ```bash
 # DNF / YUM (RHEL, Alma, Rocky, Centos, etc)
 # You are strongly recommended to use one of the distros mentioned above.
-# This will always be the frist example use case given for any scenario and
+# This will always be the first example use case given for any scenario and
 # the recommended approach to follow
 
 sudo dnf update
@@ -606,7 +604,12 @@ which ls
 
 HPL is a crucial tool in the HPC community for benchmarking and comparing the performance of supercomputing systems. The benchmark is a software package designed to solve a dense system of linear equations using double-precision floating-point arithmetic. It is commonly used to measure the performance of supercomputers, providing a standardized way to assess their computational power.
 
-You will now install and run HPL on your head node.
+You will now install and run HPL on your **head node**.
+
+> [!WARNING]
+> You are advised to skip this section if you have fallen behind the pace recommended by the course coordinators. Skipping this section will *NOT* stop you from completing the remainder of the tutorials. You will be repeating this exercise during tutorial 3.
+>
+> However, familiarizing yourselves with this material now, will make things easier for you and your team in the subsequent tutorials and their respective sections.
 
 1. Update the system and install dependencies
    You are going to be installing tools that will allow you to compile applications using the `make` command. You will also be installing a maths library to compute matrix multiplications, and an `mpi` library for communication between processes, in this case mapped to CPU cores.
@@ -614,26 +617,29 @@ You will now install and run HPL on your head node.
    # DNF / YUM (RHEL, Rocky, Alma, Centos)
    sudo dnf update -y
    sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
-   sudo dnf install wget nano vim -y
+   sudo dnf install wget nano -y
+
    # APT (Ubuntu)
-   
+   sudo apt update
+   sudo apt install openmpi libatlas-base-dev
+
    # Pacman (Arch)
    sudo pacman -Syu
-   sudo pacman -S base-devel openblas openmpi wget
+   sudo pacman -S base-devel openmpi atlas-lapack nano wget
    ```
 1. Fetch the HPL source files
    You will download the HPL source files. This is why you installed `wget` in the previous step.
    ```bash
    # Download the source files
    wget http://www.netlib.org/benchmark/hpl/hpl-2.3.tar.gz
-   
+
    # Extract the files from the tarball
    tar -xzf hpl-2.3.tar.gz
-   
+
    # Move and go into the newly extracted folder
    mv hpl-2.3 ~/hpl
    cd ~/hpl
-   
+
    # list the contents of the folder
    ls
    ```
@@ -643,18 +649,18 @@ You will now install and run HPL on your head node.
    cp setup/Make.Linux_PII_CBLAS_gm Make.<TEAM_NAME>
    nano Make.<TEAM_NAME>
    ```
-   
+
    You need to carefully edit your `Make.<TEAM_NAME>` file, ensuring that you make the following changes:
    ```conf
    ARCH               = <TEAM_NAME>
-   
+
    MPdir              = /usr/lib64/openmpi
-   
+
    LAdir              = /usr/lib64/atlas
    LAlib              = $(LAdir)/libtatlas.so $(LAdir)/libsatlas.so
-   
+
    CC                 = mpicc
-   
+
    LINKER             = mpicc
    ```
 1. Temporarily edit your `PATH` variable
@@ -663,11 +669,11 @@ You will now install and run HPL on your head node.
    ```bash
    # The following command will return a command not found error.
    which mpicc
-   
+
    # Temporarily append openmpi binary path to your PATH variable
    # These settings will reset after you logout and re-login again.
    export PATH=/usr/lib64/openmpi/bin:$PATH
-   
+
    # Rerun the which command to confirm that the `mpicc` binary is found
    which mpicc
    ```
@@ -675,13 +681,15 @@ You will now install and run HPL on your head node.
    You are finally ready to compile HPL. Should you encounter any errors and need to make adjustments and changes, first run a `make clean arch=<TEAM_NAME>`.
    ```bash
    make arch=<TEAM_NAME>
-   
+
    # Confirm that your `xhpl` binary has been successfully built
    ls bin/<TEAM_NAME>
    ```
-   
+
 > [!TIP]
 > Note that when you want to configure and recompile HPL for different architectures, compilers and systems, adapt and the Make.<NEW_CONFIG> and recompile that architecture or configuration.
+>
+> If you compile fails and you would like to try to fix your errors and recompile, you must ensure that you reset to a clean start with `make clean`.
 
 1. Configure your `HPL.dat`
    Make the following changes to your `HPL.dat` file:
@@ -689,7 +697,7 @@ You will now install and run HPL on your head node.
    cd bin/<TEAM_NAME>
    nano HPL.dat
    ```
-   
+
    Carefully edit you `HPL.dat` file and verify the following changes:
    ```conf
    1            # of process grids (P x Q)

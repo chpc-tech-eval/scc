@@ -7,11 +7,8 @@
 1. [Checklist](#checklist)
 1. [Managing Your Environment](#managing-your-environment)
     1. [NFS Mounted Shared `home` folder and the `PATH` Variable](#nfs-mounted-shared-home-folder-and-the-path-variable)
-    1. [System Software Across Multiple Nodes](#system-software-across-multiple-nodes)
-    1. [Environment Modules](#environment-modules)
 1. [Install Lmod](#install-lmod)
     1. [Lmod Usage](#lmod-usage)
-    1. [Adding Modules to Lmod](#adding-modules-to-lmod)
 1. [Running the High Performance LINPACK (HPL) Benchmark on Your Compute Node](#running-the-high-performance-linpack-hpl-benchmark-on-your-compute-node)
     1. [System Libraries](#system-libraries)
         1. [Static Libraries](#static-libraries)
@@ -48,21 +45,21 @@
 
 # Checklist
 
-Tutorial 3 demonstrates environment module manipulation and the compilation and optimization of HPC benchmark software. This introduces the reader to the concepts of environment management and workspace sanity, as well as compilation of software on Linux.
+Tutorial 3 demonstrates environment variable manipulation through the use of modules and the compilation and optimization of HPC benchmark software. This introduces the reader to the concepts of environment management and workspace sanity, as well as compilation of various software applications on Linux.
 
-I this tutorial, you will also be _spinning up and connecting a second compute node_ in order to further extend the capabilities of your small VM cluster. More importantly, you will given detailed specifics on exactly how to go about running application benchmarks across multiple nodes.
+In this tutorial, you will also be _spinning up and connecting a second compute node_ in order to further extend the capabilities of your small VM cluster. More importantly, you will given detailed specifics on exactly how to go about running application benchmarks across multiple nodes.
 
 In this tutorial you will:
 
 - [ ] Understand the importance of having a consistent environment across your cluster.
    - [ ] Understand the difference between system software and user _(local to the user's `home` directory)_ installed software.
 - [ ] Install and configure Lmod on your head node.
-- [ ] Learn how to use Lmod and write a module file for Git.
+- [ ] Learn how to use Lmod.
 - [ ] Download and compile the High Performance LINPACK (HPL) benchmark.
 - [ ] Standup and Configure a Second Compute Node.
 - [ ] Compile, Configure and Run HPL across two nodes.
 - [ ] Understand some of the fundamental considerations around optimizing HPL.
-   - [ ] Understand the pros and cons of compiling libraries from Source.
+   - [ ] Understand the pros and cons of compiling libraries from source.
 - [ ] Install and make use of Intel's OneAPI framework to run HPL.
 - [ ] Understand theoretical system peak performance.
    - [ ] Appreciate the significance of the Top500 list.
@@ -80,39 +77,45 @@ One of the most central and fundamental problems that you and your team will nee
 
 For example, if you wanted to know _"which"_ GNU C Compiler your VM's are using by default:
 ```bash
+# If you completed the HPL excercise in tutorial1, you would have installed
+# a system-wide GCC on your head node, and can expect and out of /usr/bin/gcc
+
 which gcc
-/usr/bin/gcc
 ```
 We see that for this particular system, the `gcc` that will be invoked by default is located in the directory `/usr/bin/`.
+
+> [!TIP]
+> Try the above command on your compute node, and you should notice that `no gcc in $PATH` is found...
 
 ## NFS Mounted Shared `home` folder and the `PATH` Variable
 
 You will recall that you were required to configure an [NFS Mounted home dir](../tutorial2/README.md#network-file-system). This means that any software that you install into your `/home/<USER_DIRECTORY>` on your head node, will also automatically be available on your compute nodes.
 
 In order for this to work as expected, there are two important conditions that must be satisfied:
-* Firstly, you must ensure that you're `PATH` variable is correctly configured on your head node and must similarly have a corresponding configuration on your compute node(s). For example, to see a list of directories that are searched whenever you execute a binary:
+* Firstly, you must ensure that you're `PATH` variable is correctly configured on your head node and must similarly have a corresponding configuration on your compute node(s). For example, to see a colon (`:`) separated list of directories that are searched whenever you execute a binary:
  ```bash
  echo $PATH
- /usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
-
  ```
-* Secondly, you must ensure that any system dependencies are correctly installed on **each** of your nodes.
+* Secondly, you must ensure that any system dependencies are correctly installed on **each** of your nodes. For example, this would be a good time to install `gcc` on your **compute node**:
+  ```bash
+  # DNF / YUM (RHEL, Rocky, Alma, CentOS Stream)
+  sudo dnf install gcc
+  
+  # APT
+  
+  # Pacman
+  
+  ```
+> [!IMPORTANT]
+> Software on one node will not automatically be installed across all nodes. For example, if you want to monitor the system performance of your head node, you must install and/or run `top # or htop or btop` on your head node. Similarly if you want to do this for your compute node(s), you must install and run the application on all of your compute node(s).
 
-## System Software Across Multiple Nodes
-
-Software on one node will not automatically be installed across all nodes. For example, if you want to monitor the system performance of your head node, you must install and run `top # or htop or btop` on your head node. Similarly if you want to do this for your compute node(s), you must install and run the application on all of your compute node(s).
-
-In the next few sections you will be installing and deploying Lmod across your cluster. You will be configuring, building and compiling Lmod from a directory in your `/home/<USER>` directory. This will mean that the Lmod binary will be available across your cluster, however in order to run on your compute nodes for example, you must ensure that all Lua system dependencies are installed across all you nodes.
-
-## Environment Modules
-
-Environment Modules provide a convenient way to dynamically change a user's environment through _modulefiles_ to simplify software and library use when there are multiple versions of a particular software package (e.g. Python2.7 and Python 3.x) installed on the system. Environment Module parameters typically involve, among other things, modifying the `PATH` environment variable for locating a particular package (such as dynamically changing the path to Python from `/usr/local/bin/python2.7` to `/usr/local/bin/python3`).
-
-Lmod is a Lua-based environment module tool for users to easily manipulate their HPC software environment and is used on thousands of HPC systems around the world.
+In the next few sections you will be installing and deploying Lmod across your cluster. You will be configuring, building and compiling Lmod from a directory in your `/home/<USER>` directory. This will mean that the Lmod binary will be available across your cluster, however in order to run Lmod on your compute nodes for example, you must ensure that all Lua system dependencies are installed across all you nodes.
 
 # Install Lmod
 
-In this section, you are going to be building and compiling Lmod from source. Carefully follow these instructions, as there are prerequisites and dependencies that are required to build Lmod, which are slightly different to those required to execute the Lmod binary.
+Environment Modules provide a convenient way to dynamically change a user's environment through _modulefiles_ to simplify software and library use when there are multiple versions of a particular software package (e.g. Python2.7 and Python 3.x) installed on the system. Environment Module parameters typically involve, among other things, modifying the `PATH` environment variable for locating a particular package (such as dynamically changing the path to Python from `/usr/local/bin/python2.7` to `/usr/local/bin/python3`).
+
+In this section, you are going to be building and compiling Lmod from source. Lmod is a Lua-based environment module tool for users to easily manipulate their HPC software environment and is used on thousands of HPC systems around the world. Carefully follow these instructions, as there are prerequisites and dependencies that are required to build Lmod, which are slightly different to those required to execute the Lmod binary.
 
 > [!IMPORTANT]
 > You can build Lmod on either your head node or one of your compute nodes. Since your compute node(s), _will generally speaking_ have **more compute CPUs**, they will typically be able to build and compile applications much much faster than your administrative (or login) _head node_.
@@ -122,14 +125,14 @@ In this section, you are going to be building and compiling Lmod from source. Ca
    ```bash
    # Rocky (or similar RPM based systems: RHEL, Alma, CentOS Stream)
    sudo dnf install -y epel-release
-   sudo dnf install -y git gcc make tcl tcl-devel lua lua-posix
+   sudo dnf install -y git gcc make tcl tcl-devel lua lua-posix bc
    
    # Ubuntu (or similar APT based systems)
    sudo apt update
-   sudo apt install -y git gcc make tcl tcl-dev lua5.3 lua-posix
+   sudo apt install -y git gcc make tcl tcl-dev lua5.3 lua-posix bc
    
    # Arch
-   sudo pacman -S git gcc make lua lua-filesystem lua-posix
+   sudo pacman -S git gcc make lua lua-filesystem lua-posix bc
    ```
 1. Compile, Build and Install Lmod
    The following instructions will be the same regardless of the system you are using. You will be using the Lmod repo from the Texas Advanced Computing Center at the University of Texas, to build and compile Lmod from source into your own `home` directory:
@@ -176,10 +179,8 @@ Lmod also features a shortcut command `ml` which can perform all of the above co
 | `ml foo`            | Same as `module load foo`                         |
 | `ml foo -bar`       | Same as `module load foo` and `module unload bar` |
 
-
-## Adding Modules to Lmod
-
-Some installed packages will automatically add environment modules to the Lmod system, while others will not and will require you to manually add definitions for them. For example, the `openmpi` package that we will install with `dnf` later in this tutorial will automatically add a module file to the system for loading via Lmod.
+> [!NOTE]
+> Some installed packages will automatically add environment modules to the Lmod system, while others will not and will require you to manually add definitions for them. For example, the `openmpi` package that we will install with `dnf` later in this tutorial will automatically add a module file to the system for loading via Lmod.
 
 # Running the High Performance LINPACK (HPL) Benchmark on Your Compute Node
 
@@ -189,129 +190,67 @@ The High Performance LINPACK (HPL) benchmark is used to measure a system's float
 
 A library is a collection of pre-compiled code that provides functionality to other software. This allows the re-use of common code (such as math operations) and simplifies software development. You get two types of libraries on Linux: `static` and `dynamic` libraries.
 
-### Static Libraries
+* Static Libraries
 
 Static libraries are embedded into the binary that you create when you compile your software. In essence, it copies the library that exists on your computer into the executable that gets created at **compilation time**. This means that the resulting program binary is self-contained and can operate on multiple systems without them needing the libraries installed first. Static libraries are normally files that end with the `.a` extension, for "archive".
 
 Advantages here are that the program can potentially be faster, as it has direct access to the required libraries without having to query the operating system first, but disadavanges include the file size being larger and updating the library requires recompiling (and linking the updated library) the software.
 
-### Dynamic Libraries
+* Dynamic Libraries
 
 Dynamic libraries are loaded into a compiled program at **runtime**, meaning that the library that the program needs is **not** embedded into the executable program binary at compilation time. Dynamic libraries are files that normally end with the `.so` extension, for "shared object".
 
 Advantages here are that the file size can be much smaller and the application doesn't need to be recompiled (linked) when using a different version of the library (as long as there weren't fundamental changes in the library). However, it requires the library to be installed and made available to the program on the operating system.
 
-HPL uses dynamic libraries for its math and MPI communication, as mentioned above.
+> [!NOTE]
+> HPL uses dynamic libraries for its math and MPI communication, as mentioned above.
 
-## Message Passing Interface (MPI)
+* Message Passing Interface (MPI)
 
 MPI is a message-passing standard used for parallel software communication. It allows for software to send messages between multiple processes. These processes could be on the local computer (think multiple cores of a CPU or multiple CPUs) as well as on networked computers. MPI is a cornerstone of HPC. There are many implementations of MPI in software such as OpenMPI, MPICH, MVAPICH2 and so forth. To find out more about MPI, please read the following: [https://www.linuxtoday.com/blog/mpi-in-thirty-minutes.html](https://www.linuxtoday.com/blog/mpi-in-thirty-minutes.html)
 
-## Basic Linear Algebra Subprograms Libraries
+* Basic Linear Algebra Subprograms Libraries
 
-## Install HPL
+Basic Linear Algebra Subprograms (BLAS) libraries provide low-level routines for performing common linear algebra operations such as vector and matrix multiplication. These libraries are highly optimized for performance on various hardware architectures and are a fundamental building block in many numerical computing applications.
+
+## Configure and Run HPL on Compute Node
 
 We need to install the dynamic libraries that HPL expects to have, as well as the software for MPI. The MPI implementation we're going to use here is OpenMPI and we will use the Automatically Tuned Linear Algebra Software (ATLAS) math library.
 
-**Remember, since it's dynamically linked, we need to ensure that ALL of our nodes that we expect to run the software on have the expected libraries.**
+On your **compute node**:
+```bash
+# DNF / YUM (RHEL, Rocky, Alma, Centos)
+sudo dnf update -y
+sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
+sudo dnf install wget nano -y
 
-1. Install OpenMPI and ATLAS and their libraries on all of your nodes:
+# APT (Ubuntu)
+sudo apt update
+sudo apt install openmpi libatlas-base-dev
+sudo apt install wget nano
 
-    ```bash
-    [...@headnode ~]$ sudo dnf install openmpi atlas openmpi-devel atlas-devel
-    ```
+# Pacman (Arch)
+sudo pacman -Syu
+sudo pacman -S base-devel openmpi atlas-lapack nano wget
+```
 
-    ```bash
-    [...@computenode ~]$ sudo dnf install openmpi atlas openmpi-devel atlas-devel
-    ```
+> [!IMPORTANT]
+> Remember that since the MPI and BLAS libraries are dynamically linked, you need to ensure that ALL of our nodes that you expect to run HPL on have the expected MPI and BLAS libraries.
+>
+> If you've managed to successfully [build, compile and run HPL in tutorial 1]((../tutorial1/README.md#install-compile-and-run-high-performance-linpack-hpl-benchmark)), and you've managed to successfully configure your [NFS `home` directory export in tutorial 2](../tutorial2/README.md##network-file-system), then you may proceed. Otherwise you **must** discuss with, and seek advice from an instructor.
 
-2. On the head node, in your NFS-shared home directory, download and extract the latest HPL release from the following URL:
+The `HPL.dat` file (in the same directory as `xhpl`) defines how the HPL benchmark solves a large dense linear array of **double precision floating point numbers**. Therefore, selecting the appropriate parameters in this file can have a considerable effect on the GFLOPS score that you obtain. The most important parameters are:
+* `N` which defines the length of one of the sides of the 2D array to be solved. Therefore, problem size ∝ runtime ∝ memory usage ∝ <N>². For best performance N should be a multiple of NB.
+* `NB` defines the block (or chunk) size into which the array is divided. The optimal value is determined by the CPU architecture such that the block fits in cache.
+* `P&Q` define the domains (in two dimensions) for how the array is partitioned on a distributed memory system. Therefore P*Q = MPI ranks.
 
-    ```http
-    http://www.netlib.org/benchmark/hpl/
-    ```
-
-3. Extract the downloaded file using `tar`.
-
-4. Enter the extracted directory. In this directory there is a directory called `setup`, which contains templates for settings for compiling HPL with various computer hardware configurations. Pick one that is closest to your CPU architecture and copy it to the root HPL extracted directory. The `Make.Linux_PII_CBLAS_gm` file will do for your VMs.
-    
-    ```bash
-    [...@headnode ~]$ cd hpl-<version>
-    [...@headnode hpl-<version>]$ cp setup/Make.Linux_PII_CBLAS_gm .
-    ```
-
-    **NOTE:** The Makefile suffix (`Linux_PII_CBLAS_gm` in this case) is used as the architecture identifier and is required to be specified when building the software later. The period `.` indicates that we are working in the current directory.
-
-4. Edit the `Make.Linux_PII_CBLAS_gm` file and change the following line to represent where your extracted `hpl-<version>` directory is (you can use `pwd` while inside of the directory to get the full path):
-
-    ```conf
-    TOPdir = </path/to/extracted/hpl/directory>
-    ```
-
-5. In `Make.Linux_PII_CBLAS_gm`, edit the following lines to specify where your dynamic libraries are for ATLAS:
-
-    ```conf
-    LAdir        = /usr/lib64/atlas
-    LAlib        = $(LAdir)/libtatlas.so $(LAdir)/libsatlas.so
-    ```
-
-6. In `Make.Linux_PII_CBLAS_gm`, edit the following lines to specify which binaries you want to use for your C compiler and linker. We want to use the compiler included with OpenMPI, which is called `mpicc` (MPI C Compiler):
-
-    ```conf
-    CC           = mpicc
-    LINKER       = mpicc
-    ```
-
-    > **! >>> By default, the OpenMPI you installed above is not available in your environment ($PATH & $LD_LIBRARY_PATH). Make OpenMPI available BEFORE you do any compilation steps below. To load it, do a `module avail` and look for the `mpi` module and then `module load` that module.**
-
-7. Compile HPL
-
-    **Important tip**: if your compile fails, you should reset to a clean start point with `make clean`.
-
-    ```bash
-    [...@headnode ~]$ make arch=<arch> #<arch> in this case is Linux_PII_CBLAS_gm
-    ```
-
-    To confirm that the compilation completed successfully, check that the `xhpl` executable was produced in `<hpl_extracted_dir>/bin/<arch>/xhpl`.
-
-8. The `HPL.dat` file (in the same directory as `xhpl`) defines how the HPL benchmark solves a large dense linear array of **double precision floating point numbers**. Therefore, selecting the appropriate parameters in this file can have a massive effect on the FLOPS you obtain.
-
-    ```
-         The most important parameters are:
-    N:   defines the length of one of the sides of the 2D array to be solved. 
-         Therefore, problem size ∝ runtime ∝ memory usage ∝ <N>². 
-         For best performance N should be a multiple of NB.
-    NB:  defines the block (or chunk) size into which the array is divided. 
-         The optimal value is determined by the CPU architecture such that the block fits in cache (Google). 
-    P&Q: define the domains (in two dimensions) for how the array is partitioned on a distributed memory system. 
-         Therefore P*Q = MPI ranks.  
-    ```
-
-    You can find online calculators that will generate an `HPL.dat` file for you **as a starting point**, but you will still need to do some tuning if you want to squeeze out maximum performance.
+You can find [online calculators](https://www.advancedclustering.com/act_kb/tune-hpl-dat-file/) that will generate an `HPL.dat` file for you **as a starting point**, but you will still need to do some tuning if you want to squeeze out maximum performance.
 
 9. Execute HPL on your head node
 
     ```bash
     [...@headnode ~]$ mpirun -np <cores> ./xhpl
     ```
-
-# Spinning Up a Second Compute Node
-
-## Cluster Considerations
-
-## Using a Snapshot
-
-At this point you are ready to run HPL on your cluster with two compute nodes. It's time to deploy a second compute node in Open Stack.
-
-Pay careful attention to the hostname, network and other configuration settings that may be specific to and may conflict with your initial node. Once your two compute nodes have been successfully deployed, are accessible from the head node and added to SLURM, you can continue with running HPL across multiple nodes.
-
-As a sanity check repeat Steps 10-12 of the previous task: [Message Passing Interface (MPI)](#message-passing-interface-mpi), but this time do it for **two** compute nodes and check the new results of your benchmark.
-
-## Running HPL Across Multiple Nodes
-
-### Configuring OpenMPI Hosts File
-
-### Runtime Configuration Options for `mpirun`
 
 # Building and Compiling GCC, OpenMPI and BLAS Libraries from Source
 
@@ -359,9 +298,9 @@ You will be making use of the **2024-2** versions of the Intel oneAPI and HPC To
 1. Download the offline installers into your home directory
    ```bash
    wget https://registrationcenter-download.intel.com/akdlm/IRC_NAS/9a98af19-1c68-46ce-9fdd-e249240c7c42/l_BaseKit_p_2024.2.0.634_offline.sh
-   
+
    wget https://registrationcenter-download.intel.com/akdlm/IRC_NAS/d4e49548-1492-45c9-b678-8268cb0f1b05/l_HPCKit_p_2024.2.0.635_offline.sh
-   
+
    ```
 1. Use `chmod` to make the scripts executable
    ```bash
@@ -377,7 +316,7 @@ You will be making use of the **2024-2** versions of the Intel oneAPI and HPC To
    # These must be run separately and you will need to navigate
    # through a number of CLI text prompts
    ./l_BaseKit_p_2024.2.0.634_offline.sh -a --cli --eula accept
-   
+
    # Should there be any missing dependencies, use your systems'
    # Package manager to install them
    ./l_HPCKit_p_2024.2.0.635_offline.sh -a --cli --eula accept
@@ -392,19 +331,19 @@ You will be making use of the **2024-2** versions of the Intel oneAPI and HPC To
       ```bash
       # Navigate to the location of your Intel oneAPI installation
       cd ~/intel/oneapi/
-      
+
       # Execute the modulefiles setup script
       ./modulefiles-setup.sh
-      
+
       # Return to the top level of your $HOME directory and
       # configure Lmod to make use of the newly created modules
       # Alternatively, this line can be appended to /etc/profile or your .bashrc
       ml use $HOME/modulefiles
-      
+
       # Make sure the newly created modules are available to use and have been correclty configured
       ml avail
       ```
-      
+
 ## Configuring and Running HPL with Intel OneAPI Toolkit and MKL
 
 # LinPACK Theoretical Peak Performance
@@ -432,6 +371,8 @@ You can determine your CPU model as well as the instruction extensions supported
 cat /proc/cpuinfo | grep -Ei "processor|model name|flags"
 ```
 
+`lscpu` `lsmem`
+
 For model name, you should see something like "... Intel Xeon E5-26.....". If instead you see "QEMU...", please notify the course Instructors to assist you.
 
 You can determine the maximum and base frequency of your CPU model on the Intel Ark website. Because HPL is a demanding workload, assume the CPU is operating at its base frequency and **NOT** the boost/turbo frequency. You should have everything you need to calculate the RPeak of your cluster. Typically an efficiency of at least 75% is considered adequate for Intel CPUs (RMax / RPeak > 0.75).
@@ -439,6 +380,25 @@ You can determine the maximum and base frequency of your CPU model on the Intel 
 ## Top500 List
 
 ## Plot a Graph of Your HPL Benchmark Results
+
+
+# Spinning Up a Second Compute Node
+
+## Cluster Considerations
+
+## Using a Snapshot
+
+At this point you are ready to run HPL on your cluster with two compute nodes. It's time to deploy a second compute node in Open Stack.
+
+Pay careful attention to the hostname, network and other configuration settings that may be specific to and may conflict with your initial node. Once your two compute nodes have been successfully deployed, are accessible from the head node and added to SLURM, you can continue with running HPL across multiple nodes.
+
+As a sanity check repeat Steps 10-12 of the previous task: [Message Passing Interface (MPI)](#message-passing-interface-mpi), but this time do it for **two** compute nodes and check the new results of your benchmark.
+
+## Running HPL Across Multiple Nodes
+
+### Configuring OpenMPI Hosts File
+
+### Runtime Configuration Options for `mpirun`
 
 # HPC Challenge
 
