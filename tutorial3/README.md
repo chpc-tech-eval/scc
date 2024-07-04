@@ -76,16 +76,20 @@ In order for this to work as expected, there are two important conditions that m
  ```
 1. Secondly, you must ensure that any system dependencies are correctly installed on **each** of your nodes. For example, this would be a good time to install `gcc` on your **compute node**:
   ```bash
-  # DNF / YUM (RHEL, Rocky, Alma, CentOS Stream)
   sudo dnf install gcc
+  ```
 
+  <details>
+  <summary>Instructions for APT and Pacman</summary>
+  ```bash
   # APT
   sudo apt install gcc
 
   # Pacman
   sudo pacman -S gcc
-
   ```
+  </details>
+
 > [!IMPORTANT]
 > Software on one node will not automatically be installed across all nodes. For example, if you want to monitor the system performance of your head node, you must install and/or run `top # or htop or btop` on your head node. Similarly if you want to do this for your compute node(s), you must install and run the application on all of your compute node(s).
 
@@ -472,7 +476,33 @@ You have successfully installed the Intel oneAPI Base and HPC Toolkits, includin
 
 After you've successfully completed the previous section, you will be ready to recompile HPL with Intel's `icx` compiler and `mkl` math kernel libraries.
 
-1. Configure a 
+1. Copy and Edit the `Make.Linux64`
+
+   From your `~/hpl` folder, with a properly configured environment, copy and edit the configuration
+   ```bash
+   # Copy a setup configuration script to use as a template
+   cp setup/Make.Linux64 ./
+
+   # Edit the configuration file to make use of your Intel oneAPI Toolkit
+   nano Make.Linux64
+   ```
+
+1. Configure your `Make.Linux64`
+
+   Ensure that you make the following changes and amendments:
+   ```conf
+   CC       = mpiicx
+   OMP_DEFS = -qopenmp
+   CCFLAGS  = $(HPL_DEFS) -O3 -w -ansi-alias -z noexecstack -z relro -z now -Wall
+   ```
+
+1. Compile your HPL Binary using the Intel oneAPI Toolkit
+   ```bash
+   make arch=Linux64
+   ```
+
+1. Resuse
+
 
 # LinPACK Theoretical Peak Performance
 
