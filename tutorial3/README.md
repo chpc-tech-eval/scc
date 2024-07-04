@@ -538,19 +538,22 @@ The [TOP500 list](https://top500.org/lists/top500/2024/06/) is a project that ra
 
 1. Go the the Top500 List and compare your results
 
-   Populate the following table:
+   Populate the following table by recording your Rmax from HPL results, and calculating your expected Rpeak value.
 
-   | Rank | System                                          | Cores       | Rmax (GFlops/s) | Rpeak (GFlops/s) |
-   |------|-------------------------------------------------|-------------|-----------------|------------------|
-   | 1    | Frontier - HPE - United States                  | 8 699 904   |                 |                  |
-   | 2    |                                                 |             |                 |                  |
-   | 3    |                                                 |             |                 |                  |
-   |      | Head node                                       | 2 (threads) |                 |                  |
-   |      | Compute node using head node `xhpl` binary      |             |                 |                  |
-   |      | Compute node using custom compiled MPI and BLAS |             |                 |                  |
-   |      | Compute node using Intel oneAPI Toolkits        |             |                 |                  |
-   |      | Compute node across two nodes                   |             |                 |                  |
-   |      |                                                 |             |                 |                  |
+   | Rank | System                                          | Cores     | Rmax (GFlops/s) | Rpeak (GFlops/s) |
+   |------|-------------------------------------------------|-----------|-----------------|------------------|
+   | 1    | Frontier - HPE - United States                  | 8 699 904 |                 |                  |
+   | 2    |                                                 |           |                 |                  |
+   | 3    |                                                 |           |                 |                  |
+   |      | Head node                                       | 2         |                 |                  |
+   |      | Compute node using head node `xhpl` binary      |           |                 |                  |
+   |      | Compute node using custom compiled MPI and BLAS |           |                 |                  |
+   |      | Compute node using Intel oneAPI Toolkits        |           |                 |                  |
+   |      | Across two compute nodes                        |           |                 |                  |
+   |      |                                                 |           |                 |                  |
+
+> [!IMPORTANT]
+> You do **NOT** need to try and Rank you VM's HPL performance. Cores and threads are used interchangeably in this context. Following the recommended configuration and guides, your head node has one CPU package with two compute cores / threads. Continuing this same analogy, your compute node has one CPU with six cores / threads.
 
 # Spinning Up a Second Compute Node
 
