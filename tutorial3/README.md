@@ -79,16 +79,17 @@ In order for this to work as expected, there are two important conditions that m
   sudo dnf install gcc
   ```
 
-  <details>
-  <summary>Instructions for APT and Pacman</summary>
-  ```bash
-  # APT
-  sudo apt install gcc
+<details>
+<summary>Instructions for APT and Pacman</summary>
 
-  # Pacman
-  sudo pacman -S gcc
-  ```
-  </details>
+```bash
+# APT
+sudo apt install gcc
+
+# Pacman
+sudo pacman -S gcc
+```
+</details>
 
 > [!IMPORTANT]
 > Software on one node will not automatically be installed across all nodes. For example, if you want to monitor the system performance of your head node, you must install and/or run `top # or htop or btop` on your head node. Similarly if you want to do this for your compute node(s), you must install and run the application on all of your compute node(s).
