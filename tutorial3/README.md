@@ -337,7 +337,7 @@ Code compiled specifically for HPC hardware can use instruction sets like `AVX`,
    MPinc        = -I$(MPdir)/include
    MPlib        = $(MPdir)/lib/libmpi.so
 
-   LAdir        = $(HOME)/opt/OpenBLAS
+   LAdir        = $(HOME)/opt/openblas
    LAinc        =
    LAlib        = $(LAdir)/lib/libopenblas.a
 
