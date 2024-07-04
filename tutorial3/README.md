@@ -214,15 +214,15 @@ We need to install the statically `($(LIBdir)/libhpl.a)` and dynamically`($(LAdi
    sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
    sudo dnf install wget nano -y
 
-    # APT (Ubuntu)
-    sudo apt update
-    sudo apt install openmpi libatlas-base-dev
-    sudo apt install wget nano
+   # APT (Ubuntu)
+   sudo apt update
+   sudo apt install openmpi libatlas-base-dev
+   sudo apt install wget nano
 
-    # Pacman (Arch)
-    sudo pacman -Syu
-    sudo pacman -S base-devel openmpi atlas-lapack nano wget
-    ```
+   # Pacman (Arch)
+   sudo pacman -Syu
+   sudo pacman -S base-devel openmpi atlas-lapack nano wget
+   ```
 
 1. Configuring and Tuning HPL
 
@@ -273,7 +273,7 @@ Code compiled specifically for HPC hardware can use instruction sets like `AVX`,
 1. Install dependencies
    ```bash
    # DNF / YUM (RHEL, Rocky, Alma, Centos Stream)
-   sudo dnf group install "Developer Tools"
+   sudo dnf group install "Development Tools"
    sudo dnf install gfortran git gcc wget
 
    # APT (Ubuntu)
@@ -502,19 +502,18 @@ After you've successfully completed the previous section, you will be ready to r
    make arch=Linux64
    ```
 
-1. Resuse
+1. Reuse your `HPL.dat` from when you compiled OpenMPI and OpenBLAS from source.
 
+> [!TIP]
+> Remember to use tmux to open a new tmux window, `C-b c`. You can cycle between the tmux windows using `C-b n`.
 
 # LinPACK Theoretical Peak Performance
 
 It is useful to know what the theoretical FLOPS performance (RPeak) of your hardware is when trying to obtain the highest benchmark result (RMax). RPeak can be derived from the formula:
 
-```math
-RPeak = CPU Frequency [GHz] * Num CPU Cores * OPS/cycle
-```
+**RPeak = CPU Frequency [GHz] * Num CPU Cores * OPS/cycle**
 
 Newer CPU architectures allow for 'wider' instruction sets which execute multiple instructions per CPU cycle. The table below shows the floating point operations per cycle of various instruction sets:
-
 
 | CPU Extension | Floating Point Operations per CPU Cycle |
 |---------------|-----------------------------------------|
@@ -523,23 +522,35 @@ Newer CPU architectures allow for 'wider' instruction sets which execute multipl
 | AVX2          | 16                                      |
 | AVX512        | 32                                      |
 
-
 You can determine your CPU model as well as the instruction extensions supported on your **compute node(s)** with the command:
 
 ```bash
-cat /proc/cpuinfo | grep -Ei "processor|model name|flags"
+lscpu
 ```
 
-TODO: also explain `lscpu` `lsmem`
-
-For model name, you should see something like "... Intel Xeon E5-26.....". If instead you see "QEMU...", please notify the course Instructors to assist you.
+For model name, you should see something along the lines "Intel Xeon Processor (Cascadelake)",
 
 You can determine the maximum and base frequency of your CPU model on the Intel Ark website. Because HPL is a demanding workload, assume the CPU is operating at its base frequency and **NOT** the boost/turbo frequency. You should have everything you need to calculate the RPeak of your cluster. Typically an efficiency of at least 75% is considered adequate for Intel CPUs (RMax / RPeak > 0.75).
 
 ## Top500 List
 
-## Plot a Graph of Your HPL Benchmark Results
+The [TOP500 list](https://top500.org/lists/top500/2024/06/) is a project that ranks and details the 500 most powerful supercomputers in the world. The ranking is based on the High-Performance Linpack (HPL) benchmark, which measures a system's floating point computing power.
 
+1. Go the the Top500 List and compare your results
+
+   Populate the following table:
+
+   | Rank | System                                          | Cores       | Rmax (GFlops/s) | Rpeak (GFlops/s) |
+   |------|-------------------------------------------------|-------------|-----------------|------------------|
+   | 1    | Frontier - HPE - United States                  | 8 699 904   |                 |                  |
+   | 2    |                                                 |             |                 |                  |
+   | 3    |                                                 |             |                 |                  |
+   |      | Head node                                       | 2 (threads) |                 |                  |
+   |      | Compute node using head node `xhpl` binary      |             |                 |                  |
+   |      | Compute node using custom compiled MPI and BLAS |             |                 |                  |
+   |      | Compute node using Intel oneAPI Toolkits        |             |                 |                  |
+   |      | Compute node across two nodes                   |             |                 |                  |
+   |      |                                                 |             |                 |                  |
 
 # Spinning Up a Second Compute Node
 
@@ -589,7 +600,7 @@ HPC Challenge (or HPCC) is benchmark suite which contains 7 micro-benchmarks use
     ./format.pl -w -f hpccoutf.txt
     ```
 
-    To see your benchmark result, your HPL score should be similar to your standalone HPL. 
+    To see your benchmark result, your HPL score should be similar to your standalone HPL.
 
 <span style="color: #800000">
   !!! Have the output `hpccoutf.txt` AND `Make.<architecture>` **configuration file** ready for instructors to view on request.
