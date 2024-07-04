@@ -393,6 +393,17 @@ You will need to install and configure Intel's oneAPI Base Toolkit which include
 
 You will be making use of the **2024-2** versions of the Intel oneAPI and HPC Toolkits.
 
+1. *Optionally* the following prerequisites and install dependencies, to make use of Intel's VTune Profiler for a graphical user interface.
+   ```bash
+   # DNF / YUM (RHEL, Rocky, Alma, CentOS Stream)
+   sudo dnf install libdrm gtk3 libnotify xdg-utils libxcb mesa-libgbm at-spi2-core
+
+   # APT (Ubuntu)
+   sudo apt install libdrm2 libgtk-3-0 libnotify4 xdg-utils libxcb-dri3-0 libgbm1 libatspi2.0-0
+
+   # Pacman (Arch)
+   sudo pacman -S libdrm gtk3 libnotify xdg-utils libxcb mesa-libgbm at-spi2-core
+   ```
 1. Download the offline installers into your `HOME` directory
    * Intel oneAPI Base Toolkit
      ```bash
@@ -429,7 +440,7 @@ You will be making use of the **2024-2** versions of the Intel oneAPI and HPC To
    # Run Intel oneAPI HPCkit installation script
    ./l_HPCKit_p_2024.2.0.635_offline.sh -a --cli --eula accept
    ```
-1. Configure you Environment to use Intel oneAPI Toolkits
+1. Configure your Environment to use Intel oneAPI Toolkits
    You can either use the `setvars.sh` configuration script or modulefiles:
    * To have your environment automaticaly prepared for use with Intel's oneAPI Toolkit append the following line to your `/etc/profile` `.bashrc` or run the command everytime you login to your node
       ```bash
@@ -451,9 +462,17 @@ You will be making use of the **2024-2** versions of the Intel oneAPI and HPC To
       # Make sure the newly created modules are available to use and have been correclty configured
       ml avail
       ```
+
+> [!IMPORTANT]
+> You will need to configure your environment each time you login to a new shell, as is the case when you use `mpirun` over multiple nodes. You will be shown how to do this automatically when you run HPL over multiple nodes.
+
 You have successfully installed the Intel oneAPI Base and HPC Toolkits, including Intel Compiler Suite and Math Kernel Libraries.
 
 ## Configuring and Running HPL with Intel OneAPI Toolkit and MKL
+
+After you've successfully completed the previous section, you will be ready to recompile HPL with Intel's `icx` compiler and `mkl` math kernel libraries.
+
+1. Configure a 
 
 # LinPACK Theoretical Peak Performance
 
@@ -480,7 +499,7 @@ You can determine your CPU model as well as the instruction extensions supported
 cat /proc/cpuinfo | grep -Ei "processor|model name|flags"
 ```
 
-`lscpu` `lsmem`
+TODO: also explain `lscpu` `lsmem`
 
 For model name, you should see something like "... Intel Xeon E5-26.....". If instead you see "QEMU...", please notify the course Instructors to assist you.
 
@@ -559,12 +578,12 @@ Detailed installation instructions can be found at: http://manual.gromacs.org/cu
 
 2. You will also require a compiler such as the GNU `gcc`, Intel `icc` or other, and **MPI (OpenMPI, MPICH, Intel MPI or other)** be installed on system. Your **PATH** & **LD_LIBRARY_PATH** environment variables should be set up to reflect this.
 
-3. Compile GROMACS **with MPI support** from source using `cmake`. 
+3. Compile GROMACS **with MPI support** from source using `cmake`.
 
 
 TODO Explain what an application benchmark is here.
 
-You have been provided two **GROMACS** benchmarks. The first benchmark **(adh_cubic)** should complete within a few minutes and has a small memory footprint, it is intended to demonstrate that your installation is working properly. The second benchmark **(1.5M_water)** uses more memory and takes considerably longer to complete. The metric which will be used to assess your performance is the **ns/day** (number of nanoseconds the model is simulated for per day of computation), quoted at the end of the simulation output. **Higher is better**. 
+You have been provided two **GROMACS** benchmarks. The first benchmark **(adh_cubic)** should complete within a few minutes and has a small memory footprint, it is intended to demonstrate that your installation is working properly. The second benchmark **(1.5M_water)** uses more memory and takes considerably longer to complete. The metric which will be used to assess your performance is the **ns/day** (number of nanoseconds the model is simulated for per day of computation), quoted at the end of the simulation output. **Higher is better**.
 
 Ensure that your GROMACS /**bin** directory is exported to your **PATH**. You should be able to type `gmx_mpi --version` in your terminal and have the application information displayed correctly. The first task is to pre-process the input data into a usable format, using the `grompp` tool:
 
