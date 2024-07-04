@@ -673,7 +673,33 @@ Using a batch script similar to the one above, run the benchmark. You may modify
 
 <div style="page-break-after: always;"></div>
 
-# Running Qiskit from a Remote Jupyter Notebook Server
+# Jupyter Notebook
+
+Jupyter Notebooks are powerful tools for scientific investigations due to their interactive and flexible nature. Here are some key reasons why they are favored in scientific research.
+
+* Interactive Computing and Immediate Feedback
+
+  Run code snippets and see the results immediately, which helps in quick iterations and testing of hypotheses.  Directly plot graphs and visualize data within the notebook, which is crucial for data analysis.
+
+* Documentation and Rich Narrative Text
+
+  Combine code with Markdown text to explain the methodology, document findings, and write detailed notes. Embed images, videos, and LaTeX equations to enhance documentation and understanding.
+
+* Reproducibility
+
+  Share notebooks with others to ensure that they can reproduce the results by running the same code. Use tools like Git to version control the notebooks, ensuring a record of changes and collaborative development.
+
+* Data Analysis and Visualization
+
+  Utilize a wide range of Python libraries such as NumPy, Pandas, Matplotlib, and Seaborn for data manipulation and visualization. Perform exploratory data analysis (EDA) seamlessly with powerful plotting libraries.
+
+Jupyter Notebooks provide a versatile and powerful environment for conducting scientific investigations, facilitating both the analysis and the clear communication of results.
+
+## Plot a Graph of Your HPL Benchmark Results
+
+
+
+## Running Qiskit from a Remote Jupyter Notebook Server
 
 TODO: WORK IN PROGRESS WILL NEATEN UP 03/07/24
 
