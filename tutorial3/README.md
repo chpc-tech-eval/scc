@@ -71,16 +71,16 @@ You will recall that you were required to configure an [NFS Mounted home dir](..
 
 In order for this to work as expected, there are two important conditions that must be satisfied:
 1. Firstly, you must ensure that you're `PATH` variable is correctly configured on your head node and must similarly have a corresponding configuration on your compute node(s). For example, to see a colon (`:`) separated list of directories that are searched whenever you execute a binary:
- ```bash
- echo $PATH
- ```
+   ```bash
+   echo $PATH
+   ```
 1. Secondly, you must ensure that any system dependencies are correctly installed on **each** of your nodes. For example, this would be a good time to install `gcc` on your **compute node**:
-  ```bash
-  sudo dnf install gcc
-  ```
+   ```bash
+   sudo dnf install gcc
+   ```
 
 <details>
-<summary>Instructions for APT and Pacman</summary>
+<summary>Instructions for APT (Ubuntu) and Pacman (Arch)</summary>
 
 ```bash
 # APT
