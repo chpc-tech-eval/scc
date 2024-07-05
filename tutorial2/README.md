@@ -84,7 +84,7 @@ This tutorial will demonstrate how to access web services that are on your virtu
 <u>In this tutorial you will:</u>
 
 - [ ] Install a web server.
-- [ ] Create an SSH tunnel to access your web service.
+- [ ] Create an ssh tunnel to access your web service.
 - [ ] Create new local user accounts.
 - [ ] Add local system users to sudoers file for root access.
 - [ ] Share directories between computers.
@@ -92,22 +92,16 @@ This tutorial will demonstrate how to access web services that are on your virtu
 - [ ] Install and use central authentication.
 
 
-## Spinning Up a Compute Node in OpenStack
-
-### Manually from openstack dashboard 
-To launch your compute node vm, go to `Compute-> Instances` click `launch instance` and follow the headnode vm launch process on Tutorial 1. **remember** to use `compute` flavors and `local_team_keys`  used when launching the headnode on Tutorial 1.
-
-
-### scripting and automation to test out differnet configurations
+# Spinning Up a Compute Node in OpenStack
 
 As previously discussed in [Tutorial 1: OpenStack Flavors](../tutorial1/README.md#openstack-instance-flavors), an important aspect of system administration is resource monitoring, management and utilization. Once you have successfully stood up your head node, your team will need to plan and manage the resources remaining which will be available for your compute node(s).
 
 You would have seen in [Tutorial: Head Node Resource Allocations](../tutorial1/README.md#head-node-resource-allocations), that there are a number of potentially _(in)_valid configurations that you can utilize for your cluster design.
 
 > [!TIP]
-> You are encourage to **strongly** encouraged to automate the deployment, installation and configuration of your cluster nodes through the use of either at least basic shell scripts or more advanced Ansible playbooks. This will allow you to rapidly experiment with and test the performance of different configurations in order to determine an optimum cluster for the applications you're required to evaluate.
+> You are encourage to **strongly** encouraged to automate the deployment, installation and configuration of your cluster nodes through the use of either at least basic shell scripts or more advanced Ansible playbooks, as you will be shown later in this tutorial. This will allow you to rapidly experiment with and test the performance of different configurations in order to determine an optimum cluster for the applications you're required to evaluate.
 
-### Compute Node Considerations
+## Compute Node Considerations
 
 While the head node is responsible for administrative and management related tasks, such as authenticating user logins into the cluster, managing services, hosting a network file system, workload management and load balancing, while compute nodes are responsible executing compute intensive tasks.
 
@@ -115,34 +109,17 @@ Sensible default instance flavors have already been identified and configured fo
 
 One important distinction between your head node and compute node(s), is that the compute nodes will **not** have a floating IP associated to them. Your head node will act as a ***Gateway*** for your Compute Node(s), and ***Route*** traffic between the internet and your cluster, using a method referred to as ***Network Address Translation (NAT)***, which was discussed in the [WiFi Hotspot Example](../tutorial1/README.md#wifi-hotspot-example).
 
-The final important consideration that must be made for your compute node is that you must not forget to configure an SSH key, so that you may access it after it has successfully launched. For ease of access and to simplify your configuration, you are *strongly* advised to use the same SSH key that you'd [previously generated](../tutorial1/README.md#generating-ssh-keys) on your local machine/laptop.
+The final important consideration that must be made for your compute node is that you must not forget to configure an ssh key, so that you may access it after it has successfully launched. For ease of access and to simplify your configuration, **you are *strongly* advised to use the same ssh key** that you'd [previously generated](../tutorial1/README.md#generating-ssh-keys) on your local machine/laptop.
 
-### Accessing Your Compute Node
+## Accessing Your Compute Node Using `ProxyJump` Directive
 
-After you have successfully [Launched Your Second OpenStack VM Instance](../tutorial1/README.md#launching-your-first-openstack-virtual-machine-instance), you can SSH into your new compute node VM instance using your head node as a [Jump Box](https://goteleport.com/blog/ssh-proxyjump-ssh-proxycommand/).
-
-### IP Addresses and Routing
-
-Before your access your compute node, we must verify a few details on the head node. Your will already be familiar with many of these commands.
-
-<p align="center"><img alt="OpenStack Running State." src="./resources/windows_powershell_firsttime_ssh.png" width=900 /></p>
-
-TODO: High level explanation of OpenStack's automatic network configuration and basically how it creates virtual switch for their private network
-
-TODO: Maybe remove the default routing table on compute node and route through headnode?
-
-### Command Line Proxy Jump Directive 
-
-From you workstation, using either MobaXTerm or Windows Powershell, you can `ssh` directly into your compute node by first making an **ssh** connection too your head node and then establishing a TCP forwarding connection to your compute node. Using this method, the SSH keys for both your head node and compute node must reside on your local workstation:
-
-<details>
-<summary>Head node and compute node deployed with the *SAME* ssh key</summary>
+After you have successfully [Launched Your Second OpenStack VM Instance](../tutorial1/README.md#launching-your-first-openstack-virtual-machine-instance), you can ssh into your new compute node VM instance using your head node with the use of the ssh [ProxyJump Directive](https://goteleport.com/blog/ssh-proxyjump-ssh-proxycommand/). From you workstation, using either MobaXTerm or Windows Powershell, you can `ssh` directly into your compute node by first making an **ssh** connection too your head node and then establishing a TCP forwarding connection to your compute node. Using this method, the ssh keys for both your head node and compute node must reside on your local workstation:
 
 ```bash
 ssh -i <path to ssh key> -J <user>@<head node publicly accessible ip> <user>@<compute node private internal ip>
 ```
 
-<p align="center"><img alt="SSH into Compute Node." src="./resources/ssh_into_compute_node.png" width=900 /></p>
+<p align="center"><img alt="ssh into Compute Node." src="./resources/ssh_into_compute_node.png" width=900 /></p>
 
 For example, in the screenshot above, the head node `scc24_arch_hn` and the compute node `scc24_arch_cn` have been created with the same key pair `nlisa at grogu`. The head node has a public facing IP address of **154.114.57.126** and the compute node has an private, internal IP address of **10.100.0.191**, then you would connect to this compute node using:
 
@@ -151,12 +128,12 @@ ssh -i ~/.ssh/id_ed25519_sebowa -J arch@154.114.57.126 arch@10.100.0.191
 ```
 
 > [!NOTE]
-> Remember to use the **ssh keys**, **usernames** and **ip addresses** corresponding to *your* nodes.
-
-</details>
+> Remember to use the **ssh keys**, **usernames** and **ip addresses** corresponding to *your* nodes! You has been **STRONGLY** advised to make use of the **SAME SSH KEY** on your compute node as you had used on your head node.
+>
+> Should you insist on using different ssh keys for you nodes, refer to the hidden description that follows. Reveal the hidden text by clicking on the description.
 
 <details>
-<summary>Head node and compute nods deployed using different key pairs</summary>
+<summary>Head node and compute node deployed using different ssh key pairs</summary>
 
 ```bash
 ssh -o ProxyCommand="ssh -i <path to head node ssh key> -l <user> -W %h:%p <head node ip>" -i <path to  compute node ip> <user>@<compute node ip> 
@@ -166,19 +143,19 @@ ssh -o ProxyCommand="ssh -i <path to head node ssh key> -l <user> -W %h:%p <head
 
 ### Setting a Temporary Password on your Compute Node
 
-Once you have successfully logged into your compute node, you can set a password for the default user:
+Once you have successfully logged into your compute node, you can set a password for the default user, which would be ***rocky*** in the case of Rocky Linux VM instance:
 ```bash
 sudo passwd <user>
 ```
 
-<p align="center"><img alt="Change Compute Node Password." src="./resources/ssh_compute_node_passwd.png" width=900 /></p>
+> [!IMPORTANT]
 
 
-### Generating SSH Keys on your Head Node
+### Generating ssh Keys on your Head Node
 
-Just as you did so in the previous tutorial when you generated SSH keys [on your workstation](../tutorial1/README.md#generating-ssh-keys), you're now going to do the same on your head node. You're then going to copy the newly created key onto you head node and test the new SSH connection, by logging into your compute node.
+Just as you did so in the previous tutorial when you generated ssh keys [on your workstation](../tutorial1/README.md#generating-ssh-keys), you're now going to do the same on your head node. You're then going to copy the newly created key onto you head node and test the new ssh connection, by logging into your compute node.
 
-1. Generate an SSH key on your **head node**:
+1. Generate an ssh key on your **head node**:
 
    ```bash
    ssh-keygen -t ed25519
@@ -187,13 +164,13 @@ Just as you did so in the previous tutorial when you generated SSH keys [on your
    - *Enter file in which to save the key* - Press `Enter`,
    - *Enter passphrase (empty for no passphrase)* - Leave empty and press `Enter`,
    - *Enter same passphrase again* - Leave empty and press `Enter` again,
-1. Copy the newly created SSH key to your **compute node**:
+1. Copy the newly created ssh key to your **compute node**:
 
    ```bash
    ssh-copy-id ~/.ssh/id_ed25519 <user>@<compute node ip>
    ```
    
-1. From your **head node**, SSH into your **compute node**:
+1. From your **head node**, ssh into your **compute node**:
    ```bash
    
    ssh <user>@<compute node ip>
@@ -205,7 +182,7 @@ Just as you did so in the previous tutorial when you generated SSH keys [on your
    cat ~/.ssh/id_ed25519
    ```
 
-<p align="center"><img alt="Generate Key and SSH into compute" src="./resources/install_tmux.png" width=900 /></p>
+<p align="center"><img alt="Generate Key and ssh into compute" src="./resources/install_tmux.png" width=900 /></p>
 
 
 ### Understanding the Roles of the Head Node and Compute Node
@@ -305,7 +282,7 @@ Once you've started a new `tmux` session or daemon or server, on your head node,
    ssh <user>@<compute node ip>
    
    ```
-   <p align="center"><img alt="Generate Key and SSH into compute" src="./resources/tmux_btop_htop.png" width=900 /></p>
+   <p align="center"><img alt="Generate Key and ssh into compute" src="./resources/tmux_btop_htop.png" width=900 /></p>
    
 1. Create a new window within `tmux` using `Ctrl` + `b` and 'c':
    ```bash
@@ -323,8 +300,8 @@ Once you've started a new `tmux` session or daemon or server, on your head node,
 1. Split the new window pane horizontally using `Ctrl` + `b` and `%`.
    - Run `btop` on your **head node** on one of your panes.
    - Ssh into your **compute node*** and run `htop` on the other pane.
-   <p align="center"><img alt="Generate Key and SSH into compute" src="./resources/tmux_ssh_run_tops.png" width=900 /></p>
-   <p align="center"><img alt="Generate Key and SSH into compute" src="./resources/tmux_running_htop_btop.png" width=900 /></p>
+   <p align="center"><img alt="Generate Key and ssh into compute" src="./resources/tmux_ssh_run_tops.png" width=900 /></p>
+   <p align="center"><img alt="Generate Key and ssh into compute" src="./resources/tmux_running_htop_btop.png" width=900 /></p>
 
 1. There are many more utilities available within `tmux`. Check the built-in help documentation using `Ctrl` + `b` and `?` (i.e. `Shift` + `/`):
    ```bash
@@ -656,7 +633,7 @@ legacy tool that works by setting up rules in different tables. To secure your n
 # Block a specific IP address
 sudo iptables -A INPUT -s 10.50.100.8 -j DROP
 
-# Allow all incoming SSH traffic
+# Allow all incoming ssh traffic
 sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 
 ```
@@ -677,7 +654,7 @@ sudo nft add chain ip filter input { type filter hook input priority 0 \; }
 # Add a rule to block an IP address
 sudo nft add rule ip filter input ip saddr 10.50.100.8 drop
 
-# Allow incoming SSH connections
+# Allow incoming ssh connections
 sudo nft add rule ip filter input tcp dport 22 accept
 ```
 
@@ -1002,12 +979,12 @@ For the description of nfs options listed above see the link: https://cheatograp
 
 
 
-### Passwordless SSH
+### Passwordless ssh
 
 When managing a large fleet of machines or even when just logging into a single machine repeatedly, it can become very time consuming to have to enter your password repeatedly. Another issue with passwords is that some services may rely on directly connecting to another computer and can't pass a password during login. To get around this, we can use [public key based authentication](https://www.ssh.com/academy/ssh/public-key-authentication) for passwordless login.
 
 
-1. Generate an SSH key-pair for your user. This will create a public and private key for your user in `/home/<username>/.ssh`. The private key is your identity and the public key is what you share with other computers.
+1. Generate an ssh key-pair for your user. This will create a public and private key for your user in `/home/<username>/.ssh`. The private key is your identity and the public key is what you share with other computers.
 
 ```bash
    ssh-keygen
@@ -1033,7 +1010,7 @@ Since your `/home` directory is shared with your compute node, this will look th
     [rocky@headnode ~]$ sudo restorecon -R -v ~/.ssh
 ```
 
-4. SSH to the **compute node** passwordless If you are prompted with a password it means that something is not set up correctly. 
+4. ssh to the **compute node** passwordless If you are prompted with a password it means that something is not set up correctly. 
 run the following command:
 
 ```bash
@@ -1046,7 +1023,7 @@ run the following command:
 
 ### Understanding `~/.ssh/authorized_keys`
 
-How this works is that you copy the public key to the computer that you want to connect to without a password `authorized_keys` file. When you SSH to the machine that you copied your public key to, the `ssh` tool will send a challenge that can only be decrypted if the target machine has the public key and the local machine has the private key. If this succeeds, then you are who you say you are to the target computer and you do not require a password. [Please read this for more detailed information](https://www.ssh.com/academy/ssh/public-key-authentication).
+How this works is that you copy the public key to the computer that you want to connect to without a password `authorized_keys` file. When you ssh to the machine that you copied your public key to, the `ssh` tool will send a challenge that can only be decrypted if the target machine has the public key and the local machine has the private key. If this succeeds, then you are who you say you are to the target computer and you do not require a password. [Please read this for more detailed information](https://www.ssh.com/academy/ssh/public-key-authentication).
 
 ### User Permissions and Ownership
 > **! >>> `chmod` and `chown` are Linux permission and ownership modification commands. To learn more about these commands and how they work, please go to the following link: [https://www.unixtutorial.org/difference-between-chmod-and-chown/](https://www.unixtutorial.org/difference-between-chmod-and-chown/).**
@@ -1255,7 +1232,7 @@ In this tutorial we will install ansible and use it to automate the creation of 
 
 ### Installing and Configuring Ansible
 Prerequisites :
- 1. ansible control host should be able connect to ansible clients over SSH preferably passwordless,
+ 1. ansible control host should be able connect to ansible clients over ssh preferably passwordless,
  2. via a user account with sudo or root privileges 
  3. atleast one ansible client
 
@@ -1334,7 +1311,7 @@ We will use ansible to create user accounts on remote ansible clients, to achive
 In this section you will learn to:
 Create a playbook that will perform the following actions on all Ansible hosts/clients:
     1. Create a new sudo user and granting sudo priviledges.
-    2. Copy a local SSH public key and include it in the `authorized_keys` file for the new administrative user on the remote host.
+    2. Copy a local ssh public key and include it in the `authorized_keys` file for the new administrative user on the remote host.
 
 
 1. Create an ansible working directory in your `/home/rocky`, this is where all ansible playbooks will reside.
@@ -1407,7 +1384,7 @@ Tunneling is a way of accessing software tools running privately in a server som
 
 
 ### 1. Local Port Forwarding
-This method uses `SSH` to forward/direct traffic from remote server to local machine. run `man SSH` then read `-L` flag for more details. 
+This method uses `ssh` to forward/direct traffic from remote server to local machine. run `man ssh` then read `-L` flag for more details. 
 
 the syntax goes as follows:
 
@@ -1436,7 +1413,7 @@ http://localhost:9090  or  http://127.0.0.1:9090
 
 
 ### 2. Dynamic Port Forwarding 
-This method uses `SSH` to forward/direct traffic from remote server to local machine. run `man SSH` then read `-D` flag for more details. 
+This method uses `ssh` to forward/direct traffic from remote server to local machine. run `man ssh` then read `-D` flag for more details. 
 
 syntax: 
 
@@ -1462,7 +1439,7 @@ http://headnode:1235 or http://headnode_ip:1235
 
 #### Web Browser and SOCKS5 Proxy Configuration
 
-We'll need to use a **dynamic SSH tunnel** ([SOCKS proxy](https://en.wikipedia.org/wiki/SOCKS)) to allows SSH to forward **ALL remote (target) port traffic** to and from a port on your local machine, and can include remote DNS.
+We'll need to use a **dynamic ssh tunnel** ([SOCKS proxy](https://en.wikipedia.org/wiki/SOCKS)) to allows ssh to forward **ALL remote (target) port traffic** to and from a port on your local machine, and can include remote DNS.
 
 
 ##### Firefox and Proxy Configurations
@@ -1496,7 +1473,7 @@ Now click `OK` and open a new tab in Firefox.
 
 Now you can enter `http://headnode_ip:1235` in your browser and you'll get access to the software tool interface.
 
-> **! >>> Keep the SSH sessions open while you use the proxy on Firefox**
+> **! >>> Keep the ssh sessions open while you use the proxy on Firefox**
 
 > **! >>> Remember to set your proxy settings back to `No Proxy` if you want to use your own local internet on Firefox.**
 
