@@ -3,74 +3,6 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 
 # Table of Contents
 
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-
-- [Checklist](#checklist)
-- [Spinning Up a Compute Node on Sebowa(OpenStack)](#spinning-up-a-compute-node-on-sebowaopenstack)
-    - [Compute Node Considerations](#compute-node-considerations)
-- [Accessing Your Compute Node Using `ProxyJump` Directive](#accessing-your-compute-node-using-proxyjump-directive)
-    - [Setting a Temporary Password on your Compute Node](#setting-a-temporary-password-on-your-compute-node)
-- [Understanding the Roles of the Head Node and Compute Node](#understanding-the-roles-of-the-head-node-and-compute-node)
-    - [Terminal Multiplexers and Basic System Monitoring](#terminal-multiplexers-and-basic-system-monitoring)
-        - [Basic Linux commands   ](#basic-linux-commands)
-            - [Basic System Monitoring  ](#basic-system-monitoring)
-            - [Print current working space ](#print-current-working-space)
-        - [Manipulating Files and Directories](#manipulating-files-and-directories)
-            - [Make a New Directory ](#make-a-new-directory)
-            - [creating new Files ](#creating-new-files)
-            - [List Directory ](#list-directory)
-            - [Change Directory ](#change-directory)
-            - [Copy File or Directory ](#copy-file-or-directory)
-            - [Move File or Directory ](#move-file-or-directory)
-            - [Remove File or Directory ](#remove-file-or-directory)
-            - [The history Command](#the-history-command)
-            - [The virtual environment Command ](#the-virtual-environment-command)
-    - [Recommended Project Folder Structure](#recommended-project-folder-structure)
-        - [-](#-)
-        - [Head Node (`nmtui`)](#head-node-nmtui)
-        - [Compute Node](#compute-node)
-        - [Editing `/etc/hosts` File](#editing-etchosts-file)
-        - [permanent Configuration with `~/.ssh/config`](#permanent-configuration-with-sshconfig)
-    - [Configuring a Simple Stateful Firewall](#configuring-a-simple-stateful-firewall)
-        - [-](#--1)
-        - [NFTables `nftables` ](#nftables-nftables)
-        - [Dynamic Front-end Firewall Application Managers `firewalld`](#dynamic-front-end-firewall-application-managers-firewalld)
-    - [Network Time Protocol](#network-time-protocol)
-        - [NTP Server (Head Node)](#ntp-server-head-node)
-        - [NTP Client (Compute Node)](#ntp-client-compute-node)
-    - [Network File System](#network-file-system)
-    - [Generating ssh Keys on your Head Node](#generating-ssh-keys-on-your-head-node)
-        - [NFS Server (Head Node)](#nfs-server-head-node)
-        - [NFS Client (Compute Node)](#nfs-client-compute-node)
-            - [Mounting An NFS Mount](#mounting-an-nfs-mount)
-            - [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
-        - [Passwordless ssh](#passwordless-ssh)
-        - [Understanding `~/.ssh/authorized_keys`](#understanding-sshauthorized_keys)
-        - [User Permissions and Ownership](#user-permissions-and-ownership)
-    - [User Account Management](#user-account-management)
-        - [Create Team Captain User Account](#create-team-captain-user-account)
-            - [Head Node](#head-node)
-            - [Compute Node](#compute-node-1)
-            - [Super User Access](#super-user-access)
-        - [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
-            - [Head Node](#head-node-1)
-            - [Compute Node](#compute-node-2)
-            - [Clean Up](#clean-up)
-    - [Ansible User Declaration](#ansible-user-declaration)
-        - [Installing and Configuring Ansible](#installing-and-configuring-ansible)
-            - [Installing ansible ](#installing-ansible)
-            - [configuring ansible ](#configuring-ansible)
-        - [Create Team Member Accounts](#create-team-member-accounts)
-    - [Remote Access to Your Cluster and Tunneling](#remote-access-to-your-cluster-and-tunneling)
-        - [1. Local Port Forwarding](#1-local-port-forwarding)
-        - [2. Dynamic Port Forwarding ](#2-dynamic-port-forwarding)
-            - [Web Browser and SOCKS5 Proxy Configuration](#web-browser-and-socks5-proxy-configuration)
-                - [Firefox and Proxy Configurations](#firefox-and-proxy-configurations)
-        - [WirGuard VPN Cluster Access](#wirguard-vpn-cluster-access)
-        - [ZeroTier](#zerotier)
-        - [X11 Forwarding](#x11-forwarding)
-
-<!-- markdown-toc end -->
 
 # Checklist
 
@@ -213,7 +145,7 @@ sudo apt-get install tmux
 To start a new `tmux` session on your **head node**:
 
 ```bash
-tmux new -s session_name 
+tmux new -s session_name
 ```
 
 * Working on your Head Node and Compute Node in Two Adjacent Panes
@@ -222,7 +154,7 @@ Once you've started a new `tmux` session or daemon or server, on your head node,
 
 1. Split the terminal vertically into two separate panes:
    Press and hold `Ctrl` together with `b`. Then release `Ctrl` + `b` and press `"` (i.e. `Shift` + `'`) . The combination of `Ctrl + b` `"`, is denoted by:
-   
+
    ```bash
    C-b "
    ```
@@ -327,9 +259,7 @@ htop
 
 # Verifying Networking Setup
 
-Your VMs have been assigned IP addresses, to identify these, navigate to `Compute -> Instances` on your openstack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for the headnode) and one IP address (for compute node) with their respective networks  
-
-The headnode IP addresses will look like `10.100.50.x` and `154.114.72.x` where `x` is your specific vm address number. `10.100.50.x` network is for internal use and `154.114.72.x` is for public facing usage. 
+Your VMs have been assigned local public facing IP addresses. Navigate to `Compute` -> `Instances` on your OpenStack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for the headnode) and one IP address (for compute node) with their respective networks. The headnode IP addresses will look like `10.100.50.x` and `154.114.72.x` where `x` is your specific vm address number. `10.100.50.x` network is for internal use and `154.114.72.x` is for public facing usage. 
 
 You can check your network interfaces by using the `ip a` command after logging in to your headnode or commpute node. 
 
@@ -346,9 +276,9 @@ https://docs.rockylinux.org/guides/network/basic_network_configuration/
 
 **Rocky 9** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
 
+TODO: can remove
 
-
-##### Head Node (`nmtui`) #####
+## Head Node (`nmtui`) 
 
 For the **head node**, create a new network definition using the `nmtui` graphical tool using the following steps:
 
@@ -399,7 +329,7 @@ ip route
 - `ip route` will list the interfaces and their assigned routes.
 
 
-##### Compute Node #####
+### Compute Node
 
 You must also set the static IP addressing for all other nodes in your cluster. You can explore different options for doing so, use the `nmcli` command. This is the command-line interface (CLI) for Network Manager, which is an alternative to the above nmtui, which is simply a graphical wrapper for the CLI.
 
@@ -423,7 +353,7 @@ If you get a timeout, then things are not working. Try to check your network con
 
 _**Please read [what-is-ip-routing](https://study-ccna.com/what-is-ip-routing/) to gain a better understanding of IP routing.**_ This will be impoortant for the rest of this competition and can help your understanding when debugging issues.
 
-##### Editing `/etc/hosts` File #####
+## Editing `/etc/hosts` File
 
 In the absence of a DNS server for translation IP address into hostnames and vice versa.
 we can archive the same result by editing the `/etc/hosts`.
@@ -453,19 +383,19 @@ sudo systemctl restart systemd-hostnamed
 <p align="center"><img alt="edit `/etc/hosts` " src="./resources/etchost.png" width=900 /></p>
 
 
-##### permanent Configuration with `~/.ssh/config` #####
+## permanent Configuration with `~/.ssh/config`
 
 you can explore `~/.ssh/config` permanent Configuration: 
 https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix/ 
 
 
 
-### Configuring a Simple Stateful Firewall ###
+## Configuring a Simple Stateful Firewall
 
 In the realm of network security, shielding your system against unauthorized access and ensuring data integrity are paramount. the below  tools `iptables, nftables and firewalld` serves as a system's gatekeepers, managing incoming and outgoing traffic.
 
 
-##### IPTables `iptables` #####
+# IPTables `iptables`
 
 legacy tool that works by setting up rules in different tables. To secure your network with iptables, you would typically manipulate the following tables:
 
@@ -1103,88 +1033,87 @@ Do this command for:
 
 
 
-## Ansible User Declaration
+# Ansible User Declaration
 
 Ansible is a powerful configuration management tool used for automating the deployment, configuration, and management of software systems. It allows you to control many different systems from one central location. 
 
 In this tutorial we will install ansible and use it to automate the creation of user accounts as well a other system task 
 
-### Installing and Configuring Ansible
+## Installing and Configuring Ansible
 Prerequisites :
  1. ansible control host should be able connect to ansible clients over ssh preferably passwordless,
  2. via a user account with sudo or root privileges 
  3. atleast one ansible client
 
-#### Installing ansible 
 1. Ensure that the Rocky Linux 9 EPEL repository is installed using `dnf`:
 
 ```bash
 sudo dnf install epel-release
 ```
 
-2. Once the repository is install ansible 
+1. Once the repository is install Ansible 
 
-```bash
-sudo dnf install ansible
-```
+   ```bash
+   sudo dnf install ansible
+   ```
 
-#### configuring ansible 
+## configuring Ansible
 
-1. setup ansible host file  with hosts/client machines ansible should connect to, add all hosts to `/etc/ansible/hosts` file. The file has a lot of example to help you learn ansible configurations 
+1. Setup ansible host file  with hosts/client machines ansible should connect to, add all hosts to `/etc/ansible/hosts` file. The file has a lot of example to help you   learn ansible configurations
 
-```bash
-#open ansible host file 
-sudo vi /etc/ansible/hosts
+   ```bash
+   #open ansible host file
+   sudo vi /etc/ansible/hosts
 
-#add ansible hosts/clients under servers group
-[servers]
-compute1 ansible_ssh_host=10.100.50.5
-compute2 ansible_ssh_host=10.100.50.10
+   #add ansible hosts/clients under servers group
+   [servers]
+   compute1 ansible_ssh_host=10.100.50.5
+   compute2 ansible_ssh_host=10.100.50.10
+   ```
 
-```
-The servers is a group_name tag that lets you refer to any host (ansible clients) listed under it with one word. 
+   The servers is a group_name tag that lets you refer to any host (ansible clients) listed under it with one word. 
 
-2. setup a ansible user with sudo or root privileges that ansible will use to execute ansible tasks and connect with other ansible clients, the user must also exist on all ansible clients on ansible hosts under `servers` group
+2. Setup a ansible user with sudo or root privileges that ansible will use to e   xecute ansible tasks and connect with other ansible clients, the user must also exist on all ansible clients on ansible hosts under `servers` group
 
-create a directory `group_vars` under ansible configuration structure `/etc/ansible` for creating YAML-formatted config files for each group you want to configure  
+   create a directory `group_vars` under ansible configuration structure `/etc/ansible` for creating YAML-formatted config files for each group you want to configure  
 
-```bash
-sudo mkdir /etc/ansible/group_vars
+   ```bash
+   sudo mkdir /etc/ansible/group_vars
 
-#create a servers file for configuring servers in the ansible hosts file 
-vi mkdir /etc/ansible/group_vars/servers
-```
+   #create a servers file for configuring servers in the ansible hosts file 
+   vi mkdir /etc/ansible/group_vars/servers
+   ```
 
-Add the following code to the file. YAML files start with ---
+   Add the following code to the file. YAML files start with ---
 
-```text
----
-ansible_ssh_user: ansibe_user
-```
+   ```text
+   ---
+   ansible_ssh_user: ansibe_user
+   ```
 
-save and exit the file. In vi, you can do this by pressing ESC and then :x.
-If the user you are currenlty logged in as has sudo privileges and exists on all ansible hosts then there no need to do number 2.  
+   save and exit the file. In vi, you can do this by pressing ESC and then :x.
+   If the user you are currenlty logged in as has sudo privileges and exists on all ansible hosts then there no need to do number 2.
 
-3. test ansible if ansible control host can access all clients hosts under group servers in the ansible host file 
+3. test ansible if ansible control host can access all clients hosts under group servers in the ansible host file
 
-```bash
-#access as a group 
-ansible -m ping servers 
+   ```bash
+   #access as a group
+   ansible -m ping servers
 
-#access as an individual host
-ansible -m ping compute
+   #access as an individual host
+   ansible -m ping compute
 
-#run command on hosts 
-ansible -m shell -a 'free -m' compute
-```
-<p align="center"><img alt="ansible testing hosts client connection " src="./resources/ansible_ping_servers.png" width=900 /></p>
+   #run command on hosts
+   ansible -m shell -a 'free -m' compute
+   ```
+   <p align="center"><img alt="ansible testing hosts client connection " src="./resources/ansible_ping_servers.png" width=900 /></p>
 
-<p align="center"><img alt="ansible testing individual host client connection " src="./resources/ansible_individual_host_access.png" width=900 /></p>
+   <p align="center"><img alt="ansible testing individual host client connection " src="./resources/ansible_individual_host_access.png" width=900 /></p>
 
-<p align="center"><img alt="run command on ansible clients" src="./resources/ansible_run_command_on_hosts.png" width=900 /></p>
+   <p align="center"><img alt="run command on ansible clients" src="./resources/ansible_run_command_on_hosts.png" width=900 /></p>
 
 
-### Create Team Member Accounts
+## Create Team Member Accounts
 We will use ansible to create user accounts on remote ansible clients, to achive this we need to create ansible YML scripts called `ansible playbooks` used for automating admin tasks. 
 
 In this section you will learn to:
@@ -1254,7 +1183,7 @@ Verify user `team_lead` was created on compute node and it on a `wheel` group
 <p align="center"><img alt=" user team lead exist on ansible client " src="./resources/ansible_team_lead_user_verification.png" width=900 /></p>
 
 
-## Remote Access to Your Cluster and Tunneling
+# Remote Access to Your Cluster and Tunneling
 Tunneling is a way of accessing software tools running privately in a server somewhere publicly. You want to access these tools publicly. There are multiple ways you can go about and we'll discuss 2 in this tutorial.
 
    1. Local port forwarding
@@ -1262,7 +1191,7 @@ Tunneling is a way of accessing software tools running privately in a server som
 
 
 
-### 1. Local Port Forwarding
+## 1. Local Port Forwarding
 This method uses `ssh` to forward/direct traffic from remote server to local machine. run `man ssh` then read `-L` flag for more details. 
 
 the syntax goes as follows:
@@ -1291,7 +1220,7 @@ http://localhost:9090  or  http://127.0.0.1:9090
 
 
 
-### 2. Dynamic Port Forwarding 
+## 2. Dynamic Port Forwarding 
 This method uses `ssh` to forward/direct traffic from remote server to local machine. run `man ssh` then read `-D` flag for more details. 
 
 syntax: 
@@ -1316,12 +1245,11 @@ http://headnode:1235 or http://headnode_ip:1235
 ```
 
 
-#### Web Browser and SOCKS5 Proxy Configuration
+# Web Browser and SOCKS5 Proxy Configuration
 
 We'll need to use a **dynamic ssh tunnel** ([SOCKS proxy](https://en.wikipedia.org/wiki/SOCKS)) to allows ssh to forward **ALL remote (target) port traffic** to and from a port on your local machine, and can include remote DNS.
 
-
-##### Firefox and Proxy Configurations
+## Firefox and Proxy Configurations
 
 The Firefox browser will allow the easiest proxy configuration. Please download and install Firefox from here: [https://www.mozilla.org/en-US/firefox/download/](https://www.mozilla.org/en-US/firefox/download/).
 
@@ -1357,8 +1285,8 @@ Now you can enter `http://headnode_ip:1235` in your browser and you'll get acces
 > **! >>> Remember to set your proxy settings back to `No Proxy` if you want to use your own local internet on Firefox.**
 
 
-### WirGuard VPN Cluster Access
+# WirGuard VPN Cluster Access
 
-### ZeroTier
+# ZeroTier
 
-### X11 Forwarding
+# X11 Forwarding
