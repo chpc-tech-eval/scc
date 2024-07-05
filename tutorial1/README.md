@@ -348,8 +348,18 @@ In order for you to be able to SSH into your newly created OpenStack instance, y
 > The following section is strictly for debugging and troubleshooting purposes
 
 * Deleting Instances
+   - When all else fail select the failing vm and click `Delete instance` then follow the process for launcing a new instance/VM.
+   - Sometimes mistakes happen and you find yourself deleting a VM by mistake and will need to recover the deleted VM, by default `no` is selected on `Delete Volume on Instance Delete` this will leave your root (OS) disk behing and you can recover by launching a new VM from the root disk.
+
+
 * Deleting Volumes
+   - When a root (OS) disk's volume is left behing after deleting a VM on purpose, you will need to go to `Volumes->volumes` and select your volume and click ` Delete volumes` to remove the volume from your work space
+
+
 * Dissociating and Releasing Floating IPs
+   - If your VM is deleted then the floating IP associated with that deleted VM will stay in your project under `Networks->Floating IPs` for future use. Selecting the floating IP and clicking `Release Floating IPs` will send the floating IP back to the pool and you can call a tutor to help you get back your IP. 
+
+   
 
 # Introduction to Basic Linux Administration
 
@@ -439,28 +449,28 @@ Once logged into your head node, you can now make use of the [previously discuss
 
   On Linux systems, information about commands can be found in a manual page. This doncument is accessible via a command called `man` short term for manual page. Run the following commands to understand what each does, scroll up and down then press `q` to exit the page. Familiarize yourself with these, as they are some of the commands you will use throught the week.
 
-   ```bash
-   # Review the man pages of a number of different Linux utilities.
-   # Remember you can exit the man page documentation by pressing  `q`.
-   man sudo
-   man ping
-   man tracepath
-   man ls
-   man cat
+```bash
+# Review the man pages of a number of different Linux utilities.
+# Remember you can exit the man page documentation by pressing  `q`.
+man sudo
+man ping
+man tracepath
+man ls
+man cat
    ```
 
 * the `-h` Switch
 
   If you don't want to use the `man` command to learn about each command and related options, you can use the `--help or -h` flag to see which options are available for a specific command. run the ff command to learn about available options each command has.
 
-   ```bash
+```bash
    # Check the help pages of a command using the `--help or -h` switch.
    sudo -h
    ifconfig -h
    ping -h
    ssh-keygen --help
    grep --help
-   ```
+```
 
 * Piping and Console Redirection
 
@@ -478,23 +488,23 @@ Once logged into your head node, you can now make use of the [previously discuss
   ```
 
   Pipe `|` through `grep` is used when searching the content of the file, if it exist it will be printed on the screen, if the search does not exist nothing will show on the screen.
-  ```bash
+```bash
   cat students.txt
   cat students.txt | grep "zama"
-  ```
+```
 
 * Reading and Editing Documents
 
   You will be reading a lof of files throughout the week and the following commands can be used to read files with ease, use `man` to learn about each command. All the following command are used to read the content of a file `students.txt`
 
-  ```bash
+```bash
   # Press `q` to exit from `more` or `less` text dumps.
   # You may need to install utilities like `nano` before using them.
   less students.txt
   more students.txt
   cat students.txt
   vi students.txt
-  ```
+```
 
 * GNU `history` Library
 
