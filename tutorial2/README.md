@@ -144,10 +144,10 @@ ssh -i <path to ssh key> -J <user>@<head node publicly accessible ip> <user>@<co
 
 <p align="center"><img alt="SSH into Compute Node." src="./resources/ssh_into_compute_node.png" width=900 /></p>
 
-For example, in the screenshot above, the head node `scc24_arch_hn` and the compute node `scc24_arch_cn` have been created with the same key pair `nlisa at grogu`. The head node has a public facing IP address of **154.114.57.126** and the compute node has an private, internal IP address of **10.100.0.191**, then you would connect to this compute node using:
+For example, in the screenshot above, the head node `scc24_arch_hn` and the compute node `scc24_arch_cn` have been created with the same key pair `nlisa at grogu`. The head node has a public facing IP address of **154.114.57.126** and the compute node has an private, internal IP address of **10.100.50.191**, then you would connect to this compute node using:
 
 ```bash
-ssh -i ~/.ssh/id_ed25519_sebowa -J arch@154.114.57.126 arch@10.100.0.191
+ssh -i ~/.ssh/id_ed25519_sebowa -J arch@154.114.57.126 arch@10.100.50.191
 ```
 
 > [!NOTE]
@@ -180,9 +180,9 @@ Just as you did so in the previous tutorial when you generated SSH keys [on your
 
 1. Generate an SSH key on your **head node**:
 
-   ```bash
+```bash
    ssh-keygen -t ed25519
-   ```
+```
    
    - *Enter file in which to save the key* - Press `Enter`,
    - *Enter passphrase (empty for no passphrase)* - Leave empty and press `Enter`,
@@ -343,7 +343,7 @@ tmux a -t session_name
 ```
 
 
-
+***Basic Linux commands needs to move to "things to know" section *** 
 ### Basic Linux commands   
 
 #### Basic System Monitoring  
@@ -369,22 +369,22 @@ pwd
 ```
 
 
-
 ### Manipulating Files and Directories
 
 #### Make a New Directory 
 
-`mkdir` command is used to create folders or directories, the `-p` flag means create the directory path `mnu/2024` if it does not exits before creating `SCC` directory. 
+`mkdir` command is used to create folders or directories, the `-p` flag means create the directory path `nmu/2024` if it does not exits before creating `SCC` directory. 
 
 ```bash
 mkdir SCC
-mkdir -p mnu/2024/SCC
+mkdir -p nmu/2024/SCC
 ```
 
 
 
 #### creating new Files 
-The following commands are used to create and edit files 
+The following commands are used to create and edit files:
+ 
 `touch` create a new file(s) 
 
 `vi, vim, nano ` file editor commands and are used to edit existing files, but if a file does not exist it will create the file and open it for editing. 
@@ -402,11 +402,11 @@ vi file1
 `ls` (list) command used to list the content of directory/folder.
 
 ```bash
-ls mnu/2024/SCC
+ls nmu/2024/SCC
 ```
 
 `ls` list or prints the content of the current working directory 
-`ls mnu/2024/SCC`  list or print the content of the last `SCC` directory 
+`ls nmu/2024/SCC`  list or print the content of the last `SCC` directory 
 
 
 
@@ -416,10 +416,10 @@ ls mnu/2024/SCC
 
 ```bash
 
-cd mnu/2024/SCC
+cd nmu/2024/SCC
 ```
 
-`cd mnu/2024/SCC` means moving to `SCC`  directory, you can verify your current working directory by `pwd` command 
+`cd nmu/2024/SCC` means moving to `SCC`  directory, you can verify your current working directory by `pwd` command 
 
 <p align="center"><img alt="change from current to SCC directory" src="./resources/cdexample.png" width=500 /></p>
 
@@ -430,14 +430,14 @@ cd mnu/2024/SCC
 `cp` copy files/directories from source to destinations, it works like windows `copy and paste`. 
 
 ```bash
-mkdir -p mnu/2024/team
-cp -r mnu/2024/SCC mnu/2024/team/
+mkdir -p nmu/2024/team
+cp -r nmu/2024/SCC nmu/2024/team/
 
 ```
 
-`mkdir -p mnu/2024/team` creates a team directory/folder under mnu/2024 directoy path. 
+`mkdir -p nmu/2024/team` creates a team directory/folder under nmu/2024 directoy path. 
 
-`cp -r mnu/2024/SCC mnu/2024/team/` will recursilvely copy the `SCC` directory and it content to `mnu/2024/team/` directory. 
+`cp -r nmu/2024/SCC mnu/2024/team/` will recursilvely copy the `SCC` directory and it content to `nmu/2024/team/` directory. 
 
 
 <p align="center"><img alt="creating the SCC directory" src="./resources/cpexamble.png" width=700 /></p>
@@ -446,11 +446,11 @@ cp -r mnu/2024/SCC mnu/2024/team/
 
 #### Move File or Directory 
 
-`mv` command literally moves files/directories from source to destinations, it work like windows `cut and paste`. 
+`mv` command literally moves files/directories from source to destination, it work like windows `cut and paste`. 
 
 
 ```bash
-mv staff_list.txt mnu/2024/team/SCC
+mv staff_list.txt nmu/2024/team/SCC
 ```
 
 `staff_list.txt` file is being moved to SCC directory 
@@ -462,11 +462,11 @@ mv staff_list.txt mnu/2024/team/SCC
 
 #### Remove File or Directory 
 
-`rm` remove command used to delete files, directory with `-r` flag
+`rm` remove command used to delete files, directory,  with `-r` flag it delete all files within a directory then lastly delete the directory
 
 ```bash
-rm  mnu/2024/team/SCC/staff_list.txt
-rm -r mnu/2024/team/SCC
+rm  nmu/2024/team/SCC/staff_list.txt
+rm -r nmu/2024/team/SCC
 
 ```
 
@@ -509,7 +509,7 @@ deactivate
 
 Your VMs have been assigned IP addresses,to identify these, navigate to `Compute -> Instances` on your openstack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for the headnode) and one IP address (for compute node) with their respective networks  
 
-The headnode IP addresses will look like `10.100.50.x` and `154.114.72.x` where `x` is your specific vm address number. `10.100.50.x` network is for internal use and `154.114.72.x` is for public facing usage. 
+The headnode IP addresses will look like `10.100.50.x` and `154.114.57.x` where `x` is your specific vm address number. `10.100.50.x` network is for internal use and `154.114.57.x` is for public facing usage. 
 
 You can check your network interfaces by using the `ip a` command after logging in to your headnode or commpute node. 
 
@@ -874,41 +874,21 @@ This tutorial will show you how to export a directory on the head node and mount
 
 ### NFS Server (Head Node)
 
-The head node will act as the NFS server and will export the `/home/` directory to the compute node. The `/home/` directory contains the home directories of all the the non-`root` user accounts on most default Linux operating system configurations. For more information read the this link https://docs.rockylinux.org/guides/file_sharing/nfsserver/  
+The head node will act as the NFS server and will export the `/home/` directory to the compute node. The `/home/` directory contains the home directories of all the the non-`root` user accounts on most default Linux operating system configurations. For more information read the this link https://docs.rockylinux.org/guides/file_sharing/nfsserver/   
 
 
-1. NFS requires two services to function:
-        The network service (of course)
-        The rpcbind service
 
-2. Install the NFS service on the head node:
+1. Install the NFS service on the head node:
 
 ```bash
 sudo dnf install nfs-utils
 ```
-
-
-3. Check the status of the rpcbind services:
-
-```bash
-sudo sudo systemctl status rpcbind
-```
-
-
- 4. Verify the version of NFS installation.
-
-```bash
-sudo cat /proc/fs/nfsd/versions 
- -2 +3 +4 +4.1 +4.2
-```
-
- *** NFS versions 3 and 4 are enabled by default, and version 2 is disabled. NFSv2 is pretty old and outdated, and hence you can see the -ve sign in front of it.** 
- 
- 
-5. NFS shares (directories on the NFS server) are configured in the `/etc/exports` file. Here you specify the directory you want to share, followed by the IP address or range you want to share to and then the options for sharing. We want to export the `/home` directory, so edit `/etc/exports` and add the following:
+  
+2. NFS shares (directories on the NFS server) are configured in the `/etc/exports` file. Here you specify the directory you want to share, followed by the IP address or range you want to share to and then the options for sharing. We want to export the 
+`/home` directory, so edit `/etc/exports` and add the following:
 
 ```conf
- /home    10.100.50.0/24(rw,async,no_subtree_check,no_root_squash) 
+/home 10.100.50.0/24 (rw,async,no_subtree_check,no_root_squash)
 ```
 
 
@@ -921,14 +901,15 @@ sudo cat /proc/fs/nfsd/versions
         - no_root_squash - By default, NFS translates requests from a root user on the client into a non-privileged user on the host. This option disables that behavior and should be used carefully to allow the client to gain access to the host.
 
 
-6. Start and enable the `nfs-server` service using `systemctl`.
+3. Start and enable the `nfs-server` service using `systemctl`.
 
 ```bash
-   sudo systemctl enable --now nfs-server rpcbind
+  sudo systemctl start nfs-server
+  sudo systemctl enable nfs-server
 ```
 
 
-7. NFS on Rocky Linux makes use of three different services, and they all need to be allowed through your firewall. You can add these rules with firewall-cmd:
+4. NFS on Rocky Linux makes use of three different services, and they all need to be allowed through your firewall. You can add these rules with firewall-cmd:
 
 ```bash
    sudo firewall-cmd --add-service={nfs,mountd,rpc-bind} --permanent
@@ -956,6 +937,7 @@ Since the directory we want to mount is the `/home` directory, the user can not 
 
  ```bash
    sudo mount -t nfs <headnode_ip_or_hostname>:/home /home
+   sudo mount -t nfs headnode:/home /home
  ```
 
 2. Once done, you can verify that the `/home` directory of the head node is mounted by using `df -h`:
@@ -967,21 +949,23 @@ Since the directory we want to mount is the `/home` directory, the user can not 
 
 With this mounted, it effectively replaces the `/home` directory of the compute node with the head node's one until it is unmounted. To verify this, create a file on the compute node's `rocky` user home directory (`/home/rocky`) and see if it is also automatically on the head node. If not, you may have done something wrong and may need to redo the above steps!
 
+
 #### Making The NFS Mount Permanent
 
 Using `mount` from the command line will not make the mount permanent. It will not survive a reboot. To make it permanent, we need to edit the `/etc/fstab` file on the compute node. This file contains the mappings for each mount of any drives or network locations on boot of the operating system.
 
-1. First we need to unmount the mount we made:
+1. First we need to unmount the mount we made and move out of /home directory:
 
 ```bash
      sudo umount /home
+     sudo cd /
 ```
 
 2. Now we need to edit the `/etc/fstab` file and add this new line to it (be careful not to modify the existing lines!):
 
 
 ```bash
-   headnode.cluster.scc:/home    /home     nfs auto,nofail,noatime,nolock,tcp,actimeo=1800,intr    0 0
+   headnode:/home    /home     nfs auto,nofail,noatime,nolock,tcp,actimeo=1800,intr    0 0
 ```
 
  The structure is: `<host>:<filesystem_dir> <local_location> <filesystem_type> <filesystem_options> 0 0`. The last two digits are not important for this competition and can be left at 0 0.
@@ -1000,8 +984,6 @@ For the description of nfs options listed above see the link: https://cheatograp
     df -h
 ```
 
-
-
 ### Passwordless SSH
 
 When managing a large fleet of machines or even when just logging into a single machine repeatedly, it can become very time consuming to have to enter your password repeatedly. Another issue with passwords is that some services may rely on directly connecting to another computer and can't pass a password during login. To get around this, we can use [public key based authentication](https://www.ssh.com/academy/ssh/public-key-authentication) for passwordless login.
@@ -1010,17 +992,15 @@ When managing a large fleet of machines or even when just logging into a single 
 1. Generate an SSH key-pair for your user. This will create a public and private key for your user in `/home/<username>/.ssh`. The private key is your identity and the public key is what you share with other computers.
 
 ```bash
-   ssh-keygen
+ssh-keygen -t ed25519
    #press enter on all prompt
 ```
 
-<p align="center"><img alt="generating ssh keys with `ssh-keygen` " src="./resources/sshkeygen.png" width=900 /></p>
-
-2. Copy the public key generated by `ssh-keygen` into the `authorized_keys` file in the same directory.
+2. Copy the generated public key into the `authorized_keys` file in the same directory.
 
 ```bash
     [rocky@headnode ~]$ cd ~/.ssh
-    [rocky@headnode .ssh]$ cat id_rsa.pub > authorized_keys
+    [rocky@headnode .ssh]$ cat id_ed25519 >> authorized_keys
 ```
 
 Since your `/home` directory is shared with your compute node, this will look the same on the compute node.
@@ -1040,7 +1020,7 @@ run the following command:
     [rocky@computenode ~]$ sudo setsebool -P use_nfs_home_dirs 1
 ```
 
-5. Exit **back to the head node**
+5. exit **back to the head node**
 6. You can do the same thing for passwordless login from compute node to headnode 
 
 
@@ -1133,14 +1113,14 @@ The `sudo` program is controlled by a file located at `/etc/sudoers`. This file 
 
 ```ini
 # Allow root to run any commands anywhere
-root	ALL=(ALL) 	ALL
+root    ALL=(ALL)   ALL
 
 # Allows members of the 'sys' group to run networking, software,
 # service management apps and more.
  %sys ALL = NETWORKING, SOFTWARE, SERVICES, STORAGE, DELEGATING, PROCESSES, LOCATE, DRIVERS
 
 # Allows people in group wheel to run all commands without a password
-%wheel	ALL=(ALL)	ALL  NOPASSWD: ALL
+%wheel  ALL=(ALL)   ALL  NOPASSWD: ALL
 ```
 
 To avoid modifying `/etc/sudoers` directly, we can just add `captain` to the `wheel` group.
@@ -1171,6 +1151,7 @@ Now log out and then log back into your node as `captain`. You can use `sudo` on
 
 
 
+***this Out-Of-Sync Users and Groups section should be removed***
 
 ### Out-Of-Sync Users and Groups
 
@@ -1318,14 +1299,16 @@ ansible -m ping servers
 #access as an individual host
 ansible -m ping compute
 
-#run command on hosts 
-ansible -m shell -a 'free -m' compute
+#run command on hosts to see client's interfaces
+ansible -m shell -a 'ip a' compute
 ```
-<p align="center"><img alt="ansible testing hosts client connection " src="./resources/ansible_ping_servers.png" width=900 /></p>
+<p align="center"><img alt="ansible testing hosts client connection " src="./resources/ansible_ping_feedback.png" width=900 /></p>
 
-<p align="center"><img alt="ansible testing individual host client connection " src="./resources/ansible_individual_host_access.png" width=900 /></p>
 
-<p align="center"><img alt="run command on ansible clients" src="./resources/ansible_run_command_on_hosts.png" width=900 /></p>
+```bash
+#run commands on ansible host to see or get client's interfaces information
+ansible -m shell -a 'ip a' compute
+```
 
 
 ### Create Team Member Accounts
@@ -1393,10 +1376,12 @@ ansible-playbook /home/rocky/ansible/playbooks/sudo_users.yml -l servers
 
 <p align="center"><img alt=" run the sudo_user playbook " src="./resources/ansible_create_user_run_result.png" width=900 /></p>
 
+
 Verify user `team_lead` was created on compute node and it on a `wheel` group 
-
-<p align="center"><img alt=" user team lead exist on ansible client " src="./resources/ansible_team_lead_user_verification.png" width=900 /></p>
-
+```bash
+ssh compute
+id 
+```
 
 ## Remote Access to Your Cluster and Tunneling
 Tunneling is a way of accessing software tools running privately in a server somewhere publicly. You want to access these tools publicly. There are multiple ways you can go about and we'll discuss 2 in this tutorial.
@@ -1506,3 +1491,4 @@ Now you can enter `http://headnode_ip:1235` in your browser and you'll get acces
 ### ZeroTier
 
 ### X11 Forwarding
+

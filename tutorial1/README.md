@@ -359,7 +359,7 @@ In order for you to be able to SSH into your newly created OpenStack instance, y
 * Dissociating and Releasing Floating IPs
    - If your VM is deleted then the floating IP associated with that deleted VM will stay in your project under `Networks->Floating IPs` for future use. Selecting the floating IP and clicking `Release Floating IPs` will send the floating IP back to the pool and you can call a tutor to help you get back your IP. 
 
-   
+
 
 # Introduction to Basic Linux Administration
 
@@ -572,8 +572,8 @@ sudo dnf remove <PACKAGE_NAME>
 # Moreover Ubuntu has it's origins in South Africa...
 
 sudo apt update
-sudo apt upgrade
-sudo apt install <PACKAGE_NAME>
+sudo apt update
+sudo apt install <PACKAGE_NAME> 
 sudo apt remove <PACKAGE_NAME>
 
 # Pacman-based systems (Arch-Like Linux)
@@ -621,7 +621,6 @@ You will now install and run HPL on your **head node**.
 > However, familiarizing yourselves with this material now, will make things easier for you and your team in the subsequent tutorials and their respective sections.
 
 1. Update the system and install dependencies
-
    You are going to be installing tools that will allow you to compile applications using the `make` command. You will also be installing a maths library to compute matrix multiplications, and an `mpi` library for communication between processes, in this case mapped to CPU cores.
    ```bash
    # DNF / YUM (RHEL, Rocky, Alma, Centos)
@@ -638,7 +637,6 @@ You will now install and run HPL on your **head node**.
    sudo pacman -S base-devel openmpi atlas-lapack nano wget
    ```
 1. Fetch the HPL source files
-
    You will download the HPL source files. This is why you installed `wget` in the previous step.
    ```bash
    # Download the source files
@@ -655,7 +653,6 @@ You will now install and run HPL on your **head node**.
    ls
    ```
 1. Configure HPL
-
    Copy and edit your own `Make.<TEAM_NAME>` file in the `hpl` directory to suit your system configuration.
    ```bash
    cp setup/Make.Linux_PII_CBLAS_gm Make.<TEAM_NAME>
@@ -676,7 +673,6 @@ You will now install and run HPL on your **head node**.
    LINKER             = mpicc
    ```
 1. Temporarily edit your `PATH` variable
-
    You are almost ready to compile HPL, you will need to modify your path variable in order for your MPI C Compiler `mpicc` to be a recognized binary.
    Check to see if `mpicc` is currently detected:
    ```bash
@@ -691,7 +687,6 @@ You will now install and run HPL on your **head node**.
    which mpicc
    ```
 1. Compile HPL
-
    You are finally ready to compile HPL. Should you encounter any errors and need to make adjustments and changes, first run a `make clean arch=<TEAM_NAME>`.
    ```bash
    make arch=<TEAM_NAME>
@@ -701,7 +696,6 @@ You will now install and run HPL on your **head node**.
    ```
 
 1. Configure your `HPL.dat`
-
    Make the following changes to your `HPL.dat` file:
    ```bash
    cd bin/<TEAM_NAME>
@@ -715,7 +709,6 @@ You will now install and run HPL on your **head node**.
    1            Qs
    ```
 1. Running HPL on a Single CPU
-
    For now, you will be running HPL on your head node, on a single CPU. Later you will learn how to run HPL over multiple CPUs, each with multiple cores, across multiple nodes...
    ```bash
    # Excute the HPL binary
