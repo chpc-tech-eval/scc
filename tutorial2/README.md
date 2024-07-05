@@ -5,73 +5,70 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
-1. [Checklist](#checklist)
-1. [Spinning Up a Compute Node in OpenStack](#spinning-up-a-compute-node-in-openstack)
-    1. [Compute Node Considerations](#compute-node-considerations)
-1. [Accessing Your Compute Node](#accessing-your-compute-node)
-    1. [IP Addresses and Routing](#ip-addresses-and-routing)
-    1. [Command Line Proxy Jump Directive](#command-line-proxy-jump-directive)
-        1. [Setting a Temporary Password on your Compute Node](#setting-a-temporary-passworwd-on-your-compute-node)
-    1. [Generating SSH Keys on your Head Node](#generating-ssh-keys-on-your-head-node)
-1. [Understanding the Roles of the Head Node and Compute Nodes](#understanding-the-roles-of-the-head-node-and-compute-nodes)
-    1. [Basic System Monitoring](#basic-system-monitoring)
-    1. [Terminal Multiplexers](#terminal-multiplexers)
-1. [Manipulating Files and Directories](#manipulating-files-and-directories)
-    1. [List Directory `ls`](#list-directory-ls)
-    1. [Change Directory `cd`](#change-directory-cd)
-    1. [Copy File or Directory `cp`](#copy-file-or-directory-cp)
-    1. [Move File or Directory `mv`](#move-file-or-directory-mv)
-    1. [Make a New Directory `mkdir`](#make-a-new-directory-mkdir)
-    1. [Remove File or Directory `rm`](#remove-file-or-directory-rm)
-    1. [Recommended Project Folder Structure](#recommended-project-folder-structure)
-1. [Verifying Networking Setup](#verifying-networking-setup)
-    1. [Head Node](#head-node)
-    1. [Compute Node](#compute-node)
-    1. [Editing `/etc/hosts` File](#editing-etchosts-file)
-    1. [Permanent `~/.ssh/config` Configuration](#permanent-sshconfig-configuration)
-1. [Configuring a Simple Stateful Firewall](#configuring-a-simple-stateful-firewall)
-    1. [IPTables](#iptables)
-    1. [NFTables](#nftables)
-    1. [Front-end Firewall Application Managers](#front-end-firewall-application-managers)
-1. [Network Time Protocol](#network-time-protocol)
-    1. [NTP Server (Head Node)](#ntp-server-head-node)
-    1. [NTP Client (Compute Node)](#ntp-client-compute-node)
-1. [Network File System](#network-file-system)
-    1. [NFS Server (Head Node)](#nfs-server-head-node)
-    1. [NFS Client (Compute Node)](#nfs-client-compute-node)
-        1. [Mounting An NFS Mount](#mounting-an-nfs-mount)
-        1. [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
-    1. [Passwordless SSH](#passwordless-ssh)
-        1. [Understanding `~/.ssh/authorized_keys`](#understanding-ssh/authorized_keys)
-        1. [User Permissions and Ownership](#user-permissions-and-ownership)
-1. [User Account Management](#user-account-management)
-    1. [Create Team Captain User Account](#create-team-captain-user-account)
-        1. [Head Node](#head-node-1)
-        1. [Compute Node](#compute-node-1)
-        1. [Super User Access](#super-user-access)
-    1. [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
-        1. [Head Node](#head-node-2)
-        1. [Compute Node](#compute-node-2)
-        1. [Clean Up](#clean-up)
-    1. [Ansible User Declaration](#ansible-user-declaration)
-        1. [Installing and Configuring Ansible](#installing-and-configuring-ansible)
-        1. [Create Team Member Accounts](#create-team-member-accounts)
-1. [Remote Access to Your Cluster and Tunneling](#remote-access-to-your-cluster-and-tunneling)
-    1. [Local Port Forwarding](#local-port-forwarding)
-    1. [Dynamic Port Forwarding](#dynamic-port-forwarding)
-        1. [Web Browser and SOCKS5 Proxy Configuration](#web-browser-and-socks5-proxy-configuration)
-    1. [WirGuard VPN Cluster Access](#wirguard-vpn-cluster-access)
-    1. [ZeroTier](#zerotier)
-    1. [X11 Forwarding](#x111-forwarding)
-    1. [(Delete)FreeIPA <img src="./resources/freeipa.png" width=2.1% />](#deletefreeipa-img-srcresourcesfreeipapng-width21-)
-        1. [FreeIPA Server (Head Node)](#freeipa-server-head-node)
-        1. [FreeIPA Client (Compute Node)](#freeipa-client-compute-node)
-        1. [FreeIPA Web Interface](#freeipa-web-interface)
-            1. [Dynamic SSH Tunnel](#dynamic-ssh-tunnel)
-            1. [Firefox and Proxy Configuration](#firefox-and-proxy-configuration)
-            1. [Creating a User](#creating-a-user)
-                1. [Creating the Group](#creating-the-group)
-                1. [Creating the Users](#creating-the-users)
+- [Checklist](#checklist)
+- [Spinning Up a Compute Node on Sebowa(OpenStack)](#spinning-up-a-compute-node-on-sebowaopenstack)
+    - [Compute Node Considerations](#compute-node-considerations)
+- [Accessing Your Compute Node Using `ProxyJump` Directive](#accessing-your-compute-node-using-proxyjump-directive)
+    - [Setting a Temporary Password on your Compute Node](#setting-a-temporary-password-on-your-compute-node)
+- [Understanding the Roles of the Head Node and Compute Node](#understanding-the-roles-of-the-head-node-and-compute-node)
+    - [Terminal Multiplexers and Basic System Monitoring](#terminal-multiplexers-and-basic-system-monitoring)
+        - [Basic Linux commands   ](#basic-linux-commands)
+            - [Basic System Monitoring  ](#basic-system-monitoring)
+            - [Print current working space ](#print-current-working-space)
+        - [Manipulating Files and Directories](#manipulating-files-and-directories)
+            - [Make a New Directory ](#make-a-new-directory)
+            - [creating new Files ](#creating-new-files)
+            - [List Directory ](#list-directory)
+            - [Change Directory ](#change-directory)
+            - [Copy File or Directory ](#copy-file-or-directory)
+            - [Move File or Directory ](#move-file-or-directory)
+            - [Remove File or Directory ](#remove-file-or-directory)
+            - [The history Command](#the-history-command)
+            - [The virtual environment Command ](#the-virtual-environment-command)
+    - [Recommended Project Folder Structure](#recommended-project-folder-structure)
+        - [-](#-)
+        - [Head Node (`nmtui`)](#head-node-nmtui)
+        - [Compute Node](#compute-node)
+        - [Editing `/etc/hosts` File](#editing-etchosts-file)
+        - [permanent Configuration with `~/.ssh/config`](#permanent-configuration-with-sshconfig)
+    - [Configuring a Simple Stateful Firewall](#configuring-a-simple-stateful-firewall)
+        - [-](#--1)
+        - [NFTables `nftables` ](#nftables-nftables)
+        - [Dynamic Front-end Firewall Application Managers `firewalld`](#dynamic-front-end-firewall-application-managers-firewalld)
+    - [Network Time Protocol](#network-time-protocol)
+        - [NTP Server (Head Node)](#ntp-server-head-node)
+        - [NTP Client (Compute Node)](#ntp-client-compute-node)
+    - [Network File System](#network-file-system)
+    - [Generating ssh Keys on your Head Node](#generating-ssh-keys-on-your-head-node)
+        - [NFS Server (Head Node)](#nfs-server-head-node)
+        - [NFS Client (Compute Node)](#nfs-client-compute-node)
+            - [Mounting An NFS Mount](#mounting-an-nfs-mount)
+            - [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
+        - [Passwordless ssh](#passwordless-ssh)
+        - [Understanding `~/.ssh/authorized_keys`](#understanding-sshauthorized_keys)
+        - [User Permissions and Ownership](#user-permissions-and-ownership)
+    - [User Account Management](#user-account-management)
+        - [Create Team Captain User Account](#create-team-captain-user-account)
+            - [Head Node](#head-node)
+            - [Compute Node](#compute-node-1)
+            - [Super User Access](#super-user-access)
+        - [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
+            - [Head Node](#head-node-1)
+            - [Compute Node](#compute-node-2)
+            - [Clean Up](#clean-up)
+    - [Ansible User Declaration](#ansible-user-declaration)
+        - [Installing and Configuring Ansible](#installing-and-configuring-ansible)
+            - [Installing ansible ](#installing-ansible)
+            - [configuring ansible ](#configuring-ansible)
+        - [Create Team Member Accounts](#create-team-member-accounts)
+    - [Remote Access to Your Cluster and Tunneling](#remote-access-to-your-cluster-and-tunneling)
+        - [1. Local Port Forwarding](#1-local-port-forwarding)
+        - [2. Dynamic Port Forwarding ](#2-dynamic-port-forwarding)
+            - [Web Browser and SOCKS5 Proxy Configuration](#web-browser-and-socks5-proxy-configuration)
+                - [Firefox and Proxy Configurations](#firefox-and-proxy-configurations)
+        - [WirGuard VPN Cluster Access](#wirguard-vpn-cluster-access)
+        - [ZeroTier](#zerotier)
+        - [X11 Forwarding](#x11-forwarding)
 
 <!-- markdown-toc end -->
 
@@ -156,60 +153,24 @@ Once you have successfully logged into your compute node, you can set a password
 sudo passwd <user>
 ```
 
+In the event that you manage to lock yourselves out of your VMs, from your team's Sebowa OpenStack workspace, navigate to `Instances` and click on the problematic VM. There after navigate to `Console`, where you will be free to login using the password you've just created.
+
 <p align="center"><img alt="OpenStack VNC." src="./resources/openstack_vnc_access.png" width=900 /></p>
 
 > [!IMPORTANT]
 > You will not be able to login into your ssh servers on your head (and compute) nodes using a password. This is a security feature by default. Should you have a ***very good reason*** for wanting to enable password enabled ssh access, discuss this with the instructors.
 >
 > The reason why you are setting a password at this stage, is because the following set of tasks could potentially break your ssh access and lock you out of your node(s).
->
 
-### Generating ssh Keys on your Head Node
-
-Just as you did so in the previous tutorial when you generated ssh keys [on your workstation](../tutorial1/README.md#generating-ssh-keys), you're now going to do the same on your head node. You're then going to copy the newly created key onto you head node and test the new ssh connection, by logging into your compute node.
-
-1. Generate an ssh key on your **head node**:
-
-   ```bash
-   ssh-keygen -t ed25519
-   ```
-   
-   - *Enter file in which to save the key* - Press `Enter`,
-   - *Enter passphrase (empty for no passphrase)* - Leave empty and press `Enter`,
-   - *Enter same passphrase again* - Leave empty and press `Enter` again,
-1. Copy the newly created ssh key to your **compute node**:
-
-   ```bash
-   ssh-copy-id ~/.ssh/id_ed25519 <user>@<compute node ip>
-   ```
-   
-1. From your **head node**, ssh into your **compute node**:
-   ```bash
-   
-   ssh <user>@<compute node ip>
-   
-   ```
-1. Once you've successfully logged into your **compute node**, list and examine the contents of the `~/.ssh/authorized_keys` file:
-   ```bash
-   ls -l ~/.ssh/id_ed25519
-   cat ~/.ssh/id_ed25519
-   ```
-
-<p align="center"><img alt="Generate Key and ssh into compute" src="./resources/install_tmux.png" width=900 /></p>
-
-
-### Understanding the Roles of the Head Node and Compute Node
+# Understanding the Roles of the Head Node and Compute Node
 Networking Diagram and client server model
 headnode (hd) and compute node (cn) relationship follow a server (hd) - client (cn) relations, the headnode carries the systems services and compute node does all the computations
 System software need to be installed on both head node and compute nodes
 Do not ssh endlessly between head and compute nodes, one terminal example or multiplexing (screen sessions via `tmux`)
 
-
-### Terminal Multiplexers
+## Terminal Multiplexers and Basic System Monitoring
 
 Discuss GNU Screen and [tmux](https://github.com/tmux/tmux/wiki)
-
-
 
 Install `tmux` on your **head node***:
 
@@ -255,7 +216,7 @@ To start a new `tmux` session on your **head node**:
 tmux new -s session_name 
 ```
 
-#### Working on your Head Node and Compute Node in Two Adjacent Panes
+* Working on your Head Node and Compute Node in Two Adjacent Panes
 
 Once you've started a new `tmux` session or daemon or server, on your head node, there are a number of very useful tools you can utilize.
 
@@ -322,7 +283,7 @@ Once you've started a new `tmux` session or daemon or server, on your head node,
    ```
 1. Your team must decide which tool you will be using for basic monitoring of your cluster. Choose between `top`, `htop` and `btop` and make sure your choice of application is installed across your cluster.
 
-#### Attaching and Detaching Sessions
+* Attaching and Detaching Sessions
 
 Should your terminal application close, or if you relocate from the laboratores... write a schlept about remote sessions and servers here
 
@@ -332,11 +293,8 @@ To connect to an existing `tmux` session on your **head node**:
 tmux a -t session_name 
 ```
 
+# Basic System Monitoring
 
-
-### Basic Linux commands   
-
-#### Basic System Monitoring  
 `top` `htop` are system built commands used to monitor server resource suage. for `htop` first install epel source repository then install htop 
 https://docs.rockylinux.org/gemstones/htop/ 
 
@@ -344,160 +302,32 @@ https://docs.rockylinux.org/gemstones/htop/
 sudo dnf -y install epel-release
 sudo dnf makecache
 sudo dnf -y install htop
-htop 
+htop
 ```
 
 <p align="center"><img alt="htop output" src="./resources/htopcommand.png" width=900 /></p>
 
+# Manipulating Files and Directories
 
+* Print name of current / working directory: If you are lost and don't know where you are currently working use `pwd` (print working directory). It will show you your current working space.
 
-#### Print current working space 
-If you are lost and don't know where you currently working use `pwd` (print working directory), it will show you your current woring space 
+* Make a New Directory: `mkdir` is used to create folders or directories, the `-p` flag can be used to create additional parent folders and directories.
 
-```bash
-pwd 
-```
+* Creating new Files: Both commands and text editors can be used to create and edit files. For example `touch` creates a new file. Similarly the text editors `vi`, `vim` and `nano` are used to create and / or edit files.
 
+* List Directory `ls` (list) command used to list the content of directory / folder.
 
+* Change Directory `cd` command allows you to move between directories.
 
-### Manipulating Files and Directories
+* Copy File or Directory `cp` files / directories from source to destinations.  Consider it's functions to be similar to those of Windows' `copy and paste`.
 
-#### Make a New Directory 
+* Move File or Directory `mv` command moves files / directories from source to destinations. Consider it's functions to be similar to those of Windows' `cut and paste`.
 
-`mkdir` command is used to create folders or directories, the `-p` flag means create the directory path `mnu/2024` if it does not exits before creating `SCC` directory. 
+* Remove File or Directory `rm` remove command is used to delete files, and directory with `-r` flag.
 
-```bash
-mkdir SCC
-mkdir -p mnu/2024/SCC
-```
+# Verifying Networking Setup
 
-
-
-#### creating new Files 
-The following commands are used to create and edit files 
-`touch` create a new file(s) 
-
-`vi, vim, nano ` file editor commands and are used to edit existing files, but if a file does not exist it will create the file and open it for editing. 
-
-
-```bash
-touch file
-vi file1
-```
-
-
-
-
-#### List Directory 
-`ls` (list) command used to list the content of directory/folder.
-
-```bash
-ls mnu/2024/SCC
-```
-
-`ls` list or prints the content of the current working directory 
-`ls mnu/2024/SCC`  list or print the content of the last `SCC` directory 
-
-
-
-#### Change Directory 
-
-`cd` commad allow you move from directory to directory 
-
-```bash
-
-cd mnu/2024/SCC
-```
-
-`cd mnu/2024/SCC` means moving to `SCC`  directory, you can verify your current working directory by `pwd` command 
-
-<p align="center"><img alt="change from current to SCC directory" src="./resources/cdexample.png" width=500 /></p>
-
-
-
-#### Copy File or Directory 
-
-`cp` copy files/directories from source to destinations, it works like windows `copy and paste`. 
-
-```bash
-mkdir -p mnu/2024/team
-cp -r mnu/2024/SCC mnu/2024/team/
-
-```
-
-`mkdir -p mnu/2024/team` creates a team directory/folder under mnu/2024 directoy path. 
-
-`cp -r mnu/2024/SCC mnu/2024/team/` will recursilvely copy the `SCC` directory and it content to `mnu/2024/team/` directory. 
-
-
-<p align="center"><img alt="creating the SCC directory" src="./resources/cpexamble.png" width=700 /></p>
-
-
-
-#### Move File or Directory 
-
-`mv` command literally moves files/directories from source to destinations, it work like windows `cut and paste`. 
-
-
-```bash
-mv staff_list.txt mnu/2024/team/SCC
-```
-
-`staff_list.txt` file is being moved to SCC directory 
-
-
- <p align="center"><img alt="moving staff list file to SCC directory" src="./resources/mvcommandexample.png" width=700 /></p>
-
-
-
-#### Remove File or Directory 
-
-`rm` remove command used to delete files, directory with `-r` flag
-
-```bash
-rm  mnu/2024/team/SCC/staff_list.txt
-rm -r mnu/2024/team/SCC
-
-```
-
-
-<p align="center"><img alt="moving staff list file to SCC directory" src="./resources/rmcommand.png" width=700 /></p>
-
-<p align="center"><img alt="moving staff list file to SCC directory" src="./resources/rmcommandexample.png" width=700 /></p>
-
-
-
-
-#### The history Command
-
-`history` command shows all commands you have executed so far, the feedback is numbered, use `!14` to rerun the 20th command  
- 
-
- <p align="center"><img alt="history command "  src="./resources/history_command.png" width=500 /></p>
-
-
- <p align="center"><img alt="rerun commands from history "  src="./resources/rerun_command_from_history.png" width=9000 /></p>
-
-
-
-
-#### The virtual environment Command 
-
-`virtualenv` command helps you run multiple services with conflicting packages without any problems. each virtual enviroment is treated as an independant entity. 
-Below is how you create and source or access a virtual enviroment then deactivate to exit, ensure to use sensible names.
-https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-programming-environment-on-rocky-linux-9 
-
-```bash
-python -m venv env
-source env/bin/activate
-deactivate 
-```
-
-
-## Recommended Project Folder Structure
-#### Verifying Networking Setup
-
-Your VMs have been assigned IP addresses,to identify these, navigate to `Compute -> Instances` on your openstack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for the headnode) and one IP address (for compute node) with their respective networks  
+Your VMs have been assigned IP addresses, to identify these, navigate to `Compute -> Instances` on your openstack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for the headnode) and one IP address (for compute node) with their respective networks  
 
 The headnode IP addresses will look like `10.100.50.x` and `154.114.72.x` where `x` is your specific vm address number. `10.100.50.x` network is for internal use and `154.114.72.x` is for public facing usage. 
 
@@ -518,7 +348,7 @@ https://docs.rockylinux.org/guides/network/basic_network_configuration/
 
 
 
-#### Head Node (`nmtui`)
+##### Head Node (`nmtui`) #####
 
 For the **head node**, create a new network definition using the `nmtui` graphical tool using the following steps:
 
@@ -569,7 +399,7 @@ ip route
 - `ip route` will list the interfaces and their assigned routes.
 
 
-#### Compute Node
+##### Compute Node #####
 
 You must also set the static IP addressing for all other nodes in your cluster. You can explore different options for doing so, use the `nmcli` command. This is the command-line interface (CLI) for Network Manager, which is an alternative to the above nmtui, which is simply a graphical wrapper for the CLI.
 
@@ -593,7 +423,7 @@ If you get a timeout, then things are not working. Try to check your network con
 
 _**Please read [what-is-ip-routing](https://study-ccna.com/what-is-ip-routing/) to gain a better understanding of IP routing.**_ This will be impoortant for the rest of this competition and can help your understanding when debugging issues.
 
-#### Editing `/etc/hosts` File
+##### Editing `/etc/hosts` File #####
 
 In the absence of a DNS server for translation IP address into hostnames and vice versa.
 we can archive the same result by editing the `/etc/hosts`.
@@ -623,17 +453,19 @@ sudo systemctl restart systemd-hostnamed
 <p align="center"><img alt="edit `/etc/hosts` " src="./resources/etchost.png" width=900 /></p>
 
 
-#### permanent Configuration with `~/.ssh/config`
+##### permanent Configuration with `~/.ssh/config` #####
+
 you can explore `~/.ssh/config` permanent Configuration: 
 https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix/ 
 
 
 
-## Configuring a Simple Stateful Firewall
+### Configuring a Simple Stateful Firewall ###
+
 In the realm of network security, shielding your system against unauthorized access and ensuring data integrity are paramount. the below  tools `iptables, nftables and firewalld` serves as a system's gatekeepers, managing incoming and outgoing traffic.
 
 
-#### IPTables `iptables`
+##### IPTables `iptables` #####
 
 legacy tool that works by setting up rules in different tables. To secure your network with iptables, you would typically manipulate the following tables:
 
@@ -861,6 +693,40 @@ Run `chronyc clients` on the headnode to see ntp clients
 Network File System (NFS) enables you to easily share files and directories over the network. NFS is a distributed file system protocol that we will use to share files between our nodes across our private network. It has a server-client architecture that treats one machine as a server of directories, and multiple machines (clients) can connect to it.
 
 This tutorial will show you how to export a directory on the head node and mount it through the network on the compute nodes. With the shared file system in place it becomes easy to enable **public key based ssh authentication**, which allows you to ssh into all the computers in your cluster without requiring a password.
+
+## Generating ssh Keys on your Head Node
+
+Just as you did so in the previous tutorial when you generated ssh keys [on your workstation](../tutorial1/README.md#generating-ssh-keys), you're now going to do the same on your head node. You're then going to copy the newly created key onto you head node and test the new ssh connection, by logging into your compute node.
+
+1. Generate an ssh key on your **head node**:
+
+   ```bash
+   ssh-keygen -t ed25519
+   ```
+   
+   - *Enter file in which to save the key* - Press `Enter`,
+   - *Enter passphrase (empty for no passphrase)* - Leave empty and press `Enter`,
+   - *Enter same passphrase again* - Leave empty and press `Enter` again,
+1. Copy the newly created ssh key to your **compute node**:
+
+   ```bash
+   ssh-copy-id ~/.ssh/id_ed25519 <user>@<compute node ip>
+   ```
+   
+1. From your **head node**, ssh into your **compute node**:
+   ```bash
+   
+   ssh <user>@<compute node ip>
+   
+   ```
+1. Once you've successfully logged into your **compute node**, list and examine the contents of the `~/.ssh/authorized_keys` file:
+   ```bash
+   ls -l ~/.ssh/id_ed25519
+   cat ~/.ssh/id_ed25519
+   ```
+
+<p align="center"><img alt="Generate Key and ssh into compute" src="./resources/install_tmux.png" width=900 /></p>
+
 
 ### NFS Server (Head Node)
 
