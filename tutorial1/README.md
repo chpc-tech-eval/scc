@@ -342,24 +342,22 @@ In order for you to be able to SSH into your newly created OpenStack instance, y
 1. Select the `154.114.57.*` IP address allocated and click on the *Associate* button.
    <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_added_floating_ip.png" width=900 /></p>
 
-## Success State, Resource Management and Troubleshooting
+## Troubleshooting
 
 > [!CAUTION]
-> The following section is strictly for debugging and troubleshooting purposes
+> The following section is strictly for debugging and troubleshooting purposes. You **MUST** discuss your circumstances with an instructor before proceeding with this section. If you have successfully launched your head node, proceed to the [Intro on Basic Sys Admin](#introduction-to-basic-linux-administration).
 
 * Deleting Instances
-   - When all else fail select the failing vm and click `Delete instance` then follow the process for launcing a new instance/VM.
-   - Sometimes mistakes happen and you find yourself deleting a VM by mistake and will need to recover the deleted VM, by default `no` is selected on `Delete Volume on Instance Delete` this will leave your root (OS) disk behing and you can recover by launching a new VM from the root disk.
-
+  - When all else fails, and you would like to attempt the steps from the beginning: Select the failing VM and click `Delete Instance` from the drop down menu.
+  - Occasionally you may find yourself deleting a VM instance by mistake and will need to recover the deleted VM. Do not despair, by default `no` is selected on `Delete Volume on Instance Delete` this will leave your root (OS) disk behing and you can recover by launching a new VM from the root disk.
 
 * Deleting Volumes
-   - When a root (OS) disk's volume is left behing after deleting a VM on purpose, you will need to go to `Volumes->volumes` and select your volume and click ` Delete volumes` to remove the volume from your work space
 
+  When a root (OS) disk's volume is left behind after deleting a VM on purpose, you will need to go to `Volumes` and select your volume and click `Delete volumes` to remove the volume from your work space
 
 * Dissociating and Releasing Floating IPs
-   - If your VM is deleted then the floating IP associated with that deleted VM will stay in your project under `Networks->Floating IPs` for future use. Selecting the floating IP and clicking `Release Floating IPs` will send the floating IP back to the pool and you can call a tutor to help you get back your IP. 
 
-   
+  If your VM is deleted then the floating IP associated with that deleted VM will stay in your project under `Networks -> Floating IPs` for future use. Selecting the floating IP and clicking `Release Floating IPs` will send the floating IP back to the pool and you can call a tutor to help you get back your IP.
 
 # Introduction to Basic Linux Administration
 
@@ -432,14 +430,16 @@ If your workstation or laptop is running Windows, then you may proceed using eit
 
 * Username and Password
 
-   Once you've successfully logged into your head node VM, you are encouraged to setup your password login as a fail safe incase your ssh keys are giving issue, you may also access your head node through the OpenStack VNC console interface.
+  Once you've successfully logged into your head node VM, you are encouraged to setup your password login as a fail safe incase your ssh keys are giving issue, you may also access your head node through the OpenStack VNC console interface.
 
-```bash
+  ```bash
    sudo passwd <username>
-```
+  ```
+
+  <p align="center"><img alt="OpenStack VNC." src="./resources/openstack_vnc_access.png" width=900 /></p>
 
 > [!CAUTION]
-> Setting up a password for any user *- especially the default user -* will make your VM's vulnerable to [Brute Force SSH Attacks](https://helpcenter.trendmicro.com/en-us/article/tmka-19689)!
+> Setting up a password for any user *- especially the default user -* may make your VM's vulnerable to [Brute Force SSH Attacks](https://helpcenter.trendmicro.com/en-us/article/tmka-19689) if you enable password ssh authentication.
 
 ## Running Basic Linux Commands and Services
 

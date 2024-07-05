@@ -111,7 +111,7 @@ One important distinction between your head node and compute node(s), is that th
 
 The final important consideration that must be made for your compute node is that you must not forget to configure an ssh key, so that you may access it after it has successfully launched. For ease of access and to simplify your configuration, **you are *strongly* advised to use the same ssh key** that you'd [previously generated](../tutorial1/README.md#generating-ssh-keys) on your local machine/laptop.
 
-## Accessing Your Compute Node Using `ProxyJump` Directive
+# Accessing Your Compute Node Using `ProxyJump` Directive
 
 After you have successfully [Launched Your Second OpenStack VM Instance](../tutorial1/README.md#launching-your-first-openstack-virtual-machine-instance), you can ssh into your new compute node VM instance using your head node with the use of the ssh [ProxyJump Directive](https://goteleport.com/blog/ssh-proxyjump-ssh-proxycommand/). From you workstation, using either MobaXTerm or Windows Powershell, you can `ssh` directly into your compute node by first making an **ssh** connection too your head node and then establishing a TCP forwarding connection to your compute node. Using this method, the ssh keys for both your head node and compute node must reside on your local workstation:
 
@@ -119,6 +119,18 @@ After you have successfully [Launched Your Second OpenStack VM Instance](../tuto
 ssh -i <path to ssh key> -J <user>@<head node publicly accessible ip> <user>@<compute node private internal ip>
 ```
 
+The following diagram may illustrate the scenario:
+
+```css
+[workstation] ---- SSH ----> [head node] ---- SSH ----> [compute node]
+
+# First an ssh connection is made to the head node
+[workstation] ---- SSH ----> [head node]
+
+# Then an ssh connection is made to the compute node using the head node as
+# a jump box
+[workstation] ---- SSH ----> [jump box / ssh tunnel] ---- SSH ----> [compute node]
+```
 <p align="center"><img alt="ssh into Compute Node." src="./resources/ssh_into_compute_node.png" width=900 /></p>
 
 For example, in the screenshot above, the head node `scc24_arch_hn` and the compute node `scc24_arch_cn` have been created with the same key pair `nlisa at grogu`. The head node has a public facing IP address of **154.114.57.126** and the compute node has an private, internal IP address of **10.100.0.191**, then you would connect to this compute node using:
@@ -136,20 +148,24 @@ ssh -i ~/.ssh/id_ed25519_sebowa -J arch@154.114.57.126 arch@10.100.0.191
 <summary>Head node and compute node deployed using different ssh key pairs</summary>
 
 ```bash
-ssh -o ProxyCommand="ssh -i <path to head node ssh key> -l <user> -W %h:%p <head node ip>" -i <path to  compute node ip> <user>@<compute node ip> 
+ssh -o ProxyCommand="ssh -i <path to head node ssh key> -l <user> -W %h:%p <head node ip>" -i <path to  compute node ip> <user>@<compute node ip>
 ```
-
 </details>
 
-### Setting a Temporary Password on your Compute Node
+## Setting a Temporary Password on your Compute Node
 
-Once you have successfully logged into your compute node, you can set a password for the default user, which would be ***rocky*** in the case of Rocky Linux VM instance:
+Once you have successfully logged into your compute node, you can set a password for the default user, which would be ***rocky*** in the case of Rocky Linux VM instance. This is an optional step that you are advised to do so that you may access your VM's through the VNC console, should you break your ssh access whilst configuring NFS.
 ```bash
 sudo passwd <user>
 ```
 
-> [!IMPORTANT]
+<p align="center"><img alt="OpenStack VNC." src="./resources/openstack_vnc_access.png" width=900 /></p>
 
+> [!IMPORTANT]
+> You will not be able to login into your ssh servers on your head (and compute) nodes using a password. This is a security feature by default. Should you have a ***very good reason*** for wanting to enable password enabled ssh access, discuss this with the instructors.
+>
+> The reason why you are setting a password at this stage, is because the following set of tasks could potentially break your ssh access and lock you out of your node(s).
+>
 
 ### Generating ssh Keys on your Head Node
 
