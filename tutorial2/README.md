@@ -75,9 +75,7 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 
 <!-- markdown-toc end -->
 
-## Checklist
-
-TODO: Fix checklist
+# Checklist
 
 This tutorial will demonstrate how to access web services that are on your virtual cluster via the web browser on your local computer. It will also cover basic authentication and central authentication.
 
@@ -92,14 +90,14 @@ This tutorial will demonstrate how to access web services that are on your virtu
 - [ ] Install and use central authentication.
 
 
-# Spinning Up a Compute Node in OpenStack
+# Spinning Up a Compute Node on Sebowa(OpenStack)
 
 As previously discussed in [Tutorial 1: OpenStack Flavors](../tutorial1/README.md#openstack-instance-flavors), an important aspect of system administration is resource monitoring, management and utilization. Once you have successfully stood up your head node, your team will need to plan and manage the resources remaining which will be available for your compute node(s).
 
-You would have seen in [Tutorial: Head Node Resource Allocations](../tutorial1/README.md#head-node-resource-allocations), that there are a number of potentially _(in)_valid configurations that you can utilize for your cluster design.
+You would have seen in [Tutorial: Head Node Resource Allocations](../tutorial1/README.md#head-node-resource-allocations), that there are a limited number of potentially valid configurations that you can utilize for your cluster design.
 
 > [!TIP]
-> You are encourage to **strongly** encouraged to automate the deployment, installation and configuration of your cluster nodes through the use of either at least basic shell scripts or more advanced Ansible playbooks, as you will be shown later in this tutorial. This will allow you to rapidly experiment with and test the performance of different configurations in order to determine an optimum cluster for the applications you're required to evaluate.
+> You are **strongly** encouraged to automate the deployment, installation and configuration of your cluster nodes through the use of either at least basic shell scripts or more advanced Ansible playbooks, as you will be shown later in this tutorial. This will allow you to rapidly experiment with and test the performance of different configurations in order to determine an optimum cluster for the applications you're required to evaluate.
 
 ## Compute Node Considerations
 
@@ -128,8 +126,8 @@ The following diagram may illustrate the scenario:
 [workstation] ---- SSH ----> [head node]
 
 # Then an ssh connection is made to the compute node using the head node as
-# a jump box
-[workstation] ---- SSH ----> [jump box / ssh tunnel] ---- SSH ----> [compute node]
+# an ssh forwarding tunnel
+[workstation] ---- SSH head node tunnel ----> [compute node]
 ```
 <p align="center"><img alt="ssh into Compute Node." src="./resources/ssh_into_compute_node.png" width=900 /></p>
 
