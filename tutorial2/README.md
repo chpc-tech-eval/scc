@@ -2,6 +2,61 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 =========================================================================
 
 # Table of Contents
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+
+- [Checklist](#checklist)
+- [Spinning Up a Compute Node on Sebowa(OpenStack)](#spinning-up-a-compute-node-on-sebowaopenstack)
+    - [Compute Node Considerations](#compute-node-considerations)
+- [Accessing Your Compute Node Using `ProxyJump` Directive](#accessing-your-compute-node-using-proxyjump-directive)
+    - [Setting a Temporary Password on your Compute Node](#setting-a-temporary-password-on-your-compute-node)
+- [Understanding the Roles of the Head Node and Compute Node](#understanding-the-roles-of-the-head-node-and-compute-node)
+    - [Terminal Multiplexers and Basic System Monitoring](#terminal-multiplexers-and-basic-system-monitoring)
+- [Basic System Monitoring](#basic-system-monitoring)
+- [Manipulating Files and Directories](#manipulating-files-and-directories)
+- [Verifying Networking Setup](#verifying-networking-setup)
+    - [Head Node (`nmtui`) ](#head-node-nmtui)
+        - [Compute Node](#compute-node)
+    - [Configuring a Simple Stateful Firewall](#configuring-a-simple-stateful-firewall)
+- [IPTables `iptables`](#iptables-iptables)
+    - [-](#-)
+    - [Dynamic Front-end Firewall Application Managers `firewalld`](#dynamic-front-end-firewall-application-managers-firewalld)
+- [Network Time Protocol](#network-time-protocol)
+    - [NTP Server (Head Node)](#ntp-server-head-node)
+    - [NTP Client (Compute Node)](#ntp-client-compute-node)
+- [Network File System](#network-file-system)
+    - [NFS Server (Head Node)](#nfs-server-head-node)
+    - [NFS Client (Compute Node)](#nfs-client-compute-node)
+        - [Mounting An NFS Mount](#mounting-an-nfs-mount)
+        - [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
+- [Passwordless ssh](#passwordless-ssh)
+    - [Generating ssh Keys on your Head Node](#generating-ssh-keys-on-your-head-node)
+    - [Editing `/etc/hosts` File](#editing-etchosts-file)
+    - [permanent Configuration with `~/.ssh/config`](#permanent-configuration-with-sshconfig)
+        - [Understanding `~/.ssh/authorized_keys`](#understanding-sshauthorized_keys)
+        - [User Permissions and Ownership](#user-permissions-and-ownership)
+    - [User Account Management](#user-account-management)
+        - [Create Team Captain User Account](#create-team-captain-user-account)
+            - [Head Node](#head-node)
+            - [Compute Node](#compute-node-1)
+            - [Super User Access](#super-user-access)
+        - [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
+            - [Head Node](#head-node-1)
+            - [Compute Node](#compute-node-2)
+            - [Clean Up](#clean-up)
+- [Ansible User Declaration](#ansible-user-declaration)
+    - [Installing and Configuring Ansible](#installing-and-configuring-ansible)
+    - [configuring Ansible](#configuring-ansible)
+    - [Create Team Member Accounts](#create-team-member-accounts)
+- [Remote Access to Your Cluster and Tunneling](#remote-access-to-your-cluster-and-tunneling)
+    - [1. Local Port Forwarding](#1-local-port-forwarding)
+    - [2. Dynamic Port Forwarding ](#2-dynamic-port-forwarding)
+- [Web Browser and SOCKS5 Proxy Configuration](#web-browser-and-socks5-proxy-configuration)
+    - [Firefox and Proxy Configurations](#firefox-and-proxy-configurations)
+- [WirGuard VPN Cluster Access](#wirguard-vpn-cluster-access)
+- [ZeroTier](#zerotier)
+- [X11 Forwarding](#x11-forwarding)
+
+<!-- markdown-toc end -->
 
 
 # Checklist
@@ -353,43 +408,6 @@ If you get a timeout, then things are not working. Try to check your network con
 
 _**Please read [what-is-ip-routing](https://study-ccna.com/what-is-ip-routing/) to gain a better understanding of IP routing.**_ This will be impoortant for the rest of this competition and can help your understanding when debugging issues.
 
-## Editing `/etc/hosts` File
-
-In the absence of a DNS server for translation IP address into hostnames and vice versa.
-we can archive the same result by editing the `/etc/hosts`.
-first check the current hostname then change it to headnode and computend for headnode and compute node respectively 
-
-```bash
-#get current hostname 
-nmcli general hostname
-
-#change hostname to headnode
-sudo nmcli general hostname headnode
-
-#verify 
-nmcli general hostname
-
-#edit /etc/hosts file for permanent setting
-sudo vi /etc/hosts 
-
-# refresh changes 
-sudo systemctl restart systemd-hostnamed
-
-```
-
-
-<p align="center"><img alt="change hostname using `nmcli`" src="./resources/hostnamechange.png" width=900 /></p>
-
-<p align="center"><img alt="edit `/etc/hosts` " src="./resources/etchost.png" width=900 /></p>
-
-
-## permanent Configuration with `~/.ssh/config`
-
-you can explore `~/.ssh/config` permanent Configuration: 
-https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix/ 
-
-
-
 ## Configuring a Simple Stateful Firewall
 
 In the realm of network security, shielding your system against unauthorized access and ensuring data integrity are paramount. the below  tools `iptables, nftables and firewalld` serves as a system's gatekeepers, managing incoming and outgoing traffic.
@@ -514,7 +532,7 @@ If your NAT is working correctly and your compute node's DNS was set correctly w
 <div style="page-break-after: always;"></div>
 
 
-## Network Time Protocol
+# Network Time Protocol
 
 **NTP** or **network time protocol** enables you to synchronise the time across all the computers in your network. This is important for HPC clusters as some applications require that system time be accurate between different nodes (imagine receiving a message 'before' it was sent).
 
@@ -531,7 +549,7 @@ ping google.com
 ```
 
 
-### NTP Server (Head Node)
+## NTP Server (Head Node)
 
 1. Install the Chrony software package using the Rocky package manager, `dnf`:
 
@@ -590,7 +608,7 @@ This will show empty until ntp client (compute nodes) are configured
 <p align="center"><img alt="enabling ntp traffic, showing ntp clients " src="./resources/ntp.png" width=900 /></p>
 
 
-### NTP Client (Compute Node)
+## NTP Client (Compute Node)
 
 1. Install the Chrony software package as shwon on headnode.
 
@@ -603,7 +621,7 @@ server <headnode_ip>
 3. Restart the chronyd service as above.
 
 4. Enable the chronyd service as above.
-5. verify the sources of the NTP server  
+5. verify the sources of the NTP server 
 
 ```bash
 sudo chronyc sources
@@ -618,47 +636,13 @@ Run `chronyc clients` on the headnode to see ntp clients
 
 
 
-## Network File System
+# Network File System
 
 Network File System (NFS) enables you to easily share files and directories over the network. NFS is a distributed file system protocol that we will use to share files between our nodes across our private network. It has a server-client architecture that treats one machine as a server of directories, and multiple machines (clients) can connect to it.
 
 This tutorial will show you how to export a directory on the head node and mount it through the network on the compute nodes. With the shared file system in place it becomes easy to enable **public key based ssh authentication**, which allows you to ssh into all the computers in your cluster without requiring a password.
 
-## Generating ssh Keys on your Head Node
-
-Just as you did so in the previous tutorial when you generated ssh keys [on your workstation](../tutorial1/README.md#generating-ssh-keys), you're now going to do the same on your head node. You're then going to copy the newly created key onto you head node and test the new ssh connection, by logging into your compute node.
-
-1. Generate an ssh key on your **head node**:
-
-   ```bash
-   ssh-keygen -t ed25519
-   ```
-   
-   - *Enter file in which to save the key* - Press `Enter`,
-   - *Enter passphrase (empty for no passphrase)* - Leave empty and press `Enter`,
-   - *Enter same passphrase again* - Leave empty and press `Enter` again,
-1. Copy the newly created ssh key to your **compute node**:
-
-   ```bash
-   ssh-copy-id ~/.ssh/id_ed25519 <user>@<compute node ip>
-   ```
-   
-1. From your **head node**, ssh into your **compute node**:
-   ```bash
-   
-   ssh <user>@<compute node ip>
-   
-   ```
-1. Once you've successfully logged into your **compute node**, list and examine the contents of the `~/.ssh/authorized_keys` file:
-   ```bash
-   ls -l ~/.ssh/id_ed25519
-   cat ~/.ssh/id_ed25519
-   ```
-
-<p align="center"><img alt="Generate Key and ssh into compute" src="./resources/install_tmux.png" width=900 /></p>
-
-
-### NFS Server (Head Node)
+## NFS Server (Head Node)
 
 The head node will act as the NFS server and will export the `/home/` directory to the compute node. The `/home/` directory contains the home directories of all the the non-`root` user accounts on most default Linux operating system configurations. For more information read the this link https://docs.rockylinux.org/guides/file_sharing/nfsserver/  
 
@@ -721,13 +705,11 @@ sudo cat /proc/fs/nfsd/versions
    sudo firewall-cmd --reload
  ```
 
-
-
-### NFS Client (Compute Node)
+## NFS Client (Compute Node)
 
 The compute node acts as the client for the NFS, which will mount the directory that was exported from the server (`/home`). Once mounted, the compute node will be able to interact with and modify files that exist on the head node and it will be synchronised between the two.
 
-#### Mounting An NFS Mount
+### Mounting An NFS Mount
 
 The `nfs-utils, nfs4-acl-tools` packages need to be installed before you can do anything NFS related on the compute node. 
 
@@ -753,7 +735,7 @@ Since the directory we want to mount is the `/home` directory, the user can not 
 
 With this mounted, it effectively replaces the `/home` directory of the compute node with the head node's one until it is unmounted. To verify this, create a file on the compute node's `rocky` user home directory (`/home/rocky`) and see if it is also automatically on the head node. If not, you may have done something wrong and may need to redo the above steps!
 
-#### Making The NFS Mount Permanent
+### Making The NFS Mount Permanent
 
 Using `mount` from the command line will not make the mount permanent. It will not survive a reboot. To make it permanent, we need to edit the `/etc/fstab` file on the compute node. This file contains the mappings for each mount of any drives or network locations on boot of the operating system.
 
@@ -788,7 +770,39 @@ For the description of nfs options listed above see the link: https://cheatograp
 
 
 
-### Passwordless ssh
+# Passwordless ssh
+## Generating ssh Keys on your Head Node
+
+Just as you did so in the previous tutorial when you generated ssh keys [on your workstation](../tutorial1/README.md#generating-ssh-keys), you're now going to do the same on your head node. You're then going to copy the newly created key onto you head node and test the new ssh connection, by logging into your compute node.
+
+1. Generate an ssh key on your **head node**:
+
+   ```bash
+   ssh-keygen -t ed25519
+   ```
+   
+   - *Enter file in which to save the key* - Press `Enter`,
+   - *Enter passphrase (empty for no passphrase)* - Leave empty and press `Enter`,
+   - *Enter same passphrase again* - Leave empty and press `Enter` again,
+1. Copy the newly created ssh key to your **compute node**:
+
+   ```bash
+   ssh-copy-id ~/.ssh/id_ed25519 <user>@<compute node ip>
+   ```
+   
+1. From your **head node**, ssh into your **compute node**:
+   ```bash
+   
+   ssh <user>@<compute node ip>
+   
+   ```
+1. Once you've successfully logged into your **compute node**, list and examine the contents of the `~/.ssh/authorized_keys` file:
+   ```bash
+   ls -l ~/.ssh/id_ed25519
+   cat ~/.ssh/id_ed25519
+   ```
+
+<p align="center"><img alt="Generate Key and ssh into compute" src="./resources/install_tmux.png" width=900 /></p>
 
 When managing a large fleet of machines or even when just logging into a single machine repeatedly, it can become very time consuming to have to enter your password repeatedly. Another issue with passwords is that some services may rely on directly connecting to another computer and can't pass a password during login. To get around this, we can use [public key based authentication](https://www.ssh.com/academy/ssh/public-key-authentication) for passwordless login.
 
@@ -828,6 +842,44 @@ run the following command:
 
 5. Exit **back to the head node**
 6. You can do the same thing for passwordless login from compute node to headnode 
+
+
+## Editing `/etc/hosts` File
+
+In the absence of a DNS server for translation IP address into hostnames and vice versa.
+we can archive the same result by editing the `/etc/hosts`.
+first check the current hostname then change it to headnode and computend for headnode and compute node respectively 
+
+```bash
+#get current hostname 
+nmcli general hostname
+
+#change hostname to headnode
+sudo nmcli general hostname headnode
+
+#verify 
+nmcli general hostname
+
+#edit /etc/hosts file for permanent setting
+sudo vi /etc/hosts 
+
+# refresh changes 
+sudo systemctl restart systemd-hostnamed
+
+```
+
+
+<p align="center"><img alt="change hostname using `nmcli`" src="./resources/hostnamechange.png" width=900 /></p>
+
+<p align="center"><img alt="edit `/etc/hosts` " src="./resources/etchost.png" width=900 /></p>
+
+
+## permanent Configuration with `~/.ssh/config`
+
+you can explore `~/.ssh/config` permanent Configuration: 
+https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix/ 
+
+
 
 
 ### Understanding `~/.ssh/authorized_keys`
