@@ -415,6 +415,9 @@ Then you should see:
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/0568acc5-5248-4b90-8803-5f58d2af11e2)
 
+> [!NOTE]
+> Should you have any difficulties running the above configuration, use the alternative process below to deploy your monitoring stack. Click on the heading to reveal content.
+
 <details>
 <summary>Installing your monitoring stack from pre-compiled binaries</summary>
 For this tutorial we will install from pre-complied binaries.
