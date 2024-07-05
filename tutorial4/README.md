@@ -415,6 +415,254 @@ Then you should see:
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/0568acc5-5248-4b90-8803-5f58d2af11e2)
 
+> [!NOTE]
+> Should you have any difficulties running the above configuration, use the alternative process below to deploy your monitoring stack. Click on the heading to reveal content.
+
+<details>
+<summary>Installing your monitoring stack from pre-compiled binaries</summary>
+For this tutorial we will install from pre-complied binaries.
+
+## Prometheus
+The installation and the configuration of Prometheus should be done on your headnode.
+
+1. Create a Prometheus user without login access, this will be done manually as shown below:
+ ```bash
+sudo useradd --no-create-home --shell /sbin/nologin prometheus
+ ```
+2. Download the latest stable version of Prometheus from the official site using `wget`
+ ```bash
+wget https://github.com/prometheus/prometheus/releases/download/v2.33.1/prometheus-2.33.1.linux-amd64.tar.gz
+ ```
+3. Long list file to verify Prometheus was downloaded 
+ ```bash
+ll
+ ```
+4. Extract the downloaded archive and move prometheus binaries to the /usr/local/bin directory.
+```bash
+tar -xvzf prometheus-2.33.1.linux-amd64.tar.gz
+cd prometheus-2.33.1.linux-amd64
+sudo mv prometheus promtool /usr/local/bin/ 
+```
+5. Move back to the home directory, create directorise for prometheus.
+ ```bash
+cd ~
+sudo mkdir /etc/prometheus 
+sudo mkdir /var/lib/prometheus 
+ ```
+6. Set the correct ownership for the prometheus directories
+ ```bash
+sudo chown prometheus:prometheus /etc/prometheus/ 
+sudo chown prometheus:prometheus /var/lib/prometheus
+ ```
+7. Move the configuration file and set the correct permissions 
+ ```bash
+cd prometheus-2.33.1.linux-amd64 
+sudo mv consoles/ console_libraries/ prometheus.yml /etc/prometheus/ 
+sudo chown -R prometheus:prometheus /etc/prometheus/ 
+ ```
+8. Configure Prometheus \
+  Edit the `/etc/prometheus/prometheus.yml` file to configure your targets(compute node) 
+
+    *Hint : Add the job configuration for the compute_node in the scrape_configs section of your Prometheus YAML configuration file. Ensure that all necessary configurations for this job are correctly placed within the relevant sections of the YAML file.*:
+
+```yaml
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+  - job_name: "compute_node"
+    static_configs:
+      - targets: ["<compute_node_ip>:9100"]
+```
+9.  Create a service file to manage Prometheus with `systemctl`, the file can be created with the text editor `nano` (Can use any text editor of your choice)
+ ```bash
+sudo nano /etc/systemd/system/prometheus.service
+ ```
+ ```plaintext
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/local/bin/prometheus \
+  --config.file=/etc/prometheus/prometheus.yml \
+  --storage.tsdb.path=/var/lib/prometheus/ \
+  --web.console.templates=/etc/prometheus/consoles \
+  --web.console.libraries=/etc/prometheus/console_libraries
+
+[Install]
+WantedBy=multi-user.target
+```
+10. Reload the systemd daemon, start and enable the service
+ ```bash
+sudo systemctl daemon-reload
+sudo systemctl enable prometheus 
+sudo systemctl start prometheus
+ ```
+
+11. Check that your service is active by checking the status
+  ```bash
+  sudo systemctl status prometheus
+  ``` 
+
+> [!TIP]
+> If when you check the status and find that the service is not running, ensure SELinux or AppArmor is not restricting Prometheus from running. Try disabling SELinux/AppArmor temporarily to see if it resolves the issue:
+> 
+> ```bash
+> sudo setenforce 0
+> ```
+> 
+> Then repeat steps 10 and 11.
+>
+> If the prometheus service still fails to start properly, run the command `journalctl –u prometheus -f --no-pager` and review the output for errors.
+
+> [!IMPORTANT]
+> If firewalld is enabled and running, add a rule for port 9090
+> 
+> ```bash
+> sudo firewall-cmd --permanent --zone=public --add-port=9090/tcp
+> sudo firewall-cmd --reload 
+> ```
+
+Verify that your prometheus configuration is working navigating to `http://<headnode_ip>:9090` in your web browser, access prometheus web interface. Ensure that the `headnode_ip` is the public facing ip.
+
+## Node Exporter
+Node Exporter is a Prometheus exporter specifically designed for hardware and OS metrics exposed by Unix-like kernels. It collects detailed system metrics such as CPU usage, memory usage, disk I/O, and network statistics. These metrics are exposed via an HTTP endpoint, typically accessible at `<node_ip>:9100/metrics`. The primary role of Node Exporter is to provide a source of system-level metrics that Prometheus can scrape and store. This exporter is crucial for gaining insights into the health and performance of individual nodes within a network.
+
+The installation and the configuration node exporter will be done on the **compute node/s**
+
+1. Create a Node Exporter User
+ ```bash
+sudo adduser -M -r -s /sbin/nologin node_exporter
+```
+2. Download and Install Node Exporter, this is done using `wget` as done before
+ ```bash
+cd /usr/src/
+
+sudo wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+
+sudo tar xvf node_exporter-1.6.1.linux-amd64.tar.gz
+```
+3. Next, move the node exporter binary file to the directory '/usr/local/bin' using the following command
+```bash
+mv node_exporter-*/node_exporter /usr/local/bin
+``` 
+4.  Create a service file to manage Node Exporter with `systemctl`, the file can be created with the text editor `nano` (Can use any text editor of your choice)
+ ```bash
+sudo nano /etc/systemd/system/node_exporter.service
+ ```
+ ```plaintext
+[Unit]
+Description=Node Exporter
+After=network.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter
+
+[Install]
+WantedBy=multi-user.target
+```
+> [!IMPORTANT]
+> If firewalld is enabled and running, add a rule for port 9100 
+> 
+> ```bash
+> sudo firewall-cmd --permanent --zone=public --add-port=9100/tcp
+> sudo firewall-cmd --reload 
+> ```
+
+5.  Reload the systemd daemon, start and enable the service
+ ```bash
+sudo systemctl daemon-reload
+sudo systemctl enable node_exporter 
+sudo systemctl start node_exporter
+ ```
+6. Check that your service is active by checking the status
+  ```bash
+  sudo systemctl status node_exporter
+  ``` 
+### SSH Tunneling
+In order to verify that node exporter is set up correctly we need to access `<node_ip>:9100/metrics`. This can only been done by simply going to your broswer and putting it in as we did with Prometheus, we need to use a SSH tunnel.
+
+**What is SSH Tunneling?** \
+SSH tunneling, also known as SSH port forwarding, is a method of securely forwarding network traffic from one network node to another via an encrypted SSH connection. It allows you to securely transmit data over untrusted networks by encrypting the traffic.
+
+**Why Use SSH Tunneling in This Scenario?** \
+In this setup, the compute node has only a private IP and is not directly accessible from the internet. The headnode, however, has both a public IP (accessible from the internet) and a private IP (in the same network as the compute node).
+
+Using SSH tunneling allows us to:
+
+- Access Restricted Nodes: Since the compute node is only reachable from the headnode, we can create an SSH tunnel through the headnode to access the compute node.
+- Secure Transmission: The tunnel encrypts the traffic between your local machine and the compute node, ensuring that any data sent through this tunnel is secure.
+- Simplify Access: By tunneling the Node Exporter port (9100) from the compute node to your local machine, you can access the metrics as if they were running locally, making it easier to monitor and manage the compute node.
+
+  1. Set Up SSH Tunnel on Your Local Machine
+```bash
+ssh -L 9100:compute_node_ip:9100 user@headnode_ip -N
+```
+- ssh -L: This option specifies local port forwarding. It maps a port on your local machine (first 9100) to a port on a remote machine (second 9100 on compute_node_ip) via the SSH server (headnode).
+- compute_node_ip:9100: The target address and port on the compute node where Node Exporter is running.
+user@headnode_ip: The SSH connection details for the headnode.
+- -N: Tells SSH to not execute any commands, just set up the tunnel.
+
+  2. By navigating to http://localhost:9100/metrics in your web browser, you can access the Node Exporter metrics from the compute node as if the service were running locally on your machine.
+
+
+## Grafana
+Grafana is an open-source platform for monitoring and observability, known for its capability to create interactive and customizable dashboards. It integrates seamlessly with various data sources, including Prometheus. Through its user-friendly interface, Grafana allows users to build and execute queries to visualize data effectively. Beyond visualization, Grafana also supports alerting based on the visualized data, enabling users to set up notifications for specific conditions. This makes Grafana a powerful tool for both real-time monitoring and historical analysis of system performance.
+
+Now we go back to the headnode for the installation and the configuration of Grafana
+ 1. Add the Grafana Repository, by adding the following directives in this file:
+```bash
+sudo nano /etc/yum.repos.d/grafana.repo
+```
+ ```plaintext
+  [grafana] 
+  name=grafana 
+  baseurl=https://rpm.grafana.com 
+  repo_gpgcheck=1 
+  enabled=1 
+  gpgcheck=1 
+  gpgkey=https://rpm.grafana.com/gpg.key 
+  sslverify=1 
+  sslcacert=/etc/pki/tls/certs/ca-bundle.crt 
+  exclude=*beta*
+```
+
+2. Install Grafana
+ ```bash
+sudo dnf install grafana -y 
+```
+
+3. Start and Enable Grafana 
+ ```bash
+sudo systemctl start grafana-server
+sudo systemctl enable grafana-server
+```
+
+4. Check the status of grafana-server
+```bash
+sudo systemctl status grafana-server
+```
+> [!IMPORTANT]
+> If firewalld is enabled and running, add a rule for port 9100 
+> 
+> ```bash
+> sudo firewall-cmd --permanent --zone=public --add-port=3000/tcp
+> sudo firewall-cmd --reload 
+
+</details>
 
 # Slurm Scheduler and Workload Manager
 
@@ -673,7 +921,33 @@ Using a batch script similar to the one above, run the benchmark. You may modify
 
 <div style="page-break-after: always;"></div>
 
-# Running Qiskit from a Remote Jupyter Notebook Server
+# Jupyter Notebook
+
+Jupyter Notebooks are powerful tools for scientific investigations due to their interactive and flexible nature. Here are some key reasons why they are favored in scientific research.
+
+* Interactive Computing and Immediate Feedback
+
+  Run code snippets and see the results immediately, which helps in quick iterations and testing of hypotheses.  Directly plot graphs and visualize data within the notebook, which is crucial for data analysis.
+
+* Documentation and Rich Narrative Text
+
+  Combine code with Markdown text to explain the methodology, document findings, and write detailed notes. Embed images, videos, and LaTeX equations to enhance documentation and understanding.
+
+* Reproducibility
+
+  Share notebooks with others to ensure that they can reproduce the results by running the same code. Use tools like Git to version control the notebooks, ensuring a record of changes and collaborative development.
+
+* Data Analysis and Visualization
+
+  Utilize a wide range of Python libraries such as NumPy, Pandas, Matplotlib, and Seaborn for data manipulation and visualization. Perform exploratory data analysis (EDA) seamlessly with powerful plotting libraries.
+
+Jupyter Notebooks provide a versatile and powerful environment for conducting scientific investigations, facilitating both the analysis and the clear communication of results.
+
+## Plot a Graph of Your HPL Benchmark Results
+
+
+
+## Running Qiskit from a Remote Jupyter Notebook Server
 
 TODO: WORK IN PROGRESS WILL NEATEN UP 03/07/24
 

@@ -71,21 +71,26 @@ You will recall that you were required to configure an [NFS Mounted home dir](..
 
 In order for this to work as expected, there are two important conditions that must be satisfied:
 1. Firstly, you must ensure that you're `PATH` variable is correctly configured on your head node and must similarly have a corresponding configuration on your compute node(s). For example, to see a colon (`:`) separated list of directories that are searched whenever you execute a binary:
- ```bash
- echo $PATH
- ```
+   ```bash
+   echo $PATH
+   ```
 1. Secondly, you must ensure that any system dependencies are correctly installed on **each** of your nodes. For example, this would be a good time to install `gcc` on your **compute node**:
-  ```bash
-  # DNF / YUM (RHEL, Rocky, Alma, CentOS Stream)
-  sudo dnf install gcc
+   ```bash
+   sudo dnf install gcc
+   ```
 
-  # APT
-  sudo apt install gcc
+<details>
+<summary>Instructions for APT (Ubuntu) and Pacman (Arch)</summary>
 
-  # Pacman
-  sudo pacman -S gcc
+```bash
+# APT
+sudo apt install gcc
 
-  ```
+# Pacman
+sudo pacman -S gcc
+```
+</details>
+
 > [!IMPORTANT]
 > Software on one node will not automatically be installed across all nodes. For example, if you want to monitor the system performance of your head node, you must install and/or run `top # or htop or btop` on your head node. Similarly if you want to do this for your compute node(s), you must install and run the application on all of your compute node(s).
 
@@ -209,15 +214,15 @@ We need to install the statically `($(LIBdir)/libhpl.a)` and dynamically`($(LAdi
    sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
    sudo dnf install wget nano -y
 
-    # APT (Ubuntu)
-    sudo apt update
-    sudo apt install openmpi libatlas-base-dev
-    sudo apt install wget nano
+   # APT (Ubuntu)
+   sudo apt update
+   sudo apt install openmpi libatlas-base-dev
+   sudo apt install wget nano
 
-    # Pacman (Arch)
-    sudo pacman -Syu
-    sudo pacman -S base-devel openmpi atlas-lapack nano wget
-    ```
+   # Pacman (Arch)
+   sudo pacman -Syu
+   sudo pacman -S base-devel openmpi atlas-lapack nano wget
+   ```
 
 1. Configuring and Tuning HPL
 
@@ -268,7 +273,7 @@ Code compiled specifically for HPC hardware can use instruction sets like `AVX`,
 1. Install dependencies
    ```bash
    # DNF / YUM (RHEL, Rocky, Alma, Centos Stream)
-   sudo dnf group install "Developer Tools"
+   sudo dnf group install "Development Tools"
    sudo dnf install gfortran git gcc wget
 
    # APT (Ubuntu)
@@ -332,7 +337,7 @@ Code compiled specifically for HPC hardware can use instruction sets like `AVX`,
    MPinc        = -I$(MPdir)/include
    MPlib        = $(MPdir)/lib/libmpi.so
 
-   LAdir        = $(HOME)/opt/OpenBLAS
+   LAdir        = $(HOME)/opt/openblas
    LAinc        =
    LAlib        = $(LAdir)/lib/libopenblas.a
 
@@ -393,6 +398,17 @@ You will need to install and configure Intel's oneAPI Base Toolkit which include
 
 You will be making use of the **2024-2** versions of the Intel oneAPI and HPC Toolkits.
 
+1. *Optionally* the following prerequisites and install dependencies, to make use of Intel's VTune Profiler for a graphical user interface.
+   ```bash
+   # DNF / YUM (RHEL, Rocky, Alma, CentOS Stream)
+   sudo dnf install libdrm gtk3 libnotify xdg-utils libxcb mesa-libgbm at-spi2-core
+
+   # APT (Ubuntu)
+   sudo apt install libdrm2 libgtk-3-0 libnotify4 xdg-utils libxcb-dri3-0 libgbm1 libatspi2.0-0
+
+   # Pacman (Arch)
+   sudo pacman -S libdrm gtk3 libnotify xdg-utils libxcb mesa-libgbm at-spi2-core
+   ```
 1. Download the offline installers into your `HOME` directory
    * Intel oneAPI Base Toolkit
      ```bash
@@ -429,7 +445,7 @@ You will be making use of the **2024-2** versions of the Intel oneAPI and HPC To
    # Run Intel oneAPI HPCkit installation script
    ./l_HPCKit_p_2024.2.0.635_offline.sh -a --cli --eula accept
    ```
-1. Configure you Environment to use Intel oneAPI Toolkits
+1. Configure your Environment to use Intel oneAPI Toolkits
    You can either use the `setvars.sh` configuration script or modulefiles:
    * To have your environment automaticaly prepared for use with Intel's oneAPI Toolkit append the following line to your `/etc/profile` `.bashrc` or run the command everytime you login to your node
       ```bash
@@ -451,20 +467,53 @@ You will be making use of the **2024-2** versions of the Intel oneAPI and HPC To
       # Make sure the newly created modules are available to use and have been correclty configured
       ml avail
       ```
+
+> [!IMPORTANT]
+> You will need to configure your environment each time you login to a new shell, as is the case when you use `mpirun` over multiple nodes. You will be shown how to do this automatically when you run HPL over multiple nodes.
+
 You have successfully installed the Intel oneAPI Base and HPC Toolkits, including Intel Compiler Suite and Math Kernel Libraries.
 
 ## Configuring and Running HPL with Intel OneAPI Toolkit and MKL
+
+After you've successfully completed the previous section, you will be ready to recompile HPL with Intel's `icx` compiler and `mkl` math kernel libraries.
+
+1. Copy and Edit the `Make.Linux64`
+
+   From your `~/hpl` folder, with a properly configured environment, copy and edit the configuration
+   ```bash
+   # Copy a setup configuration script to use as a template
+   cp setup/Make.Linux64 ./
+
+   # Edit the configuration file to make use of your Intel oneAPI Toolkit
+   nano Make.Linux64
+   ```
+
+1. Configure your `Make.Linux64`
+
+   Ensure that you make the following changes and amendments:
+   ```conf
+   CC       = mpiicx
+   OMP_DEFS = -qopenmp
+   CCFLAGS  = $(HPL_DEFS) -O3 -w -ansi-alias -z noexecstack -z relro -z now -Wall
+   ```
+
+1. Compile your HPL Binary using the Intel oneAPI Toolkit
+   ```bash
+   make arch=Linux64
+   ```
+
+1. Reuse your `HPL.dat` from when you compiled OpenMPI and OpenBLAS from source.
+
+> [!TIP]
+> Remember to use tmux to open a new tmux window, `C-b c`. You can cycle between the tmux windows using `C-b n`.
 
 # LinPACK Theoretical Peak Performance
 
 It is useful to know what the theoretical FLOPS performance (RPeak) of your hardware is when trying to obtain the highest benchmark result (RMax). RPeak can be derived from the formula:
 
-```math
-RPeak = CPU Frequency [GHz] * Num CPU Cores * OPS/cycle
-```
+**RPeak = CPU Frequency [GHz] * Num CPU Cores * OPS/cycle**
 
 Newer CPU architectures allow for 'wider' instruction sets which execute multiple instructions per CPU cycle. The table below shows the floating point operations per cycle of various instruction sets:
-
 
 | CPU Extension | Floating Point Operations per CPU Cycle |
 |---------------|-----------------------------------------|
@@ -473,23 +522,39 @@ Newer CPU architectures allow for 'wider' instruction sets which execute multipl
 | AVX2          | 16                                      |
 | AVX512        | 32                                      |
 
-
 You can determine your CPU model as well as the instruction extensions supported on your **compute node(s)** with the command:
 
 ```bash
-cat /proc/cpuinfo | grep -Ei "processor|model name|flags"
+lscpu
 ```
 
-`lscpu` `lsmem`
-
-For model name, you should see something like "... Intel Xeon E5-26.....". If instead you see "QEMU...", please notify the course Instructors to assist you.
+For model name, you should see something along the lines "Intel Xeon Processor (Cascadelake)",
 
 You can determine the maximum and base frequency of your CPU model on the Intel Ark website. Because HPL is a demanding workload, assume the CPU is operating at its base frequency and **NOT** the boost/turbo frequency. You should have everything you need to calculate the RPeak of your cluster. Typically an efficiency of at least 75% is considered adequate for Intel CPUs (RMax / RPeak > 0.75).
 
 ## Top500 List
 
-## Plot a Graph of Your HPL Benchmark Results
+The [TOP500 list](https://top500.org/lists/top500/2024/06/) is a project that ranks and details the 500 most powerful supercomputers in the world. The ranking is based on the High-Performance Linpack (HPL) benchmark, which measures a system's floating point computing power.
 
+1. Go the the Top500 List and compare your results
+
+   Populate the following table by recording your Rmax from HPL results, and calculating your expected Rpeak value.
+
+   | Rank | System                                          | Cores     | Rmax (GFlops/s)       | Rpeak (GFlops/s)         |
+   |------|-------------------------------------------------|-----------|-----------------------|--------------------------|
+   | 1    | Frontier - HPE - United States                  | 8 699 904 | 1206 x 10<sup>6</sup> | 1714.81 x 10<sup>6</sup> |
+|      |                                                 |           |                       |                          |
+   | 2    |                                                 |           |                       |                          |
+   | 3    |                                                 |           |                       |                          |
+   |      | Head node                                       | 2         |                       |                          |
+   |      | Compute node using head node `xhpl` binary      |           |                       |                          |
+   |      | Compute node using custom compiled MPI and BLAS |           |                       |                          |
+   |      | Compute node using Intel oneAPI Toolkits        |           |                       |                          |
+   |      | Across two compute nodes                        |           |                       |                          |
+   |      |                                                 |           |                       |                          |
+
+> [!IMPORTANT]
+> You do **NOT** need to try and Rank you VM's HPL performance. Cores and threads are used interchangeably in this context. Following the recommended configuration and guides, your head node has one CPU package with two compute cores / threads. Continuing this same analogy, your compute node has one CPU with six cores / threads.
 
 # Spinning Up a Second Compute Node
 
@@ -539,7 +604,7 @@ HPC Challenge (or HPCC) is benchmark suite which contains 7 micro-benchmarks use
     ./format.pl -w -f hpccoutf.txt
     ```
 
-    To see your benchmark result, your HPL score should be similar to your standalone HPL. 
+    To see your benchmark result, your HPL score should be similar to your standalone HPL.
 
 <span style="color: #800000">
   !!! Have the output `hpccoutf.txt` AND `Make.<architecture>` **configuration file** ready for instructors to view on request.
@@ -559,12 +624,12 @@ Detailed installation instructions can be found at: http://manual.gromacs.org/cu
 
 2. You will also require a compiler such as the GNU `gcc`, Intel `icc` or other, and **MPI (OpenMPI, MPICH, Intel MPI or other)** be installed on system. Your **PATH** & **LD_LIBRARY_PATH** environment variables should be set up to reflect this.
 
-3. Compile GROMACS **with MPI support** from source using `cmake`. 
+3. Compile GROMACS **with MPI support** from source using `cmake`.
 
 
 TODO Explain what an application benchmark is here.
 
-You have been provided two **GROMACS** benchmarks. The first benchmark **(adh_cubic)** should complete within a few minutes and has a small memory footprint, it is intended to demonstrate that your installation is working properly. The second benchmark **(1.5M_water)** uses more memory and takes considerably longer to complete. The metric which will be used to assess your performance is the **ns/day** (number of nanoseconds the model is simulated for per day of computation), quoted at the end of the simulation output. **Higher is better**. 
+You have been provided two **GROMACS** benchmarks. The first benchmark **(adh_cubic)** should complete within a few minutes and has a small memory footprint, it is intended to demonstrate that your installation is working properly. The second benchmark **(1.5M_water)** uses more memory and takes considerably longer to complete. The metric which will be used to assess your performance is the **ns/day** (number of nanoseconds the model is simulated for per day of computation), quoted at the end of the simulation output. **Higher is better**.
 
 Ensure that your GROMACS /**bin** directory is exported to your **PATH**. You should be able to type `gmx_mpi --version` in your terminal and have the application information displayed correctly. The first task is to pre-process the input data into a usable format, using the `grompp` tool:
 
