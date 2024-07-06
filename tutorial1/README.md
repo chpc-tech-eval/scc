@@ -348,12 +348,12 @@ In order for you to be able to SSH into your newly created OpenStack instance, y
 > The following section is strictly for debugging and troubleshooting purposes. You **MUST** discuss your circumstances with an instructor before proceeding with this section. If you have successfully launched your head node, proceed to the [Intro on Basic Sys Admin](#introduction-to-basic-linux-administration).
 
 * Deleting Instances
-  - When all else fails, and you would like to attempt the steps from the beginning: Select the failing VM and click `Delete Instance` from the drop down menu.
-  - Occasionally you may find yourself deleting a VM instance by mistake and will need to recover the deleted VM. Do not despair, by default `no` is selected on `Delete Volume on Instance Delete` this will leave your root (OS) disk behing and you can recover by launching a new VM from the root disk.
+  - When all else fails and you would like to reattempt the creation of your nodes from a clean start, Select the VM you want to remove and click `Delete Instance` from the drop down menu.
+  - Occasionally you may find yourself accidentally deleting a VM instance. Do not despair, by default `no` is selected on `Delete Volume on Instance Delete` this will leave your storage `volume` intact and you can recover it by launching a new instance from the `volume`. Details will be provided later in [Tutorial 3](#spinning-up-a-second-compute-node).
 
 * Deleting Volumes
 
-  When a root (OS) disk's volume is left behind after deleting a VM on purpose, you will need to go to `Volumes` and select your volume and click `Delete volumes` to remove the volume from your work space
+  When a VM's storage `volume` lingers behind after intentionally deleting a VM, you will need to go to manually remove the volume from your work space.
 
 * Dissociating and Releasing Floating IPs
 
@@ -585,17 +585,22 @@ You will now install and run HPL on your **head node**.
 1. Update the system and install dependencies
 
    You are going to be installing tools that will allow you to compile applications using the `make` command. You will also be installing a maths library to compute matrix multiplications, and an `mpi` library for communication between processes, in this case mapped to CPU cores.
+   * DNF / YUM
    ```bash
-   # DNF / YUM (RHEL, Rocky, Alma, Centos)
+   # RHEL, Rocky, Alma, Centos Steam
    sudo dnf update -y
    sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
    sudo dnf install wget nano -y
-
-   # APT (Ubuntu)
+   ```
+   * APT
+   ```bash
+   # Ubuntu
    sudo apt update
    sudo apt install openmpi libatlas-base-dev
-
-   # Pacman (Arch)
+   ```
+   * Pacman
+   ```bash
+   # Arch
    sudo pacman -Syu
    sudo pacman -S base-devel openmpi atlas-lapack nano wget
    ```

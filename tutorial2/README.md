@@ -187,23 +187,22 @@ To facilitate your understanding of the roles and interactions between your head
 For the tutorials you are encouraged to use tmux.
 
 1. Install `tmux` on your head node:
-
+   * DNF / YUM
    ```bash
+   # RHEL, Rocky, Alma, CentOS Stream
    sudo dnf update
    sudo dnf install tmux
    ```
-
-   <details>
-   <summary>Installing `tmux` using APT (Ubuntu) or Pacman (Arch)</summary>
-
+   * APT
    ```bash
-   # APT (Ubuntu)
+   # Ubuntu
    sudo apt install tmux
-
-   # Pacman (Arch)
+   ```
+   * Pacman
+   ```bash
+   # Arch
    sudo pacman -Syu tmux
    ```
-   </details>
 
 1. To start a new `tmux` session on your head node:
 
@@ -230,15 +229,20 @@ For the tutorials you are encouraged to use tmux.
    C-b o
    ```
 1. Install [`btop`](https://github.com/aristocratos/btop) on your **head node**. Depending on the Linux distribution you chose to install:
+   * DNF / YUM
    ```bash
    # RHEL, Rocky, Alma, Centos
    sudo dnf install epel-release
    sudo dnf makecache
    sudo dnf install btop
-
+   ```
+   * APT
+   ```bash
    # Ubuntu
    sudo apt install btop
-
+   ```
+   * Pacman
+   ```bash
    # Arch
    sudo pacman -S btop
    ```
@@ -254,7 +258,9 @@ For the tutorials you are encouraged to use tmux.
    ```
 
    Once you are successfully logged into your compute node:
+   * DNF / YUM
    ```bash
+   # RHEL, Rocky, Alma, CentOS Stream
    sudo dnf -y install epel-release
    sudo dnf makecache
    sudo dnf -y install htop
@@ -312,7 +318,7 @@ Here is a list of Linux commands and utilities that you will use often during th
 
 # Verifying Networking Setup
 
-Your VMs have been assigned local public facing IP addresses. Navigate to `Compute   ->  Instances` on your OpenStack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for the head node) and one IP address (for compute node) with their respective networks. The head node's IP addresses will look like `10.x.x.x` and `154.114.72.x` where `x` denotes your specific VM's subnet suffix and address number. `10.100.50.x` network is for internal use and `154.114.72.x` is for public facing usage.
+Your VMs have been assigned an external or public facing IP address. Navigate to `Compute  ->  Instances` on your OpenStack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for the head node) and one IP address (for compute node) with their respective networks. The head node's IP addresses will look like `10.x.x.x` and `154.114.72.x` where `x` denotes your specific VM's subnet suffix and address number. `10.100.50.x` network is for internal use and `154.114.72.x` is for public facing usage.
 
 You can check your network interfaces by using the `ip a` command after logging in to your headnode or commpute node.
 
