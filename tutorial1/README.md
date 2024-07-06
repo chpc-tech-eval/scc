@@ -295,21 +295,21 @@ The following table summarizes the various permutations and allocations that can
 | Cluster Configurations     | Instance Flavor | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
 |----------------------------|:---------------:|:---------------:|:------------:|:--------------:|
 |                            |                 |                 |              |                |
-| Dedicated Head Node        | scc24.C2.M4.S60    | 2               | 4 GB         | 60 GB          |
-| Compute Node 01            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
-| Compute Node 02            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
+| Dedicated Head Node        | scc.C2.M4.S60    | 2               | 4 GB         | 60 GB          |
+| Compute Node 01            | scc.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
+| Compute Node 02            | scc.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 |                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C6.M12.S60    | 6               | 12 GB        | 60 GB          |
-| Compute Node 01            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
-| Compute Node 02            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
+| Hybrid Head / Compute Node | scc.C6.M12.S60    | 6               | 12 GB        | 60 GB          |
+| Compute Node 01            | scc.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
+| Compute Node 02            | scc.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 |                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C10.M12.S60   | 10              | 20 GB        | 60 GB          |
-| Compute Node 01            | scc24.C8.M12.S10    | 8               | 16 GB        | 10 GB          |
+| Hybrid Head / Compute Node | scc.C10.M12.S60   | 10              | 20 GB        | 60 GB          |
+| Compute Node 01            | scc.C8.M12.S10    | 8               | 16 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 
-Type *"scc"* in the search bar and select the **scc24.C2.M4.S60** instance flavor.
+Type *"scc"* in the search bar and select the **scc.C2.M4.S60** instance flavor.
 
 <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_instance_flavor.png" width=900 /></p>
 
