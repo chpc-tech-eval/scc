@@ -265,6 +265,10 @@ The following list provides a few examples of Linux distros that *may* be availa
 
 * **Source-Based**: [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/) is a project that teaches you how to create your own Linux system from source code, using another Linux system. Learn how to install, configure and customize LFS and BLFS, and use tools for automation and management. Once you are **very** familiar with Linux, LFS is an excellent medium term side project that you peruse in you own time. Only Linux experts need apply.
 
+Type *"Rocky"* in the search bar, and select the **Rocky-9.3** cloud image as a boot source.
+
+<p align="center"><img alt="OpenStack Select Source." src="./resources/openstack_source_image.png" width=900 /></p>
+
 ## OpenStack Instance Flavors
 
 An important aspect of system administration is resource monitoring, management and utilization. Each Team will be required to manage their available resources and ensure that the resources of their clusters are utilized in such a way as to maximize system performance. You have been allocated a pool of resources which you will need to decide how you are going to allocate the sizing of the compute, memory and storage across your head node and compute node(s).
@@ -292,22 +296,26 @@ The following table summarizes the various permutations and allocations that can
 | Cluster Configurations     | Instance Flavor | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
 |----------------------------|:---------------:|:---------------:|:------------:|:--------------:|
 |                            |                 |                 |              |                |
-| Dedicated Head Node        | scc24.C2.S60    | 2               | 4 GB         | 60 GB          |
-| Compute Node 01            | scc24.C8.S10    | 8               | 16 GB        | 10 GB          |
-| Compute Node 02            | scc24.C8.S10    | 8               | 16 GB        | 10 GB          |
+| Dedicated Head Node        | scc24.C2.M4.S60    | 2               | 4 GB         | 60 GB          |
+| Compute Node 01            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
+| Compute Node 02            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 |                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C6.S60    | 6               | 12 GB        | 60 GB          |
-| Compute Node 01            | scc24.C6.S10    | 6               | 12 GB        | 10 GB          |
-| Compute Node 02            | scc24.C6.S10    | 6               | 12 GB        | 10 GB          |
+| Hybrid Head / Compute Node | scc24.C6.M12.S60    | 6               | 12 GB        | 60 GB          |
+| Compute Node 01            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
+| Compute Node 02            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 |                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C10.S60   | 10              | 20 GB        | 60 GB          |
-| Compute Node 01            | scc24.C8.S10    | 8               | 16 GB        | 10 GB          |
+| Hybrid Head / Compute Node | scc24.C10.M12.S60   | 10              | 20 GB        | 60 GB          |
+| Compute Node 01            | scc24.C8.M12.S10    | 8               | 16 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 
+Type *"scc"* in the search bar and select the **scc24.C2.M4.S60** instance flavor.
+
+<p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_instance_flavor.png" width=900 /></p>
+
 > [!TIP]
-> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of starting with this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the **scc24.C2.S60** flavor with *2 vCPUs* and *4 GB RAM*.
+> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of starting with this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the **scc24.C2.M4.S60** flavor with *2 vCPUs* and *4 GB RAM*.
 
 ## Networks, Ports, Services and Security Groups
 

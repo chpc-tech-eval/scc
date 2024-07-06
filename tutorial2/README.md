@@ -95,7 +95,7 @@ The final important consideration that must be made for your compute node is tha
 
 # Accessing Your Compute Node Using `ProxyJump` Directive
 
-After you have successfully [Launched Your Second OpenStack VM Instance](../tutorial1/README.md#launching-your-first-openstack-virtual-machine-instance), you can SSH into your new compute node VM instance using your head node with the use of the SSH [ProxyJump Directive](https://goteleport.com/blog/ssh-proxyjump-ssh-proxycommand/). From you workstation, using either MobaXTerm or Windows Powershell, you can SSH directly into your compute node by first making an SSH connection to your head node and then establishing a TCP forwarding connection to your compute node. Using this method, the SSH keys for both your head node and compute node must reside on your local workstation:
+After you have successfully [Launched Your Second OpenStack VM Instance](../tutorial1/README.md#launching-your-first-openstack-virtual-machine-instance), you can SSH into your new compute node VM instance using your head node with the use of the SSH [ProxyJump Directive](https://goteleport.com/blog/ssh-proxyjump-ssh-proxycommand/). From you workstation, using either MobaXTerm or Windows PowerShell, you can SSH directly into your compute node by first making an SSH connection to your head node and then establishing a TCP forwarding connection to your compute node. Using this method, the SSH keys for both your head node and compute node must reside on your local workstation:
 
 ```bash
 ssh -i <path to ssh key> -J <user>@<head node publicly accessible ip> <user>@<compute node private internal ip>
@@ -265,6 +265,15 @@ For the tutorials you are encouraged to use tmux.
    sudo dnf makecache
    sudo dnf -y install htop
    ```
+   * APT
+   ```bash
+   # Ubuntu
+   sudo apt install htop
+   ```
+   * Pacman
+   ```bash
+   sudo pacman -S htop
+   ```
 
 1. Create a new window within `tmux` using `Ctrl` + `b` and 'c':
    ```bash
@@ -300,68 +309,46 @@ Your team must decide which tool you will be using for basic monitoring of your 
 
 Here is a list of Linux commands and utilities that you will use often during the course of the competition. You should become familiar with these commands.
 
-* `pwd`: If you are lost and don't know where you are currently working use `pwd` (print working directory). It will show you your current working space.
+* `pwd` *print* the path of your current *working directory*.
 
-* `mkdir` is used to create or *make* new folders or directories, the `-p` flag can be used to create additional parent folders and directories.
+* `mkdir` create or *make* new folders or *directories*, the `-p` flag can be used to create additional parent folders and directories.
 
 * Both commands and text editors can be used to create and edit files. For example `touch <filename>` creates a new file. Similarly the text editors `vi`, `vim` and `nano` are used to create and / or edit files.
 
-* `ls` is used to list the content of directory / folder.
+* `ls` *list* the content of directory / folder.
 
-* `cd` allows you to move between directories.
+* `cd` move or *change* between *directories*.
 
-* `cp` copies files and / or directories from source to destinations. Consider it's functions to be similar to those of Windows' `copy and paste`.
+* `cp` *copy* files and / or directories from source to destinations. Consider it's functionality to be similar to those of `copy and paste` from Windows.
 
-* Move File or Directory `mv` command moves files / directories from source to destinations. Consider it's functions to be similar to those of Windows' `cut and paste`.
+* `mv` *move* files / directories from source to destinations. Consider it's functionality to be similar to those of `cut and paste` from Windows.
 
 * Remove File or Directory `rm` remove command is used to delete files, and directory with `-r` or `--recursive` flag.
 
 # Verifying Networking Setup
 
-Your VMs have been assigned an external or public facing IP address. Navigate to `Compute  ->  Instances` on your OpenStack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for the head node) and one IP address (for compute node) with their respective networks. The head node's IP addresses will look like `10.x.x.x` and `154.114.72.x` where `x` denotes your specific VM's subnet suffix and address number. `10.100.50.x` network is for internal use and `154.114.72.x` is for public facing usage.
+Your VMs have been assigned an external or publicly facing, floating IP address. Navigate to `Compute  ->  Instances` on your OpenStack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for your head node) and one IP address (for your compute node) with their respective networks. The head node's IP addresses will look like `10.100.50.x` and `154.114.57.y` where `x` denotes your specific VM's address on the respective subnet. Each team has been allocated a private `10.100.50.*` network is for internal, private use and a public facing IP address `154.114.72.x` for external access from your local workstation.
 
-You can check your network interfaces by using the `ip a` command after logging in to your headnode or commpute node.
+<p align="center"><img alt="OpenStack Success State with Compute and Head nodes" src="./resources/openstack_verify_network.png" width=900 /></p>
 
+You can check your network interfaces by using the `ip a` command after logging in to your head node or commpute node.
 
- <p align="center"><img alt="`ip a` to show `eth0` interface for internal IPs" src="./resources/ipaforeth0interface.png" width=900 /></p>
+> [!TIP] **Rocky 9** uses [Network Manager](https://docs.rockylinux.org/guides/network/basic_network_configuration/) to manage network settings. `NetworkManager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
 
+* Head Node
 
-**Rocky 9.3** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
+  * Verify that your network interfaces are indeed managed by `NetworkManager`.
+  ```bash
+  nmcli dev
+  ```
 
-You can read the ff links for more information or better understanding: 
-https://docs.rockylinux.org/gemstones/network/RL9_network_manager/  
-https://docs.rockylinux.org/guides/network/basic_network_configuration/ 
+  * `nmtui` is a terminal or console-based tool used to configure and manage network connections for Network Manager.
+  ```bash
+  sudo nmtui
+  ```
 
-
-**Rocky 9** uses `Network Manager` (**NM**) to manage network settings. `Network Manager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
-
-TODO: can remove
-
-## Head Node (`nmtui`) 
-
-For the **head node**, create a new network definition using the `nmtui` graphical tool using the following steps:
-
-First we must make sure that our network interfaces are managed by Network Manager. By default, this should already be the case. Use the following command to check if the network interfaces are managed:
-
-```bash
-nmcli dev
-```
-
-You should see something other than "unmanaged" next to each of the interfaces (excluding lo). If any of your network interfaces (other than lo) say "unmanaged", do the following:
-
-```bash
-nmcli dev set <interface> managed yes
-
-```
-
-The `nmtui` tool is a console-graphical tool used to set up and manage network connections for Network Manager.
-
-```bash
-sudo nmtui
-
-```
-
-You'll be presented with a screen, select Edit a connection, followed by <Add> and then Ethernet.
+  * Example Edit Network Configuration
+  You'll be presented with a screen, select Edit a connection, followed by <Add> and then Ethernet.
 
 For Profile Name, type the name of the interface you want to assign an IP address to, like `eth0` or `ens3`, and type the same thing for Device (in this instance, Device means interface).
 For IPv4 CONFIGURATION, change <Automatic> to <Manual>. This tells NM that we want to assign a static IP address to the connection. Hit enter on <Show> to the right of IPv4 CONFIGURATION and enter the following information:
