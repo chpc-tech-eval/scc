@@ -28,8 +28,8 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
     1. [NFS Client (Compute Node)](#nfs-client-compute-node)
         1. [Mounting An NFS Mount](#mounting-an-nfs-mount)
         1. [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
-1. [Passwordless ssh](#passwordless-ssh)
-    1. [Generating ssh Keys on your Head Node](#generating-ssh-keys-on-your-head-node)
+1. [Passwordless SSH](#passwordless-ssh)
+    1. [Generating SSH Keys on your Head Node](#generating-ssh-keys-on-your-head-node)
     1. [Editing `/etc/hosts` File](#editing-etchosts-file)
     1. [permanent Configuration with `~/.ssh/config`](#permanent-configuration-with-sshconfig)
         1. [Understanding `~/.ssh/authorized_keys`](#understanding-sshauthorized_keys)
@@ -66,7 +66,7 @@ This tutorial will demonstrate how to access web services that are on your virtu
 <u>In this tutorial you will:</u>
 
 - [ ] Install a web server.
-- [ ] Create an ssh tunnel to access your web service.
+- [ ] Create an SSH tunnel to access your web service.
 - [ ] Create new local user accounts.
 - [ ] Add local system users to sudoers file for root access.
 - [ ] Share directories between computers.
@@ -91,11 +91,11 @@ Sensible default instance flavors have already been identified and configured fo
 
 One important distinction between your head node and compute node(s), is that the compute nodes will **not** have a floating IP associated to them. Your head node will act as a ***Gateway*** for your Compute Node(s), and ***Route*** traffic between the internet and your cluster, using a method referred to as ***Network Address Translation (NAT)***, which was discussed in the [WiFi Hotspot Example](../tutorial1/README.md#wifi-hotspot-example).
 
-The final important consideration that must be made for your compute node is that you must not forget to configure an ssh key, so that you may access it after it has successfully launched. For ease of access and to simplify your configuration, **you are *strongly* advised to use the same ssh key** that you'd [previously generated](../tutorial1/README.md#generating-ssh-keys) on your local machine/laptop.
+The final important consideration that must be made for your compute node is that you must not forget to configure an SSH key, so that you may access it after it has successfully launched. For ease of access and to simplify your configuration, **you are *strongly* advised to use the same SSH key** that you'd [previously generated](../tutorial1/README.md#generating-ssh-keys) on your local machine/laptop.
 
 # Accessing Your Compute Node Using `ProxyJump` Directive
 
-After you have successfully [Launched Your Second OpenStack VM Instance](../tutorial1/README.md#launching-your-first-openstack-virtual-machine-instance), you can ssh into your new compute node VM instance using your head node with the use of the ssh [ProxyJump Directive](https://goteleport.com/blog/ssh-proxyjump-ssh-proxycommand/). From you workstation, using either MobaXTerm or Windows Powershell, you can ssh directly into your compute node by first making an ssh connection to your head node and then establishing a TCP forwarding connection to your compute node. Using this method, the ssh keys for both your head node and compute node must reside on your local workstation:
+After you have successfully [Launched Your Second OpenStack VM Instance](../tutorial1/README.md#launching-your-first-openstack-virtual-machine-instance), you can SSH into your new compute node VM instance using your head node with the use of the SSH [ProxyJump Directive](https://goteleport.com/blog/ssh-proxyjump-ssh-proxycommand/). From you workstation, using either MobaXTerm or Windows Powershell, you can SSH directly into your compute node by first making an SSH connection to your head node and then establishing a TCP forwarding connection to your compute node. Using this method, the SSH keys for both your head node and compute node must reside on your local workstation:
 
 ```bash
 ssh -i <path to ssh key> -J <user>@<head node publicly accessible ip> <user>@<compute node private internal ip>
@@ -114,18 +114,18 @@ The following diagram may facilitate the discussion and illustrate the scenario:
 ```css
 [workstation] ---- SSH ----> [head node] ---- SSH ----> [compute node]
 
-# First an ssh connection is made to the head node
+# First an SSH connection is made to the head node
 [workstation] ---- SSH ----> [head node]
 
-# Then an ssh connection is made to the compute node using the head node as an ssh forwarding tunnel
+# Then an SSH connection is made to the compute node using the head node as an SSH forwarding tunnel
 [workstation] ---- TCP Forwarding Connection through head node ----> [compute node]
 ```
 
 > [!NOTE]
-> Remember to use the **ssh keys**, **usernames** and **ip addresses** corresponding to *your* nodes! You have been **STRONGLY** advised to make use of the **SAME SSH KEY** on your compute node as you had used on your head node. Should you insist on using different ssh keys for you nodes, refer to the hidden description that follows. Reveal the hidden text by clicking on the description.
+> Remember to use the **SSH keys**, **usernames** and **ip addresses** corresponding to *your* nodes! You have been **STRONGLY** advised to make use of the **SAME SSH KEY** on your compute node as you had used on your head node. Should you insist on using different SSH keys for you nodes, refer to the hidden description that follows. Reveal the hidden text by clicking on the description.
 
 <details>
-<summary>Head node and compute node deployed using different ssh key pairs *Click to reveal*</summary>
+<summary>Head node and compute node deployed using different SSH key pairs *Click to reveal*</summary>
 
 ```bash
 ssh -o ProxyCommand="ssh -i <path to head node ssh key> -l <user> -W %h:%p <head node ip>" -i <path to  compute node ip> <user>@<compute node ip>
@@ -134,7 +134,7 @@ ssh -o ProxyCommand="ssh -i <path to head node ssh key> -l <user> -W %h:%p <head
 
 ## Setting a Temporary Password on your Compute Node
 
-Once you have successfully logged into your compute node, you can set a password for the default user, which would be ***rocky*** in the case of Rocky Linux VM instances. This is an optional step that you are advised to do so that you may access your VM's through the VNC console should you break your ssh access whilst configuring NFS.
+Once you have successfully logged into your compute node, you can set a password for the default user, which would be ***rocky*** in the case of Rocky Linux VM instances. This is an optional step that you are advised to do so that you may access your VM's through the VNC console should you break your SSH access whilst configuring NFS.
 ```bash
 sudo passwd <user>
 ```
@@ -144,53 +144,82 @@ In the event that you manage to lock yourselves out of your VMs, from your team'
 <p align="center"><img alt="OpenStack VNC." src="./resources/openstack_vnc_access.png" width=900 /></p>
 
 > [!IMPORTANT]
-> You will not be able to login into your ssh servers on your head (and compute) nodes using a password. This is a security feature by default. Should you have a ***very good reason*** for wanting to utilize password enabled ssh access, discuss this with the instructors.
+> You will not be able to login into your SSH servers on your head (and compute) nodes using a password. This is a security feature by default. Should you have a ***very good reason*** for wanting to utilize password enabled SSH access, discuss this with the instructors.
 >
-> The reason why you are setting a password at this stage, is because the following set of tasks could potentially break your ssh access and lock you out of your node(s).
+> The reason why you are setting a password at this stage, is because the following set of tasks could potentially break your SSH access and lock you out of your node(s).
 
 # Understanding the Roles of the Head Node and Compute Node
-Networking Diagram and client server model
-headnode (hd) and compute node (cn) relationship follow a server (hd) - client (cn) relations, the headnode carries the systems services and compute node does all the computations
-System software need to be installed on both head node and compute nodes
-Do not ssh endlessly between head and compute nodes, one terminal example or multiplexing (screen sessions via `tmux`)
+
+When designing a cluster, a publicly accessible administrative SSH login node acts as a gateway to an internal network of compute and storage servers. This section will describe a breakdown of the roles and interactions between your head and compute(s) nodes.
+
+<p align="center"><img alt="OpenStack VNC." src="./resources/ssh_example.avif" width=900 /></p>
+
+* Head Node
+  * **Gateway to Internal Network**: This node serves as the only publicly accessible point for administrators and authorized users to access the internal network.
+  * **Security Barrier**: By exposing only this single node to the internet, it minimizes the attack surface, making the overall infrastructure more secure.
+  * **Authentication and Access Control**: It handles user authentication and can enforce security policies before granting access to internal resources.
+  * **Logging and Monitoring**: It acts as a centralized point for logging access attempts and monitoring user activities, enhancing the ability to detect and respond to potential security incidents.
+  * **Cluster Administration and Management**: Your head node is used to administer and control the rest of your cluster and resources.
+  * **Storage Server**: For this use case, you head node is also used as a network storage server. *This is not always the case in real-world scenarios, but will be for you in the entirety of the competition.*
+  * **Task / Job Submission**: This VM is used as a means and mechanism for submitting tasks and jobs to your compute node(s).
+
+* Compute Node(s)
+  * **Task / Job Execution**: These servers (VMs) are responsible for running computations, executing code, and handling data processing tasks.
+  * **Isolation from Public Access**: They are not directly accessible from the internet, reducing their exposure to potential attacks.
+  * **Resource Allocation**: They manage CPU, memory, and other computational resources required for executing various jobs.
+  * **Client Services**: Your compute node(s) act as *'clients'* to a number of services provided by your head node.
+
+* A typical workflow example may involve the followings interactions:
+  1. **User Access**: As an administrator or authorized user, you connect to the login node via SSH from *your* local workstation.
+  1. **Authentication**: The login node authenticates you as an authorized user and grants access to the internal network.
+  1. **Administration and Maintenance**: As an *administrator*, you complete a number of administrative and maintenance tasks.
+  1. **Job Submission**: As a *user*, you submit computational tasks to the compute servers from the login node.
+  1. **Data Interaction**: Your compute node(s) fetch necessary data from the storage servers (head node) and perform the required computations.
+  1. **Result Storage**: The output data is stored back on the head node over network storage, or locally on the compute node(s).
+  1. **Data Retrieval**: You retrieve results from the head node to your local workstation.
+
+To facilitate your understanding of the roles and interactions between your head node and your compute node(s), you will now install and work with terminal multiplexers and basic system monitoring tools.
 
 ## Terminal Multiplexers and Basic System Monitoring
 
-Discuss GNU Screen and [tmux](https://github.com/tmux/tmux/wiki)
+[GNU Screen](https://www.gnu.org/software/screen/) and [tmux](https://github.com/tmux/tmux/wiki) are both terminal multiplexers, tools that allow you to manage multiple terminal sessions within a single window or remote terminal session. They are particularly useful for Linux system administration as they enable you to run multiple commands simultaneously, keep sessions alive after disconnecting, and organize terminal workspaces efficiently. Tmux is generally preferred for its modern interface and advanced capabilities, but GNU Screen remains a solid choice, especially in environments where it is already in use.
 
-Install `tmux` on your head node:
+For the tutorials you are encouraged to use tmux.
 
-```bash
-sudo dnf update
-sudo dnf install tmux
-```
+1. Install `tmux` on your head node:
 
-<details>
-<summary>Installing `tmux` using APT (Ubuntu) or Pacman (Arch)</summary>
+   ```bash
+   sudo dnf update
+   sudo dnf install tmux
+   ```
 
-```bash
-# APT (Ubuntu)
-sud apt install tmux
+   <details>
+   <summary>Installing `tmux` using APT (Ubuntu) or Pacman (Arch)</summary>
 
-# Pacman (Arch)
-sudo pacman -Syu tmux
-```
-</details>
+   ```bash
+   # APT (Ubuntu)
+   sudo apt install tmux
 
-<p align="center"><img alt="Install Tmux" src="./resources/ssh_keygen_login_compute_node.png" width=900 /></p>
+   # Pacman (Arch)
+   sudo pacman -Syu tmux
+   ```
+   </details>
 
-To start a new `tmux` session on your **head node**:
+1. To start a new `tmux` session on your head node:
 
-```bash
-tmux new -s session_name
-```
+   ```bash
+   tmux
 
-* Working on your Head Node and Compute Node in Two Adjacent Panes
+   # To open a new session and give it a <name>
+   # tmux new -s <name>
+   ```
 
-Once you've started a new `tmux` session or daemon or server, on your head node, there are a number of very useful tools you can utilize.
+1. Working on your Head Node and Compute Node in Two Adjacent Panes
+
+   Once you've started a new `tmux` session (daemon / server), on your head node, there are a number of very useful tools and functionality you can utilize.
 
 1. Split the terminal vertically into two separate panes:
-   Press and hold `Ctrl` together with `b`. Then release `Ctrl` + `b` and press `"` (i.e. `Shift` + `'`) . The combination of `Ctrl + b` `"`, is denoted by:
+   Press and hold `Ctrl` together with `b`. Then release `Ctrl` + `b` and press `"` (i.e. `Shift` + `'`). The combination of `Ctrl + b` `"`, is denoted by:
 
    ```bash
    C-b "
@@ -204,26 +233,27 @@ Once you've started a new `tmux` session or daemon or server, on your head node,
    ```bash
    sudo dnf install btop
    ```
-   **OR**
+
+   <details>
+   <summary>Installing `btop` on your head node on Ubuntu and Arch</summary>
    ```bash
    sudo yum install btop
-   ```
-   **OR**
-   ```bash
+
+   # Ubuntu
+   sudo apt install btop
+
+   # Arch
    sudo pacman -S btop
    ```
-   **OR**
-   ```bash
-   sudo apt-get install btop
-   ```
-1. Move to the second pane, and ssh into your **compute node** using `Ctrl` + `b` and `o`.
+   </details>
+
+1. Move to the second pane, and SSH into your **compute node** using `Ctrl` + `b` and `o`.
    ```bash
    C-b o
    ```
-1. Ssh into your **compute node** and install `htop`:
+1. SSH into your **compute node** and install `htop`:
    ```bash
    ssh <user>@<compute node ip>
-   
    ```
    <p align="center"><img alt="Generate Key and ssh into compute" src="./resources/tmux_btop_htop.png" width=900 /></p>
    
@@ -242,7 +272,7 @@ Once you've started a new `tmux` session or daemon or server, on your head node,
    ```
 1. Split the new window pane horizontally using `Ctrl` + `b` and `%`.
    - Run `btop` on your **head node** on one of your panes.
-   - Ssh into your **compute node*** and run `htop` on the other pane.
+   - SSH into your **compute node*** and run `htop` on the other pane.
    <p align="center"><img alt="Generate Key and ssh into compute" src="./resources/tmux_ssh_run_tops.png" width=900 /></p>
    <p align="center"><img alt="Generate Key and ssh into compute" src="./resources/tmux_running_htop_btop.png" width=900 /></p>
 
@@ -408,7 +438,7 @@ legacy tool that works by setting up rules in different tables. To secure your n
 # Block a specific IP address
 sudo iptables -A INPUT -s 10.50.100.8 -j DROP
 
-# Allow all incoming ssh traffic
+# Allow all incoming SSH traffic
 sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 
 ```
@@ -429,7 +459,7 @@ sudo nft add chain ip filter input { type filter hook input priority 0 \; }
 # Add a rule to block an IP address
 sudo nft add rule ip filter input ip saddr 10.50.100.8 drop
 
-# Allow incoming ssh connections
+# Allow incoming SSH connections
 sudo nft add rule ip filter input tcp dport 22 accept
 ```
 
@@ -622,7 +652,7 @@ Run `chronyc clients` on the headnode to see ntp clients
 
 Network File System (NFS) enables you to easily share files and directories over the network. NFS is a distributed file system protocol that we will use to share files between our nodes across our private network. It has a server-client architecture that treats one machine as a server of directories, and multiple machines (clients) can connect to it.
 
-This tutorial will show you how to export a directory on the head node and mount it through the network on the compute nodes. With the shared file system in place it becomes easy to enable **public key based ssh authentication**, which allows you to ssh into all the computers in your cluster without requiring a password.
+This tutorial will show you how to export a directory on the head node and mount it through the network on the compute nodes. With the shared file system in place it becomes easy to enable **public key based SSH authentication**, which allows you to SSH into all the computers in your cluster without requiring a password.
 
 ## NFS Server (Head Node)
 
@@ -752,12 +782,12 @@ For the description of nfs options listed above see the link: https://cheatograp
 
 
 
-# Passwordless ssh
-## Generating ssh Keys on your Head Node
+# Passwordless SSH
+## Generating SSH Keys on your Head Node
 
-Just as you did so in the previous tutorial when you generated ssh keys [on your workstation](../tutorial1/README.md#generating-ssh-keys), you're now going to do the same on your head node. You're then going to copy the newly created key onto you head node and test the new ssh connection, by logging into your compute node.
+Just as you did so in the previous tutorial when you generated SSH keys [on your workstation](../tutorial1/README.md#generating-ssh-keys), you're now going to do the same on your head node. You're then going to copy the newly created key onto you head node and test the new SSH connection, by logging into your compute node.
 
-1. Generate an ssh key on your **head node**:
+1. Generate an SSH key on your **head node**:
 
    ```bash
    ssh-keygen -t ed25519
@@ -766,13 +796,13 @@ Just as you did so in the previous tutorial when you generated ssh keys [on your
    - *Enter file in which to save the key* - Press `Enter`,
    - *Enter passphrase (empty for no passphrase)* - Leave empty and press `Enter`,
    - *Enter same passphrase again* - Leave empty and press `Enter` again,
-1. Copy the newly created ssh key to your **compute node**:
+1. Copy the newly created SSH key to your **compute node**:
 
    ```bash
    ssh-copy-id ~/.ssh/id_ed25519 <user>@<compute node ip>
    ```
    
-1. From your **head node**, ssh into your **compute node**:
+1. From your **head node**, SSH into your **compute node**:
    ```bash
    
    ssh <user>@<compute node ip>
@@ -789,7 +819,7 @@ Just as you did so in the previous tutorial when you generated ssh keys [on your
 When managing a large fleet of machines or even when just logging into a single machine repeatedly, it can become very time consuming to have to enter your password repeatedly. Another issue with passwords is that some services may rely on directly connecting to another computer and can't pass a password during login. To get around this, we can use [public key based authentication](https://www.ssh.com/academy/ssh/public-key-authentication) for passwordless login.
 
 
-1. Generate an ssh key-pair for your user. This will create a public and private key for your user in `/home/<username>/.ssh`. The private key is your identity and the public key is what you share with other computers.
+1. Generate an SSH key-pair for your user. This will create a public and private key for your user in `/home/<username>/.ssh`. The private key is your identity and the public key is what you share with other computers.
 
 ```bash
    ssh-keygen
@@ -815,7 +845,7 @@ Since your `/home` directory is shared with your compute node, this will look th
     [rocky@headnode ~]$ sudo restorecon -R -v ~/.ssh
 ```
 
-4. ssh to the **compute node** passwordless If you are prompted with a password it means that something is not set up correctly. 
+4. SSH to the **compute node** passwordless If you are prompted with a password it means that something is not set up correctly. 
 run the following command:
 
 ```bash
@@ -866,7 +896,7 @@ https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix/
 
 ### Understanding `~/.ssh/authorized_keys`
 
-How this works is that you copy the public key to the computer that you want to connect to without a password `authorized_keys` file. When you ssh to the machine that you copied your public key to, the `ssh` tool will send a challenge that can only be decrypted if the target machine has the public key and the local machine has the private key. If this succeeds, then you are who you say you are to the target computer and you do not require a password. [Please read this for more detailed information](https://www.ssh.com/academy/ssh/public-key-authentication).
+How this works is that you copy the public key to the computer that you want to connect to without a password `authorized_keys` file. When you SSH to the machine that you copied your public key to, the `ssh` tool will send a challenge that can only be decrypted if the target machine has the public key and the local machine has the private key. If this succeeds, then you are who you say you are to the target computer and you do not require a password. [Please read this for more detailed information](https://www.ssh.com/academy/ssh/public-key-authentication).
 
 ### User Permissions and Ownership
 > **! >>> `chmod` and `chown` are Linux permission and ownership modification commands. To learn more about these commands and how they work, please go to the following link: [https://www.unixtutorial.org/difference-between-chmod-and-chown/](https://www.unixtutorial.org/difference-between-chmod-and-chown/).**
@@ -1075,7 +1105,7 @@ In this tutorial we will install ansible and use it to automate the creation of 
 
 ## Installing and Configuring Ansible
 Prerequisites :
- 1. ansible control host should be able connect to ansible clients over ssh preferably passwordless,
+ 1. ansible control host should be able connect to ansible clients over SSH preferably passwordless,
  2. via a user account with sudo or root privileges 
  3. atleast one ansible client
 
@@ -1153,7 +1183,7 @@ We will use ansible to create user accounts on remote ansible clients, to achive
 In this section you will learn to:
 Create a playbook that will perform the following actions on all Ansible hosts/clients:
     1. Create a new sudo user and granting sudo priviledges.
-    2. Copy a local ssh public key and include it in the `authorized_keys` file for the new administrative user on the remote host.
+    2. Copy a local SSH public key and include it in the `authorized_keys` file for the new administrative user on the remote host.
 
 
 1. Create an ansible working directory in your `/home/rocky`, this is where all ansible playbooks will reside.
@@ -1281,7 +1311,7 @@ http://headnode:1235 or http://headnode_ip:1235
 
 # Web Browser and SOCKS5 Proxy Configuration
 
-We'll need to use a **dynamic ssh tunnel** ([SOCKS proxy](https://en.wikipedia.org/wiki/SOCKS)) to allows ssh to forward **ALL remote (target) port traffic** to and from a port on your local machine, and can include remote DNS.
+We'll need to use a **dynamic ssh tunnel** ([SOCKS proxy](https://en.wikipedia.org/wiki/SOCKS)) to allows SSH to forward **ALL remote (target) port traffic** to and from a port on your local machine, and can include remote DNS.
 
 ## Firefox and Proxy Configurations
 
@@ -1314,7 +1344,7 @@ Now click `OK` and open a new tab in Firefox.
 
 Now you can enter `http://headnode_ip:1235` in your browser and you'll get access to the software tool interface.
 
-> **! >>> Keep the ssh sessions open while you use the proxy on Firefox**
+> **! >>> Keep the SSH sessions open while you use the proxy on Firefox**
 
 > **! >>> Remember to set your proxy settings back to `No Proxy` if you want to use your own local internet on Firefox.**
 

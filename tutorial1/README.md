@@ -430,7 +430,7 @@ If your workstation or laptop is running Windows, then you may proceed using eit
 
 * Username and Password
 
-  Once you've successfully logged into your head node VM, you are encouraged to setup your password login as a fail safe incase your ssh keys are giving issue, you may also access your head node through the OpenStack VNC console interface.
+  Once you've successfully logged into your head node VM, you are encouraged to setup your password login as a fail safe in case your SSH keys are giving issue, you may also access your head node through the OpenStack VNC console interface.
 
   ```bash
    sudo passwd <username>
@@ -439,7 +439,7 @@ If your workstation or laptop is running Windows, then you may proceed using eit
   <p align="center"><img alt="OpenStack VNC." src="./resources/openstack_vnc_access.png" width=900 /></p>
 
 > [!CAUTION]
-> Setting up a password for any user *- especially the default user -* may make your VM's vulnerable to [Brute Force SSH Attacks](https://helpcenter.trendmicro.com/en-us/article/tmka-19689) if you enable password ssh authentication.
+> Setting up a password for any user *- especially the default user -* may make your VM's vulnerable to [Brute Force SSH Attacks](https://helpcenter.trendmicro.com/en-us/article/tmka-19689) if you enable password SSH authentication.
 
 ## Running Basic Linux Commands and Services
 
