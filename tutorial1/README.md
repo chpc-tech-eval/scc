@@ -535,7 +535,6 @@ sudo dnf remove <PACKAGE_NAME>
 # Moreover Ubuntu has it's origins in South Africa...
 
 sudo apt update
-sudo apt upgrade
 sudo apt install <PACKAGE_NAME>
 sudo apt remove <PACKAGE_NAME>
 

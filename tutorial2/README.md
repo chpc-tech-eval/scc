@@ -117,8 +117,7 @@ The following diagram may facilitate the discussion and illustrate the scenario:
 # First an ssh connection is made to the head node
 [workstation] ---- SSH ----> [head node]
 
-# Then an ssh connection is made to the compute node using the head node as
-# an ssh forwarding tunnel
+# Then an ssh connection is made to the compute node using the head node as an ssh forwarding tunnel
 [workstation] ---- TCP Forwarding Connection through head node ----> [compute node]
 ```
 
@@ -145,7 +144,7 @@ In the event that you manage to lock yourselves out of your VMs, from your team'
 <p align="center"><img alt="OpenStack VNC." src="./resources/openstack_vnc_access.png" width=900 /></p>
 
 > [!IMPORTANT]
-> You will not be able to login into your ssh servers on your head (and compute) nodes using a password. This is a security feature by default. Should you have a ***very good reason*** for wanting to enable password enabled ssh access, discuss this with the instructors.
+> You will not be able to login into your ssh servers on your head (and compute) nodes using a password. This is a security feature by default. Should you have a ***very good reason*** for wanting to utilize password enabled ssh access, discuss this with the instructors.
 >
 > The reason why you are setting a password at this stage, is because the following set of tasks could potentially break your ssh access and lock you out of your node(s).
 
@@ -159,39 +158,22 @@ Do not ssh endlessly between head and compute nodes, one terminal example or mul
 
 Discuss GNU Screen and [tmux](https://github.com/tmux/tmux/wiki)
 
-Install `tmux` on your **head node***:
-
-<details>
-<summary>Installing `tmux` using pacman</summary>
-
-```bash
-sudo pacman -Syu tmux
-```
-</details>
-
-<details>
-<summary>Installing `tmux` using `yum`</summary>
-
-```bash
-sudo yum update
-sudo yum install tmux
-```
-</details>
-
-<details>
-<summary>Installing `tmux` using `dnf`</summary>
+Install `tmux` on your head node:
 
 ```bash
 sudo dnf update
 sudo dnf install tmux
 ```
-</details>
 
 <details>
-<summary>Installing `tmux` using `apt-get`</summary>
+<summary>Installing `tmux` using APT (Ubuntu) or Pacman (Arch)</summary>
+
 ```bash
-sudo apt-get update
-sudo apt-get install tmux
+# APT (Ubuntu)
+sud apt install tmux
+
+# Pacman (Arch)
+sudo pacman -Syu tmux
 ```
 </details>
 
