@@ -265,6 +265,10 @@ The following list provides a few examples of Linux distros that *may* be availa
 
 * **Source-Based**: [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/) is a project that teaches you how to create your own Linux system from source code, using another Linux system. Learn how to install, configure and customize LFS and BLFS, and use tools for automation and management. Once you are **very** familiar with Linux, LFS is an excellent medium term side project that you peruse in you own time. Only Linux experts need apply.
 
+Type *"Rocky"* in the search bar, and select the **Rocky-9.3** cloud image as a boot source.
+
+<p align="center"><img alt="OpenStack Select Source." src="./resources/openstack_source_image.png" width=900 /></p>
+
 ## OpenStack Instance Flavors
 
 An important aspect of system administration is resource monitoring, management and utilization. Each Team will be required to manage their available resources and ensure that the resources of their clusters are utilized in such a way as to maximize system performance. You have been allocated a pool of resources which you will need to decide how you are going to allocate the sizing of the compute, memory and storage across your head node and compute node(s).
@@ -292,22 +296,26 @@ The following table summarizes the various permutations and allocations that can
 | Cluster Configurations     | Instance Flavor | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
 |----------------------------|:---------------:|:---------------:|:------------:|:--------------:|
 |                            |                 |                 |              |                |
-| Dedicated Head Node        | scc24.C2.S60    | 2               | 4 GB         | 60 GB          |
-| Compute Node 01            | scc24.C8.S10    | 8               | 16 GB        | 10 GB          |
-| Compute Node 02            | scc24.C8.S10    | 8               | 16 GB        | 10 GB          |
+| Dedicated Head Node        | scc24.C2.M4.S60    | 2               | 4 GB         | 60 GB          |
+| Compute Node 01            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
+| Compute Node 02            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 |                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C6.S60    | 6               | 12 GB        | 60 GB          |
-| Compute Node 01            | scc24.C6.S10    | 6               | 12 GB        | 10 GB          |
-| Compute Node 02            | scc24.C6.S10    | 6               | 12 GB        | 10 GB          |
+| Hybrid Head / Compute Node | scc24.C6.M12.S60    | 6               | 12 GB        | 60 GB          |
+| Compute Node 01            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
+| Compute Node 02            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 |                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C10.S60   | 10              | 20 GB        | 60 GB          |
-| Compute Node 01            | scc24.C8.S10    | 8               | 16 GB        | 10 GB          |
+| Hybrid Head / Compute Node | scc24.C10.M12.S60   | 10              | 20 GB        | 60 GB          |
+| Compute Node 01            | scc24.C8.M12.S10    | 8               | 16 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 
+Type *"scc"* in the search bar and select the **scc24.C2.M4.S60** instance flavor.
+
+<p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_instance_flavor.png" width=900 /></p>
+
 > [!TIP]
-> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of starting with this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the **scc24.C2.S60** flavor with *2 vCPUs* and *4 GB RAM*.
+> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of starting with this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the **scc24.C2.M4.S60** flavor with *2 vCPUs* and *4 GB RAM*.
 
 ## Networks, Ports, Services and Security Groups
 
@@ -348,12 +356,12 @@ In order for you to be able to SSH into your newly created OpenStack instance, y
 > The following section is strictly for debugging and troubleshooting purposes. You **MUST** discuss your circumstances with an instructor before proceeding with this section. If you have successfully launched your head node, proceed to the [Intro on Basic Sys Admin](#introduction-to-basic-linux-administration).
 
 * Deleting Instances
-  - When all else fails, and you would like to attempt the steps from the beginning: Select the failing VM and click `Delete Instance` from the drop down menu.
-  - Occasionally you may find yourself deleting a VM instance by mistake and will need to recover the deleted VM. Do not despair, by default `no` is selected on `Delete Volume on Instance Delete` this will leave your root (OS) disk behing and you can recover by launching a new VM from the root disk.
+  - When all else fails and you would like to reattempt the creation of your nodes from a clean start, Select the VM you want to remove and click `Delete Instance` from the drop down menu.
+  - Occasionally you may find yourself accidentally deleting a VM instance. Do not despair, by default `no` is selected on `Delete Volume on Instance Delete` this will leave your storage `volume` intact and you can recover it by launching a new instance from the `volume`. Details will be provided later in [Tutorial 3](#spinning-up-a-second-compute-node).
 
 * Deleting Volumes
 
-  When a root (OS) disk's volume is left behind after deleting a VM on purpose, you will need to go to `Volumes` and select your volume and click `Delete volumes` to remove the volume from your work space
+  When a VM's storage `volume` lingers behind after intentionally deleting a VM, you will need to go to manually remove the volume from your work space.
 
 * Dissociating and Releasing Floating IPs
 
@@ -585,17 +593,22 @@ You will now install and run HPL on your **head node**.
 1. Update the system and install dependencies
 
    You are going to be installing tools that will allow you to compile applications using the `make` command. You will also be installing a maths library to compute matrix multiplications, and an `mpi` library for communication between processes, in this case mapped to CPU cores.
+   * DNF / YUM
    ```bash
-   # DNF / YUM (RHEL, Rocky, Alma, Centos)
+   # RHEL, Rocky, Alma, Centos Steam
    sudo dnf update -y
    sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
    sudo dnf install wget nano -y
-
-   # APT (Ubuntu)
+   ```
+   * APT
+   ```bash
+   # Ubuntu
    sudo apt update
    sudo apt install openmpi libatlas-base-dev
-
-   # Pacman (Arch)
+   ```
+   * Pacman
+   ```bash
+   # Arch
    sudo pacman -Syu
    sudo pacman -S base-devel openmpi atlas-lapack nano wget
    ```
