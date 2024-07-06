@@ -305,8 +305,8 @@ The following table summarizes the various permutations and allocations that can
 | Compute Node 02            | scc.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 |                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc.C10.M12.S60   | 10              | 20 GB        | 60 GB          |
-| Compute Node 01            | scc.C8.M12.S10    | 8               | 16 GB        | 10 GB          |
+| Hybrid Head / Compute Node | scc.C10.M20.S60   | 10              | 20 GB        | 60 GB          |
+| Compute Node 01            | scc.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 
 Type *"scc"* in the search bar and select the **scc.C2.M4.S60** instance flavor.
@@ -357,14 +357,17 @@ In order for you to be able to SSH into your newly created OpenStack instance, y
 * Deleting Instances
   - When all else fails and you would like to reattempt the creation of your nodes from a clean start, Select the VM you want to remove and click `Delete Instance` from the drop down menu.
   - Occasionally you may find yourself accidentally deleting a VM instance. Do not despair, by default `no` is selected on `Delete Volume on Instance Delete` this will leave your storage `volume` intact and you can recover it by launching a new instance from the `volume`. Details will be provided later in [Tutorial 3](#spinning-up-a-second-compute-node).
+  <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_troubleshooting_delete_instance.png" width=900 /></p>
 
 * Deleting Volumes
 
   When a VM's storage `volume` lingers behind after intentionally deleting a VM, you will need to go to manually remove the volume from your work space.
+  <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_troubleshooting_delete_volume.png" width=900 /></p>
 
-* Dissociating and Releasing Floating IPs
+* Dissociating Floating IP
 
-  If your VM is deleted then the floating IP associated with that deleted VM will stay in your project under `Networks -> Floating IPs` for future use. Selecting the floating IP and clicking `Release Floating IPs` will send the floating IP back to the pool and you can call a tutor to help you get back your IP.
+  If your VM is deleted then the floating IP associated with that deleted VM will stay in your project under `Networks -> Floating IPs` for future use. Should you accidentally associate your floating IP to one of your compute nodes, dissociate it as per the diagram below, so that it may be allocated to your head node. Selecting the floating IP and clicking `Release Floating IPs` will send the floating IP back to the pool and you can call a tutor to help you get back your IP.
+  <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_troubleshooting_dissociate_float_ip.png" width=900 /></p>
 
 # Introduction to Basic Linux Administration
 
@@ -452,7 +455,7 @@ If your workstation or laptop is running Windows, then you may proceed using eit
 
 Once logged into your head node, you can now make use of the [previously discussed basic networking commands](#terminal-mobaxterm-and-windows-powershell-commands): `ip a`, `ping`, `ip route` and `tracepath`, refer to [Discussion on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/48) for example out, and to also post your screenshots as comments.
 
-Here is a list of further basic Linux / Unix commands that you must familiarize yourselves and become comfortable with in order to be successful in the competition. 
+Here is a list of further basic Linux / Unix commands that you must familiarize yourselves and become comfortable with in order to be successful in the competition.
 
 * Manual Pages `man`: On Linux systems, information about commands can be found in a manual page. This document is accessible via a command called `man` short term for manual page. For example, try running `man sudo`, scroll up and down then press `q` to exit the page.
 
