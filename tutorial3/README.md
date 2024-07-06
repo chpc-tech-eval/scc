@@ -725,7 +725,7 @@ For this benchmark, we will be providing you with the details of the script that
    return time_val
    ```
 
-* Parameterize the following variables for the QV experiment
+1. Parameterize the following variables for the QV experiment
 
   You'll need to parameterize the following variables, in order to generate the QV circuits and run them on a backend and on an ideal simulator:
   * `qubits`: number or list of physical qubits to be simulated for the experiment,
@@ -735,4 +735,9 @@ For this benchmark, we will be providing you with the details of the script that
 1. Run the benchmark by executing the script you've just written:
    ```bash
    $ python qv_experiment.py
+   ```
+
+1. Deactivate the Python virtualenv
+   ```bash
+   deactivate
    ```

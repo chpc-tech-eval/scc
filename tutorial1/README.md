@@ -249,7 +249,7 @@ You and your Team, together with input and advise from your mentors, must do som
 The following list provides a few examples of Linux distros that *may* be available on the Sebowa OpenStack cloud for you to use, and that you *might* consider using as a *'daily driver'*.
 
 > [!TIP]
-> You do not need to decide right now which Linux Flavor you and your team will be installing on you personal / school laptop and desktop computers. The list and corresponding links are provided for later reference, however for the time being you are strongly encouraged to proceed with **Rocky 9.2 image**. If you are already using or familiar with Linux, discuss this with the instructors who will advise you on how to proceed.
+> You do not need to decide right now which Linux Flavor you and your team will be installing on you personal / school laptop and desktop computers. The list and corresponding links are provided for later reference, however for the time being you are strongly encouraged to proceed with **Rocky 9.3 image**. If you are already using or familiar with Linux, discuss this with the instructors who will advise you on how to proceed.
 
 * **RPM** or Red Hat Package Manager is a free and open-source package management system. The name RPM refers to the `.rpm` file format and the package manager program itself. Examples include [Red Hat Enterprise Linux](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux), [Rocky Linux](https://rockylinux.org/), [Alma Linux](https://almalinux.org/), [CentOS Stream](https://www.centos.org/centos-stream/) and [Fedora](https://fedoraproject.org/). You can't go wrong with choose of either Red Hat, Alma, ***Rocky*** or CentoS Stream for the competition. You manage packages through tools such at `yum` (Yellowdog Updater, Modified) and / or `dnf` (Dandified YUM).
 
@@ -342,24 +342,22 @@ In order for you to be able to SSH into your newly created OpenStack instance, y
 1. Select the `154.114.57.*` IP address allocated and click on the *Associate* button.
    <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_added_floating_ip.png" width=900 /></p>
 
-## Success State, Resource Management and Troubleshooting
+## Troubleshooting
 
 > [!CAUTION]
-> The following section is strictly for debugging and troubleshooting purposes
+> The following section is strictly for debugging and troubleshooting purposes. You **MUST** discuss your circumstances with an instructor before proceeding with this section. If you have successfully launched your head node, proceed to the [Intro on Basic Sys Admin](#introduction-to-basic-linux-administration).
 
 * Deleting Instances
-   - When all else fail select the failing vm and click `Delete instance` then follow the process for launcing a new instance/VM.
-   - Sometimes mistakes happen and you find yourself deleting a VM by mistake and will need to recover the deleted VM, by default `no` is selected on `Delete Volume on Instance Delete` this will leave your root (OS) disk behing and you can recover by launching a new VM from the root disk.
-
+  - When all else fails, and you would like to attempt the steps from the beginning: Select the failing VM and click `Delete Instance` from the drop down menu.
+  - Occasionally you may find yourself deleting a VM instance by mistake and will need to recover the deleted VM. Do not despair, by default `no` is selected on `Delete Volume on Instance Delete` this will leave your root (OS) disk behing and you can recover by launching a new VM from the root disk.
 
 * Deleting Volumes
-   - When a root (OS) disk's volume is left behing after deleting a VM on purpose, you will need to go to `Volumes->volumes` and select your volume and click ` Delete volumes` to remove the volume from your work space
 
+  When a root (OS) disk's volume is left behind after deleting a VM on purpose, you will need to go to `Volumes` and select your volume and click `Delete volumes` to remove the volume from your work space
 
 * Dissociating and Releasing Floating IPs
-   - If your VM is deleted then the floating IP associated with that deleted VM will stay in your project under `Networks->Floating IPs` for future use. Selecting the floating IP and clicking `Release Floating IPs` will send the floating IP back to the pool and you can call a tutor to help you get back your IP. 
 
-   
+  If your VM is deleted then the floating IP associated with that deleted VM will stay in your project under `Networks -> Floating IPs` for future use. Selecting the floating IP and clicking `Release Floating IPs` will send the floating IP back to the pool and you can call a tutor to help you get back your IP.
 
 # Introduction to Basic Linux Administration
 
@@ -432,45 +430,26 @@ If your workstation or laptop is running Windows, then you may proceed using eit
 
 * Username and Password
 
-   Once you've successfully logged into your head node VM, you are encouraged to setup your password login as a fail safe incase your ssh keys are giving issue, you may also access your head node through the OpenStack VNC console interface.
+  Once you've successfully logged into your head node VM, you are encouraged to setup your password login as a fail safe in case your SSH keys are giving issue, you may also access your head node through the OpenStack VNC console interface.
 
-```bash
+  ```bash
    sudo passwd <username>
-```
+  ```
+
+  <p align="center"><img alt="OpenStack VNC." src="./resources/openstack_vnc_access.png" width=900 /></p>
 
 > [!CAUTION]
-> Setting up a password for any user *- especially the default user -* will make your VM's vulnerable to [Brute Force SSH Attacks](https://helpcenter.trendmicro.com/en-us/article/tmka-19689)!
+> Setting up a password for any user *- especially the default user -* may make your VM's vulnerable to [Brute Force SSH Attacks](https://helpcenter.trendmicro.com/en-us/article/tmka-19689) if you enable password SSH authentication.
 
 ## Running Basic Linux Commands and Services
 
 Once logged into your head node, you can now make use of the [previously discussed basic networking commands](#terminal-mobaxterm-and-windows-powershell-commands): `ip a`, `ping`, `ip route` and `tracepath`, refer to [Discussion on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/48) for example out, and to also post your screenshots as comments.
 
-* Manual Pages `man`
+Here is a list of further basic Linux / Unix commands that you must familiarize yourselves and become comfortable with in order to be successful in the competition. 
 
-  On Linux systems, information about commands can be found in a manual page. This doncument is accessible via a command called `man` short term for manual page. Run the following commands to understand what each does, scroll up and down then press `q` to exit the page. Familiarize yourself with these, as they are some of the commands you will use throught the week.
+* Manual Pages `man`: On Linux systems, information about commands can be found in a manual page. This document is accessible via a command called `man` short term for manual page. For example, try running `man sudo`, scroll up and down then press `q` to exit the page.
 
-```bash
-# Review the man pages of a number of different Linux utilities.
-# Remember you can exit the man page documentation by pressing  `q`.
-man sudo
-man ping
-man tracepath
-man ls
-man cat
-   ```
-
-* the `-h` Switch
-
-  If you don't want to use the `man` command to learn about each command and related options, you can use the `--help or -h` flag to see which options are available for a specific command. run the ff command to learn about available options each command has.
-
-```bash
-   # Check the help pages of a command using the `--help or -h` switch.
-   sudo -h
-   ifconfig -h
-   ping -h
-   ssh-keygen --help
-   grep --help
-```
+* The `-h` Switch: You can make use of the `--help or -h` flag to see which options are available for a specific command. Similarly, to the above, try running `sudo -h`
 
 * Piping and Console Redirection
 
@@ -487,33 +466,17 @@ man cat
   echo "<TEAM_MEMBERS" >> students.txt
   ```
 
-  Pipe `|` through `grep` is used when searching the content of the file, if it exist it will be printed on the screen, if the search does not exist nothing will show on the screen.
-```bash
+  Pipe `|` through `grep` can be used when searching the content of the file, if it exist it will be printed on the screen, if the search does not exist nothing will show on the screen.
+  ```bash
   cat students.txt
   cat students.txt | grep "zama"
-```
-
-* Reading and Editing Documents
-
-  You will be reading a lof of files throughout the week and the following commands can be used to read files with ease, use `man` to learn about each command. All the following command are used to read the content of a file `students.txt`
-
-```bash
-  # Press `q` to exit from `more` or `less` text dumps.
-  # You may need to install utilities like `nano` before using them.
-  less students.txt
-  more students.txt
-  cat students.txt
-  vi students.txt
-```
-
-* GNU `history` Library
-
-  The `history` command shows all commands you have executed so far, the feedback is numbered, use `!14` to rerun the 14th command:
-  ```bash
-  history
-  !14
   ```
-Make sure that you try these commands to familiarize yourself and become comfortable with the Linux terminal shell and command line. You can find sample outputs and are strongly encouraged to post your teams screenshots of at least one of the above commands on the [Discussion Page on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/49).
+
+* Reading and Editing Documents: Linux systems administration essentially involves file manipulation. [Everything in a Linux is a file](https://en.wikipedia.org/wiki/Everything_is_a_file). Familiarize yourself with the basic use of `nano`.
+
+* The GNU `history` command shows all commands you have executed so far, the feedback is numbered, use `!14` to rerun the 14th command.
+
+Make sure that you try some of these commands to familiarize yourself and become comfortable with the Linux terminal shell and command line. You can find sample outputs and are strongly encouraged to post your teams screenshots of at least one of the above commands on the [Discussion Page on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/49).
 
 * Understanding `journalctl` and `systemctl`
 
@@ -523,7 +486,7 @@ Make sure that you try these commands to familiarize yourself and become comfort
 
   For example to query the status of the `systemd-networkd` daemon / service, use:
   ```bash
-      sudo systemctl status systemd-networkd
+  sudo systemctl status systemd-networkd
   ```
 
 Verify some of your system's configuration settings and post a screenshot as a comment to this [Discussion Page on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/56).
@@ -536,7 +499,7 @@ Verify some of your system's configuration settings and post a screenshot as a c
 Understanding Linux binaries, libraries, and package managers is crucial for effective software development and system management on Linux systems.
 
 > [!NOTE]
-> The following discussion around the concepts of binaries and libraries does not need to be fully understood at this stage and will be covered in more detail in later tutorials and lectures. 
+> The following discussion around the concepts of binaries and libraries does not need to be fully understood at this stage and will be covered in more detail in later tutorials and lectures.
 
 * **Binaries** are executable files created from source code, often written in languages like C or C++, through a process called compilation. These files contain machine code that the operating system can execute directly.
   * **Executable Files**: These are typically found in directories like `/bin`, `/sbin`, `/usr/bin`, and `/usr/sbin`.
@@ -572,7 +535,6 @@ sudo dnf remove <PACKAGE_NAME>
 # Moreover Ubuntu has it's origins in South Africa...
 
 sudo apt update
-sudo apt upgrade
 sudo apt install <PACKAGE_NAME>
 sudo apt remove <PACKAGE_NAME>
 
