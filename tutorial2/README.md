@@ -292,27 +292,29 @@ Your team must decide which tool you will be using for basic monitoring of your 
 
 # Manipulating Files and Directories
 
-* Print name of current / working directory: If you are lost and don't know where you are currently working use `pwd` (print working directory). It will show you your current working space.
+Here is a list of Linux commands and utilities that you will use often during the course of the competition. You should become familiar with these commands.
 
-* Make a New Directory: `mkdir` is used to create folders or directories, the `-p` flag can be used to create additional parent folders and directories.
+* `pwd`: If you are lost and don't know where you are currently working use `pwd` (print working directory). It will show you your current working space.
 
-* Creating new Files: Both commands and text editors can be used to create and edit files. For example `touch` creates a new file. Similarly the text editors `vi`, `vim` and `nano` are used to create and / or edit files.
+* `mkdir` is used to create or *make* new folders or directories, the `-p` flag can be used to create additional parent folders and directories.
 
-* List Directory `ls` (list) command used to list the content of directory / folder.
+* Both commands and text editors can be used to create and edit files. For example `touch <filename>` creates a new file. Similarly the text editors `vi`, `vim` and `nano` are used to create and / or edit files.
 
-* Change Directory `cd` command allows you to move between directories.
+* `ls` is used to list the content of directory / folder.
 
-* Copy File or Directory `cp` files / directories from source to destinations.  Consider it's functions to be similar to those of Windows' `copy and paste`.
+* `cd` allows you to move between directories.
+
+* `cp` copies files and / or directories from source to destinations. Consider it's functions to be similar to those of Windows' `copy and paste`.
 
 * Move File or Directory `mv` command moves files / directories from source to destinations. Consider it's functions to be similar to those of Windows' `cut and paste`.
 
-* Remove File or Directory `rm` remove command is used to delete files, and directory with `-r` flag.
+* Remove File or Directory `rm` remove command is used to delete files, and directory with `-r` or `--recursive` flag.
 
 # Verifying Networking Setup
 
-Your VMs have been assigned local public facing IP addresses. Navigate to `Compute` -> `Instances` on your OpenStack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for the headnode) and one IP address (for compute node) with their respective networks. The headnode IP addresses will look like `10.100.50.x` and `154.114.72.x` where `x` is your specific vm address number. `10.100.50.x` network is for internal use and `154.114.72.x` is for public facing usage. 
+Your VMs have been assigned local public facing IP addresses. Navigate to `Compute   ->  Instances` on your OpenStack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for the head node) and one IP address (for compute node) with their respective networks. The head node's IP addresses will look like `10.x.x.x` and `154.114.72.x` where `x` denotes your specific VM's subnet suffix and address number. `10.100.50.x` network is for internal use and `154.114.72.x` is for public facing usage.
 
-You can check your network interfaces by using the `ip a` command after logging in to your headnode or commpute node. 
+You can check your network interfaces by using the `ip a` command after logging in to your headnode or commpute node.
 
 
  <p align="center"><img alt="`ip a` to show `eth0` interface for internal IPs" src="./resources/ipaforeth0interface.png" width=900 /></p>
