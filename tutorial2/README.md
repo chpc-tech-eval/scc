@@ -338,73 +338,40 @@ You can check your network interfaces by using the `ip a` command after logging 
 * Head Node
 
   * Verify that your network interfaces are indeed managed by `NetworkManager`.
-  ```bash
-  nmcli dev
-  ```
+
+    ```bash
+    nmcli dev
+    ```
 
   * `nmtui` is a terminal or console-based tool used to configure and manage network connections for Network Manager.
-  ```bash
-  sudo nmtui
-  ```
 
-  * Example Edit Network Configuration
-  You'll be presented with a screen, select Edit a connection, followed by <Add> and then Ethernet.
+    ```bash
+    sudo nmtui
+    ```
 
-For Profile Name, type the name of the interface you want to assign an IP address to, like `eth0` or `ens3`, and type the same thing for Device (in this instance, Device means interface).
-For IPv4 CONFIGURATION, change <Automatic> to <Manual>. This tells NM that we want to assign a static IP address to the connection. Hit enter on <Show> to the right of IPv4 CONFIGURATION and enter the following information:
+  * Example Editing Network Configuration
 
-Addresses: Hit <Add> and enter the IP address (found in OpenStack) for this interface. After the IP address, add the text "/24" to the end. It should read as <ip_address>/24 with no spaces. The "/24" is the subnet mask of the IP address in CIDR notation.
+    You'll be presented with a screen, select `Edit a connection` and click on the interface that you had identified previously with `ip a`. This will most likely be `eth0` or `ens3`, or something similar.
 
-***Gateway***: Enter the gateway address here. This will be either the internal network (10.100.50.x) gateway or external network (154.114.57.x) of the head node gateway.
+  * Configure the DNS Servers
 
-DNS servers: Hit <Add> and enter 8.8.8.8. This is the public DNS server of Google and is used to look up website names. (NB: DNS is explained later!)
-Hit <OK> at the bottom of the screen.
+    - You will now configure the connection to make use of Google's free public DNS servers. Hit enter on <Show> to the right of <IPv4 CONFIGURATION> and scroll down to the DNS servers> section.
 
-Repeat the above processes for any other network interface you want to give an IP address to, if there are more on your machine (you can use `ip a` to check how many there are).
+    - Click <Add> and enter <8.8.8.8>, then click <OK> at the bottom of the screen.
 
-The networks should now be active. You can confirm this by going <Back> and then to Activate a connection. If you see stars to the left of each of the networks that you have created, then the networks are active. If not, hit enter on the selected network to active it.
+    - Exit `nmtui` and check the networking setup is correct.
 
-Your head node should now have the correct IP addresses. Exit `nmtui` and check the networking setup is correct. To do so, use the following commands:
+> [!CAUTION]
+> Configuring and managing you network setup is a crucial and fundamental aspect that you will need to understand in order to be successful in this competition. Your VM instances make use of a virtual network (or VLAN), that manages the routing and configuration aspects on your behalf.
+>
+> The example configuration steps above will have little to no impact on your existing network setup, however you must appreciate that `nmtui` and / or `nmcli`, (i.e. Network Manger), are power tools that can add and bring interface, configure static IP address, configure routing tables, and much more. Please refer to [Set Static IP Rocky Linux Examples](https://www.golinuxcloud.com/set-static-ip-rocky-linux-examples/) and [What is IP Routing](https://study-ccna.com/what-is-ip-routing/) for detailed explanations.
 
-```bash
-ip a
-ip route
-```
-
-- `ip a` will show you the interfaces and their assigned IP addresses.
-- `ip route` will list the interfaces and their assigned routes.
-
-
-### Compute Node
-
-You must also set the static IP addressing for all other nodes in your cluster. You can explore different options for doing so, use the `nmcli` command. This is the command-line interface (CLI) for Network Manager, which is an alternative to the above nmtui, which is simply a graphical wrapper for the CLI.
-
-Open and read the following link on `Method-6: Set Static IP Address using NMCLI on Rocky Linux` comandline steps:
-
-https://www.golinuxcloud.com/set-static-ip-rocky-linux-examples/  
-
-
-  Note that the IP addresses used in this web guide will not be the same as the ones that you need to use for your node(s) and some of the commands may not be relevant to you.
-
-At this point you should test connectivity between your nodes. Using the ping command, you can see whether the nodes can speak to each other via the network. From your head node, try to ping your compute node:
-
-```bash
-ping <compute_node_ip>
-
-```
-
-
-If you get a timeout, then things are not working. Try to check your network configurations again.
-
-
-_**Please read [what-is-ip-routing](https://study-ccna.com/what-is-ip-routing/) to gain a better understanding of IP routing.**_ This will be impoortant for the rest of this competition and can help your understanding when debugging issues.
-
-## Configuring a Simple Stateful Firewall
+# Configuring a Simple Stateful Firewall
 
 In the realm of network security, shielding your system against unauthorized access and ensuring data integrity are paramount. the below  tools `iptables, nftables and firewalld` serves as a system's gatekeepers, managing incoming and outgoing traffic.
 
 
-# IPTables `iptables`
+## IPTables `iptables`
 
 legacy tool that works by setting up rules in different tables. To secure your network with iptables, you would typically manipulate the following tables:
 

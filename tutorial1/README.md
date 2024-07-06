@@ -13,7 +13,6 @@ This tutorial will conclude with you downloading, installing and running the Hig
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
-1. [Table of Contents](#table-of-contents)
 1. [Checklist](#checklist)
 1. [Network Primer](#network-primer)
     1. [Basic Networking Example (WhatIsMyIp.com)](#basic-networking-example-whatismyipcom)
@@ -30,7 +29,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
     1. [Key Pair](#key-pair)
     1. [Verify that your Instance was Successfully Deployed and Launched](#verify-that-your-instance-was-successfully-deployed-and-launched)
     1. [Associating an Externally Accessible IP Address](#associating-an-externally-accessible-ip-address)
-    1. [Success State, Resource Management and Troubleshooting](#success-state-resource-management-and-troubleshooting)
+    1. [Troubleshooting](#troubleshooting)
 1. [Introduction to Basic Linux Administration](#introduction-to-basic-linux-administration)
     1. [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
     1. [Running Basic Linux Commands and Services](#running-basic-linux-commands-and-services)
