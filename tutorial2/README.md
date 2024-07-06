@@ -154,7 +154,7 @@ When designing a cluster, a publicly accessible administrative SSH login node ac
 
 <p align="center"><img alt="OpenStack VNC." src="./resources/ssh_example.avif" width=900 /></p>
 
-* Head Node
+* **Head Node**:
   * **Gateway to Internal Network**: This node serves as the only publicly accessible point for administrators and authorized users to access the internal network.
   * **Security Barrier**: By exposing only this single node to the internet, it minimizes the attack surface, making the overall infrastructure more secure.
   * **Authentication and Access Control**: It handles user authentication and can enforce security policies before granting access to internal resources.
@@ -163,20 +163,20 @@ When designing a cluster, a publicly accessible administrative SSH login node ac
   * **Storage Server**: For this use case, you head node is also used as a network storage server. *This is not always the case in real-world scenarios, but will be for you in the entirety of the competition.*
   * **Task / Job Submission**: This VM is used as a means and mechanism for submitting tasks and jobs to your compute node(s).
 
-* Compute Node(s)
+* **Compute Node(s)**:
   * **Task / Job Execution**: These servers (VMs) are responsible for running computations, executing code, and handling data processing tasks.
   * **Isolation from Public Access**: They are not directly accessible from the internet, reducing their exposure to potential attacks.
   * **Resource Allocation**: They manage CPU, memory, and other computational resources required for executing various jobs.
   * **Client Services**: Your compute node(s) act as *'clients'* to a number of services provided by your head node.
 
-* A typical workflow example may involve the followings interactions:
-  1. **User Access**: As an administrator or authorized user, you connect to the login node via SSH from *your* local workstation.
-  1. **Authentication**: The login node authenticates you as an authorized user and grants access to the internal network.
-  1. **Administration and Maintenance**: As an *administrator*, you complete a number of administrative and maintenance tasks.
-  1. **Job Submission**: As a *user*, you submit computational tasks to the compute servers from the login node.
-  1. **Data Interaction**: Your compute node(s) fetch necessary data from the storage servers (head node) and perform the required computations.
-  1. **Result Storage**: The output data is stored back on the head node over network storage, or locally on the compute node(s).
-  1. **Data Retrieval**: You retrieve results from the head node to your local workstation.
+A typical workflow example may involve the followings interactions and steps:
+1. **User Access**: As an administrator or authorized user, you connect to the login node via SSH from *your* local workstation.
+1. **Authentication**: The login node authenticates you as an authorized user and grants access to the internal network.
+1. **Administration and Maintenance**: As an *administrator*, you complete a number of administrative and maintenance tasks.
+1. **Job Submission**: As a *user*, you submit computational tasks to the compute servers from the login node.
+1. **Data Interaction**: Your compute node(s) fetch necessary data from the storage servers (head node) and perform the required computations.
+1. **Result Storage**: The output data is stored back on the head node over network storage, or locally on the compute node(s).
+1. **Data Retrieval**: You retrieve results from the head node to your local workstation.
 
 To facilitate your understanding of the roles and interactions between your head node and your compute node(s), you will now install and work with terminal multiplexers and basic system monitoring tools.
 
@@ -214,7 +214,7 @@ For the tutorials you are encouraged to use tmux.
    # tmux new -s <name>
    ```
 
-1. Working on your Head Node and Compute Node in Two Adjacent Panes
+1. Working on your head node and compute node in two adjacent panes
 
    Once you've started a new `tmux` session (daemon / server), on your head node, there are a number of very useful tools and functionality you can utilize.
 
@@ -229,15 +229,12 @@ For the tutorials you are encouraged to use tmux.
    ```bash
    C-b o
    ```
-1. Install `btop` on your **head node**. Depending on the Linux distribution you chose to install:
+1. Install [`btop`](https://github.com/aristocratos/btop) on your **head node**. Depending on the Linux distribution you chose to install:
    ```bash
+   # RHEL, Rocky, Alma, Centos
+   sudo dnf install epel-release
+   sudo dnf makecache
    sudo dnf install btop
-   ```
-
-   <details>
-   <summary>Installing `btop` on your head node on Ubuntu and Arch</summary>
-   ```bash
-   sudo yum install btop
 
    # Ubuntu
    sudo apt install btop
@@ -245,66 +242,53 @@ For the tutorials you are encouraged to use tmux.
    # Arch
    sudo pacman -S btop
    ```
-   </details>
 
 1. Move to the second pane, and SSH into your **compute node** using `Ctrl` + `b` and `o`.
    ```bash
    C-b o
    ```
-1. SSH into your **compute node** and install `htop`:
+
+1. SSH into your **compute node** and install [`htop`](https://htop.dev/):
    ```bash
    ssh <user>@<compute node ip>
    ```
-   <p align="center"><img alt="Generate Key and ssh into compute" src="./resources/tmux_btop_htop.png" width=900 /></p>
-   
+
+   Once you are successfully logged into your compute node:
+   ```bash
+   sudo dnf -y install epel-release
+   sudo dnf makecache
+   sudo dnf -y install htop
+   ```
+
 1. Create a new window within `tmux` using `Ctrl` + `b` and 'c':
    ```bash
    C-b c
    ```
+
 1. You can cycle between the two windows using `Ctrl` + `b` and `n`:
    ```bash
    # Cycle to the next window
    C-b n
-   
-   # Or cycle to windows 0 and 1 respectively  
+
+   # Or cycle to windows 0 and 1 respectively
    C-b 0
    C-b 1
    ```
-1. Split the new window pane horizontally using `Ctrl` + `b` and `%`.
-   - Run `btop` on your **head node** on one of your panes.
-   - SSH into your **compute node*** and run `htop` on the other pane.
-   <p align="center"><img alt="Generate Key and ssh into compute" src="./resources/tmux_ssh_run_tops.png" width=900 /></p>
-   <p align="center"><img alt="Generate Key and ssh into compute" src="./resources/tmux_running_htop_btop.png" width=900 /></p>
 
 1. There are many more utilities available within `tmux`. Check the built-in help documentation using `Ctrl` + `b` and `?` (i.e. `Shift` + `/`):
    ```bash
    C-b ?
    ```
-1. Your team must decide which tool you will be using for basic monitoring of your cluster. Choose between `top`, `htop` and `btop` and make sure your choice of application is installed across your cluster.
+Your team must decide which tool you will be using for basic monitoring of your cluster. Choose between `top`, `htop` and `btop` and make sure your choice of application is installed across your cluster. Participate and reply in this [Discussion on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/95) and post a screenshot of your team running two different applications in two different panes.
 
-* Attaching and Detaching Sessions
-
-Should your terminal application close, or if you relocate from the laboratores... write a schlept about remote sessions and servers here
-
-To connect to an existing `tmux` session on your **head node**:
-
-```bash
-tmux a -t session_name 
-```
-
-# Basic System Monitoring
-
-`top` `htop` are system built commands used to monitor server resource suage. for `htop` first install epel source repository then install htop 
-https://docs.rockylinux.org/gemstones/htop/ 
-
-```bash
-sudo dnf -y install epel-release
-sudo dnf makecache
-sudo dnf -y install htop
-htop
-```
-
-<p align="center"><img alt="htop output" src="./resources/htopcommand.png" width=900 /></p>
+> [!IMPORTANT]
+> Using `tmux` is an excellent way to ensure your work continues even if your SSH connection breaks between your workstation and the login node. To connect to an existing `tmux` session on your head node:
+> ```bash
+> tmux attach
+>
+> # If you have multiple, named sessions
+> tmux a -t session_name
+> ```
 
 # Manipulating Files and Directories
 
