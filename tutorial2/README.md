@@ -548,105 +548,44 @@ The head node will act as the [NFS server](https://docs.rockylinux.org/guides/fi
 
 
 1. Install the NFS Utilities on both the head node and compute node(s):
-
    ```bash
    sudo dnf install nfs-utils
    ```
 
-5. NFS shares (directories on the NFS server) are configured in the `/etc/exports` file. Here you specify the directory you want to share, followed by the IP address or range you want to share to and then the options for sharing. We want to export the `/home` directory, so edit `/etc/exports` and add the following:
+1. Edit `/etc/exports` on the head node
 
-```conf
- /home    10.100.50.0/24(rw,async,no_subtree_check,no_root_squash) 
-```
+   NFS shares (directories on the NFS server) are configured in the `/etc/exports` file. Here you specify the directory you want to share, followed by the IP address or range you want to share to and then the options for sharing. We want to export the `/home` directory, so edit `/etc/exports` and add the following:
 
+   ```conf
+   /home    10.100.50.0/24(rw,async,no_subtree_check,no_root_squash)
+   ```
+   * `rw` gives the client machine read and write access on the NFS volume.
+   * `async` forces NFS to write changes to the disk before replying. This option is considered more reliable. However, it also reduces the speed of file operations.
+   * `no_subtree_check` prevents a process where the host must check whether the file is available along with permissions for every request. It can also cause issues when a file is renamed on the host while still open on the client. Disabling it improves the reliability of NFS.
+   * `no_root_squash` disables the default behavior where NFS translates requests from a root user on the client, into a non-privileged user on the host. Great care should be taken when allowing the client to gain access to the host with this setting.
 
-    Let us go through all the options for NFS exports.
-       - rw - gives the client machine read and write access on the NFS volume.
-        - async - this option forces NFS to write changes to the disk before replying. This option is considered more reliable. However, it also reduces the speed of file operations.
+1. Open TCP port 2049 on your head node's firewall by editing `/etc/nftables/hn.nft`, and restarting the `nftables` service
 
-        - no_subtree_check - this option prevents subtree checking, a process where the host must check whether the file is available along with permissions for every request. It can also cause issues when a file is renamed on the host while still open on the client. Disabling it improves the reliability of NFS.
-
-        - no_root_squash - By default, NFS translates requests from a root user on the client into a non-privileged user on the host. This option disables that behavior and should be used carefully to allow the client to gain access to the host.
-
-
-6. Start and enable the `nfs-server` service using `systemctl`.
-
-```bash
-   sudo systemctl enable --now nfs-server rpcbind
-```
-
-
-7. NFS on Rocky Linux makes use of three different services, and they all need to be allowed through your firewall. You can add these rules with firewall-cmd:
-
-```bash
-   sudo firewall-cmd --add-service={nfs,mountd,rpc-bind} --permanent
-   sudo firewall-cmd --reload
- ```
-
-## NFS Client (Compute Node)
-
-The compute node acts as the client for the NFS, which will mount the directory that was exported from the server (`/home`). Once mounted, the compute node will be able to interact with and modify files that exist on the head node and it will be synchronised between the two.
-
-### Mounting An NFS Mount
-
-The `nfs-utils, nfs4-acl-tools` packages need to be installed before you can do anything NFS related on the compute node. 
-
-```bash
-  sudo dnf install nfs-utils nfs4-acl-tools
- ```
-
-Since the directory we want to mount is the `/home` directory, the user can not be in that directory.
-
-
-1. Mount the /home directory from the head node using the `mount` command:
-
- ```bash
-   sudo mount -t nfs <headnode_ip_or_hostname>:/home /home
- ```
-
-2. Once done, you can verify that the `/home` directory of the head node is mounted by using `df -h`:
-
-```bash
-    df -h
-```
-
-
-With this mounted, it effectively replaces the `/home` directory of the compute node with the head node's one until it is unmounted. To verify this, create a file on the compute node's `rocky` user home directory (`/home/rocky`) and see if it is also automatically on the head node. If not, you may have done something wrong and may need to redo the above steps!
-
-### Making The NFS Mount Permanent
-
-Using `mount` from the command line will not make the mount permanent. It will not survive a reboot. To make it permanent, we need to edit the `/etc/fstab` file on the compute node. This file contains the mappings for each mount of any drives or network locations on boot of the operating system.
-
-1. First we need to unmount the mount we made:
-
-```bash
-     sudo umount /home
-```
-
-2. Now we need to edit the `/etc/fstab` file and add this new line to it (be careful not to modify the existing lines!):
-
-
-```bash
-   headnode.cluster.scc:/home    /home     nfs auto,nofail,noatime,nolock,tcp,actimeo=1800,intr    0 0
-```
-
- The structure is: `<host>:<filesystem_dir> <local_location> <filesystem_type> <filesystem_options> 0 0`. The last two digits are not important for this competition and can be left at 0 0.
-
-For the description of nfs options listed above see the link: https://cheatography.com/baa/cheat-sheets/fstab-nfs/#google_vignette
-
-3. With this done, we can mount the new `/etc/fstab` entry:
-
-```bash
- sudo mount -a 
-```
-
-4. Once again, you can verify that the `/home` directory of the head node is mounted by using `df -h`:
-
-```bash
-    df -h
-```
-
-
+1. Export the shares, then start and enable the `nfs-server` service using `systemctl` on the head node.
+   ```bash
+   exportfs -ar
+   sudo systemctl enable nfs-server
+   ```
+1. Mount the NFS export on your compute node
+   ```bash
+   # You cannot mount /home while you are occupying it
+   cd /
+   sudo mount -t nfs <headnode_ip>:/home /home
+   ```
+1. Verify that you successfully mounted `/home` export
+   ```bash
+   df -h
+   ```
+1. Edit your `/etc/fstab` to make the effect persist after a restart. Add this entry to the end of your fstab:
+   ```conf
+   <headnode_ip>:/home /home  nfs   defaults,timeo=1800,retrans=5,_netdev	0 0
+   ```
+servername:/music   /mountpoint/on/client   nfs   defaults,timeo=900,retrans=5,_netdev	0 0
 
 # Passwordless SSH
 ## Generating SSH Keys on your Head Node
