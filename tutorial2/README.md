@@ -275,7 +275,7 @@ For the tutorials you are encouraged to use tmux.
    sudo pacman -S htop
    ```
 
-1. Create a new window within `tmux` using `Ctrl` + `b` and 'c':
+1. Create a new window within `tmux` using `Ctrl` + `b` and `c`:
    ```bash
    C-b c
    ```
@@ -301,8 +301,8 @@ Your team must decide which tool you will be using for basic monitoring of your 
 > ```bash
 > tmux attach
 >
-> # If you have multiple, named sessions
-> tmux a -t session_name
+> # If you have multiple, named sessions, use
+> # tmux a -t session_name
 > ```
 
 # Manipulating Files and Directories
@@ -362,133 +362,133 @@ You can check your network interfaces by using the `ip a` command after logging 
     - Exit `nmtui` and check the networking setup is correct.
 
 > [!CAUTION]
-> Configuring and managing you network setup is a crucial and fundamental aspect that you will need to understand in order to be successful in this competition. Your VM instances make use of a virtual network (or VLAN), that manages the routing and configuration aspects on your behalf.
+> Configuring and managing you network setup is a crucial and fundamental aspect that you will need to understand in order to be successful in this competition. Your VM instances make use of a virtual network (or CLAN), that manages the routing and configuration aspects on your behalf.
 >
 > The example configuration steps above will have little to no impact on your existing network setup, however you must appreciate that `nmtui` and / or `nmcli`, (i.e. Network Manger), are power tools that can add and bring interface, configure static IP address, configure routing tables, and much more. Please refer to [Set Static IP Rocky Linux Examples](https://www.golinuxcloud.com/set-static-ip-rocky-linux-examples/) and [What is IP Routing](https://study-ccna.com/what-is-ip-routing/) for detailed explanations.
 
-# Configuring a Simple Stateful Firewall
+# Configuring a Simple Stateful Firewall Using nftables
 
-In the realm of network security, shielding your system against unauthorized access and ensuring data integrity are paramount. the below  tools `iptables, nftables and firewalld` serves as a system's gatekeepers, managing incoming and outgoing traffic.
+In the realm of network security, shielding your system against unauthorized access and ensuring data integrity are paramount. A firewall serves as a system's gatekeepers, managing incoming and outgoing traffic. `nftables` is a framework by the Netfilter Project that provides packet filtering, network address translation (NAT), and other packet mangling capabilities for Linux. It is a successor and replacement for the older `iptables`, `ip6tables`, `arptables`, and `ebtables` frameworks, consolidating their functionality into a single system, streamlining the process of configuring tables, chains, and rules.
 
+Stateful packet inspection, also referred to as dynamic packet filtering, is a network-based firewall that individually tracks sessions of network connections traversing it. You will now deploy a stateful firewall on your **head node** using `nftables`, since it is only your head node which has an interface (on the `154.114.57.0/24` network) that is vulnerable to attacks from the internet. Join the [Discussion on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/102), by commenting and posting a screenshot of `sudo journalctl | grep sshd` on your head node.
 
-## IPTables `iptables`
+> [!WARNING]
+> You must ensure that you have [configured a password so you can access your head node through VNC](../tutorial1/README.md#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc), as there is a high risk of locking yourself out of SSH.
+>
+> You may skip this section and it will not hinder your progress throughout the remainder of the tutorials, however you are strongly advised to complete this section as it contains a number of key fundamentals.
 
-legacy tool that works by setting up rules in different tables. To secure your network with iptables, you would typically manipulate the following tables:
+1. Install the userspace utilities package
+   * DNF / YUM
+     ```bash
+     # RHEL, Rocky, Alma, CentOS
+     sudo dnf install
+     ```
+   * APT
+     ```bash
+     # Ubuntu
+     sudo apt install nftables
+     ```
+   * Pacman
+     ```bash
+     # Arch
+     sudo pacman -S nftables
+     ```
+1. Check and clear the existing firewall configuration
+   ```bash
+   sudo nft list ruleset
+   sudo nft flush ruleset
+   ```
+1. Some basic concepts and terminology to be familiar with before proceeding:
+   * **Tables** are logical containers for `chains` and `rules`. Tables can be of different families (e.g., inet, ip, ip6).
+   * **Chains** are ordered lists of `rules` that match packets. Chains can be of different types (e.g., filter, nat).
+   * **Rules** are the individual packet processing instructions within chains.
 
-- `Filter`: The default table for managing general packet filtering rules.
-- `NAT`: For network address translation, crucial when dealing with private network address ranges.
-- `Mangle`: Allows alteration of packet headers. Used for specialized packet handling.
+1. Create a new `table` to house the rules for your head node
+   ```bash
+   sudo nft add table inet my_table
+   ```
+1. Add the `input`, `forward`, and `output` base chains.
+   * input chain refers to inbound packets and traffic arriving *into* your head node,
+   * forward chain refers to packets and traffic passing *through* your head node, and
+   * output chain refers to outbound packets and traffic originating *from* your head node.
 
+   The policy for `input` and `forward` will be initially set to `accept`, and then `drop` thereafter. The policy for `output` will be to `accept`.
+   ```bash
+   # If you set this to drop now, you will not be able to access your head node via ssh
+   sudo nft add chain inet hn_table hn_input '{ type filter hook input priority 0 ; policy accept ; }'
+   sudo nft add chain inet hn_table hn_forward '{ type filter hook forward priority 0 ; policy accept ; }'
+   sudo nft add chain inet hn_table hn_output '{ type filter hook output priority 0 ; policy accept ; }'
+   ```
 
-```bash
-# Block a specific IP address
-sudo iptables -A INPUT -s 10.50.100.8 -j DROP
+1. Specific rules for TCP and UDP will be managed by additional chains
+   ```bash
+   sudo nft add chain inet hn_table hn_tcp_chain
+   sudo nft add chain inet hn_table hn_udp_chain
+   ```
+1. Accept `related` and `established` traffic while dropping all `invalid` traffic
+   ```bash
+   sudo nft add rule inet hn_table hn_input ct state related,established accept
+   sudo nft add rule inet hn_table hn_input ct state invalid drop
+   ```
+1. Accept all traffic on the loopback (lo) interface
+   ```bash
+   sudo nft add rule inet hn_table hn_input iif lo accept
+   ```
+1. Accept ICMP and IGMP traffic
+   ```bash
+   sudo nft add rule inet hn_table hn_input meta l4proto icmp accept
+   sudo nft add rule inet hn_table hn_input ip protocol igmp accept
+   ```
+1. `new` udp and tcp is configured to `jump` to there respective chains
+   ```bash
+   sudo nft add rule inet hn_table hn_input meta l4proto udp ct state new jump hn_udp_chain
 
-# Allow all incoming SSH traffic
-sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+   sudo nft add rule inet hn_table hn_input 'meta l4proto tcp tcp flags & (fin|syn|rst|ack) == syn ct state new jump hn_tcp_chain'
+   ```
+1. All traffic that failed to be processed by any other rules is `rejected`
+   ```bash
+   sudo nft add rule inet hn_table hn_input meta l4proto udp reject
 
-```
+   sudo nft add rule inet hn_table hn_input meta l4proto tcp reject with tcp reset
+   sudo nft add rule inet hn_table hn_input counter reject with icmpx port-unreachable
+   ```
+1. Finally, add a rule to accept SSH traffic
+   ```bash
+   sudo nft add rule inet hn_table hn_tcp_chain tcp dport 22 accept
+   ```
+1. You can now save your configuration to an output file
+   ```bash
+   sudo nft -s list ruleset | tee hn.nft
+   ```
+1. Edit your head node's nft file and modify the policy for `input` and `forward ` to be `drop`
+   ```bash
+   nano hn.nft
 
+   sudo mv hn.nft /etc/nftables/
+   ```
+1. Amend the configuration file to include your changes when the service is restarted
+   * Edit `nftables.conf`
+     ```bash
+     sudo nano /etc/sysconfig/nftables.conf
+     ```
+   * Add the following:
+     ```conf
+     flush ruleset
+     include "/etc/nftables/hn.nft"
+     ```
+Restart and enable the `nftables` service.
 
-#### NFTables `nftables` 
-Successor to iptables, designed to replace iptables.  It integrates all the functionalities provided by the separate iptables tools into a single framework, streamlining the process of configuring tables, chains, and rules. 
-
-- Here's how you can use nftables to control network traffic:
-
-```bash
-# Add a table
-sudo nft add table ip filter
-
-# Add a chain
-sudo nft add chain ip filter input { type filter hook input priority 0 \; }
-
-# Add a rule to block an IP address
-sudo nft add rule ip filter input ip saddr 10.50.100.8 drop
-
-# Allow incoming SSH connections
-sudo nft add rule ip filter input tcp dport 22 accept
-```
-
-- `ip`: Matches only IPv4 packets. This is the default if you do not specify an address family.
-- `ip6`: Matches only IPv6 packets.
-- `inet`: Matches both IPv4 and IPv6 packets.
-
-*** It's important to note that while nftables is the future, iptables is still widely used and supported, so understanding both is beneficial.**
-
-
-####  Dynamic Front-end Firewall Application Managers `firewalld`
-
-`firewalld` is a firewall management daemon (service) available for many Linux distributions which acts as a front-end for the `iptables` packet filtering system provided by the Linux kernel. This daemon manages groups of rules using entities called “zones”.  Read more : https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-using-firewalld-on-rocky-linux-9 
-
-**NOTE:** Only your head node has an interface (on the `154.114.57.0/24` network) that can access the internet. Sebowa comes with  ***NAT already setup on your head node** to allow your compute node to access the internet via your head node (this effectively treats your head node as a router). No need to set it up but it is important to learn how to setup NAT because for the next round (in Decmeber) you will need to set it up. 
-
-Please note that the "external" zone on `firewalld` is configured for **IP masquerading** ([click here to learn more about IP masquerading](https://tldp.org/HOWTO/IP-Masquerade-HOWTO/ipmasq-background2.1.html)) so that your internal network remains private but reachable.
-
-
-**On the head node**, ensure your **external interface** is assigned to the appropriate zone:
-
-```bash
-nmcli c mod <external_interface> connection.zone external
-```
-
-Then do the same for the internal interface:
-
-```bash
-nmcli c mod <internal_interface> connection.zone internal
-```
-
-You can now use `firewalld` to allow the head node to act as a router for the compute node. 
-
-To use `firewalld` on **rocky 9** you will need to install it, start and enable the services to start after a reboot 
-
-```bash
- sudo dnf install firewalld 
- sudo systemctl start firewalld
- sudo systemctl enable firewalld
-```
-
-allow the head node to act as a router for the compute node
-
-```bash
-firewall-cmd --zone=external --add-masquerade --permanent
-firewall-cmd --reload
-```
-
-Confirm that **IP forwarding** is enabled on the head node with the following:
-
-```bash
-cat /proc/sys/net/ipv4/ip_forward
-```
-It should return a `1`.
-
-You can then add the individual firewall rules needed:
-
-```bash
-firewall-cmd --permanent --direct --add-rule ipv4 nat POSTROUTING 0 -o <external_interface> -j MASQUERADE
-firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i <internal_interface> -o <external_interface> \
-      -j ACCEPT
-firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i <external_interface> -o <internal_interface> \ 
-      -m state --state RELATED,ESTABLISHED -j ACCEPT
-```
-
-To validate that your **NAT** rules are working properly, **log into your compute node** and test if you can `ping` an external server like google public DNS on the internet.
-
-```bash
-ping 8.8.8.8   
-```
-
-Once you can ping the servers by their IPs, try ping by name - using Domain Name System (DNS) resolution.
-
-```bash
-ping google.com
-```
-
-If your NAT is working correctly and your compute node's DNS was set correctly with `Network Manager`, you should now be able to ping external servers/websites using their names on all nodes.
-
-> **! >>> Without access to a working DNS server you won't be able to install packages on your compute node (or head node for that matter), even if the internet is otherwise working.**
-
-<div style="page-break-after: always;"></div>
-
+> [!NOTE]
+> Your infrastructure on Sebowa's OpenStack cloud has already preconfigured NAT and [IP masquerading](https://tldp.org/HOWTO/IP-Masquerade-HOWTO/ipmasq-background2.1.html) so that your internal network remains private but reachable. Suppose that you were given a physical head node with two network interfaces, an `<internal private LAN>` and a `<public facing WAN>`. You would configure NAT and IP Masquerading with the following configuration `/etc/nftables/hn_masq.nft`.
+>```conf
+>table inet my_nat {
+>  chain my_masquerade {
+>    type nat hook postrouting priority srcnat;
+>    oifname "enp2s0" masquerade
+>  }
+>}
+# Remember to include this file in /etc/sysconfig/nftables.conf and to restart the nftables service.
+>```
 
 # Network Time Protocol
 
