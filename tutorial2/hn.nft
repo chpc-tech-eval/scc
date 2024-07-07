@@ -1,0 +1,31 @@
+table inet hn_table {
+        chain hn_output {
+                type filter hook output priority filter; policy accept;
+        }
+
+        chain hn_tcp_chain {
+                tcp dport 22 accept
+        }
+
+        chain hn_udp_chain {
+        }
+
+        chain hn_input {
+                type filter hook input priority filter; policy drop;
+                ct state established,related accept
+                iif "lo" accept
+                ct state invalid drop
+                meta l4proto ipv6-icmp accept
+                meta l4proto icmp accept
+                ip protocol igmp accept
+                meta l4proto udp ct state new jump hn_udp_chain
+                tcp flags syn / fin,syn,rst,ack ct state new jump hn_tcp_chain
+                meta l4proto udp reject
+                meta l4proto tcp reject with tcp reset
+                counter reject
+        }
+
+        chain hn_forward {
+                type filter hook forward priority filter; policy drop;
+        }
+}
