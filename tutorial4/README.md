@@ -2,21 +2,37 @@
 
 ## Table of Contents
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
 
 1. [Checklist](#checklist)
 1. [Cluster Monitoring](#cluster-monitoring)
-    1. [Prometheus](#prometheus)
-    1. [Node Exporter](#node-exporter)
-    1. [Grafana](#grafana)
+    1. [Importance of Cluster Monitoring on Linux Machines](#importance-of-cluster-monitoring-on-linux-machines)
+    1. [Traditional Approach Using top or htop](#traditional-approach-using-top-or-htop)
+    1. [Using Grafana, Prometheus, and Node Exporter](#using-grafana-prometheus-and-node-exporter)
+    1. [What is Docker and Docker Compose and How We Will Use It](#what-is-docker-and-docker-compose-and-how-we-will-use-it)
+1. [How to use the notes](#how-to-use-the-notes)
+1. [Pre-requisites](#pre-requisites)
+1. [Installing Monitoring Stack](#installing-monitoring-stack)
+1. [Start the services](#start-the-services)
+1. [Prometheus](#prometheus)
+1. [Node Exporter](#node-exporter)
+1. [Grafana](#grafana)
+1. [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
+    1. [Prometheus](#prometheus-1)
+    1. [Node Exporter](#node-exporter-1)
+        1. [SSH Tunneling](#ssh-tunneling)
+    1. [Grafana](#grafana-1)
 1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
     1. [Prerequisites](#prerequisites)
-        1. [Head Node Configuration (Server)](#head-node-configuration-server)
-        1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
-        1. [Configure Grafana Dashboard for Slurm](#configure-grafana-dashboard-for-slurm)
+    1. [Head Node Configuration (Server) ](#head-node-configuration-server)
+    1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
+    1. [Configure Grafana Dashboard for Slurm](#configure-grafana-dashboard-for-slurm)
 1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
     1. [Protein Visualisation](#protein-visualisation)
     1. [Benchmark 2 (1.5M Water)](#benchmark-2-15m-water)
-1. [Running Qiskit from a Remote Jupyter Notebook Server](#running-qiskit-from-a-remote-jupyter-notebook-server)
+1. [Configuring and Connecting to your Remote JupyterLab Server](#configuring-and-connecting-to-your-remote-jupyterlab-server)
+    1. [Visualize Your HPL Benchmark Results](#visualize-your-hpl-benchmark-results)
+    1. [Visualize You Qiskit Results](#visualize-you-qiskit-results)
 1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
 1. [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
 1. [Automating the Configuration of your VMs Using Ansible](#automating-the-configuration-of-your-vms-using-ansible)
@@ -48,26 +64,26 @@ In this tutorial you will:
 
 # Cluster Monitoring
 
-## Importance of Cluster Monitoring on Linux Machines
+* Importance of Cluster Monitoring on Linux Machines
 Cluster monitoring is crucial for managing Linux machines. Effective monitoring helps detect and resolve issues promptly, provides insights into resource usage (CPU, memory, disk, network), aids in capacity planning, and ensures infrastructure scales with workload demands. By monitoring system performance and health, administrators can prevent downtime, reduce costs, and improve efficiency.
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/f951e4b7-20ff-49a4-b9a7-28aa57e51f5b)
 
-## Traditional Approach Using top or htop
+* Traditional Approach Using top or htop
 Traditionally, Linux system monitoring involves command-line tools like top or htop. These tools offer real-time system performance insights, displaying active processes, resource usage, and system load. While invaluable for monitoring individual machines, they lack the ability to aggregate and visualize data across multiple nodes in a cluster, which is essential for comprehensive monitoring in larger environments.
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/7e0c8b92-adc2-4106-94ee-ca4ee78a13f5)
 
-## Using Grafana, Prometheus, and Node Exporter
+* Using Grafana, Prometheus, and Node Exporter
 Modern solutions use Grafana, Prometheus, and Node Exporter for robust and scalable monitoring. Prometheus collects and stores metrics, Node Exporter provides system-level metrics, and Grafana visualizes this data. This combination enables comprehensive cluster monitoring with historical data analysis, alerting capabilities, and customizable visualizations, facilitating better decision-making and faster issue resolution.
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/3f64a8bd-87fa-4b51-9576-b28da3af632b)
 
 
-## What is Docker and Docker Compose and How We Will Use It
+* What is Docker and Docker Compose and How We Will Use It
 Docker is a platform for creating, deploying, and managing containerized applications. Docker Compose defines and manages multi-container applications using a YAML file. For cluster monitoring on a Rocky Linux head node, we will use Docker and Docker Compose to bundle Grafana, Prometheus, and Node Exporter into deployable containers. This approach simplifies installation and configuration, ensuring all components are up and running quickly and consistently, streamlining the deployment of the monitoring stack.
 
-# How to use the notes
+* How to use the notes
 
 When the word **Input:** is mentioned, excpect the next line to have commands that you need to copy and paste into your own terminal.
 
@@ -921,9 +937,9 @@ Using a batch script similar to the one above, run the benchmark. You may modify
 
 <div style="page-break-after: always;"></div>
 
-# Jupyter Notebook
+# Configuring and Connecting to your Remote JupyterLab Server
 
-Jupyter Notebooks are powerful tools for scientific investigations due to their interactive and flexible nature. Here are some key reasons why they are favored in scientific research.
+[Project Jupyter](https://jupyter.org/) provides powerful tools for scientific investigations due to their interactive and flexible nature. Here are some key reasons why they are favored in scientific research.
 
 * Interactive Computing and Immediate Feedback
 
@@ -943,11 +959,78 @@ Jupyter Notebooks are powerful tools for scientific investigations due to their 
 
 Jupyter Notebooks provide a versatile and powerful environment for conducting scientific investigations, facilitating both the analysis and the clear communication of results.
 
-## Plot a Graph of Your HPL Benchmark Results
+1. Start by installing all the prerequisites
 
+   You would have already installed most these from [Qiskit Benchmark](../tutorial3/README.md##qiskit-quantum-volume) in tutorial 3.
+   * DNF / YUM
+     ```bash
+     # RHEL, Rocky, Alma, CentOS Stream
+     sudo dnf install python python-pip
+     ```
+   * APT
+     ```bash
+     # Ubuntu
+     sudo apt install python python-pip
+     ```
+   * Pacman
+     ```bash
+     # Arch
+     sudo pacman -S python python-pip
+     ```
+1. Open TCP port 8889 on your nftables firewall, and restart the service
+   ```bash
+   sudo nano /etc/nftables/hn.nft
+   sudo systemctl restart nftables
+   ```
 
+> [!TIP]
+> There are a number of plotting utilities available in Python. Each with their own advantages and disadvantages. You will be using [Plotly](https://plotly.com/python/ipython-notebook-tutorial/) in the following exercises.
 
-## Running Qiskit from a Remote Jupyter Notebook Server
+## Visualize Your HPL Benchmark Results
+
+You will now visualize the results from the [table you prepared of Rmax (GFlops/s)](../tutorial3/README.md#top500-list) scores for different configurations of HPL.
+
+1. Create and Activate a New Python Virtual Environment
+
+   Separate your python projects and ensure that they exist in their own, clean environments:
+
+   ```bash
+   python -m venv hplScores
+   source hplScores/bin/activate
+   ```
+1. Install Project Jupyter and Plotly plotting utilities and dependencies
+   ```bash
+   pip install jupyterlab ipywidgets plotly jupyter-dash
+   ```
+1. Start the JupyterLab server
+   ```bash
+   jupyter lab --ip 0.0.0.0 --port 8889 --no-browser
+   ```
+   * `--ip` binds to all interfaces on your head node, including the public facing address
+   * `--port` bind to the port that you granted access to in `nftables`
+   * --no-browser, do not try to launch a browser directly on your head node.
+1. Carefully copy your `<TOKEN>` from the command line after successfully launching your JupyterLab server.
+   ```bash
+   # Look for a line similar to the one below, and carefully copy your <TOKEN>
+   http://127.0.0.1:8889/lab?token=<TOKEN>
+   ```
+1. Open a browser on you workstation and navigate to your JupyterLab server on your headnode:
+   ```bash
+   http://<headnode_public_ip>:8889
+   ```
+1. Login to your JupyterLab server using your `<TOKEN>`.
+1. Create a new Python Notebook and plot your HPL results:
+   ```python
+   import plotly.express as px
+   x=["Head [<treads>]", "Compute Repo MPI and BLAS [<threads>]", "Compute Compiled MPI and BLAS [<threads>]", "Compute Intel oneAPI Toolkits", "Two Compute Nodes", "etc..."]
+   y=[<gflops_headnode>, <gflops_compute>, <gflops_compute_compiled_mpi_blas>, <gflops_compute_intel_oneapi>, <gflops_two_compute>, <etc..>]
+   fig = px.bar(x, y)
+   fig.show()
+   ```
+1. Click on the camera icon to download and save your image.
+   Post your results as a comment, replying to this [GitHub discussion thread](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/114).
+
+## Visualize You Qiskit Results
 
 TODO: WORK IN PROGRESS WILL NEATEN UP 03/07/24
 
@@ -955,27 +1038,36 @@ add jupyter notebook details
 
 1. Append the following to your `qv_experiment.py` script:
 
-```python
-# number of qubits, for your system see how much higher that 30 your can go...
-num_qubits = np.arrange(10, 30)
+   ```python
+   # number of qubits, for your system see how much higher that 30 your can go...
+   num_qubits = np.arrange(10, 30)
 
-# QV Depth
-qv_depth = 10
+   # QV Depth
+   qv_depth = 10
 
-# For bonus points submit results with up to 20 or even 30 shots
-# Note that this will be more demanding on your system
-num_shots = 10
+   # For bonus points submit results with up to 20 or even 30 shots
+   # Note that this will be more demanding on your system
+   num_shots = 10
 
-# Array for storing the output results
-result_array = [[], []]
+   # Array for storing the output results
+   result_array = [[], []]
 
-# iterate over qv depth and number of qubits
-for i in num_qubits:
-  result_array[i] = quant_vol(qubits=i, shots=num_shots, depth=qv_depth)
-  # for debugging purposes you can optionally print the output
-  print(i, result_array[i])
+   # iterate over qv depth and number of qubits
+   for i in num_qubits:
+     result_array[i] = quant_vol(qubits=i, shots=num_shots, depth=qv_depth)
+     # for debugging purposes you can optionally print the output
+     print(i, result_array[i])
+   ```
 
-```
+1. Create and Activate a New Python Virtual Environment
+
+   Separate your python projects and ensure that they exist in their own, clean environments:
+
+   ```bash
+   python -m venv
+   source QiskitAer/bin/activate
+   ```
+
 
 1. Run the benchmark by executing the script you've just written:
 ```bash
