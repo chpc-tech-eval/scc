@@ -921,9 +921,9 @@ Using a batch script similar to the one above, run the benchmark. You may modify
 
 <div style="page-break-after: always;"></div>
 
-# Jupyter Notebook
+# Configuring and Connecting to your Remote JupyterLab Server
 
-Jupyter Notebooks are powerful tools for scientific investigations due to their interactive and flexible nature. Here are some key reasons why they are favored in scientific research.
+[Project Jupyter](https://jupyter.org/) provides powerful tools for scientific investigations due to their interactive and flexible nature. Here are some key reasons why they are favored in scientific research.
 
 * Interactive Computing and Immediate Feedback
 
@@ -943,11 +943,78 @@ Jupyter Notebooks are powerful tools for scientific investigations due to their 
 
 Jupyter Notebooks provide a versatile and powerful environment for conducting scientific investigations, facilitating both the analysis and the clear communication of results.
 
-## Plot a Graph of Your HPL Benchmark Results
+1. Start by installing all the prerequisites
 
+   You would have already installed most these from [Qiskit Benchmark](../tutorial3/README.md##qiskit-quantum-volume) in tutorial 3.
+   * DNF / YUM
+     ```bash
+     # RHEL, Rocky, Alma, CentOS Stream
+     sudo dnf install python python-pip
+     ```
+   * APT
+     ```bash
+     # Ubuntu
+     sudo apt install python python-pip
+     ```
+   * Pacman
+     ```bash
+     # Arch
+     sudo pacman -S python python-pip
+     ```
+1. Open TCP port 8080 on your nftables firewall, and restart the service
+   ```bash
+   sudo nano /etc/nftables/hn.nft
+   sudo systemctl restart nftables
+   ```
 
+> [!TIP]
+> There are a number of plotting utilities available in Python. Each with their own advantages and disadvantages. You will be using [Plotly](https://plotly.com/python/ipython-notebook-tutorial/) in the following exercises.
 
-## Running Qiskit from a Remote Jupyter Notebook Server
+## Visualize Your HPL Benchmark Results
+
+You will now visualize the results from the [table you prepared of Rmax (GFlops/s)](../tutorial3/README.md#top500-list) scores for different configurations of HPL.
+
+1. Create and Activate a New Python Virtual Environment
+
+   Separate your python projects and ensure that they exist in their own, clean environments:
+
+   ```bash
+   python -m venv hplScores
+   source hplScores/bin/activate
+   ```
+1. Install Project Jupyter and Plotly plotting utilities and dependencies
+   ```bash
+   pip install jupyterlab ipywidgets plotly jupyter-dash
+   ```
+1. Start the JupyterLab server
+   ```bash
+   jupyter lab --ip 0.0.0.0 --port 8080 --no-browser
+   ```
+   * `--ip` binds to all interfaces on your head node, including the public facing address
+   * `--port` bind to the port that you granted access to in `nftables`
+   * --no-browser, do not try to launch a browser directly on your head node.
+1. Carefully copy your `<TOKEN>` from the command line after successfully launching your JupyterLab server.
+   ```bash
+   # Look for a line similar to the one below, and carefully copy your <TOKEN>
+   http://127.0.0.1:8080/lab?token=<TOKEN>
+   ```
+1. Open a browser on you workstation and navigate to your JupyterLab server on your headnode:
+   ```bash
+   http://<headnode_public_ip>:8080
+   ```
+1. Login to your JupyterLab server using your `<TOKEN>`.
+1. Create a new Python Notebook and plot your HPL results:
+   ```python
+   import plotly.express as px
+   x=["Head [<treads>]", "Compute Repo MPI and BLAS [<threads>]", "Compute Compiled MPI and BLAS [<threads>]", "Compute Intel oneAPI Toolkits", "Two Compute Nodes", "etc..."]
+   y=[<gflops_headnode>, <gflops_compute>, <gflops_compute_compiled_mpi_blas>, <gflops_compute_intel_oneapi>, <gflops_two_compute>, <etc..>]
+   fig = px.bar(x, y)
+   fig.show()
+   ```
+1. Click on the camera icon to download and save your image.
+   Post your results as a comment, replying to this [GitHub discussion thread](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/114).
+
+## Visualize You Qiskit Results
 
 TODO: WORK IN PROGRESS WILL NEATEN UP 03/07/24
 
@@ -955,27 +1022,36 @@ add jupyter notebook details
 
 1. Append the following to your `qv_experiment.py` script:
 
-```python
-# number of qubits, for your system see how much higher that 30 your can go...
-num_qubits = np.arrange(10, 30)
+   ```python
+   # number of qubits, for your system see how much higher that 30 your can go...
+   num_qubits = np.arrange(10, 30)
 
-# QV Depth
-qv_depth = 10
+   # QV Depth
+   qv_depth = 10
 
-# For bonus points submit results with up to 20 or even 30 shots
-# Note that this will be more demanding on your system
-num_shots = 10
+   # For bonus points submit results with up to 20 or even 30 shots
+   # Note that this will be more demanding on your system
+   num_shots = 10
 
-# Array for storing the output results
-result_array = [[], []]
+   # Array for storing the output results
+   result_array = [[], []]
 
-# iterate over qv depth and number of qubits
-for i in num_qubits:
-  result_array[i] = quant_vol(qubits=i, shots=num_shots, depth=qv_depth)
-  # for debugging purposes you can optionally print the output
-  print(i, result_array[i])
+   # iterate over qv depth and number of qubits
+   for i in num_qubits:
+     result_array[i] = quant_vol(qubits=i, shots=num_shots, depth=qv_depth)
+     # for debugging purposes you can optionally print the output
+     print(i, result_array[i])
+   ```
 
-```
+1. Create and Activate a New Python Virtual Environment
+
+   Separate your python projects and ensure that they exist in their own, clean environments:
+
+   ```bash
+   python -m venv
+   source QiskitAer/bin/activate
+   ```
+
 
 1. Run the benchmark by executing the script you've just written:
 ```bash

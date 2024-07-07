@@ -107,18 +107,42 @@ In this section, you are going to be building and compiling Lmod from source. Lm
 
 1. Install prerequisites required to build Lmod:
    From one of your **compute nodes**, install the following dependencies
-   ```bash
-   # Rocky (or similar RPM based systems: RHEL, Alma, CentOS Stream)
-   sudo dnf install -y epel-release
-   sudo dnf install -y git gcc make tcl tcl-devel lua lua-posix bc
-
-   # Ubuntu (or similar APT based systems)
-   sudo apt update
-   sudo apt install -y git gcc make tcl tcl-dev lua5.3 lua-posix bc
-
-   # Arch
-   sudo pacman -S git gcc make lua lua-filesystem lua-posix bc
-   ```
+   * DNF / YUM
+     ```bash
+     # Rocky (or similar RPM based systems: RHEL, Alma, CentOS Stream)
+     sudo dnf install -y epel-release
+     sudo dnf install -y git gcc make
+     ```
+   * APT
+     ```bash
+     # Ubuntu (or similar APT based systems)
+     sudo apt update
+     sudo apt install -y git gcc make
+     ```
+   * Pacman
+     ```bash
+     # Arch
+     sudo pacman -S git gcc make
+     ```
+1. Install dependencies for running and using Lmod:
+   You will need to install these on all the nodes you intend to use with Lmod
+   * DNF / YUM
+     ```bash
+     # Rocky (or similar RPM based systems: RHEL, Alma, CentOS Stream)
+     sudo dnf install -y epel-release
+     sudo dnf install -y tcl-devel lua lua-posix bc
+     ```
+   * APT
+     ```bash
+     # Ubuntu (or similar APT based systems)
+     sudo apt update
+     sudo apt install -y tcl tcl-dev lua5.3 lua-posix bc
+     ```
+   * Pacman
+     ```bash
+     # Arch
+     sudo pacman -S lua lua-filesystem lua-posix bc
+     ```
 1. Compile, Build and Install Lmod
    The following instructions will be the same regardless of the system you are using. You will be using the Lmod repo from the Texas Advanced Computing Center at the University of Texas, to build and compile Lmod from source into your own `home` directory:
    ```bash
@@ -208,30 +232,35 @@ We need to install the statically `($(LIBdir)/libhpl.a)` and dynamically`($(LAdi
 > If you've managed to successfully [build, compile and run HPL in tutorial 1]((../tutorial1/README.md#install-compile-and-run-high-performance-linpack-hpl-benchmark)), and you've managed to successfully configure your [NFS `home` directory export in tutorial 2](../tutorial2/README.md##network-file-system), then you may proceed. Otherwise you **must** discuss with, and seek advice from an instructor.
 
 1. Install the necessary dependencies on your **compute node**:
-   ```bash
-   # DNF / YUM (RHEL, Rocky, Alma, Centos)
-   sudo dnf update -y
-   sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
-   sudo dnf install wget nano -y
-
-   # APT (Ubuntu)
-   sudo apt update
-   sudo apt install openmpi libatlas-base-dev
-   sudo apt install wget nano
-
-   # Pacman (Arch)
-   sudo pacman -Syu
-   sudo pacman -S base-devel openmpi atlas-lapack nano wget
+   * DNF / YUM
+     ```bash
+     # RHEL, Rocky, Alma, Centos
+     sudo dnf update -y
+     sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
+     sudo dnf install wget nano -y
+     ```
+   * APT
+     ```bash
+     # Ubuntu
+     sudo apt update
+     sudo apt install openmpi libatlas-base-dev
+     sudo apt install wget nano
+     ```
+   * Pacman
+     ```bash
+     # Arch
+     sudo pacman -Syu
+     sudo pacman -S base-devel openmpi atlas-lapack nano wget
    ```
 
 1. Configuring and Tuning HPL
 
    The `HPL.dat` file (in the same directory as `xhpl`) defines how the HPL benchmark solves a large dense linear array of double precision floating point numbers. Therefore, selecting the appropriate parameters in this file can have a considerable effect on the GFLOPS score that you obtain. The most important parameters are:
-   * `N` which defines the length of one of the sides of the 2D array to be solved. Therefore, problem size ∝ runtime ∝ memory usage ∝ <N>². For best performance N should be a multiple of NB.
+   * `N` which defines the length of one of the sides of the 2D array to be solved. Therefore, problem size ∝ runtime ∝ memory usage ∝ N². For best performance N should be a multiple of NB.
    * `NB` defines the block (or chunk) size into which the array is divided. The optimal value is determined by the CPU architecture such that the block fits in cache.
-   * `P x Q` define the domains (in two dimensions) for how the array is partitioned on a distributed memory system. Therefore P*Q = MPI ranks, or number of nodes, or number of NUMA domains.
+   * `P x Q` define the domains (in two dimensions) for how the array is partitioned on a distributed memory system. Therefore `P x Q` typically should equate more or less to the number of MPI ranks, or number of nodes, or number of NUMA domains. For example, if you have 4 single CPU nodes, the permutations for P and Q indlude [1,4] and [2, 2]. Similarly, if you hace
 
-   You can find [online calculators](https://www.advancedclustering.com/act_kb/tune-hpl-dat-file/) that will generate an `HPL.dat` file for you *as a starting point*, but you will still need to do some tuning if you want to squeeze out maximum performance.
+    
 
 1. Prepare your environment to rerun your `xhpl` binary on your **compute node**
 
@@ -258,6 +287,8 @@ We need to install the statically `($(LIBdir)/libhpl.a)` and dynamically`($(LAdi
    ```bash
    ./xhpl
    ```
+> [!TIP]
+> You can find [online calculators](https://www.advancedclustering.com/act_kb/tune-hpl-dat-file/) that will generate an `HPL.dat` file for you *as a starting point*, but you will still need to do some tuning if you want to squeeze out maximum performance.
 
 # Building and Compiling OpenBLAS and OpenMPI Libraries from Source
 
@@ -540,7 +571,7 @@ The [TOP500 list](https://top500.org/lists/top500/2024/06/) is a project that ra
 
    Populate the following table by recording your Rmax from HPL results, and calculating your expected Rpeak value.
 
-   | Rank | System                                          | Cores     | Rmax (GFlops/s)       | Rpeak (GFlops/s)         |
+   | Rank | System                                          | Threads     | Rmax (GFlops/s)       | Rpeak (GFlops/s)         |
    |------|-------------------------------------------------|-----------|-----------------------|--------------------------|
    | 1    | Frontier - HPE - United States                  | 8 699 904 | 1206 x 10<sup>6</sup> | 1714.81 x 10<sup>6</sup> |
 |      |                                                 |           |                       |                          |
@@ -672,7 +703,7 @@ You may modify the `mpirun` command to optimise performance (significantly) but 
 
 IBM's Qiskit is an open-source [Software Development Kit (SDK)](https://www.ibm.com/quantum/qiskit) for working with quantum computers at the level of circuits, pulses, and algorithms. It provides tools for creating and manipulating quantum programs and running them on prototype quantum devices on IBM Quantum Platform or on simulators on a local computer.
 
-*Qiskit-Aer* is an extension to the Qiskit SDK for using high performance computing resources to simulate quantum computers and programs. It provides interfaces to run quantum circuits with or without noise using a number of various simulation methods. *Qiskit-Aer* supports leveraging *MPI* to improve the performance of simulation.
+[Qiskit-Aer](https://github.com/Qiskit/) is an extension to the Qiskit SDK for using high performance computing resources to simulate quantum computers and programs. It provides interfaces to run quantum circuits with or without noise using a number of various simulation methods. *Qiskit-Aer* supports leveraging *MPI* to improve the performance of simulation.
 
 **Quantum Volume (QV)** is a single-number metric that can be measured using a concrete protocol on near-term quantum computers of modest size. The QV method quantifies the largest random circuit of equal width and depth that the computer successfully implements. Quantum computing systems with high-fidelity operations, high connectivity, large calibrated gate sets, and circuit rewriting tool chains are expected to have higher quantum volumes. Simply put, Quantum Volume is a single number meant to encapsulate the performance of today’s quantum computers, like a classical computer’s transistor count.
 
@@ -680,21 +711,28 @@ For this benchmark, we will be providing you with the details of the script that
 
 1. Configure and install dependencies
    You will be using [Python Pip - PyPI](https://pypi.org/project/pip/) to configure and install Qiskit. `pip` is the official tool for installing and using Python packages from various indexes.
-   ```bash
-   # DNF / YUM (RHEL, Rocky, Alma, CentOS Stream)
-
-   # APT (Ubuntu)
-
-   # Pacman
-   sudo pacman -S python python-pip
-   ```
+   * DNF / YUM
+     ```bash
+     # RHEL, Rocky, Alma, CentOS Stream
+     sudo dnf install python python-pip
+     ```
+   * APT
+     ```bash
+     # Ubuntu
+     sudo apt install python python-pip
+     ```
+   * Pacman
+     ```bash
+     # Arch
+     sudo pacman -S python python-pip
+     ```
 1. Create and Activate a New Virtual Environment
 
    Separate your python projects and ensure that they exist in their own, clean environments:
 
    ```bash
-   $ python -m venv QiskitAer
-   $ source QiskitAer/bin/activate
+   python -m venv QiskitAer
+   source QiskitAer/bin/activate
    ```
 
 1. Install `qiskit-aer`
