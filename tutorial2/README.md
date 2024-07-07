@@ -9,8 +9,6 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 1. [Spinning Up a Compute Node on Sebowa(OpenStack)](#spinning-up-a-compute-node-on-sebowaopenstack)
     1. [Compute Node Considerations](#compute-node-considerations)
 1. [Accessing Your Compute Node Using `ProxyJump` Directive](#accessing-your-compute-node-using-proxyjump-directive)
-1. [First an SSH connection is made to the head node](#first-an-ssh-connection-is-made-to-the-head-node)
-1. [Then an SSH connection is made to the compute node using the head node as an SSH forwarding tunnel](#then-an-ssh-connection-is-made-to-the-compute-node-using-the-head-node-as-an-ssh-forwarding-tunnel)
     1. [Setting a Temporary Password on your Compute Node](#setting-a-temporary-password-on-your-compute-node)
 1. [Understanding the Roles of the Head Node and Compute Node](#understanding-the-roles-of-the-head-node-and-compute-node)
     1. [Terminal Multiplexers and Basic System Monitoring](#terminal-multiplexers-and-basic-system-monitoring)
