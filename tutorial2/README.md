@@ -3,61 +3,49 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 
 # Table of Contents
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
 
-1. [Checklist](#checklist)
-1. [Spinning Up a Compute Node on Sebowa(OpenStack)](#spinning-up-a-compute-node-on-sebowaopenstack)
-    1. [Compute Node Considerations](#compute-node-considerations)
-1. [Accessing Your Compute Node Using `ProxyJump` Directive](#accessing-your-compute-node-using-proxyjump-directive)
-    1. [Setting a Temporary Password on your Compute Node](#setting-a-temporary-password-on-your-compute-node)
-1. [Understanding the Roles of the Head Node and Compute Node](#understanding-the-roles-of-the-head-node-and-compute-node)
-    1. [Terminal Multiplexers and Basic System Monitoring](#terminal-multiplexers-and-basic-system-monitoring)
-1. [Basic System Monitoring](#basic-system-monitoring)
-1. [Manipulating Files and Directories](#manipulating-files-and-directories)
-1. [Verifying Networking Setup](#verifying-networking-setup)
-    1. [Head Node (`nmtui`) ](#head-node-nmtui)
-        1. [Compute Node](#compute-node)
-    1. [Configuring a Simple Stateful Firewall](#configuring-a-simple-stateful-firewall)
-1. [IPTables `iptables`](#iptables-iptables)
-    1. [-](#-)
-    1. [Dynamic Front-end Firewall Application Managers `firewalld`](#dynamic-front-end-firewall-application-managers-firewalld)
-1. [Network Time Protocol](#network-time-protocol)
-    1. [NTP Server (Head Node)](#ntp-server-head-node)
-    1. [NTP Client (Compute Node)](#ntp-client-compute-node)
-1. [Network File System](#network-file-system)
-    1. [NFS Server (Head Node)](#nfs-server-head-node)
-    1. [NFS Client (Compute Node)](#nfs-client-compute-node)
-        1. [Mounting An NFS Mount](#mounting-an-nfs-mount)
-        1. [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
-1. [Passwordless SSH](#passwordless-ssh)
-    1. [Generating SSH Keys on your Head Node](#generating-ssh-keys-on-your-head-node)
-    1. [Editing `/etc/hosts` File](#editing-etchosts-file)
-    1. [permanent Configuration with `~/.ssh/config`](#permanent-configuration-with-sshconfig)
-        1. [Understanding `~/.ssh/authorized_keys`](#understanding-sshauthorized_keys)
-        1. [User Permissions and Ownership](#user-permissions-and-ownership)
-    1. [User Account Management](#user-account-management)
-        1. [Create Team Captain User Account](#create-team-captain-user-account)
-            1. [Head Node](#head-node)
-            1. [Compute Node](#compute-node-1)
-            1. [Super User Access](#super-user-access)
-        1. [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
-            1. [Head Node](#head-node-1)
-            1. [Compute Node](#compute-node-2)
-            1. [Clean Up](#clean-up)
-1. [Ansible User Declaration](#ansible-user-declaration)
-    1. [Installing and Configuring Ansible](#installing-and-configuring-ansible)
-    1. [configuring Ansible](#configuring-ansible)
-    1. [Create Team Member Accounts](#create-team-member-accounts)
-1. [Remote Access to Your Cluster and Tunneling](#remote-access-to-your-cluster-and-tunneling)
-    1. [1. Local Port Forwarding](#1-local-port-forwarding)
-    1. [2. Dynamic Port Forwarding ](#2-dynamic-port-forwarding)
-1. [Web Browser and SOCKS5 Proxy Configuration](#web-browser-and-socks5-proxy-configuration)
-    1. [Firefox and Proxy Configurations](#firefox-and-proxy-configurations)
-1. [WirGuard VPN Cluster Access](#wirguard-vpn-cluster-access)
-1. [ZeroTier](#zerotier)
-1. [X11 Forwarding](#x11-forwarding)
+- [Checklist](#checklist)
+- [Spinning Up a Compute Node on Sebowa(OpenStack)](#spinning-up-a-compute-node-on-sebowaopenstack)
+    - [Compute Node Considerations](#compute-node-considerations)
+- [Accessing Your Compute Node Using `ProxyJump` Directive](#accessing-your-compute-node-using-proxyjump-directive)
+    - [Setting a Temporary Password on your Compute Node](#setting-a-temporary-password-on-your-compute-node)
+- [Understanding the Roles of the Head Node and Compute Node](#understanding-the-roles-of-the-head-node-and-compute-node)
+    - [Terminal Multiplexers and Basic System Monitoring](#terminal-multiplexers-and-basic-system-monitoring)
+- [Manipulating Files and Directories](#manipulating-files-and-directories)
+- [Verifying Networking Setup](#verifying-networking-setup)
+- [Configuring a Simple Stateful Firewall Using nftables](#configuring-a-simple-stateful-firewall-using-nftables)
+- [Network Time Protocol](#network-time-protocol)
+    - [NTP Server (Head Node)](#ntp-server-head-node)
+    - [NTP Client (Compute Node)](#ntp-client-compute-node)
+- [Network File System](#network-file-system)
+    - [NFS Server (Head Node)](#nfs-server-head-node)
+    - [NFS Client (Compute Node)](#nfs-client-compute-node)
+        - [Mounting An NFS Mount](#mounting-an-nfs-mount)
+        - [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
+- [Passwordless SSH](#passwordless-ssh)
+    - [Generating SSH Keys on your Head Node](#generating-ssh-keys-on-your-head-node)
+    - [Editing `/etc/hosts` File](#editing-etchosts-file)
+    - [permanent Configuration with `~/.ssh/config`](#permanent-configuration-with-sshconfig)
+        - [Understanding `~/.ssh/authorized_keys`](#understanding-sshauthorized_keys)
+        - [User Permissions and Ownership](#user-permissions-and-ownership)
+    - [User Account Management](#user-account-management)
+        - [Create Team Captain User Account](#create-team-captain-user-account)
+            - [Head Node](#head-node)
+            - [Compute Node](#compute-node)
+            - [Super User Access](#super-user-access)
+        - [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
+            - [Head Node](#head-node-1)
+            - [Compute Node](#compute-node-1)
+            - [Clean Up](#clean-up)
+- [Ansible User Declaration](#ansible-user-declaration)
+    - [Installing and Configuring Ansible](#installing-and-configuring-ansible)
+    - [configuring Ansible](#configuring-ansible)
+    - [Create Team Member Accounts](#create-team-member-accounts)
+- [WirGuard VPN Cluster Access](#wirguard-vpn-cluster-access)
+- [ZeroTier](#zerotier)
 
 <!-- markdown-toc end -->
-
 
 # Checklist
 
@@ -72,7 +60,6 @@ This tutorial will demonstrate how to access web services that are on your virtu
 - [ ] Share directories between computers.
 - [ ] Connect to machines without a password using public key based authentication.
 - [ ] Install and use central authentication.
-
 
 # Spinning Up a Compute Node on Sebowa(OpenStack)
 
@@ -487,7 +474,7 @@ Restart and enable the `nftables` service.
 >    oifname "enp2s0" masquerade
 >  }
 >}
-# Remember to include this file in /etc/sysconfig/nftables.conf and to restart the nftables service.
+># Remember to include this file in /etc/sysconfig/nftables.conf and to restart the nftables service.
 >```
 
 # Network Time Protocol
@@ -605,33 +592,11 @@ This tutorial will show you how to export a directory on the head node and mount
 The head node will act as the NFS server and will export the `/home/` directory to the compute node. The `/home/` directory contains the home directories of all the the non-`root` user accounts on most default Linux operating system configurations. For more information read the this link https://docs.rockylinux.org/guides/file_sharing/nfsserver/  
 
 
-1. NFS requires two services to function:
-        The network service (of course)
-        The rpcbind service
-
 2. Install the NFS service on the head node:
 
 ```bash
 sudo dnf install nfs-utils
 ```
-
-
-3. Check the status of the rpcbind services:
-
-```bash
-sudo sudo systemctl status rpcbind
-```
-
-
- 4. Verify the version of NFS installation.
-
-```bash
-sudo cat /proc/fs/nfsd/versions 
- -2 +3 +4 +4.1 +4.2
-```
-
- *** NFS versions 3 and 4 are enabled by default, and version 2 is disabled. NFSv2 is pretty old and outdated, and hence you can see the -ve sign in front of it.** 
- 
  
 5. NFS shares (directories on the NFS server) are configured in the `/etc/exports` file. Here you specify the directory you want to share, followed by the IP address or range you want to share to and then the options for sharing. We want to export the `/home` directory, so edit `/etc/exports` and add the following:
 
@@ -768,7 +733,7 @@ When managing a large fleet of machines or even when just logging into a single 
 1. Generate an SSH key-pair for your user. This will create a public and private key for your user in `/home/<username>/.ssh`. The private key is your identity and the public key is what you share with other computers.
 
 ```bash
-   ssh-keygen
+   ssh-keygen -t ed25519
    #press enter on all prompt
 ```
 
@@ -1122,6 +1087,7 @@ sudo dnf install epel-release
 
    <p align="center"><img alt="run command on ansible clients" src="./resources/ansible_run_command_on_hosts.png" width=900 /></p>
 
+<p align="center"><img alt="ansible testing hosts client connection " src="./resources/ansible_ping_feedback.png" width=900 /></p>
 
 ## Create Team Member Accounts
 We will use ansible to create user accounts on remote ansible clients, to achive this we need to create ansible YML scripts called `ansible playbooks` used for automating admin tasks. 
@@ -1191,112 +1157,11 @@ ansible-playbook /home/rocky/ansible/playbooks/sudo_users.yml -l servers
 Verify user `team_lead` was created on compute node and it on a `wheel` group 
 
 <p align="center"><img alt=" user team lead exist on ansible client " src="./resources/ansible_team_lead_user_verification.png" width=900 /></p>
-
-
-# Remote Access to Your Cluster and Tunneling
-Tunneling is a way of accessing software tools running privately in a server somewhere publicly. You want to access these tools publicly. There are multiple ways you can go about and we'll discuss 2 in this tutorial.
-
-   1. Local port forwarding
-   2. dynamic port forwarding 
-
-
-
-## 1. Local Port Forwarding
-This method uses `ssh` to forward/direct traffic from remote server to local machine. run `man ssh` then read `-L` flag for more details. 
-
-the syntax goes as follows:
-
-***ssh -L <localhost_port:target_host:target_host_port> <username>@<remote_host>***
-
-***localhost_port*** is your local machine port
-***target_host*** remote server (IP/domain name) that runs the software tools
-
-***target_host_port***  port that the software tools uses on the remote server
-
-***<username>@<remote_host>***  login server/node/machine, the login server and target host can be the same machine/server
-
-
-The ***-L*** specifies that you want to create a port forward to/from your <localhost_port> to the <target_host_port> of the <target_host>.
-
-In this tutorial there will be software tools (running on port 8080) you will need to use tunneling to access from your headnode to your local machine 
-
 ```bash
-#on your terminal run 
-ssh -L 9090:headnode:8080 username@headnode 
-
-#on the web browser type the below to access your software tool
-http://localhost:9090  or  http://127.0.0.1:9090 
+ssh compute
+id 
 ```
-
-
-
-## 2. Dynamic Port Forwarding 
-This method uses `ssh` to forward/direct traffic from remote server to local machine. run `man ssh` then read `-D` flag for more details. 
-
-syntax: 
-
-***ssh -D local_port username@target_host***
-
-To use the Dynamic Port Forwarding 
-1. on your terminal run the below command, keep the terminal open
-```bash
-
-ssh -D 1235 username@headnode
-```
-
- **The `-D 1235` tells `ssh` to open `1235` on your local computer for sending and receiving all port traffic to and from the target_host machine ( which in this case is the `headnode` or `headnode_ip`.)**
-
-2. follow the **Web Browser and SOCKS5 Proxy Configuration** section to configure `socks` protocol
-
-3. on the web browser type the below after the Web Browser and SOCKS5 Proxy Configuration to access your software tool 
-
-```bash
-http://headnode:1235 or http://headnode_ip:1235 
-```
-
-
-# Web Browser and SOCKS5 Proxy Configuration
-
-We'll need to use a **dynamic ssh tunnel** ([SOCKS proxy](https://en.wikipedia.org/wiki/SOCKS)) to allows SSH to forward **ALL remote (target) port traffic** to and from a port on your local machine, and can include remote DNS.
-
-## Firefox and Proxy Configurations
-
-The Firefox browser will allow the easiest proxy configuration. Please download and install Firefox from here: [https://www.mozilla.org/en-US/firefox/download/](https://www.mozilla.org/en-US/firefox/download/).
-
-
-Once downloaded and opened, go to the `three line menu` at the top right and click on `Settings`. In the `Find in Settings` search bar type "proxy" and click `Settings` next to the **Network Settings** option.
-
-<span id="fig1" class="img_container center" style="font-size:8px;margin-bottom:0px; display: block;">
-    <img alt="webserver" src="./resources/firefox_proxy_option.png" style="display:block; margin-left: auto; margin-right: auto; width: 50%;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center; margin-left: auto;
-    margin-right: auto; width: 45%;">
-
-<i> The Network Settings section of the Firefox Preferences.</i></span>
-</span>
-
-
-
-In this pop-up, change The proxy setting to `Manual Proxy Configuration` and delete `HTTP Proxy`, `HTTPS Proxy` and `FTP Proxy` and set their port numbers to `0`. 
-
-In `SOCKS Host` enter `127.0.0.1` and for the port enter `1235`.
-
-Select `SOCKS v5` and **tick on** `Proxy DNS when using SOCKS v5`.
-
-Now click `OK` and open a new tab in Firefox.
-
-
-<p align="center"><img alt=" socks 5 settings" src="./resources/sock5proxysettings.png" width=400 /></p>
-
-
-Now you can enter `http://headnode_ip:1235` in your browser and you'll get access to the software tool interface.
-
-> **! >>> Keep the SSH sessions open while you use the proxy on Firefox**
-
-> **! >>> Remember to set your proxy settings back to `No Proxy` if you want to use your own local internet on Firefox.**
-
 
 # WirGuard VPN Cluster Access
 
 # ZeroTier
-
-# X11 Forwarding
