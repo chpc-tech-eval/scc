@@ -3,6 +3,7 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 
 # Table of Contents
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
 
 1. [Checklist](#checklist)
 1. [Spinning Up a Compute Node on Sebowa(OpenStack)](#spinning-up-a-compute-node-on-sebowaopenstack)
@@ -11,15 +12,9 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
     1. [Setting a Temporary Password on your Compute Node](#setting-a-temporary-password-on-your-compute-node)
 1. [Understanding the Roles of the Head Node and Compute Node](#understanding-the-roles-of-the-head-node-and-compute-node)
     1. [Terminal Multiplexers and Basic System Monitoring](#terminal-multiplexers-and-basic-system-monitoring)
-1. [Basic System Monitoring](#basic-system-monitoring)
 1. [Manipulating Files and Directories](#manipulating-files-and-directories)
 1. [Verifying Networking Setup](#verifying-networking-setup)
-    1. [Head Node (`nmtui`) ](#head-node-nmtui)
-        1. [Compute Node](#compute-node)
-    1. [Configuring a Simple Stateful Firewall](#configuring-a-simple-stateful-firewall)
-1. [IPTables `iptables`](#iptables-iptables)
-    1. [-](#-)
-    1. [Dynamic Front-end Firewall Application Managers `firewalld`](#dynamic-front-end-firewall-application-managers-firewalld)
+1. [Configuring a Simple Stateful Firewall Using nftables](#configuring-a-simple-stateful-firewall-using-nftables)
 1. [Network Time Protocol](#network-time-protocol)
     1. [NTP Server (Head Node)](#ntp-server-head-node)
     1. [NTP Client (Compute Node)](#ntp-client-compute-node)
@@ -37,27 +32,20 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
     1. [User Account Management](#user-account-management)
         1. [Create Team Captain User Account](#create-team-captain-user-account)
             1. [Head Node](#head-node)
-            1. [Compute Node](#compute-node-1)
+            1. [Compute Node](#compute-node)
             1. [Super User Access](#super-user-access)
         1. [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
             1. [Head Node](#head-node-1)
-            1. [Compute Node](#compute-node-2)
+            1. [Compute Node](#compute-node-1)
             1. [Clean Up](#clean-up)
 1. [Ansible User Declaration](#ansible-user-declaration)
     1. [Installing and Configuring Ansible](#installing-and-configuring-ansible)
     1. [configuring Ansible](#configuring-ansible)
     1. [Create Team Member Accounts](#create-team-member-accounts)
-1. [Remote Access to Your Cluster and Tunneling](#remote-access-to-your-cluster-and-tunneling)
-    1. [1. Local Port Forwarding](#1-local-port-forwarding)
-    1. [2. Dynamic Port Forwarding ](#2-dynamic-port-forwarding)
-1. [Web Browser and SOCKS5 Proxy Configuration](#web-browser-and-socks5-proxy-configuration)
-    1. [Firefox and Proxy Configurations](#firefox-and-proxy-configurations)
 1. [WirGuard VPN Cluster Access](#wirguard-vpn-cluster-access)
 1. [ZeroTier](#zerotier)
-1. [X11 Forwarding](#x11-forwarding)
 
 <!-- markdown-toc end -->
-
 
 # Checklist
 
@@ -72,7 +60,6 @@ This tutorial will demonstrate how to access web services that are on your virtu
 - [ ] Share directories between computers.
 - [ ] Connect to machines without a password using public key based authentication.
 - [ ] Install and use central authentication.
-
 
 # Spinning Up a Compute Node on Sebowa(OpenStack)
 
@@ -487,246 +474,118 @@ Restart and enable the `nftables` service.
 >    oifname "enp2s0" masquerade
 >  }
 >}
-# Remember to include this file in /etc/sysconfig/nftables.conf and to restart the nftables service.
+># Remember to include this file in /etc/sysconfig/nftables.conf and to restart the nftables service.
 >```
 
 # Network Time Protocol
 
-**NTP** or **network time protocol** enables you to synchronise the time across all the computers in your network. This is important for HPC clusters as some applications require that system time be accurate between different nodes (imagine receiving a message 'before' it was sent).
+NTP let's you to synchronise the time across all the computers in your network. This is important for HPC clusters as some applications require that system time be accurate between different nodes (imagine receiving a message 'before' it was sent). You will configure the NTP service through `chronyd` on your head node and then connect your compute nodes as its clients.
 
-It is also important that your timezones are also consistent across your machines. Time actions on **rocky 9** can be controlled by a tool called `timedatectl`. For example, if you wanted to change the timezone that your system is in, you could use `timedatectl list-timezones`, find the one you want and then set it by using `timedatectl set-timezone <timezone>`. `timedatectl` can also set the current time on a local machine and more.
-
-You will now **setup the NTP service** (through the `chronyd` implementation) on your head node and then connect your compute nodes to it.
-
-Compute nodes need to access the internet for package installation.
-To test if your compute node can access the internet, you can ping google DNS by IP and domain name.
-
-```bash
-ping 8.8.8.8      # Google external DNS server
-ping google.com
-```
-
-
-## NTP Server (Head Node)
-
-1. Install the Chrony software package using the Rocky package manager, `dnf`:
+1. Install `chrony` on both your head and compute nodes
 
 ```bash
  sudo dnf install chrony 
 ```
 
-2. Edit the file `/etc/chrony.conf` and modify the `allow` declaration to include the internal subnet of your cluster (uncomment or remove the "#" in front of `allow` if it's there, otherwise this is ignored).
+1. Head Node
+   * Edit the file `/etc/chrony.conf`
 
-```bash
- allow 10.50.100.0/24
-```
+   Modify the `allow` declaration to include the internal subnet of your cluster (uncomment or remove the "#" in front of `allow` if it's there, otherwise this is ignored).
 
-3. Chrony runs as a service (daemon) and  is included with CentOS 8 so it likely is already running. Restart the chrony daemon with `systemctl`. This will also start it if it was not yet started:
+   ```bash
+   allow 10.50.100.0/24
+   ```
+   * Start and enable the `chronyd` service
+   ```bash
+   sudo systemctl enable chronyd
 
+   # The service may be automatically started and enabled after installtion
+   # Thus you may need to restart is for changes to take effect.
+   sudo systemctl restart chronyd
+   ```
+   * Verify the NTP synchronization status and that there are no clients connected as yet
+   ```bash
+   sudo chronyc tracking
+   sudo chronyc clients
+   ```
 
-```bash
-#start service 
-sudo systemctl restart chronyd 
-#enable service
- sudo systemctl enable chronyd
-```
+1. Compute Node
+   * Edit the file `/etc/chrony.conf`
 
+     Comment out (add a "#" in front of) all the `pool` and `server` declarations and add this new line to the file:
+     ```bash
+     server <headnode_ip>
+     ```
+   * Restart and enable the `chronyd` service
+     ```bash
+     sudo systemctl enable chronyd
+     sudo systemctl restart chronyd
+     ```
+   * Verify the sources of the NTP server
+     ```bash
+     sudo chronyc sources```
 
-6. Ensure `firewalld` is installed and enabled 
+1. Firewall Configure on Head Node
+   * Check `chronyc clients` again
+   * Edit `/etc/nftables/hn.nft` and accept incoming traffic on port 123 UDP
+     ```conf
+     chain hn_udp_chain {
+             udp dport 123 accept
+     }
+     ```
+   * Restart `nftables`
 
-```bash
-sudo dnf install firewalld -y
-sudo systemctl start firewalld
-sudo systemctl enable firewalld
-```
-
-5. Add chrony to the firewall exclusion list:
-
-
-```bash
-sudo firewall-cmd --zone=internal --permanent --add-service=ntp
-sudo firewall-cmd --reload
-```
-
-5. You can view the clients that are connected to the chrony server on the head node by using the following command on the head node:
-
-```bash
-sudo chronyc clients
-```
-
-6. Confirm the NTP synchronization status.
-
-```bash
-sudo chronyc tracking
-```
-
-This will show empty until ntp client (compute nodes) are configured
-
-
-<p align="center"><img alt="enabling ntp traffic, showing ntp clients " src="./resources/ntp.png" width=900 /></p>
-
-
-## NTP Client (Compute Node)
-
-1. Install the Chrony software package as shwon on headnode.
-
-2. Edit the file `/etc/chrony.conf`, comment out (add a "#" in front of) all the `pool` and `server` declarations and add this new line to the file:
-
-```bash
-server <headnode_ip>
-```
-
-3. Restart the chronyd service as above.
-
-4. Enable the chronyd service as above.
-5. verify the sources of the NTP server 
-
-```bash
-sudo chronyc sources
-```
-
-<p align="center"><img alt=" compute node NTP server source" src="./resources/ntp_source_for_compute_node.png" width=900 /></p>
-
-
-Run `chronyc clients` on the headnode to see ntp clients 
-
-<p align="center"><img alt=" chronyc clients after client config" src="./resources/ntp_clients.png" width=900 /></p>
-
-
+1. Restart `chronyd` daemon on your compute node and recheck `chronyc sources`.
+1. Verify that `chronyc clients` is now working correctly on your head node.
 
 # Network File System
 
-Network File System (NFS) enables you to easily share files and directories over the network. NFS is a distributed file system protocol that we will use to share files between our nodes across our private network. It has a server-client architecture that treats one machine as a server of directories, and multiple machines (clients) can connect to it.
+Network File System (NFS) enables you to easily share files and directories over the network. NFS is a distributed file system protocol that we will use to share files between our nodes across our private network. It has a server-client architecture that treats one machine as a server of directories, and multiple machines as clients that can connect to it.
 
 This tutorial will show you how to export a directory on the head node and mount it through the network on the compute nodes. With the shared file system in place it becomes easy to enable **public key based SSH authentication**, which allows you to SSH into all the computers in your cluster without requiring a password.
 
-## NFS Server (Head Node)
-
-The head node will act as the NFS server and will export the `/home/` directory to the compute node. The `/home/` directory contains the home directories of all the the non-`root` user accounts on most default Linux operating system configurations. For more information read the this link https://docs.rockylinux.org/guides/file_sharing/nfsserver/  
+The head node will act as the [NFS server](https://docs.rockylinux.org/guides/file_sharing/nfsserver/) and will export the `/home/` directory to the compute node. The `/home/` directory contains the home directories of all the the non-`root` user accounts on most default Linux operating system configurations. For more information read the this link
 
 
-1. NFS requires two services to function:
-        The network service (of course)
-        The rpcbind service
+1. Install the NFS Utilities on both the head node and compute node(s):
+   ```bash
+   sudo dnf install nfs-utils
+   ```
 
-2. Install the NFS service on the head node:
+1. Edit `/etc/exports` on the head node
 
-```bash
-sudo dnf install nfs-utils
-```
+   NFS shares (directories on the NFS server) are configured in the `/etc/exports` file. Here you specify the directory you want to share, followed by the IP address or range you want to share to and then the options for sharing. We want to export the `/home` directory, so edit `/etc/exports` and add the following:
 
+   ```conf
+   /home    10.100.50.0/24(rw,async,no_subtree_check,no_root_squash)
+   ```
+   * `rw` gives the client machine read and write access on the NFS volume.
+   * `async` forces NFS to write changes to the disk before replying. This option is considered more reliable. However, it also reduces the speed of file operations.
+   * `no_subtree_check` prevents a process where the host must check whether the file is available along with permissions for every request. It can also cause issues when a file is renamed on the host while still open on the client. Disabling it improves the reliability of NFS.
+   * `no_root_squash` disables the default behavior where NFS translates requests from a root user on the client, into a non-privileged user on the host. Great care should be taken when allowing the client to gain access to the host with this setting.
 
-3. Check the status of the rpcbind services:
+1. Open TCP port 2049 on your head node's firewall by editing `/etc/nftables/hn.nft`, and restarting the `nftables` service
 
-```bash
-sudo sudo systemctl status rpcbind
-```
-
-
- 4. Verify the version of NFS installation.
-
-```bash
-sudo cat /proc/fs/nfsd/versions 
- -2 +3 +4 +4.1 +4.2
-```
-
- *** NFS versions 3 and 4 are enabled by default, and version 2 is disabled. NFSv2 is pretty old and outdated, and hence you can see the -ve sign in front of it.** 
- 
- 
-5. NFS shares (directories on the NFS server) are configured in the `/etc/exports` file. Here you specify the directory you want to share, followed by the IP address or range you want to share to and then the options for sharing. We want to export the `/home` directory, so edit `/etc/exports` and add the following:
-
-```conf
- /home    10.100.50.0/24(rw,async,no_subtree_check,no_root_squash) 
-```
-
-
-    Let us go through all the options for NFS exports.
-       - rw - gives the client machine read and write access on the NFS volume.
-        - async - this option forces NFS to write changes to the disk before replying. This option is considered more reliable. However, it also reduces the speed of file operations.
-
-        - no_subtree_check - this option prevents subtree checking, a process where the host must check whether the file is available along with permissions for every request. It can also cause issues when a file is renamed on the host while still open on the client. Disabling it improves the reliability of NFS.
-
-        - no_root_squash - By default, NFS translates requests from a root user on the client into a non-privileged user on the host. This option disables that behavior and should be used carefully to allow the client to gain access to the host.
-
-
-6. Start and enable the `nfs-server` service using `systemctl`.
-
-```bash
-   sudo systemctl enable --now nfs-server rpcbind
-```
-
-
-7. NFS on Rocky Linux makes use of three different services, and they all need to be allowed through your firewall. You can add these rules with firewall-cmd:
-
-```bash
-   sudo firewall-cmd --add-service={nfs,mountd,rpc-bind} --permanent
-   sudo firewall-cmd --reload
- ```
-
-## NFS Client (Compute Node)
-
-The compute node acts as the client for the NFS, which will mount the directory that was exported from the server (`/home`). Once mounted, the compute node will be able to interact with and modify files that exist on the head node and it will be synchronised between the two.
-
-### Mounting An NFS Mount
-
-The `nfs-utils, nfs4-acl-tools` packages need to be installed before you can do anything NFS related on the compute node. 
-
-```bash
-  sudo dnf install nfs-utils nfs4-acl-tools
- ```
-
-Since the directory we want to mount is the `/home` directory, the user can not be in that directory.
-
-
-1. Mount the /home directory from the head node using the `mount` command:
-
- ```bash
-   sudo mount -t nfs <headnode_ip_or_hostname>:/home /home
- ```
-
-2. Once done, you can verify that the `/home` directory of the head node is mounted by using `df -h`:
-
-```bash
-    df -h
-```
-
-
-With this mounted, it effectively replaces the `/home` directory of the compute node with the head node's one until it is unmounted. To verify this, create a file on the compute node's `rocky` user home directory (`/home/rocky`) and see if it is also automatically on the head node. If not, you may have done something wrong and may need to redo the above steps!
-
-### Making The NFS Mount Permanent
-
-Using `mount` from the command line will not make the mount permanent. It will not survive a reboot. To make it permanent, we need to edit the `/etc/fstab` file on the compute node. This file contains the mappings for each mount of any drives or network locations on boot of the operating system.
-
-1. First we need to unmount the mount we made:
-
-```bash
-     sudo umount /home
-```
-
-2. Now we need to edit the `/etc/fstab` file and add this new line to it (be careful not to modify the existing lines!):
-
-
-```bash
-   headnode.cluster.scc:/home    /home     nfs auto,nofail,noatime,nolock,tcp,actimeo=1800,intr    0 0
-```
-
- The structure is: `<host>:<filesystem_dir> <local_location> <filesystem_type> <filesystem_options> 0 0`. The last two digits are not important for this competition and can be left at 0 0.
-
-For the description of nfs options listed above see the link: https://cheatography.com/baa/cheat-sheets/fstab-nfs/#google_vignette
-
-3. With this done, we can mount the new `/etc/fstab` entry:
-
-```bash
- sudo mount -a 
-```
-
-4. Once again, you can verify that the `/home` directory of the head node is mounted by using `df -h`:
-
-```bash
-    df -h
-```
-
-
+1. Export the shares, then start and enable the `nfs-server` service using `systemctl` on the head node.
+   ```bash
+   exportfs -ar
+   sudo systemctl enable nfs-server
+   ```
+1. Mount the NFS export on your compute node
+   ```bash
+   # You cannot mount /home while you are occupying it
+   cd /
+   sudo mount -t nfs <headnode_ip>:/home /home
+   ```
+1. Verify that you successfully mounted `/home` export
+   ```bash
+   df -h
+   ```
+1. Edit your `/etc/fstab` to make the effect persist after a restart. Add this entry to the end of your fstab:
+   ```conf
+   <headnode_ip>:/home /home  nfs   defaults,timeo=1800,retrans=5,_netdev	0 0
+   ```
+servername:/music   /mountpoint/on/client   nfs   defaults,timeo=900,retrans=5,_netdev	0 0
 
 # Passwordless SSH
 ## Generating SSH Keys on your Head Node
@@ -768,7 +627,7 @@ When managing a large fleet of machines or even when just logging into a single 
 1. Generate an SSH key-pair for your user. This will create a public and private key for your user in `/home/<username>/.ssh`. The private key is your identity and the public key is what you share with other computers.
 
 ```bash
-   ssh-keygen
+   ssh-keygen -t ed25519
    #press enter on all prompt
 ```
 
@@ -1122,6 +981,7 @@ sudo dnf install epel-release
 
    <p align="center"><img alt="run command on ansible clients" src="./resources/ansible_run_command_on_hosts.png" width=900 /></p>
 
+<p align="center"><img alt="ansible testing hosts client connection " src="./resources/ansible_ping_feedback.png" width=900 /></p>
 
 ## Create Team Member Accounts
 We will use ansible to create user accounts on remote ansible clients, to achive this we need to create ansible YML scripts called `ansible playbooks` used for automating admin tasks. 
@@ -1191,112 +1051,11 @@ ansible-playbook /home/rocky/ansible/playbooks/sudo_users.yml -l servers
 Verify user `team_lead` was created on compute node and it on a `wheel` group 
 
 <p align="center"><img alt=" user team lead exist on ansible client " src="./resources/ansible_team_lead_user_verification.png" width=900 /></p>
-
-
-# Remote Access to Your Cluster and Tunneling
-Tunneling is a way of accessing software tools running privately in a server somewhere publicly. You want to access these tools publicly. There are multiple ways you can go about and we'll discuss 2 in this tutorial.
-
-   1. Local port forwarding
-   2. dynamic port forwarding 
-
-
-
-## 1. Local Port Forwarding
-This method uses `ssh` to forward/direct traffic from remote server to local machine. run `man ssh` then read `-L` flag for more details. 
-
-the syntax goes as follows:
-
-***ssh -L <localhost_port:target_host:target_host_port> <username>@<remote_host>***
-
-***localhost_port*** is your local machine port
-***target_host*** remote server (IP/domain name) that runs the software tools
-
-***target_host_port***  port that the software tools uses on the remote server
-
-***<username>@<remote_host>***  login server/node/machine, the login server and target host can be the same machine/server
-
-
-The ***-L*** specifies that you want to create a port forward to/from your <localhost_port> to the <target_host_port> of the <target_host>.
-
-In this tutorial there will be software tools (running on port 8080) you will need to use tunneling to access from your headnode to your local machine 
-
 ```bash
-#on your terminal run 
-ssh -L 9090:headnode:8080 username@headnode 
-
-#on the web browser type the below to access your software tool
-http://localhost:9090  or  http://127.0.0.1:9090 
+ssh compute
+id 
 ```
-
-
-
-## 2. Dynamic Port Forwarding 
-This method uses `ssh` to forward/direct traffic from remote server to local machine. run `man ssh` then read `-D` flag for more details. 
-
-syntax: 
-
-***ssh -D local_port username@target_host***
-
-To use the Dynamic Port Forwarding 
-1. on your terminal run the below command, keep the terminal open
-```bash
-
-ssh -D 1235 username@headnode
-```
-
- **The `-D 1235` tells `ssh` to open `1235` on your local computer for sending and receiving all port traffic to and from the target_host machine ( which in this case is the `headnode` or `headnode_ip`.)**
-
-2. follow the **Web Browser and SOCKS5 Proxy Configuration** section to configure `socks` protocol
-
-3. on the web browser type the below after the Web Browser and SOCKS5 Proxy Configuration to access your software tool 
-
-```bash
-http://headnode:1235 or http://headnode_ip:1235 
-```
-
-
-# Web Browser and SOCKS5 Proxy Configuration
-
-We'll need to use a **dynamic ssh tunnel** ([SOCKS proxy](https://en.wikipedia.org/wiki/SOCKS)) to allows SSH to forward **ALL remote (target) port traffic** to and from a port on your local machine, and can include remote DNS.
-
-## Firefox and Proxy Configurations
-
-The Firefox browser will allow the easiest proxy configuration. Please download and install Firefox from here: [https://www.mozilla.org/en-US/firefox/download/](https://www.mozilla.org/en-US/firefox/download/).
-
-
-Once downloaded and opened, go to the `three line menu` at the top right and click on `Settings`. In the `Find in Settings` search bar type "proxy" and click `Settings` next to the **Network Settings** option.
-
-<span id="fig1" class="img_container center" style="font-size:8px;margin-bottom:0px; display: block;">
-    <img alt="webserver" src="./resources/firefox_proxy_option.png" style="display:block; margin-left: auto; margin-right: auto; width: 50%;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center; margin-left: auto;
-    margin-right: auto; width: 45%;">
-
-<i> The Network Settings section of the Firefox Preferences.</i></span>
-</span>
-
-
-
-In this pop-up, change The proxy setting to `Manual Proxy Configuration` and delete `HTTP Proxy`, `HTTPS Proxy` and `FTP Proxy` and set their port numbers to `0`. 
-
-In `SOCKS Host` enter `127.0.0.1` and for the port enter `1235`.
-
-Select `SOCKS v5` and **tick on** `Proxy DNS when using SOCKS v5`.
-
-Now click `OK` and open a new tab in Firefox.
-
-
-<p align="center"><img alt=" socks 5 settings" src="./resources/sock5proxysettings.png" width=400 /></p>
-
-
-Now you can enter `http://headnode_ip:1235` in your browser and you'll get access to the software tool interface.
-
-> **! >>> Keep the SSH sessions open while you use the proxy on Firefox**
-
-> **! >>> Remember to set your proxy settings back to `No Proxy` if you want to use your own local internet on Firefox.**
-
 
 # WirGuard VPN Cluster Access
 
 # ZeroTier
-
-# X11 Forwarding
