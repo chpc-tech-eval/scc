@@ -5,45 +5,45 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-- [Checklist](#checklist)
-- [Spinning Up a Compute Node on Sebowa(OpenStack)](#spinning-up-a-compute-node-on-sebowaopenstack)
-    - [Compute Node Considerations](#compute-node-considerations)
-- [Accessing Your Compute Node Using `ProxyJump` Directive](#accessing-your-compute-node-using-proxyjump-directive)
-    - [Setting a Temporary Password on your Compute Node](#setting-a-temporary-password-on-your-compute-node)
-- [Understanding the Roles of the Head Node and Compute Node](#understanding-the-roles-of-the-head-node-and-compute-node)
-    - [Terminal Multiplexers and Basic System Monitoring](#terminal-multiplexers-and-basic-system-monitoring)
-- [Manipulating Files and Directories](#manipulating-files-and-directories)
-- [Verifying Networking Setup](#verifying-networking-setup)
-- [Configuring a Simple Stateful Firewall Using nftables](#configuring-a-simple-stateful-firewall-using-nftables)
-- [Network Time Protocol](#network-time-protocol)
-    - [NTP Server (Head Node)](#ntp-server-head-node)
-    - [NTP Client (Compute Node)](#ntp-client-compute-node)
-- [Network File System](#network-file-system)
-    - [NFS Server (Head Node)](#nfs-server-head-node)
-    - [NFS Client (Compute Node)](#nfs-client-compute-node)
-        - [Mounting An NFS Mount](#mounting-an-nfs-mount)
-        - [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
-- [Passwordless SSH](#passwordless-ssh)
-    - [Generating SSH Keys on your Head Node](#generating-ssh-keys-on-your-head-node)
-    - [Editing `/etc/hosts` File](#editing-etchosts-file)
-    - [permanent Configuration with `~/.ssh/config`](#permanent-configuration-with-sshconfig)
-        - [Understanding `~/.ssh/authorized_keys`](#understanding-sshauthorized_keys)
-        - [User Permissions and Ownership](#user-permissions-and-ownership)
-    - [User Account Management](#user-account-management)
-        - [Create Team Captain User Account](#create-team-captain-user-account)
-            - [Head Node](#head-node)
-            - [Compute Node](#compute-node)
-            - [Super User Access](#super-user-access)
-        - [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
-            - [Head Node](#head-node-1)
-            - [Compute Node](#compute-node-1)
-            - [Clean Up](#clean-up)
-- [Ansible User Declaration](#ansible-user-declaration)
-    - [Installing and Configuring Ansible](#installing-and-configuring-ansible)
-    - [configuring Ansible](#configuring-ansible)
-    - [Create Team Member Accounts](#create-team-member-accounts)
-- [WirGuard VPN Cluster Access](#wirguard-vpn-cluster-access)
-- [ZeroTier](#zerotier)
+1. [Checklist](#checklist)
+1. [Spinning Up a Compute Node on Sebowa(OpenStack)](#spinning-up-a-compute-node-on-sebowaopenstack)
+    1. [Compute Node Considerations](#compute-node-considerations)
+1. [Accessing Your Compute Node Using `ProxyJump` Directive](#accessing-your-compute-node-using-proxyjump-directive)
+    1. [Setting a Temporary Password on your Compute Node](#setting-a-temporary-password-on-your-compute-node)
+1. [Understanding the Roles of the Head Node and Compute Node](#understanding-the-roles-of-the-head-node-and-compute-node)
+    1. [Terminal Multiplexers and Basic System Monitoring](#terminal-multiplexers-and-basic-system-monitoring)
+1. [Manipulating Files and Directories](#manipulating-files-and-directories)
+1. [Verifying Networking Setup](#verifying-networking-setup)
+1. [Configuring a Simple Stateful Firewall Using nftables](#configuring-a-simple-stateful-firewall-using-nftables)
+1. [Network Time Protocol](#network-time-protocol)
+    1. [NTP Server (Head Node)](#ntp-server-head-node)
+    1. [NTP Client (Compute Node)](#ntp-client-compute-node)
+1. [Network File System](#network-file-system)
+    1. [NFS Server (Head Node)](#nfs-server-head-node)
+    1. [NFS Client (Compute Node)](#nfs-client-compute-node)
+        1. [Mounting An NFS Mount](#mounting-an-nfs-mount)
+        1. [Making The NFS Mount Permanent](#making-the-nfs-mount-permanent)
+1. [Passwordless SSH](#passwordless-ssh)
+    1. [Generating SSH Keys on your Head Node](#generating-ssh-keys-on-your-head-node)
+    1. [Editing `/etc/hosts` File](#editing-etchosts-file)
+    1. [permanent Configuration with `~/.ssh/config`](#permanent-configuration-with-sshconfig)
+        1. [Understanding `~/.ssh/authorized_keys`](#understanding-sshauthorized_keys)
+        1. [User Permissions and Ownership](#user-permissions-and-ownership)
+    1. [User Account Management](#user-account-management)
+        1. [Create Team Captain User Account](#create-team-captain-user-account)
+            1. [Head Node](#head-node)
+            1. [Compute Node](#compute-node)
+            1. [Super User Access](#super-user-access)
+        1. [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
+            1. [Head Node](#head-node-1)
+            1. [Compute Node](#compute-node-1)
+            1. [Clean Up](#clean-up)
+1. [Ansible User Declaration](#ansible-user-declaration)
+    1. [Installing and Configuring Ansible](#installing-and-configuring-ansible)
+    1. [configuring Ansible](#configuring-ansible)
+    1. [Create Team Member Accounts](#create-team-member-accounts)
+1. [WirGuard VPN Cluster Access](#wirguard-vpn-cluster-access)
+1. [ZeroTier](#zerotier)
 
 <!-- markdown-toc end -->
 
@@ -479,125 +479,80 @@ Restart and enable the `nftables` service.
 
 # Network Time Protocol
 
-**NTP** or **network time protocol** enables you to synchronise the time across all the computers in your network. This is important for HPC clusters as some applications require that system time be accurate between different nodes (imagine receiving a message 'before' it was sent).
+NTP let's you to synchronise the time across all the computers in your network. This is important for HPC clusters as some applications require that system time be accurate between different nodes (imagine receiving a message 'before' it was sent). You will configure the NTP service through `chronyd` on your head node and then connect your compute nodes as its clients.
 
-It is also important that your timezones are also consistent across your machines. Time actions on **rocky 9** can be controlled by a tool called `timedatectl`. For example, if you wanted to change the timezone that your system is in, you could use `timedatectl list-timezones`, find the one you want and then set it by using `timedatectl set-timezone <timezone>`. `timedatectl` can also set the current time on a local machine and more.
-
-You will now **setup the NTP service** (through the `chronyd` implementation) on your head node and then connect your compute nodes to it.
-
-Compute nodes need to access the internet for package installation.
-To test if your compute node can access the internet, you can ping google DNS by IP and domain name.
-
-```bash
-ping 8.8.8.8      # Google external DNS server
-ping google.com
-```
-
-
-## NTP Server (Head Node)
-
-1. Install the Chrony software package using the Rocky package manager, `dnf`:
+1. Install `chrony` on both your head and compute nodes
 
 ```bash
  sudo dnf install chrony 
 ```
 
-2. Edit the file `/etc/chrony.conf` and modify the `allow` declaration to include the internal subnet of your cluster (uncomment or remove the "#" in front of `allow` if it's there, otherwise this is ignored).
+1. Head Node
+   * Edit the file `/etc/chrony.conf`
 
-```bash
- allow 10.50.100.0/24
-```
+   Modify the `allow` declaration to include the internal subnet of your cluster (uncomment or remove the "#" in front of `allow` if it's there, otherwise this is ignored).
 
-3. Chrony runs as a service (daemon) and  is included with CentOS 8 so it likely is already running. Restart the chrony daemon with `systemctl`. This will also start it if it was not yet started:
+   ```bash
+   allow 10.50.100.0/24
+   ```
+   * Start and enable the `chronyd` service
+   ```bash
+   sudo systemctl enable chronyd
 
+   # The service may be automatically started and enabled after installtion
+   # Thus you may need to restart is for changes to take effect.
+   sudo systemctl restart chronyd
+   ```
+   * Verify the NTP synchronization status and that there are no clients connected as yet
+   ```bash
+   sudo chronyc tracking
+   sudo chronyc clients
+   ```
 
-```bash
-#start service 
-sudo systemctl restart chronyd 
-#enable service
- sudo systemctl enable chronyd
-```
+1. Compute Node
+   * Edit the file `/etc/chrony.conf`
 
+     Comment out (add a "#" in front of) all the `pool` and `server` declarations and add this new line to the file:
+     ```bash
+     server <headnode_ip>
+     ```
+   * Restart and enable the `chronyd` service
+     ```bash
+     sudo systemctl enable chronyd
+     sudo systemctl restart chronyd
+     ```
+   * Verify the sources of the NTP server
+     ```bash
+     sudo chronyc sources```
 
-6. Ensure `firewalld` is installed and enabled 
+1. Firewall Configure on Head Node
+   * Check `chronyc clients` again
+   * Edit `/etc/nftables/hn.nft` and accept incoming traffic on port 123 UDP
+     ```conf
+     chain hn_udp_chain {
+             udp dport 123 accept
+     }
+     ```
+   * Restart `nftables`
 
-```bash
-sudo dnf install firewalld -y
-sudo systemctl start firewalld
-sudo systemctl enable firewalld
-```
-
-5. Add chrony to the firewall exclusion list:
-
-
-```bash
-sudo firewall-cmd --zone=internal --permanent --add-service=ntp
-sudo firewall-cmd --reload
-```
-
-5. You can view the clients that are connected to the chrony server on the head node by using the following command on the head node:
-
-```bash
-sudo chronyc clients
-```
-
-6. Confirm the NTP synchronization status.
-
-```bash
-sudo chronyc tracking
-```
-
-This will show empty until ntp client (compute nodes) are configured
-
-
-<p align="center"><img alt="enabling ntp traffic, showing ntp clients " src="./resources/ntp.png" width=900 /></p>
-
-
-## NTP Client (Compute Node)
-
-1. Install the Chrony software package as shwon on headnode.
-
-2. Edit the file `/etc/chrony.conf`, comment out (add a "#" in front of) all the `pool` and `server` declarations and add this new line to the file:
-
-```bash
-server <headnode_ip>
-```
-
-3. Restart the chronyd service as above.
-
-4. Enable the chronyd service as above.
-5. verify the sources of the NTP server 
-
-```bash
-sudo chronyc sources
-```
-
-<p align="center"><img alt=" compute node NTP server source" src="./resources/ntp_source_for_compute_node.png" width=900 /></p>
-
-
-Run `chronyc clients` on the headnode to see ntp clients 
-
-<p align="center"><img alt=" chronyc clients after client config" src="./resources/ntp_clients.png" width=900 /></p>
-
-
+1. Restart `chronyd` daemon on your compute node and recheck `chronyc sources`.
+1. Verify that `chronyc clients` is now working correctly on your head node.
 
 # Network File System
 
-Network File System (NFS) enables you to easily share files and directories over the network. NFS is a distributed file system protocol that we will use to share files between our nodes across our private network. It has a server-client architecture that treats one machine as a server of directories, and multiple machines (clients) can connect to it.
+Network File System (NFS) enables you to easily share files and directories over the network. NFS is a distributed file system protocol that we will use to share files between our nodes across our private network. It has a server-client architecture that treats one machine as a server of directories, and multiple machines as clients that can connect to it.
 
 This tutorial will show you how to export a directory on the head node and mount it through the network on the compute nodes. With the shared file system in place it becomes easy to enable **public key based SSH authentication**, which allows you to SSH into all the computers in your cluster without requiring a password.
 
-## NFS Server (Head Node)
-
-The head node will act as the NFS server and will export the `/home/` directory to the compute node. The `/home/` directory contains the home directories of all the the non-`root` user accounts on most default Linux operating system configurations. For more information read the this link https://docs.rockylinux.org/guides/file_sharing/nfsserver/  
+The head node will act as the [NFS server](https://docs.rockylinux.org/guides/file_sharing/nfsserver/) and will export the `/home/` directory to the compute node. The `/home/` directory contains the home directories of all the the non-`root` user accounts on most default Linux operating system configurations. For more information read the this link
 
 
-2. Install the NFS service on the head node:
+1. Install the NFS Utilities on both the head node and compute node(s):
 
-```bash
-sudo dnf install nfs-utils
-```
- 
+   ```bash
+   sudo dnf install nfs-utils
+   ```
+
 5. NFS shares (directories on the NFS server) are configured in the `/etc/exports` file. Here you specify the directory you want to share, followed by the IP address or range you want to share to and then the options for sharing. We want to export the `/home` directory, so edit `/etc/exports` and add the following:
 
 ```conf
