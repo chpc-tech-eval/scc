@@ -5,6 +5,8 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
+1. [Tutorial 2: Standing Up a Compute Node and Configuring Users and Services](#tutorial-2-standing-up-a-compute-node-and-configuring-users-and-services)
+1. [Table of Contents](#table-of-contents)
 1. [Checklist](#checklist)
 1. [Spinning Up a Compute Node on Sebowa(OpenStack)](#spinning-up-a-compute-node-on-sebowaopenstack)
     1. [Compute Node Considerations](#compute-node-considerations)
@@ -17,16 +19,9 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 1. [Configuring a Simple Stateful Firewall Using nftables](#configuring-a-simple-stateful-firewall-using-nftables)
 1. [Network Time Protocol](#network-time-protocol)
 1. [Network File System](#network-file-system)
-1. [Generating SSH Keys for your Clusters' Internal Communications](#generating-ssh-keys-for-your-clusters-internal-communications)
+1. [Generating an SSH Key for your NFS `/home`](#generating-an-ssh-key-for-your-nfs-home)
 1. [User Account Management](#user-account-management)
-1. [Create Team Captain User Account](#create-team-captain-user-account)
-    1. [Head Node](#head-node)
-    1. [Compute Node](#compute-node)
-    1. [Super User Access](#super-user-access)
     1. [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
-        1. [Head Node](#head-node-1)
-        1. [Compute Node](#compute-node-1)
-    1. [Clean Up](#clean-up)
 1. [Ansible User Declaration](#ansible-user-declaration)
     1. [Installing and Configuring Ansible](#installing-and-configuring-ansible)
     1. [configuring Ansible](#configuring-ansible)
@@ -574,7 +569,7 @@ The head node will act as the [NFS server](https://docs.rockylinux.org/guides/fi
    ```conf
    <headnode_ip>:/home /home  nfs   defaults,timeo=1800,retrans=5,_netdev	0 0
    ```
-# Generating SSH Keys for your Clusters' Internal Communications
+# Generating an SSH Key for your NFS `/home`
 
 Just as you did so in the previous tutorial when you generated SSH keys [on your workstation](../tutorial1/README.md#generating-ssh-keys), you're now going to do the same on *either* your head node or your compute node. However, you will be exploiting the fact that we have a NFS mounted `/home` directory. You'll test the new SSH connection, by logging into your compute node.
 
@@ -585,7 +580,6 @@ Just as you did so in the previous tutorial when you generated SSH keys [on your
    ```bash
    ssh-keygen -t ed25519
    ```
-
    - *Enter file in which to save the key* - Press `Enter`,
    - *Enter passphrase (empty for no passphrase)* - Leave empty and press `Enter`,
    - *Enter same passphrase again* - Leave empty and press `Enter` again,
@@ -630,192 +624,74 @@ In enterprise systems and HPC, it's common to manage user accounts from one cent
 
 When creating a user account locally on a Linux operating system, it's provided with a user ID (uid) and a group ID (gid). These are used to tell the operating system which user this is and which groups of permissions they belong to. When you create a user with the default settings of the built-in user creation tools, it will generally increment on from the last UID used. This can be different for different systems. If UID / GID numbers do not match up across the nodes in your cluster, there can be all sorts of headaches for some of the tools and services that we will set up later in this competition.
 
-We're going to demonstrate some of this.
-
-Right now you have one user: `root`. `root` is the default super-user of Linux operating systems. It is all powerful. It is generally **NOT recommended** to operate as `root` for the majority of things you would do on a system. This is to prevent things from going wrong.
+Right now you have two users, on of them being `root`, which is the default super-user of Linux operating systems. It is all powerful. It is generally **NOT recommended** to operate as `root` for the majority of things you would do on a system. This is to prevent things from going wrong.
 
 When logged in to the head node or compute node, check the UID and GID of `root` by using the `id` command.
 
-```bash
-#change to root
-sudo su
-
- id
-uid=0(root) gid=0(root) groups=0(root) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
-```
-
-This shows that `root` is the user `0` and it's primary group (GID) is group `0`. It also states that it only belongs to one group, which is the `root` group (`0`).
-
-
-# Create Team Captain User Account
-
-## Head Node
-
-Let us now create a user account on the head node:
-
-1. Log into the head node
-
-2. Use the `adduser` command to create a new user called `captain` and then give it a password.
-
- ```bash
-    [root@headnode ~]$ adduser -U -m captain
-    [root@headnode ~]$ passwd captain
-```
-
-`-U` tells `adduser` to create a group for the user and `-m` means to create the user home directory.
-
-3. Check the ID of the new user
-
-```bash
-[root@headnode ~]$ id captain
-uid=1000(captain) gid=1000(captain) groups=1000(captain)
-```
-
-As you can tell, it has a different ID for the user and group than `root`.
-
-## Compute Node
-
-Log into the compute node and try to verify that the `captain` user **does NOT exist** there:
-
-```bash
-[root@computenode ~]$ id captain
-```
-
-You'll be prompted with an error:
-
-```bash
-id: ‘captain’: no such user
-```
-
-We will now create the same user here. Follow the steps above for creating the `captain` user on the compute node.
-
-## Super User Access
-
-The `captain` user will not have the privileges to do anything that modify system files or configurations. Many Linux operating systems come with a program called `sudo` which manages and allows normal user accounts to access `root` privileges.
-
-A user is only able to evoke root privileges if their account has been explicitly added to at least one of the following:
-- the default sudo users group (the actual term of this group varies across Linux variants, such as **wheel** **sudoers** etc.)
-- a newly created sudo users group,
-- or, if the user has been explicitly added as a privileged user directly in the Sudo configuration file.
-
-
-The `sudo` program is controlled by a file located at `/etc/sudoers`. This file specifies which users and/or groups can access superuser privileges. It specifies that the user `root` is allowed to run all actions and any user in the `wheel` group is also allowed to:
-
-```ini
-# Allow root to run any commands anywhere
-root	ALL=(ALL) 	ALL
-
-# Allows members of the 'sys' group to run networking, software,
-# service management apps and more.
- %sys ALL = NETWORKING, SOFTWARE, SERVICES, STORAGE, DELEGATING, PROCESSES, LOCATE, DRIVERS
-
-# Allows people in group wheel to run all commands without a password
-%wheel	ALL=(ALL)	ALL  NOPASSWD: ALL
-```
-
-To avoid modifying `/etc/sudoers` directly, we can just add `captain` to the `wheel` group.
-
-**On each of your nodes**, add the `captain` user to the `wheel` group:
-
-```bash
- [root@node ~]$  usermod -aG wheel captain 
-```
-
-Now log out and then log back into your node as `captain`. You can use `sudo` one of two ways:
-
-1. To become a `root` user:
-
-```bash
-    [centos@headnode ~]$ sudo su
-```
-
-2. To run a command with superuser privileges:
-
- ```bash
-    [centos@headnode ~]$ sudo <command>
-```
-
-> **! >>> From now on, you should use the `captain` user for all the configuration you can and should avoid logging in as the `root` user.**
-
-<div style="page-break-after: always;"></div>
-
-
-
-
 ## Out-Of-Sync Users and Groups
 
-When managing a large cluster of machines, it gets really complicated to manage user ID and group ID mappings. With things like shared file systems (e.g. NFS), if user account names are the same, but IDs don't match across machines then we get permission problems. 
+When managing a large cluster of machines, it gets really complicated to manage user ID and group ID mappings. With things like shared file systems (e.g. NFS), if user account names are the same, but IDs don't match across machines then we get permission problems.
 
 If users are created out-of-sync across the cluster then this becomes a problem very quickly. Let us take Alice and Bob for example:
 
-1. Alice and Bob are both system administrators working on a cluster.
-2. There is no central authentication and user/group accounts are made manually.
-3. Alice creates a user `alice` on the head node using the `adduser` command listed in this tutorial.
-4. While Alice does this, Bob creates user `bob` on the compute node in the same way.
-5. Alice then creates user `alice` on the compute node.
-6. Bob creates `bob` on the head node.
-
-Even though the names are the same:
-
-- `alice` on the **head node** has a UID/GID of `1000`/`1000`
-- `bob` on the **head node** has a UID/GID of `1001`/`1001`
-- `alice` on the **compute node** has a UID/GID of `1001`/`1001`.
-- `bob` on the **compute node** has a UID/GID of `1000`/`1000`.
+* Alice and Bob are both system administrators working on a cluster.
+* There is no central authentication and user/group accounts are made manually.
+* Alice creates a user `alice` on the head node using the `adduser` command listed in this tutorial.
+* While Alice does this, Bob creates user `bob` on the compute node in the same way.
+* Alice then creates user `alice` on the compute node.
+* Bob creates `bob` on the head node.
+* Even though the names are the same:
+  - `alice` on the **head node** has a UID/GID of `1000`/`1000`
+  - `bob` on the **head node** has a UID/GID of `1001`/`1001`
+  - `alice` on the **compute node** has a UID/GID of `1001`/`1001`.
+  - `bob` on the **compute node** has a UID/GID of `1000`/`1000`.
 
 These do not match, so if Alice wants to create a file on the head node and access that file on the compute node she will get permission errors as `1000` is not the same as `1001`.
 
-User- and group- names do not matter to Linux, only the numerical IDs. Let us demonstrate this now.
+User and group names do not matter to Linux, only the numerical IDs. Let us demonstrate this now.
 
-### Head Node
+1. Create a new user on the head node, let's call it `outofsync`. If you check it's IDs with `id outofsync`, you should see it belongs to UID/GID `1001`.
+   ```bash
+   sudo adduser outofsync
+   ```
 
-1. Create a new user on the head node, let's call it `outofsync`. If you check it's IDs with `id outofsync`, you should see it belongs to UID/GID `1001`. 
+1. Set the password for this user and log in as this user.
+   ```bash
+   sudo passwd outofsync
+   ```
 
-2. Set the password for this user and log in as this user.
+1. Create a file in the home directory of `outofsync` (`/home/outofsync`) called `testfile.txt` and put some words in it.
+   ```bash
+   nano testfile.txt
+   ```
 
-3. Create a file in the home directory of `outofsync` (`/home/outofsync`) called `testfile.txt` and put some words in it.
+1. Create a new user on your **compute node** called `unwittinguser`. If you check the ID of this user, you will see that `unwittinguser` has UID/GID of `1001`.
 
-### Compute Node
+1. Create a new user on the compute node called `outofsync`. If you check the ID of this user, you will see that `outofsync` has UID/GID of `1002`.
 
-1. Create a new user on the compute node called `unwittinguser`. If you check the ID of this user, you will see that `unwittinguser` has UID/GID of `1001`.
+1. Set the password for the `outofsync` user.
 
-2. Create a new user on the compute node called `outofsync`. If you check the ID of this user, you will see that `outofsync` has UID/GID of `1002`.
+1. Log into the compute node as `outofsync`.
 
-3. Set the password for the `outofsync` user.
+1. You will see that the terminal complains about permission errors and that you aren't logged into the user's home directory.
 
-4. Log into the compute node as `outofsync`.
-
-5. You will see that the terminal complains about permission errors and that you aren't logged into the user's home directory.
-
-6. You will not be able to read the `testfile.txt` file in `/home/outofsync/testfile.txt` if you tried.
+1. You will not be able to read the `testfile.txt` file in `/home/outofsync/testfile.txt` if you tried.
 
 This happens because you have an NFS mount for `/home`, replacing (while mounted) the compute node's `/home` with the head node's `/home` and the UID/GID for `outofsync` on the compute node does not match the one on the head node.
 
 Check `ls -ln /home/outofsync` on the **head node** and you'll see that the `testfile.txt` belongs to `1001`, not `1002`.
 
-<span id="fig3" class="img_container center" style="font-size:8px;margin-bottom:0px; display: block;">
-    <img alt="webserver" src="./resources/ls_uid_different.png" style="display:block; margin-left: auto; margin-right: auto; width: 50%;" title="caption" />
-    <span class="img_caption" style="display: block; text-align: center; margin-left: auto;
-    margin-right: auto; width: 45%;"><i>Figure 3: The head node's `testfile.txt` is owned by user 1001, which is user `outofsync` on the head node.</i></span>
-</span>
-
-## Clean Up
-
-**Before proceeding, you must delete the users that you have created on the machines.**
-
-To delete a user you can use the command below:
-
-```bash
-sudo userdel -r <username>
-```
-
-Do this command for:
-
-- `outofsync` on the head node.
-- `unwittinguser` on the compute node.
-- `outofsync` on the compute node.
-
-
-
+> [!TIP]
+> Before proceeding, you must delete the users that you have created on the machines. To delete a user you can use the command below:
+>```bash
+>sudo userdel -r <username>
+>```
+>
+>Do this command for:
+>
+>- `outofsync` on the head node.
+>- `unwittinguser` on the compute node.
+>- `outofsync` on the compute node.
 
 # Ansible User Declaration
 
