@@ -10,66 +10,65 @@ The goal of this document is to introduce you to the competition platform and fa
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
 1. [Structure of the Competition](#structure-of-the-competition)
-  1. [Getting Help](#getting-help)
-    1. [GitHub Discussions Page](#github-discussions-page)
-    1. [GitHub Issues Page](#github-issues-page)
-    1. [Using Chat GPT4](#using-chat-gpt4)
-  1. [Timetable](#timetable)
-  1. [Scoring](#scoring)
-  1. [Instructions for Mentors](#instructions-for-mentors)
-    1. [Hands-Off Rule *(You may not touch the keyboard)*](#hands-off-rule-you-may-not-touch-the-keyboard)
-  1. [Cheat Sheet](#cheat-sheet)
+    1. [Getting Help](#getting-help)
+    1. [Timetable](#timetable)
+    1. [Scoring](#scoring)
+    1. [Instructions for Mentors](#instructions-for-mentors)
+        1. [Hands-Off Rule *(You may not touch the keyboard)*](#hands-off-rule-you-may-not-touch-the-keyboard)
+    1. [Cheat Sheet](#cheat-sheet)
 1. [Deliverables](#deliverables)
-  1. [Project](#project)
-  1. [Technical Knowledge Assessment](#technical-knowledge-assessment)
+    1. [Project](#project)
+    1. [Technical Knowledge Assessment](#technical-knowledge-assessment)
 1. [Links to Livestreams and Lecture Recordings](#links-to-livestreams-and-lecture-recordings)
-  1. [Day 1 - Welcome, Introduction and Getting Started](#day-1---welcome-introduction-and-getting-started)
-  1. [Day 2 - HPC Hardware, HPC Networking and Systems Administration](#day-2---hpc-hardware-hpc-networking-and-systems-administration)
-  1. [Day 3 - Benchmarking, Compilation and Parallel Computing](#day-3---benchmarking-compilation-and-parallel-computing)
-  1. [Day 4 - HPC Administration and Application Visualization](#day-4---hpc-administration-and-application-visualization)
-  1. [Day 5 - Career Guidance](#day-5---career-guidance)
+    1. [Day 1 - Welcome, Introduction and Getting Started](#day-1---welcome-introduction-and-getting-started)
+    1. [Day 2 - HPC Hardware, HPC Networking and Systems Administration](#day-2---hpc-hardware-hpc-networking-and-systems-administration)
+    1. [Day 3 - Benchmarking, Compilation and Parallel Computing](#day-3---benchmarking-compilation-and-parallel-computing)
+    1. [Day 4 - HPC Administration and Application Visualization](#day-4---hpc-administration-and-application-visualization)
+    1. [Day 5 - Career Guidance](#day-5---career-guidance)
 1. [Tutorial Glossary and Section Overview](#tutorial-glossary-and-section-overview)
-  1. [Tutorial 1](#tutorial-1)
-  1. [Tutorial 2](#tutorial-2)
-  1. [Tutorial 3](#tutorial-3)
-  1. [Tutorial 4](#tutorial-4)
+    1. [Tutorial 1](#tutorial-1)
 1. [Contributing to the Project](#contributing-to-the-project)
-  1. [Steps to follow when editing existing content](#steps-to-follow-when-editing-existing-content)
-  1. [Syntax and Style](#syntax-and-style)
+    1. [Steps to follow when editing existing content](#steps-to-follow-when-editing-existing-content)
+    1. [Syntax and Style](#syntax-and-style)
 1. [Collaborating with your Team and Storing you Progress on GitHub](#collaborating-with-your-team-and-storing-you-progress-on-github)
-  1. [Forking the Tutorials into Your Own Team's Private GitHub Repository](#forking-the-tutorials-into-your-own-teams-private-github-repository)
-  1. [Editing the Git Markdown Files to Track Your Team's Progress](#editing-the-git-markdown-files-to-track-your-teams-progress)
 
 <!-- markdown-toc end -->
 
 # Structure of the Competition
 
+The CHPC invites applications from suitably qualified candidates to enter the CHPC Student Cluster Competition. The CHPC Student Cluster Competition gives undergraduate students at South African universities exposure to the High Performance Computing (HPC) Industry. The winning team will be entered into the ISC Student Cluster Competition hosted at the [2025 International Supercomputing Conference](https://www.isc-hpc.com/) held in Hamburg, Germany.
+
+You will be accessing all of the course work and material through this GitHub repository, which you and your team must check regularly to receive updates.
+
 ## Getting Help
 
-### GitHub Discussions Page
+You are strongly encouraged to get help and even assist others by [Opening and Participating in Discussions](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions).
 
-### GitHub Issues Page
-
-### Using Chat GPT4
+> [!TIP]
+> Active participation in the student discussions is an easy way to separate yourselves from the rest of the competition and make it easy for the instructors to notice you!
 
 ## Timetable
+
+Everyday will comprise of four lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](CHPC_2024_SCC_Local_Selection_Round_Timetable.pdf) is available for you to download.
 
 <p align="center"><img alt="Timetable." src="./CHPC_2024_SCC_Local_Selection_Round_Timetable.png" width=900 /></p>
 
 ## Scoring
 
-| Component                      | Weight | Breakdown |
-| :---                           | :---:  | :---:     |
-|                                |        |           |
-| Technical Knowledge Assessment |        |           |
-| Tutorials                      |        |           |
-| HPCC                           |        |           |
-| LAMMPS                         |        |           |
-|                                |        |           |
+Teams will be evaluate according to the following breakdown, with your progress in the tutorials and your final presentations carrying the most weight.
+
+| Component                          | Weight |
+|:-----------------------------------|:------:|
+|                                    |        |
+| Technical Knowledge Assessment     | 0.1    |
+| Tutorials                          | 0.4    |
+| Cluster Design Assignment (Part 1) | 0.1    |
+| Cluster Design Presentation        | 0.4    |
+|                                    |        |
 
 ## Instructions for Mentors
 
-The role of Mentors and Volunteers is to provide leadership and guidance for the student competitors participating in this year's Center for High Performance Computing 2024 Student Cluster Competition.
+The role of mentors, instructors and volunteers is to provide leadership and guidance for the student competitors participating in this year's Center for High Performance Computing 2024 Student Cluster Competition.
 
 In preparing your teams for the competition, your main goal is to ensure that you teach and impart knowledge to the student participants in such a way that they are empowered and enable to tackle the problems and benchmarking tasks themselves.
 
@@ -111,244 +110,117 @@ Below is a table with a number of Linux system commands and utilities that you *
 
 # Deliverables
 
-## Project
+You will need to submit the following for scoring and evaluation by the judges:
+* Cluster Design Assignment (Part 1) *[10 %]*
+* Cluster Design Assignment (Part 2) *[40 %]*
+  * One PDF Presentation Slide with Team Profiles
+    This slide must clearly indicate your Team Name and Institution. Below each team member's photograph, indicate their
+    * Name and surname,
+    * Degree and Year of study,
+  * Presentation Slides
+  * Short Technical Brief with Cluster Design Specifications
+* Technical Knowledge Assessment
+* Tutorials
+
+## Cluster Design Assignment
+
+You are tasked with designing a small cluster, with at least three nodes, to the value of R 400  000.00 (ZAR) and present your design to the judging panel. In your design you must specify hardware and software for an operational cluster and describe how it functions. The design must be based on servers and interconnects from either [HPE](https://buy.hpe.com/us/en/servers-systems) or [Dell](www.dell.com/en-us), and accessories from either [NVIDIA](https://www.nvidia.com/en-us/high-performance-computing/), or [AMD](https://www.amd.com/en/solutions/high-performance-computing.html) or [Intel](https://www.intel.com/content/www/us/en/high-performance-computing/hpc-products.html). You must use the prices you find in the [Parts List Spreadsheet](CHPC Student Cluster Competition - Parts List - 2024.xlsx)
+
+> [!TIP]
+> You may submit an additional design, that extends upon your small R 400 000.00 cluster, up to the value of R 1 000 000.00. You may use any of the above links for this exercise, using a Dollar to Rand conversion rate or 1:20. You may use GPU's from either AMD or NVIDIA. You may utilize CPUs from either AMD or Intel. You may use either Dell or HPE as a vendor.
+
+The primary purpose of your HPC cluster is to run one of the following codes as efficiently as possible:
+* [Amber](https://ambermd.org/)
+* [ICON](https://icon-model.org/)
+* [SwiftSIM](https://github.com/SWIFTSIM/SWIFT)
+* [MLPerf](https://www.nvidia.com/en-us/data-center/resources/mlperf-benchmarks/)
+
+You are not given a choice regarding the application selection. Your team will be told which application to optimize for on Wednesday. For now, you should investigate the codes above to understand their unique hardware and software requirements. You are required to submit a brief (half page) report on your findings to the competition organizers by 23:00 on Tuesday.
+
+In addition, your choice of design must take into consideration:
+* Base Platform (Server),
+* Target Processing Unit (CPU / GPU),
+* Memory, Networking and Storage Requirements,
+* System and Application Dependency Software Requirements,
+* Ease of Use (Build, Assembly, Deployment),
+* Efficiency, Performance, Power Consumption and Reliability and
+* Team Management, Coordination and Planning.
+
+The 10 minute slide presentation by the whole team must include your design decisions and the features of your cluster, including: cost, hardware, software, configuration and operation. Each member of the team is required to present even though you will be assessed as a team.
+
+After the presentation the judging panel will have an opportunity to ask questions to each member of your team. All members of your team can be questioned about any part of the cluster, so make sure you are fully familiar with the design.
 
 ## Technical Knowledge Assessment
 
-# Links to Livestreams and Lecture Recordings
+This information will be provided directly to team captains.
 
-## Day 1 - Welcome, Introduction and Getting Started
+## Tutorials
 
-## Day 2 - HPC Hardware, HPC Networking and Systems Administration
+You will be evaluated on your overall progress in the tutorials. Below you will find an overview, glossary and high level breakdown of the tutorials. You must progress through four tutorials, which will be released daily. Your overall progress through the tutorials forms a large component of you score. By the end of the week you would have covered a considerable amount of content, use the links provided should you need to refer to a specific section and are having trouble remembering where is it.
 
-## Day 3 - Benchmarking, Compilation and Parallel Computing
-
-## Day 4 - HPC Administration and Application Visualization
-
-## Day 5 - Career Guidance
-
-
-TODO: Add objectives for each Tutorial and section. They should be editable so students check them off as they go along.
-
-# Tutorial Glossary and Section Overview
-
-## Tutorial 1
-
-Tutorial 1 deals with introducing concepts to users and getting them started with using the virtual lab, setting up networking and remotely connecting. The content is as follows:
+**Tutorial 1** deals with introducing concepts to users and getting them started with using the virtual lab, standing up the first virtual machine instance and connecting to it remotely. The content is as follows:
 
 1. [Checklist](tutorial1/README.md#checklist)
 1. [Network Primer](tutorial1/README.md#network-primer)
     1. [Basic Networking Example (WhatIsMyIp.com)](tutorial1/README.md#basic-networking-example-whatismyipcom)
-        1. [Local WiFi Network](tutorial1/README.md#local-wifi-network)
-        1. [External Cellular Network](tutorial1/README.md#external-cellular-network)
-        1. [WiFi Hotspot Example](tutorial1/README.md#wifi-hotspot-example)
     1. [Terminal, Windows MobaXTerm and PowerShell Commands](tutorial1/README.md#terminal-windows-mobaxterm-and-powershell-commands)
-        1. [`ip a` or `ipconfig`](tutorial1/README.md#ip-a-or-ipconfig)
-        1. [`ping 8.8.8.8`](tutorial1/README.md#ping-8888)
-        1. [`ip route` or `route print`](tutorial1/README.md#ip-route-or-route-print)
-        1. [`tracepath` or `tracert`](tutorial1/README.md#tracepath-or-tracert)
 1. [Launching your First Open Stack Virtual Machine Instance](tutorial1/README.md#launching-your-first-open-stack-virtual-machine-instance)
     1. [Accessing the NICIS Cloud](tutorial1/README.md#accessing-the-nicis-cloud)
     1. [Verify your Teams' Project Workspace and Available Resources](tutorial1/README.md#verify-your-teams-project-workspace-and-available-resources)
-    1. [Generating SSH Keys](tutorial1/README.md#generating-ssh)
+    1. [Generating SSH Keys](tutorial1/README.md#generating-ssh-keys)
     1. [Launch a New Instance](tutorial1/README.md#launch-a-new-instance)
     1. [Linux Flavors and Distributions](tutorial1/README.md#linux-flavors-and-distributions)
-        1. [Desktop Usage vs Server](tutorial1/README.md#desktop-usage-vs-server)
-        1. [Table of Linux Distributions](tutorial1/README.md#table-of-linux-distributions)
+        1. [Summary of Linux Distributions](tutorial1/README.md#summary-of-linux-distributions)
     1. [OpenStack Instance Flavors](tutorial1/README.md#openstack-instance-flavors)
-        1. [Compute (vCPUs)](tutorial1/README.md#compute-vcpus)
-        1. [Memory (RAM)](tutorial1/README.md#memory-ram)
-        1. [Storage (DISK)](tutorial1/README.md#storage-disk)
-        1. [Head Node Resource Allocations](tutorial1/README.md#head-node-resource-allocations)
     1. [Networks, Ports, Services and Security Groups](tutorial1/README.md#networks-ports-services-and-security-groups)
     1. [Key Pair](tutorial1/README.md#key-pair)
     1. [Verify that your Instance was Successfully Deployed and Launched](tutorial1/README.md#verify-that-your-instance-was-successfully-deployed-and-launched)
     1. [Associating an Externally Accessible IP Address](tutorial1/README.md#associating-an-externally-accessible-ip-address)
     1. [Success State, Resource Management and Troubleshooting](tutorial1/README.md#success-state-resource-management-and-troubleshooting)
-        1. [Deleting Instances](tutorial1/README.md#deleting-instances)
-        1. [Deleting Volumes](tutorial1/README.md#deleting-volumes)
-        1. [Dissociating and Releasing Floating IPs](tutorial1/README.md#dissociating-and-releasing-floating-ips)
 1. [Introduction to Basic Linux Administration](tutorial1/README.md#introduction-to-basic-linux-administration)
     1. [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](tutorial1/README.md#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
-        1. [SSH Through a Linux Terminal, MobaXTerm or Windows PowerShell](tutorial1/README.md#ssh-through-a-linux-terminal-mobaxterm-or-windows-powershell)
-        1. [Windows PuTTY](tutorial1/README.md#windows-putty)
-        1. [Username and Password](tutorial1/README.md#username-and-password)
-        1. [Running Basic Networking Commands](tutorial1/README.md#running-basic-networking-commands)
-    1. [Manual Pages `man`, Reading Documents `cat` and the `-h` Switch](tutorial1/README.md#manual-pages-man-reading-documents-cat-and-the--h-switch)
-    1. [Piping `|` Through `grep`, `more` or `less`](tutorial1/README.md#piping--through-grep-more-or-less)
-    1. [Redirecting `>>` Console Output to a File](tutorial1/README.md#redirecting--console-output-to-a-file)
-    1. [GNU `history` Library](tutorial1/README.md#gnu-history-library)
-    1. [Brief Introduction to Text Editors (Vi vs Vim vs Nano)](tutorial1/README.md#brief-introduction-to-text-editors-vi-vs-vim-vs-nano)
-        1. [Your First Chat GPT Query](tutorial1/README.md#your-first-chat-gpt-query)
-        1. [Your First Shell Script](tutorial1/README.md#your-first-shell-script)
-    1. [Privilege Escalation and `sudo`](tutorial1/README.md#privilege-escalation-and-sudo)
-    1. [Linux Services - Understanding `journalctl` and `systemctl`](tutorial1/README.md#linux-services---understanding-journalctl-and-systemctl)
-        1. [Networking](tutorial1/README.md#networking)
-        1. [Resolv.conf](tutorial1/README.md#resolvconf)
-        1. [Failed SSH Brute Force Login Attempts](tutorial1/README.md#failed-ssh-brute-force-login-attempts)
-    1. [Verifying Instance Hostname and `/etc/hosts` File](tutorial1/README.md#verifying-instance-hostname-and-etchosts-file)
+    1. [Running Basic Linux Commands and Services](tutorial1/README.md#running-basic-linux-commands-and-services)
 1. [Linux Binaries, Libraries and Package Management](tutorial1/README.md#linux-binaries-libraries-and-package-management)
     1. [User Environment and the `PATH` Variable](tutorial1/README.md#user-environment-and-the-path-variable)
-1. [Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark](tutorial1/README.md#install-dependencies-and-fetch-source-files-for-high-performance-linpack-hpl-benchmark)
-    1. [Install the GNU Compiler Collection (GCC)](tutorial1/README.md#install-the-gnu-compiler-collection-gcc)
-    1. [Install OpenMPI](tutorial1/README.md#install-openmpi)
-    1. [Install ATLAS Math Library](tutorial1/README.md#install-atlas-math-library)
-    1. [Fetch and Extract the HPC Source Tarball](tutorial1/README.md#fetch-and-extract-the-hpc-source-tarball)
-    1. [Copy and Edit the Makefile for _your_ Target Architecture](tutorial1/README.md#copy-and-edit-the-makefile-for-_your_-target-architecture)
-1. [Compile the HPL Source Code to Produce an Executable Binary](tutorial1/README.md#compile-the-hpl-source-code-to-produce-an-executable-binary)
-    1. [Editing _your_ PATH Variable](tutorial1/README.md#editing-_your_-path-variable)
-        1. [Dynamic and Static Libraries: Editing _Your_ ATLAS Shared Object Files](tutorial1/README.md#dynamic-and-static-libraries-editing-_your_-atlas-shared-object-files)
-    1. [Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`](tutorial1/README.md#configuring-_your_-hpldat-file-using-lscpu-and-lsmem)
+1. [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](tutorial1/README.md#install-compile-and-run-high-performance-linpack-hpl-benchmark)
 
-## Tutorial 2
+# Links to Livestreams and Lecture Recordings
 
-Tutorial 2 deals with understaning the roles of the head and compute nodes, adding a compute node to create your cluster, configuring linux services such as the firewall, time server.
-1. [Checklist](tutorial2/README.md#checklist)
-1. [Spinning Up a Compute Node in OpenStack](tutorial2/README.md#spinning-up-a-compute-node-in-openstack)
-    1. [Compute Node Considerations](tutorial2/README.md#compute-node-considerations)
-1. [Accessing Your Compute Node](tutorial2/README.md#accessing-your-compute-node)
-    1. [IP Addresses and Routing](tutorial2/README.md#ip-addresses-and-routing)
-    1. [Command Line Proxy Jump Directive](tutorial2/README.md#command-line-proxy-jump-directive)
-        1. [Setting a Temporary Password on your Compute Node](tutorial2/#setting-a-temporary-passworwd-on-your-compute-node)
-1. [Understanding the Roles of the Head Node and Compute Nodes](tutorial2/README.md#understanding-the-roles-of-the-head-node-and-compute-nodes)
-   1. [Basic System Monitoring](tutorial2/README.md#basic-system-monitoring)
-   1. [Terminal Multiplexers](tutorial2/README.md#terminal-multiplexers)
-1. [Manipulating Files and Directories](tutorial2/README.md#manipulating-files-and-directories)
-    1. [List Directory `ls`](tutorial2/README.md#list-directory-ls)
-    1. [Change Directory `cd`](tutorial2/README.md#change-directory-cd)
-    1. [Copy File or Directory `cp`](tutorial2/README.md#copy-file-or-directory-cp)
-    1. [Move File or Directory `mv`](tutorial2/README.md#move-file-or-directory-mv)
-    1. [Make a New Directory `mkdir`](tutorial2/README.md#make-a-new-directory-mkdir)
-    1. [Remove File or Directory `rm`](tutorial2/README.md#remove-file-or-directory-rm)
-    1. [Recommended Project Folder Structure](tutorial2/README.md#recommended-project-folder-structure)
-1. [Verifying Networking Setup](tutorial2/README.md#verifying-networking-setup)
-    1. [Head Node](tutorial2/README.md#head-node)
-    1. [Compute Node](tutorial2/README.md#compute-node)
-    1. [Editing `/etc/hosts` File](tutorial2/README.md#editing-etchosts-file)
-    1. [Permanent `~/.ssh/config` Configuration](tutorial2/README.md#permanent-sshconfig-configuration)
-1. [Configuring a Simple Stateful Firewall](tutorial2/README.md#configuring-a-simple-stateful-firewall)
-    1. [IPTables](tutorial2/README.md#iptables)
-    1. [NFTables](tutorial2/README.md#nftables)
-    1. [Front-end Firewall Application Managers](tutorial2/README.md#front-end-firewall-application-managers)
-1. [Network Time Protocol](tutorial2/README.md#network-time-protocol)
-    1. [NTP Server (Head Node)](tutorial2/README.md#ntp-server-head-node)
-    1. [NTP Client (Compute Node)](tutorial2/README.md#ntp-client-compute-node)
-1. [Network File System](tutorial2/README.md#network-file-system)
-    1. [NFS Server (Head Node)](tutorial2/README.md#nfs-server-head-node)
-    1. [NFS Client (Compute Node)](tutorial2/README.md#nfs-client-compute-node)
-        1. [Mounting An NFS Mount](tutorial2/README.md#mounting-an-nfs-mount)
-        1. [Making The NFS Mount Permanent](tutorial2/README.md#making-the-nfs-mount-permanent)
-    1. [Passwordless SSH](tutorial2/README.md#passwordless-ssh)
-        1. [Generating SSH Keys on Your Head Node](tutorial2/README.md#generating-ssh-keys-on-your-head-node)
-        1. [Understanding `~/.ssh/authorized_keys`](tutorial2/README.md#understanding-ssh/authorized_keys)
-        1. [User Permissions and Ownership](tutorial2/README.md#user-permissions-and-ownership)
-1. [User Account Management](tutorial2/README.md#user-account-management)
-    1. [Create Team Captain User Account](tutorial2/README.md#create-team-captain-user-account)
-        1. [Head Node](tutorial2/README.md#head-node-1)
-        1. [Compute Node](tutorial2/README.md#compute-node-1)
-        1. [Super User Access](tutorial2/README.md#super-user-access)
-    1. [Out-Of-Sync Users and Groups](tutorial2/README.md#out-of-sync-users-and-groups)
-        1. [Head Node](tutorial2/README.md#head-node-2)
-        1. [Compute Node](tutorial2/README.md#compute-node-2)
-        1. [Clean Up](tutorial2/README.md#clean-up)
-    1. [Ansible User Declaration](tutorial2/README.md#ansible-user-declaration)
-        1. [Installing and Configuring Ansible](tutorial2/README.md#installing-and-configuring-ansible)
-        1. [Create Team Member Accounts](tutorial2/README.md#create-team-member-accounts)
-1. [Remote Access to Your Cluster and Tunneling](tutorial2/README.md#remote-access-to-your-cluster-and-tunneling)
-    1. [Local Port Forwarding](tutorial2/README.md#local-port-forwarding)
-    1. [Dynamic Port Forwarding](tutorial2/README.md#dynamic-port-forwarding)
-        1. [Web Browser and SOCKS5 Proxy Configuration](tutorial2/README.md#web-browser-and-socks5-proxy-configuration)
-    1. [WirGuard VPN Cluster Access](tutorial2/README.md#wirguard-vpn-cluster-access)
-    1. [ZeroTier](tutorial2/README.md#zerotier)
-    1. [X11 Forwarding](tutorial2/README.md#x111-forwarding)
+In this section you will finds links to all of the livestreams of the lectures (Teams Meetings) and subsequent recordings for you to refer back to.
 
+1. Day 1 - Welcome, Introduction and Getting Started
+   * **08:30 - 09:30**: [Welcome and Introduction]()
+   * **09:30 - 10:30**: [Getting Started]()
+   * **11:00 - 12:00**: [Intro to Linux & Services]()
+   * **12:00 - 13:30**: [Intro to Tools for the Modern IT Engineer]()
 
-## Tutorial 3
+2. Day 2 - HPC Hardware, HPC Networking and Systems Administration
+   * **08:30 - 09:30**:
+   * **09:30 - 10:30**:
+   * **11:00 - 12:00**:
+   * **12:00 - 13:30**:
 
-1. [Checklist](#checklist)
-1. [Managing Your Environment](#managing-your-environment)
-    1. [NFS Mounted Shared `home` folder and the `PATH` Variable](#nfs-mounted-shared-home-folder-and-the-path-variable)
-    1. [System Software Across Multiple Nodes](#system-software-across-multiple-nodes)
-    1. [Environment Modules](#environment-modules)
-    1. [Install Lmod](#install-lmod)
-    1. [Lmod Usage](#lmod-usage)
-    1. [Adding Modules to Lmod](#adding-modules-to-lmod)
-1. [Lmod Modulefiles](#lmod-modulefiles)
-    1. [Install Git Using the System Package Manager](#install-git-using-the-system-package-manager)
-    1. [Install a Different Version of Git from Source](#install-a-different-version-of-git-from-source)
-    1. [Writing a Lmod Modulefile](#writing-a-lmod-modulefile)
-    1. [Verifying and Using Different Versions of Git](#verifying-and-using-different-versions-of-git)
-1. [Running the High Performance LINPACK (HPL) Benchmark on Your Compute Node](#running-the-high-performance-linpack-hpl-benchmark-on-your-compute-node)
-    1. [System Libraries](#system-libraries)
-        1. [Static Libraries](#static-libraries)
-        1. [Dynamic Libraries](#dynamic-libraries)
-    1. [Message Passing Interface (MPI)](#message-passing-interface-mpi)
-    1. [Basic Linear Algebra Subprograms Libraries](#basic-linear-algebra-subprograms-libraries)
-    1. [Install HPL](#install-hpl)
-1. [Spinning Up a Second Compute Node](#spinning-up-a-second-compute-node)
-    1. [Cluster Considerations](#cluster-considerations)
-    1. [Using a Snapshot](#using-a-snapshot)
-    1. [Running HPC Across Multiple Nodes](#running-hpc-across-multiple-nodes)
-        1. [Configuring OpenMPI Hosts File](#configuring-openmpi-hosts-file)
-        1. [Runtime Configuration Options for `mpirun`](#runtime-configuration-options-for-mpirun)
-1. [Building and Compiling GCC, OpenMPI and BLAS Libraries from Source](#building-and-compiling-gcc-openmpi-and-blas-libraries-from-source)
-    1. [Compiler](#compiler)
-    1. [OpenMPI](#openmpi)
-    1. [BLAS Library](#blas-library)
-        1. [OpenBLAS](#openblas)
-        1. [ATLAS](#atlas)
-        1. [GotoBLAS](#gotoblas)
-        1. [BLIS](#blis)
-        1. [GSL](#gsl)
-1. [Intel OneAPI Toolkit and Compiler Suite](#intel-oneapi-toolkit-and-compiler-suite)
-    1. [Fetch and Unpack Intel OneAPI Toolkit Sourcefiles](#fetch-and-unpack-intel-oneapi-toolkit-sourcefiles)
-    1. [Configure and Install Intel OneAPI Toolkit](#configure-and-install-intel-oneapi-toolkit)
-    1. [Configure LMOD Environment Modulefile](#configure-lmod-environment-modulefile)
-    1. [Configuring and Running HPL with Intel OneAPI Toolkit and MKL](#configuring-and-running-hpl-with-intel-oneapi-toolkit-and-mkl)
-1. [LinPACK Theoretical Peak Performance](#linpack-theoretical-peak-performance)
-    1. [Top500 List](#top500-list)
-    1. [Plot a Graph of Your HPL Benchmark Results](#plot-a-graph-of-your-hpl-benchmark-results)
-1. [HPC Challenge](#hpc-challenge)
-1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
-    1. [Installation](#installation)
-    1. [Application Benchmark and System Evaluation](#application-benchmark-and-system-evaluation)
-        1. [Benchmark 1 (adh_cubic):](#benchmark-1-adh_cubic)
-        1. [Benchmark 2 (1.5M_water):](#benchmark-2-15m_water)
-1. [LAMMPS Application Benchmark](#lammps-application-benchmark)
-1. [Qiskit Application Benchmark](#qiskit-application-benchmark)
+3. Day 3 - Benchmarking, Compilation and Parallel Computing
+   * **08:30 - 09:30**:
+   * **09:30 - 10:30**:
+   * **11:00 - 12:00**:
+   * **12:00 - 13:30**:
 
-## Tutorial 4
+4. Day 4 - HPC Administration and Application Visualization
+   * **08:30 - 09:30**:
+   * **09:30 - 10:30**:
+   * **11:00 - 12:00**:
+   * **12:00 - 13:30**:
 
-1. [Checklist](#checklist)
-    1. [(Delete) - Remote Web Service Access](#delete---remote-web-service-access)
-1. [Prometheus](#prometheus)
-    1. [Edit YML Configuration File](#edit-yml-configuration-file)
-    1. [Configuring Prometheus as a Service](#configuring-prometheus-as-a-service)
-    1. [SSH Port Forwarding](#ssh-port-forwarding)
-    1. [Dynamic SSH Forwarding (SOCKS Proxy)](#dynamic-ssh-forwarding-socks-proxy)
-        1. [Configuring Your Browser](#configuring-your-browser)
-    1. [X11 Forwarding](#x11-forwarding)
-1. [Grafana](#grafana)
-    1. [Configuring Grafana Dashboards](#configuring-grafana-dashboards)
-1. [Node Exporter](#node-exporter)
-    1. [Configuring Node Exporter as a Service](#configuring-node-exporter-as-a-service)
-1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
-    1. [Prerequisites](#prerequisites)
-    1. [Head Node Configuration (Server)](#head-node-configuration-server)
-    1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
-    1. [Configure Grafana Dashboard for Slurm](#configure-grafana-dashboard-for-slurm)
-1. [GROMACS Protein Visualisation](#gromacs-protein-visualisation)
-1. [Running Qiskit from a Remote Jupyter Notebook Server](#running-qiskit-from-a-remote-jupyter-notebook-server)
-1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
-1. [Automating the Configuration of your VMs Using Ansisble](#automating-the-configuration-of-your-vms-using-ansible)
-1. [Introduction to Continuous Integration](#introduction-to-continuous-integration)
-    1. [GitHub](#github)
-    1. [TravisCI](#travisci)
-    1. [CircleCI](#circleci)
+5. Day 5 - Career Guidance
+   * **08:30 - 10:30**
 
 # Contributing to the Project
 
-You are strongly encouraged to contribute and improve the project by [Opening and Participating in Discussions](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions), [Raising, Addressing and Resolving Issues](https://github.com/chpc-tech-eval/chpc24-scc-nmu/issues) and editing the course content directly. The following guide describes [How to clone, push, and pull with git (beginners GitHub tutorial)](https://youtu.be/yxvqLBHZfXk?si=jFFdP1XafscVX9BF).
+> [!IMPORTANT]
+> While we value your feedback, the following sections are primarily targeted as _Contributors to the Project_. As a student participating in the competition, do **NOT** spend your time working through any of the material below. However, we would love to have your contributions to the project, *after* the competition.
+
+You are strongly encouraged to contribute and improve the project by [Opening and Participating in Discussions](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions), [Raising, Addressing and Resolving Issues](https://github.com/chpc-tech-eval/chpc24-scc-nmu/issues). The following guide describes [How to clone, push, and pull with git (beginners GitHub tutorial)](https://youtu.be/yxvqLBHZfXk?si=jFFdP1XafscVX9BF).
 
 ## Steps to follow when editing existing content
 
@@ -364,8 +236,12 @@ Editing the content directly, will require the use of Git. Using a terminal appl
    - Navigate to your *'Profile'* and go to *'Settings'*.
    - Under *'Access'*, navigate to *'SSH and GPG Keys'*
      <p align="center"><img alt="Adding SSH Keys to GitHub." src="./resources/github_profile_settings_highlight.png" width=900 /></p>
+
 1. `git clone` a local copy of the repository, to your personal work space.
    <p align="center"><img alt="Adding SSH Keys to GitHub." src="./resources/github_clone.png" width=900 /></p>
+
+   You can copy the command from GitHub itself.
+
    ```bash
    git clone git@github.com:chpc-tech-eval/chpc24-scc-nmu.git
    ```
@@ -398,10 +274,5 @@ Editing the content directly, will require the use of Git. Using a terminal appl
 
 ## Syntax and Style
 
-Use the following guide on [Github Markdown Syntax Editing](https://docs.github.com/en/get-started/writing-on-.)
+Use the following guide on [Github Markdown Syntax Editing](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github)
 
-# Collaborating with your Team and Storing you Progress on GitHub
-
-## Forking the Tutorials into Your Own Team's Private GitHub Repository
-
-## Editing the Git Markdown Files to Track Your Team's Progress
