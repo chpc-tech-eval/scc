@@ -111,8 +111,8 @@ You will need to submit the following for scoring and evaluation by the judges:
     * Degree and Year of study,
   * Presentation Slides
   * Short Technical Brief with Cluster Design Specifications
-* Technical Knowledge Assessment
-* Tutorials
+* Technical Knowledge Assessment *[10 %]*
+* Tutorials *[40 %]*
 
 ## Cluster Design Assignment
 
