@@ -118,9 +118,6 @@ You will need to submit the following for scoring and evaluation by the judges:
 
 You are tasked with designing a small cluster, with at least three nodes, to the value of R 400  000.00 (ZAR) and present your design to the judging panel. In your design you must specify hardware and software for an operational cluster and describe how it functions. The design must be based on servers and interconnects from either [HPE](https://buy.hpe.com/us/en/servers-systems) or [Dell](www.dell.com/en-us), and accessories from either [NVIDIA](https://www.nvidia.com/en-us/high-performance-computing/), or [AMD](https://www.amd.com/en/solutions/high-performance-computing.html) or [Intel](https://www.intel.com/content/www/us/en/high-performance-computing/hpc-products.html). You must use the prices you find in the [Parts List Spreadsheet](CHPC_Student_Cluster_Competition_Parts_List_2024.xlsx).
 
-> [!IMPORTANT]
-> You may submit an additional design, that extends upon your small R 400 000.00 cluster, up to the value of R 1 000 000.00. You may use any of the above links for this exercise, using a Dollar to Rand conversion rate or 1:20. You may use GPU's from either AMD or NVIDIA. You may utilize CPUs from either AMD or Intel. You may use either Dell or HPE as a vendor.
-
 The primary purpose of your HPC cluster is to run one of the following codes as efficiently as possible:
 * [Amber](https://ambermd.org/)
 * [ICON](https://icon-model.org/)
@@ -137,6 +134,9 @@ In addition, your choice of design must take into consideration:
 * Ease of Use (Build, Assembly, Deployment),
 * Efficiency, Performance, Power Consumption and Reliability and
 * Team Management, Coordination and Planning.
+
+> [!IMPORTANT]
+> You may submit an additional design, that extends upon your small R 400 000.00 cluster, up to the value of R 1 000 000.00. You may use any of the above links for this exercise, using a Dollar to Rand conversion rate or 1:20. You may use GPU's from either AMD or NVIDIA. You may utilize CPUs from either AMD or Intel. You may use either Dell or HPE as a vendor.
 
 The 10 minute slide presentation by the whole team must include your design decisions and the features of your cluster, including: cost, hardware, software, configuration and operation. Each member of the team is required to present even though you will be assessed as a team.
 
