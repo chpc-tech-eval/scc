@@ -5,12 +5,9 @@ This tutorial will help you become familiar with Cloud Computing and will also s
 
 You will then login into the CHPC's Cloud Computing Platform and launch your own OpenStack virtual machine instances. Here you will need to make a decision on choice of Linux distribution that you will use as well as how your team will allocate your limited cloud computing resources.
 
-such as navigating and configuring your hosts and network on the terminal. If you are new to Linux and need help getting more comfortable, please check out the resources tab on the learning system.
-
-Once your team has successfully launched your instances you'll login to your VM's to do some basic Linux administration.
+Once your team has successfully launched your instances you'll login to your VM's to do some basic Linux administration, such as navigating and configuring your hosts and network on the terminal. If you are new to Linux and need help getting more comfortable, please check out the resources tab on the learning system.
 
 This tutorial will conclude with you downloading, installing and running the High Performance LinPACK benchmark on your newly created VM's.
-
 
 # Table of Contents
 
@@ -19,66 +16,26 @@ This tutorial will conclude with you downloading, installing and running the Hig
 1. [Checklist](#checklist)
 1. [Network Primer](#network-primer)
     1. [Basic Networking Example (WhatIsMyIp.com)](#basic-networking-example-whatismyipcom)
-        1. [Local WiFi Network](#local-wifi-network)
-        1. [External Cellular Network](#external-cellular-network)
-        1. [WiFi Hotspot Example](#wifi-hotspot-example)
     1. [Terminal, Windows MobaXTerm and PowerShell Commands](#terminal-windows-mobaxterm-and-powershell-commands)
-        1. [`ip a` or `ipconfig`](#ip-a-or-ipconfig)
-        1. [`ping 8.8.8.8`](#ping-8888)
-        1. [`ip route` or `route print`](#ip-route-or-route-print)
-        1. [`tracepath` or `tracert`](#tracepath-or-tracert)
 1. [Launching your First Open Stack Virtual Machine Instance](#launching-your-first-open-stack-virtual-machine-instance)
     1. [Accessing the NICIS Cloud](#accessing-the-nicis-cloud)
     1. [Verify your Teams' Project Workspace and Available Resources](#verify-your-teams-project-workspace-and-available-resources)
     1. [Generating SSH Keys](#generating-ssh-keys)
     1. [Launch a New Instance](#launch-a-new-instance)
     1. [Linux Flavors and Distributions](#linux-flavors-and-distributions)
-        1. [Desktop Usage vs Server](#desktop-usage-vs-server)
-        1. [Table of Linux Distributions](#table-of-linux-distributions)
+        1. [Summary of Linux Distributions](#summary-of-linux-distributions)
     1. [OpenStack Instance Flavors](#openstack-instance-flavors)
-        1. [Compute (vCPUs)](#compute-vcpus)
-        1. [Memory (RAM)](#memory-ram)
-        1. [Storage (DISK)](#storage-disk)
-        1. [Head Node Resource Allocations](#head-node-resource-allocations)
     1. [Networks, Ports, Services and Security Groups](#networks-ports-services-and-security-groups)
     1. [Key Pair](#key-pair)
     1. [Verify that your Instance was Successfully Deployed and Launched](#verify-that-your-instance-was-successfully-deployed-and-launched)
     1. [Associating an Externally Accessible IP Address](#associating-an-externally-accessible-ip-address)
-    1. [Success State, Resource Management and Troubleshooting](#success-state-resource-management-and-troubleshooting)
-        1. [Deleting Instances](#deleting-instances)
-        1. [Deleting Volumes](#deleting-volumes)
-        1. [Dissociating and Releasing Floating IPs](#dissociating-and-releasing-floating-ips)
+    1. [Troubleshooting](#troubleshooting)
 1. [Introduction to Basic Linux Administration](#introduction-to-basic-linux-administration)
     1. [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
-        1. [SSH Through a Linux Terminal, MobaXTerm or Windows PowerShell](#ssh-through-a-linux-terminal-mobaxterm-or-windows-powershell)
-        1. [Windows PuTTY](#windows-putty)
-        1. [Username and Password](#username-and-password)
-        1. [Running Basic Networking Commands](#running-basic-networking-commands)
-    1. [Manual Pages `man`, Reading Documents `cat` and the `-h` Switch](#manual-pages-man-reading-documents-cat-and-the--h-switch)
-    1. [Piping `|` Through `grep`, `more` or `less`](#piping--through-grep-more-or-less)
-    1. [Redirecting `>>` Console Output to a File](#redirecting--console-output-to-a-file)
-    1. [GNU `history` Library](#gnu-history-library)
-    1. [Brief Introduction to Text Editors (Vi vs Vim vs Nano)](#brief-introduction-to-text-editors-vi-vs-vim-vs-nano)
-        1. [Your First Chat GPT Query](your-first-chat-gpt-query)
-        1. [Your First Shell Script](#your-first-shell-script)
-    1. [Privilege Escalation and `sudo`](#privilege-escalation-and-sudo)
-    1. [Linux Services - Understanding `journalctl` and `systemctl`](#linux-services---understanding-journalctl-and-systemctl)
-        1. [Networking](#networking)
-        1. [Resolv.conf](#resolvconf)
-        1. [Failed SSH Brute Force Login Attempts](#failed-ssh-brute-force-login-attempts)
-    1. [Verifying Instance Hostname and `/etc/hosts` File](#verifying-instance-hostname-and-etchosts-file)
+    1. [Running Basic Linux Commands and Services](#running-basic-linux-commands-and-services)
 1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
     1. [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
-1. [Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark](#install-dependencies-and-fetch-source-files-for-high-performance-linpack-hpl-benchmark)
-    1. [Install the GNU Compiler Collection (GCC)](#install-the-gnu-compiler-collection-gcc)
-    1. [Install OpenMPI](#install-openmpi)
-    1. [Install ATLAS Math Library](#install-atlas-math-library)
-    1. [Fetch and Extract the HPC Source Tarball](#fetch-and-extract-the-hpc-source-tarball)
-    1. [Copy and Edit the Makefile for _your_ Target Architecture](#copy-and-edit-the-makefile-for-_your_-target-architecture)
-1. [Compile the HPL Source Code to Produce an Executable Binary](#compile-the-hpl-source-code-to-produce-an-executable-binary)
-    1. [Editing _your_ PATH Variable](#editing-_your_-path-variable)
-        1. [Dynamic and Static Libraries: Editing _Your_ ATLAS Shared Object Files](#dynamic-and-static-libraries-editing-_your_-atlas-shared-object-files)
-    1. [Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`](#configuring-_your_-hpldat-file-using-lscpu-and-lsmem)
+1. [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](#install-compile-and-run-high-performance-linpack-hpl-benchmark)
 
 <!-- markdown-toc end -->
 
@@ -103,9 +60,8 @@ This tutorial will conclude with you downloading, installing and running the Hig
   - [ ] Understand how to satisfy Linux Package Dependencies,
   - [ ] Download and unpack files using a terminal,
   - [ ] Editing Makefiles,
-  - [ ] Compiling Sourcefiles to produce an Executable Binary,
-  - [ ] Understanding the basics of the Linux Shell Environment, and
-  - [ ] Understanding the basic tuning required to successfully run a benchmark in your environment.
+  - [ ] Compiling Sourcefiles to produce an Executable Binary, and
+  - [ ] Understanding the basics of the Linux Shell Environment.
 
 # Network Primer
 
@@ -113,7 +69,7 @@ At the core of High Performance Computing (HPC) is networking. Something as simp
 
 When you enter this address into your browser, one of the first things that will happen is that a [Domain Name Service (DNS)](https://en.wikipedia.org/wiki/Domain_Name_System) will translate the URL [google.co.za] into it's corresponding [Internet Protocol (IP) Address](https://en.wikipedia.org/wiki/IP_address) [142.251.216.67].
 
-A number of [routing](https://en.wikipedia.org/wiki/Router_(computing)) lookup tables will be utilized to determine an available, _and preferably optimal_ path to the resource that you'd requested, thereafter a number of routers or gateway devices will be used to exchange packets between your workstation, through all of the intermediary networks, and finally the target resource. 
+A number of [routing](https://en.wikipedia.org/wiki/Router_(computing)) lookup tables will be utilized to determine an available, _and preferably optimal_ path to the resource that you'd requested, thereafter a number of routers or gateway devices will be used to exchange packets between your workstation, through all of the intermediary networks, and finally the target resource.
 
 At this point it is important to note that even though packets and network traffic are being exchanged between your local workstation and the Google servers, at no point is the private IP Address of your workstation exposed to the external Google Servers. Your workstation would have been assigned a private internal IP Address based on the computer laboratory. Traffic is then routed between the computer laboratory's private internal network and the rest of the university's networks through routers and gateway devices. All the internal computers and components across the campus will appear to the outside as though they have a single public IP address. This is accomplished through a process known as [Network address Translation (NAT)](https://en.wikipedia.org/wiki/Network_address_translation).
 
@@ -146,47 +102,49 @@ From the _"Network Details"_ section of your own device, you should see similar 
 * *DNS*: A [Domain Name System](https://en.wikipedia.org/wiki/Domain_Name_System) is a lookup service that translates human readable domain names into the corresponding IP Addresses.
 
 > [!IMPORTANT]
-> The IP Addresses, Gateways, Subnet Masks, DNS Servers _may_ not correspond to those on _YOUR_ particular device.
+> The IP Addresses, Gateways, Subnet Masks, DNS Servers _may_ not correspond to those on _YOUR_ particular device. You must ensure that you are connected to the correct network when executing the next set of tasks. Each member of your team must record the *IP Address*, *Gateway*, *Subnet Mask*, and *DNS* settings from their connection when completing this short exercise.
 
-Each member of your team must the *IP Address*, *Gateway*, *Subnet Mask*, and *DNS* settings from their connection to the laboratory WiFi.
+1. Testing the Local WiFi Connection Network
 
-### Local WiFi Network
+   On your cellular device, ensure that you are connected to the *computer laboratory's WiFi network* and that all SIM card(s) are disabled. Navigate to https://WhatIsMyIp.com, explore the website and record the IP Address indicated.
 
-On your cellular device, ensure that you are connected to the *computer laboratory's WiFi network* and that all SIM card(s) are disabled. Navigate to https://WhatIsMyIp.com, explore the website and record the IP Address indicated.
+   <p align="center"><img alt="WhatIsMyWiFi.com test while connected to university computer laboratory WiFi." src="./resources/whatismyip_wifi.png" width=900 /></p>
 
-<p align="center"><img alt="WhatIsMyWiFi.com test while connected to university computer laboratory WiFi." src="./resources/whatismyip_wifi.png" width=900 /></p>
+1. Testing the External Cellular Network
 
-### External Cellular Network
+   On your cellular device, ensure that you are connected to your *SIM provider's network* and that all WiFi radios are disabled. Navigate to https://www.whatismyip.com and again record the IP Address indicated.
 
-On your cellular device, ensure that you are connected to your *SIM provider's network* and that all WiFi radios are disabled. Navigate to https://www.whatismyip.com and again record the IP Address indicated.
+   <p align="center"><img alt="WhatIsMyWiFi.com test while connected to your SIM provider's network." src="./resources/whatismyip_cell.png" width=900 /></p>
 
-<p align="center"><img alt="WhatIsMyWiFi.com test while connected to your SIM provider's network." src="./resources/whatismyip_cell.png" width=900 /></p>
+1. WiFi Hotspot Example
 
-> [!WARNING]
-> You must ensure that you are connected to the correct network when executing the above tasks.
+   Team Captains are required to setup and establish a WiFi Hotspot for their team mates. The above experiments will be repeated for the university's computer laboratory WiFi connections as well as the Team Captain's Cellular SIM provider's network.
 
-### WiFi Hotspot Example
+   On your cellular device, ensure that you are connected to your Team Captain's WiFi Hotspot network, *alternating for both* the *SIM provider's network* as well as the *university's computer laboratory's WiFi network*. Navigate to https://www.whatismyip.com and again record the IP Address indicated and this time you *MUST* also record your device's _"Network Settings"_.
 
-Team Captains are required to setup and establish a WiFi Hotspot for their team mates. The above experiments will be repeated for the university's computer laboratory WiFi connections as well as the Team Captain's Cellular SIM provider's network.
-
-On your cellular device, ensure that you are connected to your Team Captain's WiFi Hotspot network, *alternating for both* the *SIM provider's network* as well as the *university's computer laboratory's WiFi network*. Navigate to https://www.whatismyip.com and again record the IP Address indicated and this time you *MUST* also record your device's _"Network Settings"_.
-
-<p align="center"><img alt="WhatIsMyWiFi.com test while connected to your Team Captain's WiFi Hotspot network." src="./resources/whatismyip_hotspot.png" width=900 /></p>
+   <p align="center"><img alt="WhatIsMyWiFi.com test while connected to your Team Captain's WiFi Hotspot network." src="./resources/whatismyip_hotspot.png" width=900 /></p>
 
 > [!TIP]
 > Pay careful attention to the IP Address reported by WhatIsMyIp.com. This is the unique identifier that _your_ device will be identified and recognized by externally on the internet. Use this information to assist you to understand and describe [NAT](https://en.wikipedia.org/wiki/Network_address_translation).
 
 ## Terminal, Windows MobaXTerm and PowerShell Commands
 
+You should familiarize yourself with a few basic networking commands that can be utilized on your local shell, as well as your compute nodes. These commands are useful as a first step in debugging network related connection issues.
 
+* `ip a` or `ipconfig`:
+   The ip a command (short for ip addr) is used to display all IP addresses assigned to all network interfaces on a Linux system. It provides detailed information about the state of the network interfaces, including the IP address, broadcast address, subnet mask, and other relevant details.
 
-<p align="center"><img alt="Basic Networking Commands Linux Terminal." src="./resources/linux_terminal_network_basics.png" width=900 /></p>
+* `ping 8.8.8.8`:
+   The ping command is used to test the reachability of a host on an IP network. The 8.8.8.8 is a well-known public DNS server provided by Google. By sending ICMP Echo Request messages to 8.8.8.8, you can determine if the server is reachable and measure the round-trip time of the packets.
 
-### `ip a` or `ipconfig`
-### `ping 8.8.8.8`
-### `ip route` or `route print`
-### `tracepath` or `tracert`
+* `ip route` or `route print`:
+   The ip route command is used to display or manipulate the routing table on a Linux system. It shows the kernel's routing table, which dictates how packets should be routed through the network. This includes the default gateway, subnet routes, and any other custom routing rules.
 
+* `tracepath` or `tracert`:
+   The tracepath command is used to trace the network path to a destination, showing the route that packets take to reach it. Unlike traceroute, tracepath does not require root privileges and is often easier to use. It provides details about each hop along the route, including the IP address and round-trip time.
+
+> [!TIP]
+> Refer to the [Q&A Discussion on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/48) for an example. Post a similar screenshot of your team executing these commands as a comment to that discussion.
 
 # Launching your First Open Stack Virtual Machine Instance
 
@@ -218,22 +176,19 @@ Over the course of the lecture content and the tutorials, you will be making ext
 > [!TIP]
 > A number [encryption algorithms](https://en.wikipedia.org/wiki/Public-key_cryptography) exist for securing your SSH connections. [Elliptic Curve Digital Signature Algorithm (ECDSA)](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) is secure and simple enough should you need to copy the public key manually. Nonetheless however, you are free to use whichever algorithm you choose to.
 
-<details>
-<summary>Windows with PowerShell</summary>
-
 From the `Start` menu, open the Windows `PowerShell` application:
+These commands are the same if you are commenting from a Linux, Unix or MacOS Terminal, and Moba XTerm.
 1. Generate an SSH key pair:
-   ```shell
-   
+   ```bash
    ssh-keygen -t ed25519
-   
    ```
 1. When prompted to _"Enter file in which to save the key"_, press `Enter`,
 1. When prompted to _"Enter a passphrase"_, press `Enter`, and `Enter` again to verify it.
 
    <p align="center"><img alt="Windows Powershell SSH Keygen." src="./resources/windows_powershell_sshkeygen.png" width=900 /></p>
 
-></details>
+> [!TIP]
+> Below is an example using Windows PuTTY. It is hidden and you must click the heading to reveal it's contents. You are strongly encourage to use either Windows PowerShell or Moba XTerm instead.
 
 <details>
 <summary>Windows PuTTY</summary>
@@ -246,19 +201,7 @@ From the `Start` menu, open the Windows `PowerShell` application:
    <p align="center"><img alt="PuTTYgen Generate Save." src="./resources/windows_puttygen_save.png" width=900 /></p>
 </details>
 
-<details>
-<summary>Linux, Unix or MacOS Terminal</summary>
-
-You must follow the same procedure as you would have done for the Windows PowerShell scenario.
-1. Generate an SSH key pair:
-   ```shell
-   ssh-keygen -t ed25519
-   ```
-
-</details>
-
-> [!NOTE]
-> You **MUST** take note of the location and paths to **BOTH** your public and private keys. Your public key will be shared and distributed to the SSH servers you want to authenticate against. Your private key must be kept secure within your team, and must not be shared or distributed to anyone.
+You **MUST** take note of the location and paths to **BOTH** your public and private keys. Your public key will be shared and distributed to the SSH servers you want to authenticate against. Your private key must be kept secure within your team, and must not be shared or distributed to anyone.
 
 Once you have successfully generated an SSH key pair, navigate to `Compute` &rarr; `Key Pairs` and import the **public** key `id_ed25519.pub` into your Team's Project Workspace within OpenStack.
 
@@ -279,13 +222,8 @@ After configuring your new VM name under instance details, you will need to sele
 1. *Create New Volume* is `Yes`,
 1. *Delete Volume on Instance Delete* is `No`, and
 1. *Volume Size (GB)* will be set when you configure the instance flavor.
-<p align="center"><img alt="OpenStack Launch New Instance." src="./resources/openstack_source_image.png" width=900 /></p>
 
-There are a number of considerations that must be taken into account when selecting a Linux Distribution that will be appropriate for your requirements and needs.
-
-### Desktop Usage vs Server
-
-[Since June 2017](https://www.top500.org/statistics/details/osfam/1/) **all** of the systems on the Top500 list make use of a Linux-based Operating System. Familiarity and proficiency with Linux-based operating systems and their derivatives is a mandatory requirement for gaining expertise in Software Development, Systems Administration and Networking.
+There are a number of considerations that must be taken into account when selecting a Linux distribution that will be appropriate for your requirements and needs. [Since June 2017](https://www.top500.org/statistics/details/osfam/1/) **all** of the systems on the Top500 list make use of a Linux-based Operating System. Familiarity and proficiency with Linux-based operating systems and their derivatives is a mandatory requirement for gaining expertise in Software Development, Systems Administration and Networking.
 
 An argument could be made, that the best way to acquire Linux systems administration skills, is to make daily use of a Linux Distribution by running it on your personal laptop, desktop or workstation at home / school.
 
@@ -293,109 +231,90 @@ This is something for you and your team to investigate after the competition and
 * Dual-boot Linux alongside your Windows environment,
 * Windows Subsystem for Linux [(WSL)](https://learn.microsoft.com/en-us/linux/install),
 * Running Linux VM's locally within your Windows environment,
-* Running Linux VM's through cloud-based solutions, and Virtual Private Servers [(VPS)](https://en.wikipedia.org/wiki/Virtual_private_server), as you are doing for the competition. There are many commercial and free-tier services available, e.g. [Amazon AWS](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=*all), [Google Cloud](https://cloud.google.com/free) and [Microsoft Azure](https://azure.microsoft.com/en-us/free), 
+* Running Linux VM's through cloud-based solutions, and Virtual Private Servers [(VPS)](https://en.wikipedia.org/wiki/Virtual_private_server), as you are doing for the competition. There are many commercial and free-tier services available, e.g. [Amazon AWS](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=*all), [Google Cloud](https://cloud.google.com/free) and [Microsoft Azure](https://azure.microsoft.com/en-us/free).
 
-### Table of Linux Distributions
+### Summary of Linux Distributions
 
 A Linux distribution, is a collection of software that is at the very leased comprised of a [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) and a [package manager](https://en.wikipedia.org/wiki/Package_manager). A package manager is responsible for automating the process of installing, configuring, upgrading, downgrading and removing software programs and associated components from a computer's operating system.
 
 A number of considerations must be taken into account when deciding on choice of Linux distro as a *'daily driver'* and as well as a server. There are subtleties and nuances between the various Linux flavors. These vary from a number of factors, not least of which including:
-* Support - is the project well documented and do the developers respond to queries, 
+* Support - is the project well documented and do the developers respond to queries,
 * Community - is there a large and an active userbase,
 * Driver Compatibility - will the distro *'natively'* run on your hardware without workarounds or custom compilation / installation of various device drivers,
 * Stability and Maturity - is the intended distro and version currently actively supported and maintained, not 'End of Life' and verified to run across a number of different systems and environment configurations. Or do you intend to run a *'bleeding-edge'* distro so that you may in the future, influence the direction of application development and assist developers in identifying bugs in their releases...
 
 You and your Team, together with input and advise from your mentors, must do some research and depending on the intended use case, decide which will be the best choice.
 
-The following table summarizes a few Linux distros that *may* be available on the Sebowa OpenStack cloud for you to use, and that you *might* consider using as a *'daily driver'*.
-
-| Package Management System | Flavor                                                                                              | Description | Versions Available as Cloud Instances | General Recommendations and Comments |
-| ---                       | ---                                                                                                 | ---         | ---                                   | ---                                  |
-|                           |                                                                                                     |             |                                       |                                      |
-| RPM                       | [Red Hat Enterprise Linux](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux) |             |                                       |                                      |
-|                           | [Rocky Linux](https://rockylinux.org/)                                                              |             |                                       |                                      |
-|                           | [Alma Linux](https://almalinux.org/)                                                                |             |                                       |                                      |
-|                           | [CentOS Stream](https://www.centos.org/centos-stream/)                                              |             |                                       |                                      |
-|                           | [Fedora](https://fedoraproject.org/)                                                                |             |                                       |                                      |
-|                           | [OpenSUSE](https://www.opensuse.org/)                                                               |             |                                       |                                      |
-|                           |                                                                                                     |             |                                       |                                      |
-|                           |                                                                                                     |             |                                       |                                      |
-| PkgTool                   | [Slackware Linux](http://www.slackware.com/)                                                        |             |                                       |                                      |
-|                           |                                                                                                     |             |                                       |                                      |
-|                           |                                                                                                     |             |                                       |                                      |
-| APT                       | [Debian](https://www.debian.org/)                                                                   |             |                                       |                                      |
-|                           | [Ubuntu](https://ubuntu.com/)                                                                       |             |                                       |                                      |
-|                           | [Linux Mint](https://linuxmint.com/)                                                                |             |                                       |                                      |
-|                           | [Pop! OS](https://pop.system76.com/)                                                                |             |                                       |                                      |
-|                           | [Kali Linux](https://www.kali.org/)                                                                 |             |                                       |                                      |
-|                           |                                                                                                     |             |                                       |                                      |
-|                           |                                                                                                     |             |                                       |                                      |
-| Pacman                    | [Arch Linux](https://archlinux.org/)                                                                |             |                                       |                                      |
-|                           | [Manjaro](https://manjaro.org/)                                                                     |             |                                       |                                      |
-|                           |                                                                                                     |             |                                       |                                      |
-|                           |                                                                                                     |             |                                       |                                      |
-| Portage                   | [Gentoo](https://www.gentoo.org/)                                                                   |             |                                       |                                      |
-|                           |                                                                                                     |             |                                       |                                      |
-|                           |                                                                                                     |             |                                       |                                      |
-| APK                       | [Alpine Linux]                                                                                      |             |                                       |                                      |
-|                           |                                                                                                     |             |                                       |                                      |
-|                           |                                                                                                     |             |                                       |                                      |
-| Source-Based              | [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/)                                       |             |                                       |                                      |
-|                           |                                                                                                     |             |                                       |                                      |
+The following list provides a few examples of Linux distros that *may* be available on the Sebowa OpenStack cloud for you to use, and that you *might* consider using as a *'daily driver'*.
 
 > [!TIP]
-> The set of tutorials have been tested against **Alma Linux 8.9, 9.3**, **Arch Linux**, **CentOS Stream 9**, **Rocky Linux 8, 9.2, 9.3** and **Ubuntu Server 23.10**. 
+> You do not need to decide right now which Linux Flavor you and your team will be installing on you personal / school laptop and desktop computers. The list and corresponding links are provided for later reference, however for the time being you are strongly encouraged to proceed with **Rocky 9.3 image**. If you are already using or familiar with Linux, discuss this with the instructors who will advise you on how to proceed.
+
+* **RPM** or Red Hat Package Manager is a free and open-source package management system. The name RPM refers to the `.rpm` file format and the package manager program itself. Examples include [Red Hat Enterprise Linux](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux), [Rocky Linux](https://rockylinux.org/), [Alma Linux](https://almalinux.org/), [CentOS Stream](https://www.centos.org/centos-stream/) and [Fedora](https://fedoraproject.org/). You can't go wrong with choose of either Red Hat, Alma, ***Rocky*** or CentoS Stream for the competition. You manage packages through tools such at `yum` (Yellowdog Updater, Modified) and / or `dnf` (Dandified YUM).
+
+* **Zypper** is the package manager used by [openSUSE](https://www.opensuse.org/), [SUSE Linux Enterprise (SLE)](https://www.suse.com/), and related distributions. This is another good choice for beginners, however openSUSE is not available as an image for the competition.
+
+* **APT**: In Debian-based distributions, the installation and removal of software are generally managed through the package management system known as the Advanced Package Tool (APT). Examples include [Debian](https://www.debian.org/), [Ubuntu](https://ubuntu.com/), [Linux Mint](https://linuxmint.com/), [Pop! OS](https://pop.system76.com/) and [Kali Linux](https://www.kali.org/). Debian or Ubuntu Based Linux distributions are fantastic options for beginners. If one of your team members are already using such a system, then you are advised to use the provided Ubuntu image for the competition.
+
+* **PkgTool** is a menu-driven package maintenance tool provided with the [Slackware Linux distribution](http://www.slackware.com/). Listed here for interest, not recommended for beginners.
+
+* **Pacman** is a package manager that is used in the [Arch Linux](https://archlinux.org/) distribution and its derivatives such as [Manjaro](https://manjaro.org/). Not recommended for beginners.
+
+* **Portage** is a package management system originally created for and used by  [Gentoo Linux](https://www.gentoo.org/) and also by ChromeOS. Definitely not recommended for beginners.
+
+* **Source-Based**: [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/) is a project that teaches you how to create your own Linux system from source code, using another Linux system. Learn how to install, configure and customize LFS and BLFS, and use tools for automation and management. Once you are **very** familiar with Linux, LFS is an excellent medium term side project that you peruse in you own time. Only Linux experts need apply.
+
+Type *"Rocky"* in the search bar, and select the **Rocky-9.3** cloud image as a boot source.
+
+<p align="center"><img alt="OpenStack Select Source." src="./resources/openstack_source_image.png" width=900 /></p>
 
 ## OpenStack Instance Flavors
 
 An important aspect of system administration is resource monitoring, management and utilization. Each Team will be required to manage their available resources and ensure that the resources of their clusters are utilized in such a way as to maximize system performance. You have been allocated a pool of resources which you will need to decide how you are going to allocate the sizing of the compute, memory and storage across your head node and compute node(s).
 
-### Compute (vCPUs)
+1. Compute (vCPUs)
+   You have been allocated a pool totaling **18 vCPUs**, which would permit the following configurations:
+   1. Head Node (2 vCPUs) and 2 x Compute Nodes (8 vCPUs each),
+   1. Head node (6 vCPUs) and 2 x Compute Nodes (6 vCPUs each),
+   1. Head node (10 vCPUs) and 1 x Compute Node (8 vCPUs).
 
-You have been allocated a pool totaling **18 vCPUs**, which would permit the following configurations:
-1. Head Node (2 vCPUs) and 2 x Compute Nodes (8 vCPUs each),
-1. Head node (6 vCPUs) and 2 x Compute Nodes (6 vCPUs each),
-1. Head node (10 vCPUs) and 1 x Compute Node (8 vCPUs).
+1. Memory (RAM)
+   You have been allocated a pool totaling **36 GB** of RAM, which would permit the following configurations:
+   1. Head Node (4 GB RAM) and 2 x Compute Nodes (16 GB RAM each),
+   1. Head node (12 GB RAM) and 2 x Compute Nodes (12 GB RAM each),
+   1. Head node (20 GB RAM) and 1 x Compute Node (16 GB RAM).
 
-### Memory (RAM)
-
-You have been allocated a pool totaling **36 GB** of RAM, which would permit the following configurations:
-1. Head Node (4 GB RAM) and 2 x Compute Nodes (16 GB RAM each),
-1. Head node (12 GB RAM) and 2 x Compute Nodes (12 GB RAM each),
-1. Head node (20 GB RAM) and 1 x Compute Node (16 GB RAM).
-
-### Storage (DISK)
-
-You have been allocated a pool of 50 GB of storage, which can be distributed in the following configurations:
-1. Head Node (60 GB of storage) and 2 x Compute Nodes (10 GB of storage each),
-1. Head Node (60 GB of storage) and 2 x Compute Nodes (10 GB of storage each), and
-1. Head Node (60 GB of storage) and 1 x Compute Node (10 GB of storage).
-
-### Head Node Resource Allocations
+1. Storage (DISK)
+   You have been allocated a pool of 50 GB of storage, which can be distributed in the following configurations:
+   1. Head Node (60 GB of storage) and 2 x Compute Nodes (10 GB of storage each),
+   1. Head Node (60 GB of storage) and 2 x Compute Nodes (10 GB of storage each), and
+   1. Head Node (60 GB of storage) and 1 x Compute Node (10 GB of storage).
 
 The following table summarizes the various permutations and allocations that can be used for designing your clusters within your Team's Project Workspace on Sebowa's OpenStack cloud platform.
 
-| Cluster Configurations     | Instance Flavor   | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
-|----------------------------|:-----------------:|:---------------:|:------------:|:--------------:|
-|                            |                   |                 |              |                |
-| Dedicated Head Node        | scc24.C2.M4.S60   | 2               | 4 GB         | 60 GB          |
-| Compute Node 01            | scc24.C8.M16.S10  | 8               | 16 GB        | 10 GB          |
-| Compute Node 02            | scc24.C8.M16.S10  | 8               | 16 GB        | 10 GB          |
-|                            |                   |                 |              |                |
-|                            |                   |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C6.M12.S60  | 6               | 12 GB        | 60 GB          |
-| Compute Node 01            | scc24.C6.M12.S10  | 6               | 12 GB        | 10 GB          |
-| Compute Node 02            | scc24.C6.M12.S10  | 6               | 12 GB        | 10 GB          |
-|                            |                   |                 |              |                |
-|                            |                   |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C10.M20.S60 | 10              | 20 GB        | 60 GB          |
-| Compute Node 01            | scc24.C8.M16.S10  | 8               | 16 GB        | 10 GB          |
-|                            |                   |                 |              |                |
+| Cluster Configurations     | Instance Flavor | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
+|----------------------------|:---------------:|:---------------:|:------------:|:--------------:|
+|                            |                 |                 |              |                |
+| Dedicated Head Node        | scc.C2.M4.S60    | 2               | 4 GB         | 60 GB          |
+| Compute Node 01            | scc.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
+| Compute Node 02            | scc.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
+|                            |                 |                 |              |                |
+|                            |                 |                 |              |                |
+| Hybrid Head / Compute Node | scc.C6.M12.S60    | 6               | 12 GB        | 60 GB          |
+| Compute Node 01            | scc.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
+| Compute Node 02            | scc.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
+|                            |                 |                 |              |                |
+|                            |                 |                 |              |                |
+| Hybrid Head / Compute Node | scc.C10.M20.S60   | 10              | 20 GB        | 60 GB          |
+| Compute Node 01            | scc.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
+|                            |                 |                 |              |                |
+
+Type *"scc"* in the search bar and select the **scc.C2.M4.S60** instance flavor.
+
+<p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_instance_flavor.png" width=900 /></p>
 
 > [!TIP]
-> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the *sccHeadN** flavor with *2 vCPUs* and *4 GB RAM*.
-
-<p align="center"><img alt="OpenStack Instance Flavor Selection." src="./resources/openstack_instance_flavor.png" width=900 /></p>
+> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of starting with this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the **scc24.C2.M4.S60** flavor with *2 vCPUs* and *4 GB RAM*.
 
 ## Networks, Ports, Services and Security Groups
 
@@ -410,7 +329,7 @@ No configurations are required for *Network Ports*, however you must ensure that
 ## Key Pair
 
 > [!CAUTION]
-> You must ensure that you associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance 
+> You must ensure that you associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance
 ><p align="center"><img alt="OpenStack Key Pair Selection." src="./resources/openstack_key_pair_select.png" width=900 /></p>
 
 ## Verify that your Instance was Successfully Deployed and Launched
@@ -430,14 +349,25 @@ In order for you to be able to SSH into your newly created OpenStack instance, y
 1. Select the `154.114.57.*` IP address allocated and click on the *Associate* button.
    <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_added_floating_ip.png" width=900 /></p>
 
-## Success State, Resource Management and Troubleshooting
+## Troubleshooting
 
 > [!CAUTION]
-> The following section is strictly for debugging and troubleshooting purposes
+> The following section is strictly for debugging and troubleshooting purposes. You **MUST** discuss your circumstances with an instructor before proceeding with this section. If you have successfully launched your head node, proceed to the [Intro on Basic Sys Admin](#introduction-to-basic-linux-administration).
 
-### Deleting Instances
-### Deleting Volumes
-### Dissociating and Releasing Floating IPs
+* Deleting Instances
+  - When all else fails and you would like to reattempt the creation of your nodes from a clean start, Select the VM you want to remove and click `Delete Instance` from the drop down menu.
+  - Occasionally you may find yourself accidentally deleting a VM instance. Do not despair, by default `no` is selected on `Delete Volume on Instance Delete` this will leave your storage `volume` intact and you can recover it by launching a new instance from the `volume`. Details will be provided later in [Tutorial 3](#spinning-up-a-second-compute-node).
+  <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_troubleshooting_delete_instance.png" width=900 /></p>
+
+* Deleting Volumes
+
+  When a VM's storage `volume` lingers behind after intentionally deleting a VM, you will need to go to manually remove the volume from your work space.
+  <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_troubleshooting_delete_volume.png" width=900 /></p>
+
+* Dissociating Floating IP
+
+  If your VM is deleted then the floating IP associated with that deleted VM will stay in your project under `Networks -> Floating IPs` for future use. Should you accidentally associate your floating IP to one of your compute nodes, dissociate it as per the diagram below, so that it may be allocated to your head node. Selecting the floating IP and clicking `Release Floating IPs` will send the floating IP back to the pool and you can call a tutor to help you get back your IP.
+  <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_troubleshooting_dissociate_float_ip.png" width=900 /></p>
 
 # Introduction to Basic Linux Administration
 
@@ -450,67 +380,52 @@ The VMs are running minimalist, cloud-based operating systems that are not packa
 > [!NOTE]
 > You will require the **PATH** to the private SSH key that you have previously [generated](#generating-ssh-keys), as well as the Floating IP address [associated](#associating-an-externally-Accessible-ip-address) to your VM. Depending on the specific distribution your Team chose to implement for your Head Node, the ***default username** will vary accordingly.
 
-### SSH Through a Linux Terminal, MobaXTerm or Windows PowerShell
+* SSH Through a Linux Terminal, MobaXTerm or Windows PowerShell
 
 If your workstation or laptop is running a Linux-based or macOS operating system, or a version of Windows with MobaXTerm or Windows PowerShell, then you may proceed using a terminal. Most Linux and macOS distributions come preshipped with an SSH client included via `OpenSSH`.
 
-<details>
-
-<summary>Alma Linux</summary>
 > [!NOTE]
 > In an Alma Linux cloud image, the default login account is **alma**.
 
 ```bash
    ssh -i ~/.ssh/id_ed25519 alma@154.114.57.<YOUR Head Node IP>
 ```
-</details>
 
-<details>
-<summary>Arch Linux</summary>
 > [!NOTE]
 > In an Arch Linux cloud image, the default login account is **arch**.
 
 ```bash
    ssh -i ~/.ssh/id_ed25519 arch@154.114.57.<YOUR Head Node IP>
 ```
-</details>
 
-<details>
-<summary>CentOS Stream</summary>
 > [!NOTE]
 > In a CentOS Linux cloud image, the default login account is **centos**.
 
 ```bash
    ssh -i ~/.ssh/id_ed25519 centos@154.114.57.<YOUR Head Node IP>
 ```
-</details>
 
-<details>
-<summary>Rocky Linux</summary>
 > [!NOTE]
 > In a Rocky Linux cloud image, the default login account is **rocky**.
 
 ```bash
    ssh -i ~/.ssh/id_ed25519 rocky@154.114.57.<YOUR Head Node IP>
 ```
-</details>
 
-<details>
-<summary>Ubuntu Server</summary>
 > [!NOTE]
 > In an Ubuntu Linux cloud image, the default login account is **ubuntu**.
 
 ```bash
    ssh -i ~/.ssh/id_ed25519 ubuntu@154.114.57.<YOUR Head Node IP>
 ```
-</details>
 
 > [!TIP]
 > The "~" in `~/.ssh/id_ed25519` is a shortcut for `/home/<username>`. Secondly, the first time you connect to a new SSH server, you will be prompted to confirm the authenticity of the host. Type 'yes' and hit 'Enter'
 
 <p align="center"><img alt="OpenStack Running State." src="./resources/windows_powershell_firsttime_ssh.png" width=900 /></p>
 
-### Windows PuTTY
+<details>
+<summary>Windows PuTTY</summary>
 
 If your workstation or laptop is running Windows, then you may proceed using either Windows PowerShell above *(preferred)* or PuTTY. Use PuTTY only if Windows PowerShell is not available on your current system.
 
@@ -521,155 +436,274 @@ If your workstation or laptop is running Windows, then you may proceed using eit
 1. From the *Connection* &rarr; *SSH* &rarr; *Auth* &rarr; *Credentials* category, select `Browse` and navigate to the path where your private key is located:
    <p align="center"><img alt="OpenStack Running State." src="./resources/windows_putty_enter_private_key.png" width=900 /></p>
 
-### Username and Password
+</details>
 
-Once you've successfully logged into your head node VM, you are encouraged to setup your password login as a fail safe incase your ssh keys are giving issue, you may also access your head node through the OpenStack VNC console interface.
+* Username and Password
 
-```bash
+  Once you've successfully logged into your head node VM, you are encouraged to setup your password login as a fail safe in case your SSH keys are giving issue, you may also access your head node through the OpenStack VNC console interface.
+
+  ```bash
    sudo passwd <username>
-   
-```
+  ```
+
+  <p align="center"><img alt="OpenStack VNC." src="./resources/openstack_vnc_access.png" width=900 /></p>
 
 > [!CAUTION]
-> Setting up a password for any user *- especially the default user -* will make your VM's vulnerable to [Brute Force SSH Attacks](https://helpcenter.trendmicro.com/en-us/article/tmka-19689)!
+> Setting up a password for any user *- especially the default user -* may make your VM's vulnerable to [Brute Force SSH Attacks](https://helpcenter.trendmicro.com/en-us/article/tmka-19689) if you enable password SSH authentication.
 
-### Running Basic Networking Commands
+## Running Basic Linux Commands and Services
 
-Once logged into your head node, you can now make use of the [previously discussed basic networking commands](#terminal-mobaxterm-and-windows-powershell-commands): `ip a`, `ping`, `ip route` and `tracepath`.
+Once logged into your head node, you can now make use of the [previously discussed basic networking commands](#terminal-mobaxterm-and-windows-powershell-commands): `ip a`, `ping`, `ip route` and `tracepath`, refer to [Discussion on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/48) for example out, and to also post your screenshots as comments.
 
-<p align="center"><img alt="Verifying head node basic networking configuration." src="./resources/head_node_basic_networking_commands.png" width=900 /></p>
+Here is a list of further basic Linux / Unix commands that you must familiarize yourselves and become comfortable with in order to be successful in the competition.
 
-## Manual Pages `man`
-In linux every information about all linux commands is found in a linux built in manual page document. This doncument is accessible via a command called `man` short term for manual page. Run the ff commands to understand what each command mean, scroll up and down then press `q` to exit the page, these are some of the commands you will use throught the week. 
+* Manual Pages `man`: On Linux systems, information about commands can be found in a manual page. This document is accessible via a command called `man` short term for manual page. For example, try running `man sudo`, scroll up and down then press `q` to exit the page.
 
-```bash
-   man sudo
-   man ping 
-   man tracepath
-   man ls 
-   man cat 
-   
-```
-<p align="center"><img alt="manual page for `sudo` command" src="./resources/man_sudo_feedback.png" width=900 /></p>
+* The `-h` Switch: You can make use of the `--help or -h` flag to see which options are available for a specific command. Similarly, to the above, try running `sudo -h`
 
+* Piping and Console Redirection
 
-## the `-h` Switch
-If you don't want to use the `man` command to learn about each command and related options, you can use the `--help or -h` flag to see which options are available for a specific command. run the ff command to learn about available options each command has.
+  `>`  replaces the content of an output file with all input content
+  `>>` appends the input content to the end of the output file.
 
-```bash
+  For example to create a file called `students.txt` and add a name to the file, use:
+  ```bash
+  # You can create new files using the `touch` command or the `>` redirect.
+  touch students.txt
+  echo "zama" >> students.txt
+  echo "<TEAM_CAPTAIN>" >> students.txt
+  echo "zama lecturer" >> students.txt
+  echo "<TEAM_MEMBERS" >> students.txt
+  ```
 
-   sudo -h 
-   ifconfig -h 
-   ping -h 
-   ssh-keygen --help 
-   grep --help 
-   
-```
+  Pipe `|` through `grep` can be used when searching the content of the file, if it exist it will be printed on the screen, if the search does not exist nothing will show on the screen.
+  ```bash
+  cat students.txt
+  cat students.txt | grep "zama"
+  ```
 
-<p align="center"><img alt="manual page for `sudo` command" src="./resources/sudo_with-h_flag.png" width=900 /></p>
+* Reading and Editing Documents: Linux systems administration essentially involves file manipulation. [Everything in a Linux is a file](https://en.wikipedia.org/wiki/Everything_is_a_file). Familiarize yourself with the basic use of `nano`.
 
+* The GNU `history` command shows all commands you have executed so far, the feedback is numbered, use `!14` to rerun the 14th command.
 
-## Reading Documents
-you will be reading a lof of files throughout the week and the ff commands can be used to read files with ease, use `man` to learn about each command. All the following command are used to read the content of a file `staff_list.txt`
+Make sure that you try some of these commands to familiarize yourself and become comfortable with the Linux terminal shell and command line. You can find sample outputs and are strongly encouraged to post your teams screenshots of at least one of the above commands on the [Discussion Page on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/49).
 
-```bash
-less staff_list.txt
-more staff_list.txt
-cat staff_list.txt
-vi staff_list.txt
-nana staff_list.txt
+* Understanding `journalctl` and `systemctl`
 
-   
-```
+  Both `journalctl` and `systemctl` are two powerful command-line utilities used to manage and view system logs and services on Linux systems, respectively. Both are part of the systemd suite, which is used for system and service management.
+  * `journalctl` is used to query and display logs from the journal, which is a component of systemd that provides a centralized location for logging messages generated by the `system` and services.
+  * `systemctl` is used to examine and control the `systemd` system and service manager. It provides commands to start, stop, restart, enable, disable, and check the status of services, among other functionalities.
 
-<p align="center"><img alt="cat prints the content of file on screen" src="./resources/cat_command.png" width=900 /></p>
+  For example to query the status of the `systemd-networkd` daemon / service, use:
+  ```bash
+  sudo systemctl status systemd-networkd
+  ```
 
-<p align="center"><img alt="read the content of the file with `less` command " src="./resources/less_command.png" width=900 /></p>
-
-
-## Piping 
-
-`|` Through `grep` is used when searching the content of the file, if it exist it will be printed on the screen, if the search does not exist nothing will show on the screen.
-
-<p align="center"><img alt="search the file with `grep` command " src="./resources/search_commands_grep.png" width=400 /></p>
-
-
-## Console Output to a File
-
-`>`  replaces the content of an output file with all input content
-`>>` appends the input content to the end of the output file.
-
-<p align="center"><img alt="appends james at the endo of staff_list.txt file" src="./resources/append.png" width=900 /></p>
-
-<p align="center"><img alt="replaces the content of staff_list.txt file with james"  src="./resources/replaces.png" width=900 /></p>
-
-
-## GNU `history` Library
-`history` command shows all commands you have executed so far, the feedback is numbered, use `!14` to rerun the 20th command  
- 
- <p align="center"><img alt="history command "  src="./resources/history_command.png" width=900 /></p>
- 
- <p align="center"><img alt="rerun commands from history "  src="./resources/rerun_command_from_history.png" width=900 /></p>
-
-## Brief Introduction to Text Editors (Vi vs Vim vs Nano)
-### Your First Chat GPT Query
-
-<p align="center"><img alt="Chat GPT Query on Text Editors." src="./resources/chatgpt_text_editors.png" width=600 /></p>
-
-<p align="center"><img alt="Chat GPT Query on Installing Nano." src="./resources/chat_install_nano_on_linux.png" width=600 /></p>
-
-### Your First Shell Script
-## Privilege Escalation and `sudo`
-## Linux Services - Understanding `journalctl` and `systemctl`
-
-### Networking
-
-<p align="center"><img alt="Linux basic networking on workstation." src="./resources/linux_basic_networking_checking_networkd_service.png" width=900 /></p>
-
-<p align="center"><img alt="Linux basic networking on workstation." src="./resources/headnode_systemd-networkd.png" width=900 /></p>
-
-### Resolv.conf
-
-<p align="center"><img alt="Linux basic networking on workstation." src="./resources/linux_basic_networking_checking_resolv_service.png" width=900 /></p>
-
-<p align="center"><img alt="Linux basic networking on workstation." src="./resources/linux_basic_networking_checking_resolvconf_file.png" width=900 /></p>
-
-<p align="center"><img alt="Linux basic networking on workstation." src="./resources/headnode_resolv_status.png" width=900 /></p>
-
-<p align="center"><img alt="Linux basic networking on workstation." src="./resources/headnode_systemd_resolved.png" width=900 /></p>
+Verify some of your system's configuration settings and post a screenshot as a comment to this [Discussion Page on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/56).
 
 > [!CAUTION]
-> It is **CRITICAL** that you are always aware and sure which node or server your are working on. As you can see in the examples above, you can run *similar* commands in a Linux terminal on your workstation, on the console prompt of your headnode, and as you will see later, on the console prompt of your compute node.
+> It is **CRITICAL** that you are always aware and sure which node or server your are working on. As you can see in the examples above, you can run *similar* commands in a Linux terminal on your workstation, on the console prompt of your head node, and as you will see later, on the console prompt of your compute node.
 
-### Failed SSH Brute Force Login Attempts
+# Linux Binaries, Libraries and Package Management
 
-talk about tarpitting and stateful firewall
+Understanding Linux binaries, libraries, and package managers is crucial for effective software development and system management on Linux systems.
 
-mention that there are many more services
+> [!NOTE]
+> The following discussion around the concepts of binaries and libraries does not need to be fully understood at this stage and will be covered in more detail in later tutorials and lectures.
 
-<p align="center"><img alt="Linux basic networking on workstation." src="./resources/headnode_journalctl_sshd_brute_force.png" width=900 /></p>
+* **Binaries** are executable files created from source code, often written in languages like C or C++, through a process called compilation. These files contain machine code that the operating system can execute directly.
+  * **Executable Files**: These are typically found in directories like `/bin`, `/sbin`, `/usr/bin`, and `/usr/sbin`.
+  * **Shared Libraries**: These are files containing code that can be shared by multiple programs. They usually have extensions like `.so` (shared object) and are found in directories like `/lib` and `/usr/lib`.
 
-## Verifying Instance Hostname and `/etc/hosts` File
+* **Libraries** provide a way to share code among multiple programs to avoid redundancy and ease maintenance. They come in two main types:
+  * **Static Libraries (`.a` files)** are linked into the executable at compile time, resulting in a larger binary. Do not require the library to be present at runtime.
+  * **Shared (Dynamic) Libraries (.so files)** are linked at runtime, reducing the binary size. The executable will need the shared library to be present on the system at runtime.
 
+* **Package Managers** are tools that automate the process of installing, updating, configuring, and removing software packages. They handle dependencies and ensure that software components are properly integrated into the system.
+    * **Repositories** are online servers storing software packages. Package managers download packages from these repositories.
+    * **Dependencies** are binaries, libraries or other packages that software depends on to function correctly. Package managers resolve, install and remove dependencies automatically.
 
+From this point onward, you're going to need to pay extra attention to the commands that have been issued and you must ensure that they correspond to the distribution that you are using.
 
-<p align="center"><img alt="Linux basic networking on workstation." src="./resources/linux_basics_hostname.png" width=900 /></p>
+> [!WARNING]
+> Do not try to type the following arbitrary commands into your head node's terminal. They are merely included here for illustration purposes.
 
-<p align="center"><img alt="Linux basic networking on workstation." src="./resources/headnode_hostname_status.png" width=900 /></p>
+```bash
+# DNF / YUM (RHEL, Alma, Rocky, Centos, etc)
+# You are strongly recommended to use one of the distros mentioned above.
+# This will always be the first example use case given for any scenario and
+# the recommended approach to follow
 
-## Linux Binaries, Libraries and Package Management
-### User Environment and the `PATH` Variable
-hostname and etc/hosts
-At this point your VMs and network should be correctly configured and you can continue with setting up some important Linux services.
+sudo dnf update
+sudo dnf install <PACKAGE_NAME>
+sudo dnf remove <PACKAGE_NAME>
 
-## Install Dependencies and Fetch Source files for High Performance LinPACK (HPL) Benchmark
-### Install the GNU Compiler Collection (GCC)
-### Install OpenMPI
-### Install ATLAS Math Library
-Automatically Tuned Linear Algebra Software
-### Fetch and Extract the HPC Source Tarball
-### Copy and Edit the Makefile for _your_ Target Architecture
-## Compile the HPL Source Code to Produce an Executable Binary
-### Editing _your_ PATH Variable
-#### Dynamic and Static Libraries: Editing _Your_ ATLAS Shared Object Files
-## Configuring _Your_ `HPL.dat` File Using `lscpu` and `lsmem`
+# APT-based systems (Ubuntu)
+# Another really good choice and strong recommendation to adopt is Ubuntu.
+# Ubuntu has many users, and many first time Linux users, start their
+# journeys into Linux through APT (or Ubuntu) based distros.
+# Moreover Ubuntu has it's origins in South Africa...
+
+sudo apt update
+sudo apt install <PACKAGE_NAME>
+sudo apt remove <PACKAGE_NAME>
+
+# Pacman-based systems (Arch-Like Linux)
+# Arch Linux is one of the most "flexible and succinct" Linux distros
+# available today. It popularity stems not only from the fact that is has
+# excellent documentation, but it's "keep it straight and simple" approach.
+# Not recommend for beginners, unless you have previous Linux expertise or
+# unless you are looking for a challenge.
+
+sudo pacman -Syu
+sudo pacman -S <PACKAGE_NAME>
+sudo pacman -R <PACKAGE_NAME>
+```
+
+## User Environment and the `PATH` Variable
+
+Understanding the user environment and the `PATH` variable is crucial for effective command-line operations and software management on Linux systems. The user environment in Linux refers to the collection of settings and variables that define how the system behaves for a user. These settings include environment variables, configuration files, and shell settings.
+```bash
+# For example, to view the `USER` and `HOME` variables
+echo $USER
+echo $HOME
+```
+
+The `PATH` variable is one of the most important environment variables. It specifies a list of directories that the shell searches to find executable files for commands. When you type a command in the terminal, the shell looks for an executable file with that name in the directories listed in `PATH`.
+```
+# View the contents of your PATH variable
+echo $PATH
+
+# List the contents of your HOME directory
+ls $HOME
+
+# Find the location of the ls command
+which ls
+```
+
+# Install, Compile and Run High Performance LinPACK (HPL) Benchmark
+
+HPL is a crucial tool in the HPC community for benchmarking and comparing the performance of supercomputing systems. The benchmark is a software package designed to solve a dense system of linear equations using double-precision floating-point arithmetic. It is commonly used to measure the performance of supercomputers, providing a standardized way to assess their computational power.
+
+You will now install and run HPL on your **head node**.
+
+> [!WARNING]
+> You are advised to skip this section if you have fallen behind the pace recommended by the course coordinators. Skipping this section will *NOT* stop you from completing the remainder of the tutorials. You will be repeating this exercise during tutorial 3.
+>
+> However, familiarizing yourselves with this material now, will make things easier for you and your team in the subsequent tutorials and their respective sections.
+
+1. Update the system and install dependencies
+
+   You are going to be installing tools that will allow you to compile applications using the `make` command. You will also be installing a maths library to compute matrix multiplications, and an `mpi` library for communication between processes, in this case mapped to CPU cores.
+   * DNF / YUM
+   ```bash
+   # RHEL, Rocky, Alma, Centos Steam
+   sudo dnf update -y
+   sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
+   sudo dnf install wget nano -y
+   ```
+   * APT
+   ```bash
+   # Ubuntu
+   sudo apt update
+   sudo apt install openmpi libatlas-base-dev
+   ```
+   * Pacman
+   ```bash
+   # Arch
+   sudo pacman -Syu
+   sudo pacman -S base-devel openmpi atlas-lapack nano wget
+   ```
+1. Fetch the HPL source files
+
+   You will download the HPL source files. This is why you installed `wget` in the previous step.
+   ```bash
+   # Download the source files
+   wget http://www.netlib.org/benchmark/hpl/hpl-2.3.tar.gz
+
+   # Extract the files from the tarball
+   tar -xzf hpl-2.3.tar.gz
+
+   # Move and go into the newly extracted folder
+   mv hpl-2.3 ~/hpl
+   cd ~/hpl
+
+   # list the contents of the folder
+   ls
+   ```
+1. Configure HPL
+
+   Copy and edit your own `Make.<TEAM_NAME>` file in the `hpl` directory to suit your system configuration.
+   ```bash
+   cp setup/Make.Linux_PII_CBLAS_gm Make.<TEAM_NAME>
+   nano Make.<TEAM_NAME>
+   ```
+
+   You need to carefully edit your `Make.<TEAM_NAME>` file, ensuring that you make the following changes:
+   ```conf
+   ARCH               = <TEAM_NAME>
+
+   MPdir              = /usr/lib64/openmpi
+
+   LAdir              = /usr/lib64/atlas
+   LAlib              = $(LAdir)/libtatlas.so $(LAdir)/libsatlas.so
+
+   CC                 = mpicc
+
+   LINKER             = mpicc
+   ```
+1. Temporarily edit your `PATH` variable
+
+   You are almost ready to compile HPL, you will need to modify your path variable in order for your MPI C Compiler `mpicc` to be a recognized binary.
+   Check to see if `mpicc` is currently detected:
+   ```bash
+   # The following command will return a command not found error.
+   which mpicc
+
+   # Temporarily append openmpi binary path to your PATH variable
+   # These settings will reset after you logout and re-login again.
+   export PATH=/usr/lib64/openmpi/bin:$PATH
+
+   # Rerun the which command to confirm that the `mpicc` binary is found
+   which mpicc
+   ```
+1. Compile HPL
+
+   You are finally ready to compile HPL. Should you encounter any errors and need to make adjustments and changes, first run a `make clean arch=<TEAM_NAME>`.
+   ```bash
+   make arch=<TEAM_NAME>
+
+   # Confirm that your `xhpl` binary has been successfully built
+   ls bin/<TEAM_NAME>
+   ```
+
+1. Configure your `HPL.dat`
+
+   Make the following changes to your `HPL.dat` file:
+   ```bash
+   cd bin/<TEAM_NAME>
+   nano HPL.dat
+   ```
+
+   Carefully edit you `HPL.dat` file and verify the following changes:
+   ```conf
+   1            # of process grids (P x Q)
+   1            Ps
+   1            Qs
+   ```
+1. Running HPL on a Single CPU
+
+   For now, you will be running HPL on your head node, on a single CPU. Later you will learn how to run HPL over multiple CPUs, each with multiple cores, across multiple nodes...
+   ```bash
+   # Excute the HPL binary
+   ./xhpl
+   ```
+
+> [!TIP]
+> Note that when you want to configure and recompile HPL for different architectures, compilers and systems, adapt and the `Make.<NEW_CONFIG>` and recompile that architecture or configuration.
+>
+> If you compile fails and you would like to try to fix your errors and recompile, you must ensure that you reset to a clean start with `make clean`.
+
+Congratulations!
+
+You have successfully completed you first HPL benchmark.
