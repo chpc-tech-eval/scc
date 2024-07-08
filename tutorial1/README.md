@@ -540,7 +540,7 @@ sudo dnf install <PACKAGE_NAME>
 sudo dnf remove <PACKAGE_NAME>
 ```
 * APT-based systems
-  ```bash
+```bash
 
 # Ubuntu
 # Another really good choice and strong recommendation to adopt is Ubuntu.
