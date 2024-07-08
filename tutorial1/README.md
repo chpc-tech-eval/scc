@@ -322,7 +322,7 @@ Under the *Networks* settings, make sure to select the `vxlan` that corresponds 
 
 <p align="center"><img alt="OpenStack Networks Selection." src="./resources/openstack_networks.png" width=900 /></p>
 
-No configurations are required for *Network Ports*, however you must ensure that you have selected `ssh & web services` under *Security Groups*.
+No configurations are required for *Network Ports*, however you must ensure that you have selected `` under *Security Groups*.
 
 <p align="center"><img alt="OpenStack Security Groups Selection." src="./resources/openstack_security_groups.png" width=900 /></p>
 

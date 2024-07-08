@@ -3,12 +3,11 @@ CHPC 2024 Student Cluster Competition
 
 Welcome the **Center for High Performance Computing (CHPC)'s Student Cluster Competition (SCC)** - Team Selection Round. This round requires each team to build a **prototype multi-node compute cluster** within the National Integrated Cyber Infrastructure Systems (NICIS) **virtual compute cloud** (described below).
 
-The goal of this document is to introduce you to the competition platform and familiarise you with some Linux and systems administration concepts. This competition provides you with a fixed set of virtual resources, that you will use to initialize a set a set of virtual machines instances based on your choice _or flavor_ of **
+The goal of this document is to introduce you to the competition platform and familiarise you with some Linux and systems administration concepts. This competition provides you with a fixed set of virtual resources, that you will use to initialize a set a set of virtual machines instances based on your choice _or flavor_ of *Linux*.
 
 # Table of Contents
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-
 1. [Structure of the Competition](#structure-of-the-competition)
     1. [Getting Help](#getting-help)
     1. [Timetable](#timetable)
@@ -17,20 +16,13 @@ The goal of this document is to introduce you to the competition platform and fa
         1. [Hands-Off Rule *(You may not touch the keyboard)*](#hands-off-rule-you-may-not-touch-the-keyboard)
     1. [Cheat Sheet](#cheat-sheet)
 1. [Deliverables](#deliverables)
-    1. [Project](#project)
+    1. [Cluster Design Assignment](#cluster-design-assignment)
     1. [Technical Knowledge Assessment](#technical-knowledge-assessment)
+    1. [Tutorials](#tutorials)
 1. [Links to Livestreams and Lecture Recordings](#links-to-livestreams-and-lecture-recordings)
-    1. [Day 1 - Welcome, Introduction and Getting Started](#day-1---welcome-introduction-and-getting-started)
-    1. [Day 2 - HPC Hardware, HPC Networking and Systems Administration](#day-2---hpc-hardware-hpc-networking-and-systems-administration)
-    1. [Day 3 - Benchmarking, Compilation and Parallel Computing](#day-3---benchmarking-compilation-and-parallel-computing)
-    1. [Day 4 - HPC Administration and Application Visualization](#day-4---hpc-administration-and-application-visualization)
-    1. [Day 5 - Career Guidance](#day-5---career-guidance)
-1. [Tutorial Glossary and Section Overview](#tutorial-glossary-and-section-overview)
-    1. [Tutorial 1](#tutorial-1)
 1. [Contributing to the Project](#contributing-to-the-project)
     1. [Steps to follow when editing existing content](#steps-to-follow-when-editing-existing-content)
     1. [Syntax and Style](#syntax-and-style)
-1. [Collaborating with your Team and Storing you Progress on GitHub](#collaborating-with-your-team-and-storing-you-progress-on-github)
 
 <!-- markdown-toc end -->
 
@@ -119,14 +111,14 @@ You will need to submit the following for scoring and evaluation by the judges:
     * Degree and Year of study,
   * Presentation Slides
   * Short Technical Brief with Cluster Design Specifications
-* Technical Knowledge Assessment
-* Tutorials
+* Technical Knowledge Assessment *[10 %]*
+* Tutorials *[40 %]*
 
 ## Cluster Design Assignment
 
-You are tasked with designing a small cluster, with at least three nodes, to the value of R 400  000.00 (ZAR) and present your design to the judging panel. In your design you must specify hardware and software for an operational cluster and describe how it functions. The design must be based on servers and interconnects from either [HPE](https://buy.hpe.com/us/en/servers-systems) or [Dell](www.dell.com/en-us), and accessories from either [NVIDIA](https://www.nvidia.com/en-us/high-performance-computing/), or [AMD](https://www.amd.com/en/solutions/high-performance-computing.html) or [Intel](https://www.intel.com/content/www/us/en/high-performance-computing/hpc-products.html). You must use the prices you find in the [Parts List Spreadsheet](CHPC Student Cluster Competition - Parts List - 2024.xlsx)
+You are tasked with designing a small cluster, with at least three nodes, to the value of R 400  000.00 (ZAR) and present your design to the judging panel. In your design you must specify hardware and software for an operational cluster and describe how it functions. The design must be based on servers and interconnects from either [HPE](https://buy.hpe.com/us/en/servers-systems) or [Dell](www.dell.com/en-us), and accessories from either [NVIDIA](https://www.nvidia.com/en-us/high-performance-computing/), or [AMD](https://www.amd.com/en/solutions/high-performance-computing.html) or [Intel](https://www.intel.com/content/www/us/en/high-performance-computing/hpc-products.html). You must use the prices you find in the [Parts List Spreadsheet](CHPC_Student_Cluster_Competition_Parts_List_2024.xlsx).
 
-> [!TIP]
+> [!IMPORTANT]
 > You may submit an additional design, that extends upon your small R 400 000.00 cluster, up to the value of R 1 000 000.00. You may use any of the above links for this exercise, using a Dollar to Rand conversion rate or 1:20. You may use GPU's from either AMD or NVIDIA. You may utilize CPUs from either AMD or Intel. You may use either Dell or HPE as a vendor.
 
 The primary purpose of your HPC cluster is to run one of the following codes as efficiently as possible:
@@ -184,7 +176,7 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
     1. [User Environment and the `PATH` Variable](tutorial1/README.md#user-environment-and-the-path-variable)
 1. [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](tutorial1/README.md#install-compile-and-run-high-performance-linpack-hpl-benchmark)
 
-# Links to Livestreams and Lecture Recordings
+# Lecture Recordings
 
 In this section you will finds links to all of the livestreams of the lectures (Teams Meetings) and subsequent recordings for you to refer back to.
 
@@ -195,25 +187,25 @@ In this section you will finds links to all of the livestreams of the lectures (
    * **12:00 - 13:30**: [Intro to Tools for the Modern IT Engineer]()
 
 2. Day 2 - HPC Hardware, HPC Networking and Systems Administration
-   * **08:30 - 09:30**:
-   * **09:30 - 10:30**:
-   * **11:00 - 12:00**:
-   * **12:00 - 13:30**:
+   * **08:30 - 09:30**: [HPC Hardware]()
+   * **09:30 - 10:30**: [HPC Networking]()
+   * **11:00 - 12:00**: [System Administration & Configuration Management]()
+   * **12:00 - 13:30**: [Standing up a Compute Node]()
 
 3. Day 3 - Benchmarking, Compilation and Parallel Computing
-   * **08:30 - 09:30**:
-   * **09:30 - 10:30**:
-   * **11:00 - 12:00**:
-   * **12:00 - 13:30**:
+   * **08:30 - 09:30**: [HPC Benchmarking]()
+   * **09:30 - 10:30**: [Code Compilation]()
+   * **11:00 - 12:00**: [Parallel Computing and Intro to QC]()
+   * **12:00 - 13:30**: [Applications: LAMMPS & Qiskit]()
 
 4. Day 4 - HPC Administration and Application Visualization
-   * **08:30 - 09:30**:
-   * **09:30 - 10:30**:
-   * **11:00 - 12:00**:
-   * **12:00 - 13:30**:
+   * **08:30 - 09:30**: [Cluster Admin, Ansible & Containers]()
+   * **09:30 - 10:30**: [Monitoring]()
+   * **11:00 - 12:00**: [Schedulers]()
+   * **12:00 - 13:30**: [Data Visualization & Jupyter Lab]()
 
 5. Day 5 - Career Guidance
-   * **08:30 - 10:30**
+   * **08:30 - 10:30** [HPC Career Panel]()
 
 # Contributing to the Project
 
@@ -274,5 +266,5 @@ Editing the content directly, will require the use of Git. Using a terminal appl
 
 ## Syntax and Style
 
-Use the following guide on [Github Markdown Syntax Editing](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github)
+Use the following guide on [Github Markdown Syntax Editing](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github).
 
