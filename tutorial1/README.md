@@ -529,43 +529,43 @@ From this point onward, you're going to need to pay extra attention to the comma
 > Do not try to type the following arbitrary commands into your head node's terminal. They are merely included here for illustration purposes.
 
 * DNF / YUM
-  ```bash
-  # RHEL, Alma, Rocky, Centos
-  # You are strongly recommended to use one of the distros mentioned above.
-  # This will always be the first example use case given for any scenario and
-  # the recommended approach to follow
+```bash
+# RHEL, Alma, Rocky, Centos
+# You are strongly recommended to use one of the distros mentioned above.
+# This will always be the first example use case given for any scenario and
+# the recommended approach to follow
 
-  sudo dnf update
-  sudo dnf install <PACKAGE_NAME>
-  sudo dnf remove <PACKAGE_NAME>
-  ```
+sudo dnf update
+sudo dnf install <PACKAGE_NAME>
+sudo dnf remove <PACKAGE_NAME>
+```
 * APT-based systems
   ```bash
 
-  # Ubuntu
-  # Another really good choice and strong recommendation to adopt is Ubuntu.
-  # Ubuntu has many users, and many first time Linux users, start their
-  # journeys into Linux through APT (or Ubuntu) based distros.
-  # Moreover Ubuntu has it's origins in South Africa...
+# Ubuntu
+# Another really good choice and strong recommendation to adopt is Ubuntu.
+# Ubuntu has many users, and many first time Linux users, start their
+# journeys into Linux through APT (or Ubuntu) based distros.
+# Moreover Ubuntu has it's origins in South Africa...
 
-  sudo apt update
-  sudo apt install <PACKAGE_NAME>
-  sudo apt remove <PACKAGE_NAME>
-  ```
+sudo apt update
+sudo apt install <PACKAGE_NAME>
+sudo apt remove <PACKAGE_NAME>
+```
 * Pacman-based systems
-  ```bash
+```bash
 
-  # Arch-Like Linux
-  # Arch Linux is one of the most "flexible and succinct" Linux distros
-  # available today. It popularity stems not only from the fact that is has
-  # excellent documentation, but it's "keep it straight and simple" approach.
-  # Not recommend for beginners, unless you have previous Linux expertise or
-  # unless you are looking for a challenge.
+# Arch-Like Linux
+# Arch Linux is one of the most "flexible and succinct" Linux distros
+# available today. It popularity stems not only from the fact that is has
+# excellent documentation, but it's "keep it straight and simple" approach.
+# Not recommend for beginners, unless you have previous Linux expertise or
+# unless you are looking for a challenge.
 
-  sudo pacman -Syu
-  sudo pacman -S <PACKAGE_NAME>
-  sudo pacman -R <PACKAGE_NAME>
-  ```
+sudo pacman -Syu
+sudo pacman -S <PACKAGE_NAME>
+sudo pacman -R <PACKAGE_NAME>
+```
 
 ## User Environment and the `PATH` Variable
 
