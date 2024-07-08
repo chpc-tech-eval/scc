@@ -8,7 +8,6 @@ The goal of this document is to introduce you to the competition platform and fa
 # Table of Contents
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-
 1. [Structure of the Competition](#structure-of-the-competition)
     1. [Getting Help](#getting-help)
     1. [Timetable](#timetable)
@@ -17,20 +16,13 @@ The goal of this document is to introduce you to the competition platform and fa
         1. [Hands-Off Rule *(You may not touch the keyboard)*](#hands-off-rule-you-may-not-touch-the-keyboard)
     1. [Cheat Sheet](#cheat-sheet)
 1. [Deliverables](#deliverables)
-    1. [Project](#project)
+    1. [Cluster Design Assignment](#cluster-design-assignment)
     1. [Technical Knowledge Assessment](#technical-knowledge-assessment)
+    1. [Tutorials](#tutorials)
 1. [Links to Livestreams and Lecture Recordings](#links-to-livestreams-and-lecture-recordings)
-    1. [Day 1 - Welcome, Introduction and Getting Started](#day-1---welcome-introduction-and-getting-started)
-    1. [Day 2 - HPC Hardware, HPC Networking and Systems Administration](#day-2---hpc-hardware-hpc-networking-and-systems-administration)
-    1. [Day 3 - Benchmarking, Compilation and Parallel Computing](#day-3---benchmarking-compilation-and-parallel-computing)
-    1. [Day 4 - HPC Administration and Application Visualization](#day-4---hpc-administration-and-application-visualization)
-    1. [Day 5 - Career Guidance](#day-5---career-guidance)
-1. [Tutorial Glossary and Section Overview](#tutorial-glossary-and-section-overview)
-    1. [Tutorial 1](#tutorial-1)
 1. [Contributing to the Project](#contributing-to-the-project)
     1. [Steps to follow when editing existing content](#steps-to-follow-when-editing-existing-content)
     1. [Syntax and Style](#syntax-and-style)
-1. [Collaborating with your Team and Storing you Progress on GitHub](#collaborating-with-your-team-and-storing-you-progress-on-github)
 
 <!-- markdown-toc end -->
 
@@ -119,8 +111,8 @@ You will need to submit the following for scoring and evaluation by the judges:
     * Degree and Year of study,
   * Presentation Slides
   * Short Technical Brief with Cluster Design Specifications
-* Technical Knowledge Assessment
-* Tutorials
+* Technical Knowledge Assessment *[10 %]*
+* Tutorials *[40 %]*
 
 ## Cluster Design Assignment
 
