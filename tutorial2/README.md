@@ -242,7 +242,7 @@ For the tutorials you are encouraged to use tmux.
 
 1. SSH into your **compute node** and install [`htop`](https://htop.dev/):
    ```bash
-   ssh <user>@<compute node ip>
+   ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no <user>@<compute node ip>
    ```
 
    Once you are successfully logged into your compute node:
@@ -785,51 +785,51 @@ You will now create a new user and add them to the `wheel` group so they have `s
 
 1. Create an Ansilble working directory in your user's `/home`, to house your playbooks
 
-```bash
-# Create the ansible playbooks directory
-mkdir -p ~/playbooks
+   ```bash
+   # Create the ansible playbooks directory
+   mkdir -p ~/playbooks
 
-# Creating the sudo users ansible playbook script
-nano ~/playbooks/create_sudo_users.yml
-```
+   # Creating the sudo users ansible playbook script
+   nano ~/playbooks/create_sudo_users.yml
+   ```
 
-  Add your user name to the `YML` file. A typical convention will have you user your initial and surname, for example "Zama Marshal" would have username "zmtshali".
+1. Add your user name to the `YML` file. A typical convention will have you user your initial and surname, for example "Zama Mtshali" would have username "zmtshali".
 
-```yml
-# Add the below content
----
-- hosts: all
-  become: true
-  vars:
-    add_sudo_user: zmtshali
-    del_user: unwittinguser
+   ```yml
+   # Add the below content
+   ---
+   - hosts: all
+     become: true
+     vars:
+       add_sudo_user: zmtshali
+       del_user: unwittinguser
 
-  tasks:
+     tasks:
 
-    - name: Ensure sudo user is present on system
-      user:
-        name: "{{ add_sudo_user }}"
-        state: present
-        groups: wheel
-        append: true
-        create_home: true
+       - name: Ensure sudo user is present on system
+         user:
+           name: "{{ add_sudo_user }}"
+           state: present
+           groups: wheel
+           append: true
+           create_home: true
 
-    - name: Remove user from system
-      user:
-        name: "{{ del_user }}"
-        state: absent
-        remove: yes
-```
+       - name: Remove user from system
+         user:
+           name: "{{ del_user }}"
+           state: absent
+           remove: yes
+   ```
 
-   Where the keyword `all` is used to apply the playbook to all hosts, `become` determines whether commands are executed with `sudo` privileges and `vars` defines variables for the playbook.
+   * Where the keyword `all` is used to apply the playbook to all hosts, `become` determines whether commands are executed with `sudo` privileges and `vars` defines variables for the playbook.
 
-   The playbook is comprised of a two `tasks`, that are given a `name` and in this instance, make use of the [ansible.builtin.user](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html) module.
+   * The playbook is comprised of a two `tasks`, that are given a `name` and in this instance, make use of the [ansible.builtin.user](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html) module.
 
 1. Run the playbook
 
-```bash
-ansible-playbook -i inventory ~/playbooks/create_sudo_users.yml
-```
+   ```bash
+   ansible-playbook -i inventory ~/playbooks/create_sudo_users.yml
+   ```
 
 1. SSH into your other nodes and verify that the users have been correctly
 
