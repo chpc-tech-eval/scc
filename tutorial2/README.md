@@ -119,19 +119,19 @@ In the event that you manage to lock yourselves out of your VMs, from your team'
 <p align="center"><img alt="OpenStack VNC." src="./resources/openstack_vnc_access.png" width=900 /></p>
 
 > [!IMPORTANT]
-> You will not be able to login into your SSH servers on your head (and compute) nodes using a password. This is a security feature by default. Should you have a ***very good reason*** for wanting to utilize password enabled SSH access, discuss this with the instructors.
+> You will not be able to login into your SSH servers on your head (and *generally speaking* your compute) nodes using a password. This is a security feature by default. Should you have a ***very good reason*** for wanting to utilize password enabled SSH access, discuss this with the instructors.
 >
 > The reason why you are setting a password at this stage, is because the following set of tasks could potentially break your SSH access and lock you out of your node(s).
 >
-> Edit your /etc/ssh/sshd_config and enable password authentication
+> * Edit your /etc/ssh/sshd_config and enable password authentication
 > ```bash
 > sudo nano /etc/ssh/sshd_config
 > ```
-> and uncomment #PasswordAuthentication
+> * And uncomment #PasswordAuthentication
 > ```conf
-> #PasswordAuthentication yes
+> PasswordAuthentication yes
 > ```
-> Restart the SSH daemon no your compute node
+> * Restart the SSH daemon on your compute node
 > ```bash
 > sudo systemctl restart sshd
 > ```
