@@ -528,8 +528,9 @@ From this point onward, you're going to need to pay extra attention to the comma
 > [!WARNING]
 > Do not try to type the following arbitrary commands into your head node's terminal. They are merely included here for illustration purposes.
 
+* DNF / YUM
 ```bash
-# DNF / YUM (RHEL, Alma, Rocky, Centos, etc)
+# RHEL, Alma, Rocky, Centos
 # You are strongly recommended to use one of the distros mentioned above.
 # This will always be the first example use case given for any scenario and
 # the recommended approach to follow
@@ -537,8 +538,11 @@ From this point onward, you're going to need to pay extra attention to the comma
 sudo dnf update
 sudo dnf install <PACKAGE_NAME>
 sudo dnf remove <PACKAGE_NAME>
+```
+* APT-based systems
+```bash
 
-# APT-based systems (Ubuntu)
+# Ubuntu
 # Another really good choice and strong recommendation to adopt is Ubuntu.
 # Ubuntu has many users, and many first time Linux users, start their
 # journeys into Linux through APT (or Ubuntu) based distros.
@@ -547,8 +551,11 @@ sudo dnf remove <PACKAGE_NAME>
 sudo apt update
 sudo apt install <PACKAGE_NAME>
 sudo apt remove <PACKAGE_NAME>
+```
+* Pacman-based systems
+```bash
 
-# Pacman-based systems (Arch-Like Linux)
+# Arch-Like Linux
 # Arch Linux is one of the most "flexible and succinct" Linux distros
 # available today. It popularity stems not only from the fact that is has
 # excellent documentation, but it's "keep it straight and simple" approach.

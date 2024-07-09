@@ -41,9 +41,9 @@ You are strongly encouraged to get help and even assist others by [Opening and P
 
 ## Timetable
 
-Everyday will comprise of four lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](CHPC_2024_SCC_Local_Selection_Round_Timetable.pdf) is available for you to download.
+Everyday will comprise of four lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](resources/CHPC_2024_SCC_Local_Selection_Round_Timetable.pdf) is available for you to download.
 
-<p align="center"><img alt="Timetable." src="./CHPC_2024_SCC_Local_Selection_Round_Timetable.png" width=900 /></p>
+<p align="center"><img alt="Timetable." src="resources/CHPC_2024_SCC_Local_Selection_Round_Timetable.png" width=900 /></p>
 
 ## Scoring
 
@@ -116,7 +116,7 @@ You will need to submit the following for scoring and evaluation by the judges:
 
 ## Cluster Design Assignment
 
-You are tasked with designing a small cluster, with at least three nodes, to the value of R 400  000.00 (ZAR) and present your design to the judging panel. In your design you must specify hardware and software for an operational cluster and describe how it functions. The design must be based on servers and interconnects from either [HPE](https://buy.hpe.com/us/en/servers-systems) or [Dell](www.dell.com/en-us), and accessories from either [NVIDIA](https://www.nvidia.com/en-us/high-performance-computing/), or [AMD](https://www.amd.com/en/solutions/high-performance-computing.html) or [Intel](https://www.intel.com/content/www/us/en/high-performance-computing/hpc-products.html). You must use the prices you find in the [Parts List Spreadsheet](CHPC_Student_Cluster_Competition_Parts_List_2024.xlsx).
+You are tasked with designing a small cluster, with at least three nodes, to the value of R 400  000.00 (ZAR) and present your design to the judging panel. In your design you must specify hardware and software for an operational cluster and describe how it functions. The design must be based on servers and interconnects from either [HPE](https://buy.hpe.com/us/en/servers-systems) or [Dell](www.dell.com/en-us), and accessories from either [NVIDIA](https://www.nvidia.com/en-us/high-performance-computing/), or [AMD](https://www.amd.com/en/solutions/high-performance-computing.html) or [Intel](https://www.intel.com/content/www/us/en/high-performance-computing/hpc-products.html). You must use the prices you find in the [Parts List Spreadsheet](resources/CHPC_Student_Cluster_Competition_Parts_List_2024.xlsx).
 
 The primary purpose of your HPC cluster is to run one of the following codes as efficiently as possible:
 * [Amber](https://ambermd.org/)
@@ -144,7 +144,7 @@ After the presentation the judging panel will have an opportunity to ask questio
 
 ## Technical Knowledge Assessment
 
-This information will be provided directly to team captains.
+Each Team must work together to answer and complete the [Technical Knowledge Assessment](resources/CHPC__SCC_2024_Technical_Knowledge_Assessment.docx) to the best of their ability. Team Captains must email your findings to the organizers **no later than 23:00 13th July**. You are required to demonstrate your understanding of the concepts in **YOUR OWN WORDS**. Keep your answers succinct and to the point. Your answers to each of the questions, should not exceed more than 2-3 lines.
 
 ## Tutorials
 
