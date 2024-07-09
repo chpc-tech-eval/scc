@@ -174,10 +174,9 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
     1. [Running Basic Linux Commands and Services](tutorial1/README.md#running-basic-linux-commands-and-services)
 1. [Linux Binaries, Libraries and Package Management](tutorial1/README.md#linux-binaries-libraries-and-package-management)
     1. [User Environment and the `PATH` Variable](tutorial1/README.md#user-environment-and-the-path-variable)
-1. [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](tutorial1/README.md#install-compile-and-run-high-performance-linpack-hpl-benchmark**
+1. [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](tutorial1/README.md#install-compile-and-run-high-performance-linpack-hpl-benchmark)
 
 **Tutorial 2** will demonstrate how to configure and stand-up a compute node, and access it using a transparently created, port forwarding SSH tunnel between your workstation and your head node. You will then install a number of critical services across your cluster.
-
 
 1. [Checklist](tutorial2/README.md#checklist)
 1. [Spinning Up a Compute Node on Sebowa(OpenStack)](tutorial2/README.md#spinning-up-a-compute-node-on-sebowaopenstack)
@@ -204,10 +203,10 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
 In this section you will finds links to all of the livestreams of the lectures (Teams Meetings) and subsequent recordings for you to refer back to.
 
 1. Day 1 - Welcome, Introduction and Getting Started
-   * **08:30 - 09:30**: [Welcome and Introduction]()
-   * **09:30 - 10:30**: [Getting Started]()
-   * **11:00 - 12:00**: [Intro to Linux & Services]()
-   * **12:00 - 13:30**: [Intro to Tools for the Modern IT Engineer]()
+   * **08:30 - 09:30**: [Welcome and Introduction](https://youtu.be/T68pHDdZW3s)
+   * **09:30 - 10:30**: [Getting Started](https://youtu.be/cIB9Gtpifpk)
+   * **11:00 - 12:00**: [Intro to Linux & Services](https://youtu.be/pbpjAw9eVcM)
+   * **12:00 - 13:30**: [Intro to Tools for the Modern IT Engineer](https://youtu.be/t4hD6NMw9Xg)
 
 2. Day 2 - HPC Hardware, HPC Networking and Systems Administration
    * **08:30 - 09:30**: [HPC Hardware]()

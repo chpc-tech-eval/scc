@@ -29,7 +29,7 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 # Checklist
 
 This tutorial will demonstrate how to setup, configure and deploy your **compute node.** From the previous Tutorial, you should have a good understanding of the requirements and considerations to take into account when deploying additional nodes.
- 
+
 You will also learn more about [Public Key Cryptography](https://en.wikipedia.org/wiki/Public-key_cryptography), as you'll be using SSH directives to `ProxyJump` through your head node, whereby you're going to be transparently creating an SSH forwarding tunnel, prior to accessing your compute node.
 
 Once you can access your compute node, you will learn additional Linux systems administrations and experiment with a number of useful tasks and utilities. It is crucial, that you understand and appreciate the specific roles of the head node and your compute node(s).
@@ -122,6 +122,19 @@ In the event that you manage to lock yourselves out of your VMs, from your team'
 > You will not be able to login into your SSH servers on your head (and compute) nodes using a password. This is a security feature by default. Should you have a ***very good reason*** for wanting to utilize password enabled SSH access, discuss this with the instructors.
 >
 > The reason why you are setting a password at this stage, is because the following set of tasks could potentially break your SSH access and lock you out of your node(s).
+>
+> Edit your /etc/ssh/sshd_config and enable password authentication
+> ```bash
+> sudo nano /etc/ssh/sshd_config
+> ```
+> and uncomment #PasswordAuthentication
+> ```conf
+> #PasswordAuthentication yes
+> ```
+> Restart the SSH daemon no your compute node
+> ```bash
+> sudo systemctl restart sshd
+> ```
 
 # Understanding the Roles of the Head Node and Compute Node
 
@@ -482,7 +495,7 @@ NTP let's you to synchronise the time across all the computers in your network. 
      Modify the `allow` declaration to include the internal subnet of your cluster (uncomment or remove the "#" in front of `allow` if it's there, otherwise this is ignored).
 
    ```bash
-   allow 10.50.100.0/24
+   allow 10.100.50.0/24
    ```
    * Start and enable the `chronyd` service
    ```bash
@@ -780,7 +793,8 @@ mkdir -p ~/playbooks
 nano ~/playbooks/create_sudo_users.yml
 ```
 
-Add your user name to the `YML` file. A typical convention will have you user your initial and surname, for example "Zama Marshal" would have username "zmtshali".
+  Add your user name to the `YML` file. A typical convention will have you user your initial and surname, for example "Zama Marshal" would have username "zmtshali".
+
 ```yml
 # Add the below content
 ---
@@ -807,9 +821,9 @@ Add your user name to the `YML` file. A typical convention will have you user yo
         remove: yes
 ```
 
-Where the keyword `all` is used to apply the playbook to all hosts, `become` determines whether commands are executed with `sudo` privileges and `vars` defines variables for the playbook.
+   Where the keyword `all` is used to apply the playbook to all hosts, `become` determines whether commands are executed with `sudo` privileges and `vars` defines variables for the playbook.
 
-The playbook is comprised of a two `tasks`, that are given a `name` and in this instance, make use of the [ansible.builtin.user](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html) module.
+   The playbook is comprised of a two `tasks`, that are given a `name` and in this instance, make use of the [ansible.builtin.user](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html) module.
 
 1. Run the playbook
 
@@ -819,7 +833,7 @@ ansible-playbook -i inventory ~/playbooks/create_sudo_users.yml
 
 1. SSH into your other nodes and verify that the users have been correctly
 
-Congratulations on successfully running your first Ansible playbook.
+   Congratulations on successfully running your first Ansible playbook.
 
 # WirGuard VPN Cluster Access
 
@@ -941,7 +955,7 @@ Some of the benefits and key features of ZeroTier include:
 
 * **Performance**: Unlike traditional VPNs that can introduce latency and reduce performance, ZeroTier is designed to optimize network performance by using peer-to-peer technology and intelligent routing.
 
-* **Scalability**: ZeroTier can scale from small home networks to large enterprise deployments. Its flexible architecture allows it to handle a wide range of network sizes and configurations.
+    * **Scalability**: ZeroTier can scale from small home networks to large enterprise deployments. Its flexible architecture allows it to handle a wide range of network sizes and configurations.
 
 * **Open Source**: The core ZeroTier engine is open source, which allows for transparency, community contributions, and customization.
 
