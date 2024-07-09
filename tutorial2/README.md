@@ -819,7 +819,7 @@ You will now create a new user and add them to the `wheel` group so they have `s
            name: "{{ del_user }}"
            state: absent
            remove: yes
-```
+   ```
 
    Where the keyword `all` is used to apply the playbook to all hosts, `become` determines whether commands are executed with `sudo` privileges and `vars` defines variables for the playbook.
 
@@ -827,9 +827,9 @@ You will now create a new user and add them to the `wheel` group so they have `s
 
 1. Run the playbook
 
-```bash
-ansible-playbook -i inventory ~/playbooks/create_sudo_users.yml
-```
+   ```bash
+   ansible-playbook -i inventory ~/playbooks/create_sudo_users.yml
+   ```
 
 1. SSH into your other nodes and verify that the users have been correctly
 
