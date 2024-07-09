@@ -427,6 +427,8 @@ Code compiled specifically for HPC hardware can use instruction sets like `AVX`,
 > [!TIP]
 > Remember to open a new ssh session to your compute node and run either `top # preferably htop / btop`. Better yet, if you are running `tmux` in your current session, open a new tmux window using `C-b c` then ssh to your compute node from there, and you can cycle between the two tmux windows using `C-b n`.
 
+Join the [Discussion](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/61) by replying to the thread with a screenshot of your compute node's CPU threads hard at work.
+
 # Intel oneAPI Toolkits and Compiler Suite
 
 Intel oneAPI Toolkits provide a comprehensive suite of development tools that span various programming models and architectures. These toolkits help developers optimize their applications for performance across CPUs, GPUs, FPGAs, and other accelerators, visit [Intel oneAPI Toolkits](https://www.intel.com/content/www/us/en/developer/tools/oneapi/toolkits.html) for more information.
