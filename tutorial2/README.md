@@ -785,15 +785,15 @@ You will now create a new user and add them to the `wheel` group so they have `s
 
 1. Create an Ansilble working directory in your user's `/home`, to house your playbooks
 
-```bash
-# Create the ansible playbooks directory
-mkdir -p ~/playbooks
+   ```bash
+   # Create the ansible playbooks directory
+   mkdir -p ~/playbooks
 
-# Creating the sudo users ansible playbook script
-nano ~/playbooks/create_sudo_users.yml
-```
+   # Creating the sudo users ansible playbook script
+   nano ~/playbooks/create_sudo_users.yml
+   ```
 
-  Add your user name to the `YML` file. A typical convention will have you user your initial and surname, for example "Zama Marshal" would have username "zmtshali".
+   Add your user name to the `YML` file. A typical convention will have you user your initial and surname, for example "Zama Marshal" would have username "zmtshali".
 
 ```yml
 # Add the below content
