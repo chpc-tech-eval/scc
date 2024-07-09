@@ -242,7 +242,7 @@ For the tutorials you are encouraged to use tmux.
 
 1. SSH into your **compute node** and install [`htop`](https://htop.dev/):
    ```bash
-   ssh <user>@<compute node ip>
+   ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no <user>@<compute node ip>
    ```
 
    Once you are successfully logged into your compute node:
