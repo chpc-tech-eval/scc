@@ -700,7 +700,7 @@ Check `ls -ln /home/outofsync` on the **head node** and you'll see that the `tes
 >- `unwittinguser` on the compute node.
 >- `outofsync` on the compute node.
 
-# Ansible User Declaration
+# Ansible's Builtin User Module
 
 Ansible is a powerful configuration management tool used for automating the deployment, configuration, and management of software systems. It allows you to control many different systems from one central location.
 
@@ -814,7 +814,7 @@ The playbook is comprised of a two `tasks`, that are given a `name` and in this 
 1. Run the playbook
 
 ```bash
-ansible-playbook -i ~/playbooks/create_sudo_users.yml
+ansible-playbook -i inventory ~/playbooks/create_sudo_users.yml
 ```
 
 1. SSH into your other nodes and verify that the users have been correctly
