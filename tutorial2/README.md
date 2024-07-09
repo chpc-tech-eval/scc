@@ -3,10 +3,7 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 
 # Table of Contents
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-**Table of Contents**
 
-1. [Tutorial 2: Standing Up a Compute Node and Configuring Users and Services](#tutorial-2-standing-up-a-compute-node-and-configuring-users-and-services)
-1. [Table of Contents](#table-of-contents)
 1. [Checklist](#checklist)
 1. [Spinning Up a Compute Node on Sebowa(OpenStack)](#spinning-up-a-compute-node-on-sebowaopenstack)
     1. [Compute Node Considerations](#compute-node-considerations)
@@ -33,17 +30,26 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 
 # Checklist
 
-This tutorial will demonstrate how to access web services that are on your virtual cluster via the web browser on your local computer. It will also cover basic authentication and central authentication.
+This tutorial will demonstrate how to setup, configure and deploy your **compute node.** From the previous Tutorial, you should have a good understanding of the requirements and considerations to take into account when deploying additional nodes.
+
+You will also learn more about [Public Key Cryptography](https://en.wikipedia.org/wiki/Public-key_cryptography), as you'll be using SSH directives to `ProxyJump` through your head node, whereby you're going to be transparently creating an SSH forwarding tunnel, prior to accessing your compute node.
+
+Once you can access your compute node, you will learn additional Linux systems administrations and experiment with a number of useful tasks and utilities. It is crucial, that you understand and appreciate the specific roles of the head node and your compute node(s).
+
+You will then be deploying a number of fundamental services, that are central to the functioning of your virtual cluster. These include setup and configuration of a firewall, networked time protocol and a network file system. You will also be deploying Ansible, for user account management. Lastly you'll explore two methods for accessing your virtual cluster over a VPN.
 
 <u>In this tutorial you will:</u>
 
-- [ ] Install a web server.
-- [ ] Create an SSH tunnel to access your web service.
-- [ ] Create new local user accounts.
-- [ ] Add local system users to sudoers file for root access.
-- [ ] Share directories between computers.
-- [ ] Connect to machines without a password using public key based authentication.
-- [ ] Install and use central authentication.
+- [ ] Deploy a Compute Node.
+- [ ] Create an SSH tunnel to access your compute node from your workstation.
+- [ ] Understand the roles and purposes of your head node and compute node(s).
+- [ ] Learn additional Linux administration and test a number of utilities.
+- [ ] Configure a simple stateful firewall.
+- [ ] Install and configure a network time service.
+- [ ] Install and configure a network file sharing service.
+- [ ] Understand the interaction between an NFS exported `/home` directly and your SSH keys.
+- [ ] Install, configure and deploy Ansible, and use it to manage your users.
+- [ ] Deploy a VPN service to join (or route) traffic between your workstation and cluster's internal networks.
 
 # Spinning Up a Compute Node on Sebowa(OpenStack)
 
@@ -699,39 +705,49 @@ Check `ls -ln /home/outofsync` on the **head node** and you'll see that the `tes
 
 # Ansible User Declaration
 
-Ansible is a powerful configuration management tool used for automating the deployment, configuration, and management of software systems. It allows you to control many different systems from one central location. 
+Ansible is a powerful configuration management tool used for automating the deployment, configuration, and management of software systems. It allows you to control many different systems from one central location.
 
-In this tutorial we will install ansible and use it to automate the creation of user accounts as well a other system task 
+In this tutorial you will be installing Ansible and using it to automate the creation of user accounts as well as completing a number of administrative tasks. Your Ansible control host (head node) must be able connect to Ansible clients (compute nodes) over SSH, *preferably passwordless*.
 
-## Installing and Configuring Ansible
-Prerequisites :
- 1. ansible control host should be able connect to ansible clients over SSH preferably passwordless,
- 2. via a user account with sudo or root privileges 
- 3. atleast one ansible client
-
-1. Ensure that the Rocky Linux 9 EPEL repository is installed using `dnf`:
-
-```bash
-sudo dnf install epel-release
-```
-
-1. Once the repository is install Ansible 
-
+1. Install Ansible
+   * DNF / YUM
    ```bash
-   sudo dnf install ansible
+   # RHEL, Rocky, Alma, CentOS Stream
+   sudo dnf install epel-release
+   sudo dnf install python ansible
+   ```
+   * APT
+   ```bash
+   # Ubuntu
+   sudo apt update
+   sudo apt install software-properties-common
+   sudo add-apt-repository --yes --update ppa:ansible/ansible
+   sudo apt install python ansible
+   ```
+   * Pacman
+   ```bash
+   # Arch
+   sudo pacman -Syu ansible
    ```
 
-## configuring Ansible
+1. Configure your inventory file
 
-1. Setup ansible host file  with hosts/client machines ansible should connect to, add all hosts to `/etc/ansible/hosts` file. The file has a lot of example to help you   learn ansible configurations
-
+   Setup an Ansible inventory file which contains a list of nodes or *hosts*, that you will be managing.
+   * Open a file in your `/home` directory
    ```bash
-   #open ansible host file
-   sudo vi /etc/ansible/hosts
+   nano ~/hosts
+   ```
+   * Describe your custom inventory file using your cluster's internal network, in the `INI` format
+   ```ini
+   [cluster]
+   # All nodes in the cluster
 
-   #add ansible hosts/clients under servers group
-   [servers]
-   compute1 ansible_ssh_host=10.100.50.5
+   [head]
+   # Only the head node's IP or hostname
+   10.100.50.10
+
+   [compute]
+   #
    compute2 ansible_ssh_host=10.100.50.10
    ```
 
@@ -911,6 +927,7 @@ The following steps can be employed to utilize WireGuard in order to setup a bas
    wg pubkey < headnode.key > peerA.pub
    ```
 1. Peer Configuration
+
    In this setup, your *head node* is listening on port 9993 (remember to open this UDP port), and will accept connections from  your *laptop* / *desktop*.
    ```bash
    # Create a new WireGuard connection and bind an IP address to it

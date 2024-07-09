@@ -41,7 +41,7 @@ You are strongly encouraged to get help and even assist others by [Opening and P
 
 ## Timetable
 
-Everyday will comprise of four lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](./resources/CHPC_2024_SCC_Local_Selection_Round_Timetable.pdf) is available for you to download.
+Everyday will comprise of four lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](resources/CHPC_2024_SCC_Local_Selection_Round_Timetable.pdf) is available for you to download.
 
 <p align="center"><img alt="Timetable." src="resources/CHPC_2024_SCC_Local_Selection_Round_Timetable.png" width=900 /></p>
 
@@ -144,7 +144,7 @@ After the presentation the judging panel will have an opportunity to ask questio
 
 ## Technical Knowledge Assessment
 
-Each Team must work together to answer and complete the [Technical Knowledge Assessment](./resources/CHPC_SCC_2024_Technical_Knowledge_Assessment.docx) to the best of their ability. Team Captains must email your findings to the organizers **no later than 23:00 13th July**. You are required to demonstrate your understanding of the concepts in **YOUR OWN WORDS**. Keep your answers succinct and to the point. Your answers to each of the questions, should not exceed more than 2-3 lines.
+Each Team must work together to answer and complete the [Technical Knowledge Assessment](resources/CHPC_SCC_2024_Technical_Knowledge_Assessment.docx) to the best of their ability. Team Captains must email your findings to the organizers **no later than 23:00 13th July**. You are required to demonstrate your understanding of the concepts in **YOUR OWN WORDS**. Keep your answers succinct and to the point. Your answers to each of the questions, should not exceed more than 2-3 lines.
 
 ## Tutorials
 
