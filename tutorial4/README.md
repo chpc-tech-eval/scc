@@ -83,7 +83,7 @@ Modern solutions use Grafana, Prometheus, and Node Exporter for robust and scala
 ## What is Docker and Docker Compose and How We Will Use It
 Docker is a platform for creating, deploying, and managing containerized applications. Docker Compose defines and manages multi-container applications using a YAML file. For cluster monitoring on a Rocky Linux head node, we will use Docker and Docker Compose to bundle Grafana, Prometheus, and Node Exporter into deployable containers. This approach simplifies installation and configuration, ensuring all components are up and running quickly and consistently, streamlining the deployment of the monitoring stack.
 
-## How to use the notes
+# How to use the notes
 
 When the word **Input:** is mentioned, excpect the next line to have commands that you need to copy and paste into your own terminal.
 
