@@ -124,7 +124,7 @@ The primary purpose of your HPC cluster is to run one of the following codes as 
 * [SwiftSIM](https://github.com/SWIFTSIM/SWIFT)
 * [MLPerf](https://www.nvidia.com/en-us/data-center/resources/mlperf-benchmarks/)
 
-You are not given a choice regarding the application selection. Your team will be told which application to optimize for on Wednesday. For now, you should investigate the codes above to understand their unique hardware and software requirements. You are required to submit a brief (half page) report on your findings to the competition organizers by 23:00 on Tuesday.
+You are not given a choice regarding the application selection. Your team will be told which application to optimize for on Wednesday. For now, you should investigate the codes above to understand their unique hardware and software requirements. **You are required to submit a brief (half page) report on your findings to the competition organizers by 23:00 on Tuesday**.
 
 In addition, your choice of design must take into consideration:
 * Base Platform (Server),
