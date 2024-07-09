@@ -495,7 +495,7 @@ NTP let's you to synchronise the time across all the computers in your network. 
      Modify the `allow` declaration to include the internal subnet of your cluster (uncomment or remove the "#" in front of `allow` if it's there, otherwise this is ignored).
 
    ```bash
-   allow 10.50.100.0/24
+   allow 10.100.50.0/24
    ```
    * Start and enable the `chronyd` service
    ```bash

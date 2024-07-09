@@ -203,10 +203,10 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
 In this section you will finds links to all of the livestreams of the lectures (Teams Meetings) and subsequent recordings for you to refer back to.
 
 1. Day 1 - Welcome, Introduction and Getting Started
-   * **08:30 - 09:30**: [Welcome and Introduction]()
-   * **09:30 - 10:30**: [Getting Started]()
-   * **11:00 - 12:00**: [Intro to Linux & Services]()
-   * **12:00 - 13:30**: [Intro to Tools for the Modern IT Engineer]()
+   * **08:30 - 09:30**: [Welcome and Introduction](https://youtu.be/T68pHDdZW3s)
+   * **09:30 - 10:30**: [Getting Started](https://youtu.be/cIB9Gtpifpk)
+   * **11:00 - 12:00**: [Intro to Linux & Services](https://youtu.be/pbpjAw9eVcM)
+   * **12:00 - 13:30**: [Intro to Tools for the Modern IT Engineer](https://youtu.be/t4hD6NMw9Xg)
 
 2. Day 2 - HPC Hardware, HPC Networking and Systems Administration
    * **08:30 - 09:30**: [HPC Hardware]()
