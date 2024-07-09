@@ -873,9 +873,15 @@ Some of the benefits and key features of WireGuard include:
 
 The following steps can be employed to utilize WireGuard in order to setup a basic tunnel between two or more peers:
 
-| Peer      | External (Public) IP Address | Internal (Private) IP Address | Port |
-|-----------|------------------------------|-------------------------------|------|
-| Head node |                              |                               |      |
+| Peer               | External (Public) IP Address | New Internal (WireGuard) IP Address | Port      |
+|--------------------|------------------------------|-------------------------------------|-----------|
+| Peer A (head node) | 154114.57.x                  | 10.0.0.1/24                         | UDP/9993  |
+| Peer B (desktop)   | 102.64.114.107               | 10.0.0.2/24                         | UDP/51900 |
+| Peer C (laptop)    | *dynamic*                    | 10.0.0.3/24                         | UDP/51902 |
+|                    |                              |                                     |           |
+
+> [!TIP]
+> The UDP Ports do not have to be different. The same UDP port could have been used for all three peers.
 
 1. Installation
    * DNF / YUM
@@ -894,10 +900,59 @@ The following steps can be employed to utilize WireGuard in order to setup a bas
    ```bash
    sudo pacman -S wireguard-tools
    ```
-1.  
+1. Create a private and public key for **each** peer
+   * Create a private key
+   ```bash
+   # We want to restrict reading and writing to the owner, so we temporarily alter the umask with the sub-shell.
+   (umask 0077; wg genkey > headnode.key)
+   ```
+   * Create a public key
+   ```bash
+   wg pubkey < headnode.key > peerA.pub
+   ```
+1. Peer Configuration
+   In this setup, your *head node* is listening on port 9993 (remember to open this UDP port), and will accept connections from  your *laptop* / *desktop*.
+   ```bash
+   # Create a new WireGuard connection and bind an IP address to it
+   sudo ip link add dev wg0 type wireguard
+   sudo ip addr add 10.0.0.1/24 dev wg0
 
+   # Create a WireGuard "Server" on your head node
+   sudo wg set wg0 listen-port 9993 private-key /path/to/peer_A.key
 
+   # If you were staying at the City Lodge in Gqeberha, for exmaple, you endpoint (public ip) would be as follows:
+   sudo wg set wg0 peer PEER_B_PUBLIC_KEY endpoint 102.64.114.107:51900 allowed-ips 10.0.0.2/32
 
+   # Your laptop is roaming "dynamic" and does not have a fixed IP or endpoint
+   sudo wg set wg0 peer PEER_C_PUBLIC_KEY allowed-ips 10.0.0.3/32
+
+   # Bring up your new WireGuard tunnel device
+   sudo ip link set wg0 up
+   ```
+
+   Your head node is now listening for incoming connections.
+
+1. Verify the configuration settings
+   ```bash
+   # Verify that the device has been correctly created
+   ip a
+
+   # Check to see whether your head node is listening for incoming connections
+   wg
+   ```
+
+1. Repeat the above steps for Peers B and C.
+   * This time when you run the `wg` to verify the configuration settings, you should see active connections.
+
+1. Test the WirGuard Connection
+   ```bash
+   # From your head node
+   ping 10.0.0.2
+   ping 10.0.0.3
+
+   # Similarly, do the same from the other nodes
+   ```
+You have successfully configured your WireGuard VPN Tunnel.
 
 # ZeroTier
 
