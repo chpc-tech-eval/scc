@@ -20,9 +20,7 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 1. [User Account Management](#user-account-management)
     1. [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
 1. [Ansible User Declaration](#ansible-user-declaration)
-    1. [Installing and Configuring Ansible](#installing-and-configuring-ansible)
-    1. [configuring Ansible](#configuring-ansible)
-    1. [Create Team Member Accounts](#create-team-member-accounts)
+    1. [Create User Accounts](#create-user-accounts)
 1. [WirGuard VPN Cluster Access](#wirguard-vpn-cluster-access)
 1. [ZeroTier](#zerotier)
 
