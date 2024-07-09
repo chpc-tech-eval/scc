@@ -64,26 +64,26 @@ In this tutorial you will:
 
 # Cluster Monitoring
 
-* Importance of Cluster Monitoring on Linux Machines
+## Importance of Cluster Monitoring on Linux Machines
 Cluster monitoring is crucial for managing Linux machines. Effective monitoring helps detect and resolve issues promptly, provides insights into resource usage (CPU, memory, disk, network), aids in capacity planning, and ensures infrastructure scales with workload demands. By monitoring system performance and health, administrators can prevent downtime, reduce costs, and improve efficiency.
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/f951e4b7-20ff-49a4-b9a7-28aa57e51f5b)
 
-* Traditional Approach Using top or htop
+## Traditional Approach Using top or htop
 Traditionally, Linux system monitoring involves command-line tools like top or htop. These tools offer real-time system performance insights, displaying active processes, resource usage, and system load. While invaluable for monitoring individual machines, they lack the ability to aggregate and visualize data across multiple nodes in a cluster, which is essential for comprehensive monitoring in larger environments.
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/7e0c8b92-adc2-4106-94ee-ca4ee78a13f5)
 
-* Using Grafana, Prometheus, and Node Exporter
+## Using Grafana, Prometheus, and Node Exporter
 Modern solutions use Grafana, Prometheus, and Node Exporter for robust and scalable monitoring. Prometheus collects and stores metrics, Node Exporter provides system-level metrics, and Grafana visualizes this data. This combination enables comprehensive cluster monitoring with historical data analysis, alerting capabilities, and customizable visualizations, facilitating better decision-making and faster issue resolution.
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/3f64a8bd-87fa-4b51-9576-b28da3af632b)
 
 
-* What is Docker and Docker Compose and How We Will Use It
+## What is Docker and Docker Compose and How We Will Use It
 Docker is a platform for creating, deploying, and managing containerized applications. Docker Compose defines and manages multi-container applications using a YAML file. For cluster monitoring on a Rocky Linux head node, we will use Docker and Docker Compose to bundle Grafana, Prometheus, and Node Exporter into deployable containers. This approach simplifies installation and configuration, ensuring all components are up and running quickly and consistently, streamlining the deployment of the monitoring stack.
 
-* How to use the notes
+## How to use the notes
 
 When the word **Input:** is mentioned, excpect the next line to have commands that you need to copy and paste into your own terminal.
 
