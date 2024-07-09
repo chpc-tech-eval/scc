@@ -45,8 +45,18 @@ This tutorial demonstrates _cluster monitoring_ and _workload scheduling_. These
 
 In this tutorial you will:
 
-- [ ] Develop a monitoring stack using Docker Compose
-- [ ] Setup monitoring stack using Prometheus, Node Exporter, and Grafana
+- [ ] Setup a monitoring stack using Docker Compose
+  - [ ] Install and setup the pre-requisites
+  - [ ] Create all the files required for configuring the 3 containers to be launched
+    - [ ] The docker-compose.yml file describing the Node-Exporter, Prometheus and Grafana services
+    - [ ] The prometheus.yml file describing the metrics to be scraped for each host involved
+    - [ ] The prometheus-datasource.yaml file describing the Prometheus datasource for Grafana
+  - [ ] Start the services
+    - [ ] Verify that they are running and accessible (locally, and externally)
+  - [ ] Create a dashboard in Grafana
+    - [ ] Login
+    - [ ] Import the Node-Exporter dashboard
+    - [ ] Check that the dashboard is working as expected
 - [ ] Install the Slurm workload manager across your cluster.
 - [ ] Submit a test job to run on your cluster through the newly-configured workload manager.
 
