@@ -853,4 +853,138 @@ id
 
 # WirGuard VPN Cluster Access
 
+WireGuard is a modern, high-performance, and easy-to-use VPN (Virtual Private Network) protocol that aims to provide a simple yet secure way to create encrypted network connections. WireGuard uses a combination of public and private keys for each peer.
+
+Each device generates its own key pair, and peers exchange public keys. This key exchange process is secure and ensures that only authorized devices can communicate. WireGuard is stateless between packets, which means that it does not maintain session state between the communication of two peers, meaning that sessions persist even when roaming or through network disruptions.
+
+Some of the benefits and key features of WireGuard include:
+
+* **Ease of Setup and Management**: WireGuard is designed to be easy to configure and deploy. Its configuration is straightforward and involves only a few steps, making it accessible even for users who are not experts in networking.
+
+* **Cross-Platform Compatibility**: WireGuard is cross-platform and can run on various operating systems, including Linux, Windows, macOS, iOS, and Android. This makes it versatile and suitable for a wide range of devices.
+
+* **Security**: WireGuard employs modern, state-of-the-art cryptographic primitives. This ensures robust security for all communications.
+
+* **Simplicity**: WireGuard is designed to be simple and minimalistic, with a codebase that is significantly smaller than other VPN protocols like OpenVPN and IPSec. This simplicity helps in reducing the attack surface and makes the protocol easier to audit and maintain.
+
+* **Performance**: WireGuard is known for its high performance and low overhead. It uses state-of-the-art cryptographic algorithms and efficient networking techniques to ensure fast and secure connections.
+
+* **Open Source**: WireGuard is free and open-source, which allows for transparency, community contributions, and customization.
+
+The following steps can be employed to utilize WireGuard in order to setup a basic tunnel between two or more peers:
+
+| Peer      | External (Public) IP Address | Internal (Private) IP Address | Port |
+|-----------|------------------------------|-------------------------------|------|
+| Head node |                              |                               |      |
+
+1. Installation
+   * DNF / YUM
+   ```bash
+   # RHEL, Rocky, Alma CentOS Stream
+   sudo dnf install epel-release
+   sudo dnf install wireguard-tools
+   ```
+   * APT
+   ```bash
+   # Ubuntu
+   sudo apt update
+   sudo apt install wireguard-tools
+   ```
+   * Pacman
+   ```bash
+   sudo pacman -S wireguard-tools
+   ```
+1.  
+
+
+
+
 # ZeroTier
+
+> [!CAUTION]
+> If you have successfully configured WireGuard, generally speaking you will not need additional VPN configurations. Disable the WireGuard service to continue to experiment with this example. You and your team will then decide on the preferred method.
+
+ZeroTier is a software-based network virtualization solution that allows you to create and manage secure virtual networks across different devices and platforms. It combines features of traditional VPNs with modern software-defined networking (SDN) to provide a flexible, efficient, and secure way to connect devices over the internet.
+
+Some of the benefits and key features of ZeroTier include:
+* **Easy Setup and Management**: ZeroTier simplifies the process of setting up virtual networks. It provides a user-friendly interface for creating and managing networks, adding devices, and configuring settings.
+
+* **Cross-Platform Compatibility**: ZeroTier works on a variety of operating systems, including Windows, macOS, Linux, Android, and iOS. This ensures that you can connect virtually any device to your network.
+
+* **Security**: ZeroTier uses strong encryption to secure your connections, ensuring that data transmitted between devices is protected from unauthorized access.
+
+* **Performance**: Unlike traditional VPNs that can introduce latency and reduce performance, ZeroTier is designed to optimize network performance by using peer-to-peer technology and intelligent routing.
+
+* **Scalability**: ZeroTier can scale from small home networks to large enterprise deployments. Its flexible architecture allows it to handle a wide range of network sizes and configurations.
+
+* **Open Source**: The core ZeroTier engine is open source, which allows for transparency, community contributions, and customization.
+
+* **Use Cases**: ZeroTier can be used for a variety of purposes, such as remote access, site-to-site VPNs, IoT networking, multiplayer gaming, and secure peer-to-peer communications. You will be using ZeroTier to create a VPN between your laptops and your head node, regardless of where you are in the world...
+
+You will be able to create Virtual Private Networks (VPN) between systems you might have local network access to, but where you traditionally do not have external network access to. Let's demonstrate this with an example by creating your first ZeroTier network:
+
+1. Create a service account
+
+   Navigate to [my.zerotier.com](https://my.zerotier.com/) and create an account.
+
+1. Create a `zerotier` network from the Networks tab
+
+   Click the `Create A Network` button.
+   <p align="center"><img alt="ZeroTier Create a network." src="./resources/zerotier-networks-empty.png" width=900 /></p>
+
+1. Configure and edit your new network, by clicking on it
+
+   Give it an appropriate name and description
+
+   <p align="center"><img alt="ZeroTier new newtwork name." src="./resources/zerotier_new_network.png" width=900 /></p>
+
+   * Scroll down to the `Members Section`
+
+1. Install ZeroTier on each device that you intend to connect to your new ZeroTier network
+
+   * Use the respective app store for mobile devices
+   * Navigate to [Download ZeroTier](zerotier.com/download) for other devices
+
+     For example, on your head node:
+   ```bash
+   curl -s https://install.zerotier.com | sudo bash
+   ```
+1. Copy the network id from the Networks tab, on your [ZeroTier account page](https://my.zerotier.com)
+
+   i.e. `93afae59635c6f4b` in this example.
+
+1. Join your ZeroTier network from your devices
+
+   * On macOS, Windows, Android and iOS: Use the menu / tray / app icon and `join` your network using your network id.
+   * On your head node and other Linux machines
+   ```bash
+   # You must take note of the unique address indicated from the `info` switch
+   sudo zerotier-cli info
+
+   # Join you zerotier network
+   sudo zerotier-cli join 93afae59635c6f4b
+
+   # Verify whether or not your client is authorized
+   sudo zerotier-cli listnetworks
+   ```
+
+1. Go back to the `Members Section` on your account page:
+
+   * Authorize the devices that you would like to join your ZeroTier network
+   * Provide a name and description to the devices
+   * Assigned `Managed IPs` if they are not automatically assigned
+
+   <p align="center"><img alt="ZeroTier authorize." src="./resources/zerotier_auth.png" width=900 /></p>
+
+1. Confirm the status on your devices
+
+   Should now read `OK` instead of `ACCESS DENIED`
+   ```bash
+   sudo zerotier-cli listnetworks
+   ```
+
+1. Test connectivity between the *Managed IPs* using `ping`.
+
+   * Make sure to open *UDP Port 9993* on your head node and restart the `nfstables` service.
+
+You have successfully created a ZeroTier VPN network.
