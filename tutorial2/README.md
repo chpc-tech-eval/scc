@@ -780,7 +780,8 @@ mkdir -p ~/playbooks
 nano ~/playbooks/create_sudo_users.yml
 ```
 
-Add your user name to the `YML` file. A typical convention will have you user your initial and surname, for example "Zama Marshal" would have username "zmtshali".
+  Add your user name to the `YML` file. A typical convention will have you user your initial and surname, for example "Zama Marshal" would have username "zmtshali".
+
 ```yml
 # Add the below content
 ---
@@ -807,9 +808,9 @@ Add your user name to the `YML` file. A typical convention will have you user yo
         remove: yes
 ```
 
-Where the keyword `all` is used to apply the playbook to all hosts, `become` determines whether commands are executed with `sudo` privileges and `vars` defines variables for the playbook.
+   Where the keyword `all` is used to apply the playbook to all hosts, `become` determines whether commands are executed with `sudo` privileges and `vars` defines variables for the playbook.
 
-The playbook is comprised of a two `tasks`, that are given a `name` and in this instance, make use of the [ansible.builtin.user](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html) module.
+   The playbook is comprised of a two `tasks`, that are given a `name` and in this instance, make use of the [ansible.builtin.user](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html) module.
 
 1. Run the playbook
 
@@ -819,7 +820,7 @@ ansible-playbook -i inventory ~/playbooks/create_sudo_users.yml
 
 1. SSH into your other nodes and verify that the users have been correctly
 
-Congratulations on successfully running your first Ansible playbook.
+   Congratulations on successfully running your first Ansible playbook.
 
 # WirGuard VPN Cluster Access
 
@@ -941,7 +942,7 @@ Some of the benefits and key features of ZeroTier include:
 
 * **Performance**: Unlike traditional VPNs that can introduce latency and reduce performance, ZeroTier is designed to optimize network performance by using peer-to-peer technology and intelligent routing.
 
-* **Scalability**: ZeroTier can scale from small home networks to large enterprise deployments. Its flexible architecture allows it to handle a wide range of network sizes and configurations.
+    * **Scalability**: ZeroTier can scale from small home networks to large enterprise deployments. Its flexible architecture allows it to handle a wide range of network sizes and configurations.
 
 * **Open Source**: The core ZeroTier engine is open source, which allows for transparency, community contributions, and customization.
 

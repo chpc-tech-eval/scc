@@ -174,10 +174,9 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
     1. [Running Basic Linux Commands and Services](tutorial1/README.md#running-basic-linux-commands-and-services)
 1. [Linux Binaries, Libraries and Package Management](tutorial1/README.md#linux-binaries-libraries-and-package-management)
     1. [User Environment and the `PATH` Variable](tutorial1/README.md#user-environment-and-the-path-variable)
-1. [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](tutorial1/README.md#install-compile-and-run-high-performance-linpack-hpl-benchmark**
+1. [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](tutorial1/README.md#install-compile-and-run-high-performance-linpack-hpl-benchmark)
 
 **Tutorial 2** will demonstrate how to configure and stand-up a compute node, and access it using a transparently created, port forwarding SSH tunnel between your workstation and your head node. You will then install a number of critical services across your cluster.
-
 
 1. [Checklist](tutorial2/README.md#checklist)
 1. [Spinning Up a Compute Node on Sebowa(OpenStack)](tutorial2/README.md#spinning-up-a-compute-node-on-sebowaopenstack)
