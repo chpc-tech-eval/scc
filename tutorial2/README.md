@@ -795,30 +795,30 @@ You will now create a new user and add them to the `wheel` group so they have `s
 
    Add your user name to the `YML` file. A typical convention will have you user your initial and surname, for example "Zama Marshal" would have username "zmtshali".
 
-```yml
-# Add the below content
----
-- hosts: all
-  become: true
-  vars:
-    add_sudo_user: zmtshali
-    del_user: unwittinguser
+   ```yml
+   # Add the below content
+   ---
+   - hosts: all
+     become: true
+     vars:
+       add_sudo_user: zmtshali
+       del_user: unwittinguser
 
-  tasks:
+     tasks:
 
-    - name: Ensure sudo user is present on system
-      user:
-        name: "{{ add_sudo_user }}"
-        state: present
-        groups: wheel
-        append: true
-        create_home: true
+       - name: Ensure sudo user is present on system
+         user:
+           name: "{{ add_sudo_user }}"
+           state: present
+           groups: wheel
+           append: true
+           create_home: true
 
-    - name: Remove user from system
-      user:
-        name: "{{ del_user }}"
-        state: absent
-        remove: yes
+       - name: Remove user from system
+         user:
+           name: "{{ del_user }}"
+           state: absent
+           remove: yes
 ```
 
    Where the keyword `all` is used to apply the playbook to all hosts, `become` determines whether commands are executed with `sudo` privileges and `vars` defines variables for the playbook.
