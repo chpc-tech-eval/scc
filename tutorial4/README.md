@@ -54,8 +54,8 @@ In this tutorial you will:
   - [ ] Start the services
     - [ ] Verify that they are running and accessible (locally, and externally)
   - [ ] Create a dashboard in Grafana
-    - [ ] Login
-    - [ ] Import the Node-Exporter dashboard
+    - [ ] Login to the Grafana endpoint (via your browser)
+    - [ ] Import the appropriate Node-Exporter dashboard
     - [ ] Check that the dashboard is working as expected
 - [ ] Install the Slurm workload manager across your cluster.
 - [ ] Submit a test job to run on your cluster through the newly-configured workload manager.
