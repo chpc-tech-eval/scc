@@ -741,14 +741,19 @@ In this tutorial you will be installing Ansible and using it to automate the cre
    ```ini
    [cluster]
    # All nodes in the cluster
+   10.100.50.10
+   10.100.50.20
+   10.100.50.30
 
    [head]
-   # Only the head node's IP or hostname
+   # Only the head node's IP or hostname, when you need stricly management tasks
    10.100.50.10
 
    [compute]
-   #
-   compute2 ansible_ssh_host=10.100.50.10
+   # List of all of your COMPUTE nodes
+   # Depending on your cluster design, your head node may also be compute
+   10.100.50.20
+   10.100.50.30
    ```
 
    The servers is a group_name tag that lets you refer to any host (ansible clients) listed under it with one word. 
