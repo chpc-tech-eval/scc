@@ -29,7 +29,7 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 # Checklist
 
 This tutorial will demonstrate how to setup, configure and deploy your **compute node.** From the previous Tutorial, you should have a good understanding of the requirements and considerations to take into account when deploying additional nodes.
-
+ 
 You will also learn more about [Public Key Cryptography](https://en.wikipedia.org/wiki/Public-key_cryptography), as you'll be using SSH directives to `ProxyJump` through your head node, whereby you're going to be transparently creating an SSH forwarding tunnel, prior to accessing your compute node.
 
 Once you can access your compute node, you will learn additional Linux systems administrations and experiment with a number of useful tasks and utilities. It is crucial, that you understand and appreciate the specific roles of the head node and your compute node(s).

@@ -174,7 +174,30 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
     1. [Running Basic Linux Commands and Services](tutorial1/README.md#running-basic-linux-commands-and-services)
 1. [Linux Binaries, Libraries and Package Management](tutorial1/README.md#linux-binaries-libraries-and-package-management)
     1. [User Environment and the `PATH` Variable](tutorial1/README.md#user-environment-and-the-path-variable)
-1. [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](tutorial1/README.md#install-compile-and-run-high-performance-linpack-hpl-benchmark)
+1. [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](tutorial1/README.md#install-compile-and-run-high-performance-linpack-hpl-benchmark**
+
+**Tutorial 2** will demonstrate how to configure and stand-up a compute node, and access it using a transparently created, port forwarding SSH tunnel between your workstation and your head node. You will then install a number of critical services across your cluster.
+
+
+1. [Checklist](tutorial2/README.md#checklist)
+1. [Spinning Up a Compute Node on Sebowa(OpenStack)](tutorial2/README.md#spinning-up-a-compute-node-on-sebowaopenstack)
+    1. [Compute Node Considerations](tutorial2/README.md#compute-node-considerations)
+1. [Accessing Your Compute Node Using `ProxyJump` Directive](tutorial2/README.md#accessing-your-compute-node-using-proxyjump-directive)
+    1. [Setting a Temporary Password on your Compute Node](tutorial2/README.md#setting-a-temporary-password-on-your-compute-node)
+1. [Understanding the Roles of the Head Node and Compute Node](tutorial2/README.md#understanding-the-roles-of-the-head-node-and-compute-node)
+    1. [Terminal Multiplexers and Basic System Monitoring](tutorial2/README.md#terminal-multiplexers-and-basic-system-monitoring)
+1. [Manipulating Files and Directories](tutorial2/README.md#manipulating-files-and-directories)
+1. [Verifying Networking Setup](tutorial2/README.md#verifying-networking-setup)
+1. [Configuring a Simple Stateful Firewall Using nftables](tutorial2/README.md#configuring-a-simple-stateful-firewall-using-nftables)
+1. [Network Time Protocol](tutorial2/README.md#network-time-protocol)
+1. [Network File System](tutorial2/README.md#network-file-system)
+1. [Generating an SSH Key for your NFS `/home`](tutorial2/README.md#generating-an-ssh-key-for-your-nfs-home)
+1. [User Account Management](tutorial2/README.md#user-account-management)
+    1. [Out-Of-Sync Users and Groups](tutorial2/README.md#out-of-sync-users-and-groups)
+1. [Ansible User Declaration](tutorial2/README.md#ansible-user-declaration)
+    1. [Create User Accounts](tutorial2/README.md#create-user-accounts)
+1. [WirGuard VPN Cluster Access](tutorial2/README.md#wirguard-vpn-cluster-access)
+1. [ZeroTier](tutorial2/README.md#zerotier)
 
 # Lecture Recordings
 
