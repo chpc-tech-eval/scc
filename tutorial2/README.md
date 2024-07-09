@@ -383,7 +383,7 @@ Stateful packet inspection, also referred to as dynamic packet filtering, is a n
 
 1. Create a new `table` to house the rules for your head node
    ```bash
-   sudo nft add table inet my_table
+   sudo nft add table inet hn_table
    ```
 1. Add the `input`, `forward`, and `output` base chains.
    * `input` chain refers to inbound packets and traffic arriving *into* your head node,
@@ -397,7 +397,6 @@ Stateful packet inspection, also referred to as dynamic packet filtering, is a n
    sudo nft add chain inet hn_table hn_forward '{ type filter hook forward priority 0 ; policy accept ; }'
    sudo nft add chain inet hn_table hn_output '{ type filter hook output priority 0 ; policy accept ; }'
    ```
-   If these ports were set to 
 
 1. Specific rules for TCP and UDP will be managed by additional chains
    ```bash
@@ -709,7 +708,7 @@ Ansible is a powerful configuration management tool used for automating the depl
 
 In this tutorial you will be installing Ansible and using it to automate the creation of user accounts as well as completing a number of administrative tasks. Your Ansible control host (head node) must be able connect to Ansible clients (compute nodes) over SSH, *preferably passwordless*.
 
-1. Install Ansible
+1. Install Ansible on your head node (it is not required on your compute node)
    * DNF / YUM
    ```bash
    # RHEL, Rocky, Alma, CentOS Stream
@@ -735,16 +734,10 @@ In this tutorial you will be installing Ansible and using it to automate the cre
    Setup an Ansible inventory file which contains a list of nodes or *hosts*, that you will be managing.
    * Open a file in your `/home` directory
    ```bash
-   nano ~/hosts
+   nano ~/inventory
    ```
    * Describe your custom inventory file using your cluster's internal network, in the `INI` format
    ```ini
-   [cluster]
-   # All nodes in the cluster
-   10.100.50.10
-   10.100.50.20
-   10.100.50.30
-
    [head]
    # Only the head node's IP or hostname, when you need stricly management tasks
    10.100.50.10
@@ -756,34 +749,11 @@ In this tutorial you will be installing Ansible and using it to automate the cre
    10.100.50.30
    ```
 
-   The servers is a group_name tag that lets you refer to any host (ansible clients) listed under it with one word. 
-
-2. Setup a ansible user with sudo or root privileges that ansible will use to e   xecute ansible tasks and connect with other ansible clients, the user must also exist on all ansible clients on ansible hosts under `servers` group
-
-   create a directory `group_vars` under ansible configuration structure `/etc/ansible` for creating YAML-formatted config files for each group you want to configure  
+1. Test to see if your Ansible control host can access all nodes listed in the inventory file
 
    ```bash
-   sudo mkdir /etc/ansible/group_vars
-
-   #create a servers file for configuring servers in the ansible hosts file 
-   vi mkdir /etc/ansible/group_vars/servers
-   ```
-
-   Add the following code to the file. YAML files start with ---
-
-   ```text
-   ---
-   ansible_ssh_user: ansibe_user
-   ```
-
-   save and exit the file. In vi, you can do this by pressing ESC and then :x.
-   If the user you are currenlty logged in as has sudo privileges and exists on all ansible hosts then there no need to do number 2.
-
-3. test ansible if ansible control host can access all clients hosts under group servers in the ansible host file
-
-   ```bash
-   #access as a group
-   ansible -m ping servers
+   # access as a group
+   ansible -i inventory compute -m ping
 
    #access as an individual host
    ansible -m ping compute
@@ -791,86 +761,67 @@ In this tutorial you will be installing Ansible and using it to automate the cre
    #run command on hosts
    ansible -m shell -a 'free -m' compute
    ```
-   <p align="center"><img alt="ansible testing hosts client connection " src="./resources/ansible_ping_servers.png" width=900 /></p>
 
-   <p align="center"><img alt="ansible testing individual host client connection " src="./resources/ansible_individual_host_access.png" width=900 /></p>
+## Create User Accounts
 
-   <p align="center"><img alt="run command on ansible clients" src="./resources/ansible_run_command_on_hosts.png" width=900 /></p>
+You will now use Ansible to create user accounts on ***all*** clients. To achieve this you will need to create Ansible YML scripts called `ansible playbooks` used for automating administrative tasks.
 
-<p align="center"><img alt="ansible testing hosts client connection " src="./resources/ansible_ping_feedback.png" width=900 /></p>
-
-## Create Team Member Accounts
-We will use ansible to create user accounts on remote ansible clients, to achive this we need to create ansible YML scripts called `ansible playbooks` used for automating admin tasks. 
-
-In this section you will learn to:
-Create a playbook that will perform the following actions on all Ansible hosts/clients:
-    1. Create a new sudo user and granting sudo priviledges.
-    2. Copy a local SSH public key and include it in the `authorized_keys` file for the new administrative user on the remote host.
+> [!TIP]
+> You could use an LDAP service or something similar for identities management, such as [FreeIPA](https://www.freeipa.org/page/Main_Page), however due to the small scale of your cluster, and the limited number of users, [Ansible's Builtin User Module](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html) is more than adequate for managing your team's user accounts.
 
 
-1. Create an ansible working directory in your `/home/rocky`, this is where all ansible playbooks will reside.
+You will now create a new user and add them to the `wheel` group so they have `sudo` or `root` privileges.
+
+1. Create an Ansilble working directory in your user's `/home`, to house your playbooks
 
 ```bash
-#create the ansible playbooks directory
-sudo mkdir -p /home/rocky/ansible/playbooks
+# Create the ansible playbooks directory
+mkdir -p ~/playbooks
 
-#creating the sudo users ansible playbook script, 
-vi /home/rocky/ansible/playbooks/sudo_users.yml
-
-# add the below content
----
-- hosts: all
-  become: true
-  vars:
-    created_username: team_lead
-
+# Creating the sudo users ansible playbook script
+nano ~/playbooks/create_sudo_users.yml
 ```
 
-The above says in `all hosts` create user team_lead, `become` states whether commands are done with sudo priviledges. `var` stores data in variables so that you only edit that line when you decide to change 
-
-Granting user team_lead with sudo privileges by adding:
-
-```bash
-
-# create user team_lead, execute tasks to grand sudo priviledge 
+Add your user name to the `YML` file. A typical convention will have you user your initial and surname, for example "Zama Marshal" would have username "zmtshali".
+```yml
+# Add the below content
 ---
 - hosts: all
   become: true
   vars:
-    created_username: team_lead
-  
+    add_sudo_user: zmtshali
+    del_user: unwittinguser
+
   tasks:
-    - name: create user with sudo priviledges 
-      user: 
-        name: "{{ created_username }}"
-        state: present 
+
+    - name: Ensure sudo user is present on system
+      user:
+        name: "{{ add_sudo_user }}"
+        state: present
         groups: wheel
         append: true
-        create_home: true 
-    
-    - name: Set authorized key for remote user
-      ansible.posix.authorized_key:
-        user: "{{ created_username }}"
-        state: present
-        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
-     
+        create_home: true
+
+    - name: Remove user from system
+      user:
+        name: "{{ del_user }}"
+        state: absent
+        remove: yes
 ```
 
-Run the playbook script 
+Where the keyword `all` is used to apply the playbook to all hosts, `become` determines whether commands are executed with `sudo` privileges and `vars` defines variables for the playbook.
+
+The playbook is comprised of a two `tasks`, that are given a `name` and in this instance, make use of the [ansible.builtin.user](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html) module.
+
+1. Run the playbook
 
 ```bash
-ansible-playbook /home/rocky/ansible/playbooks/sudo_users.yml -l servers
+ansible-playbook -i ~/playbooks/create_sudo_users.yml
 ```
 
-<p align="center"><img alt=" run the sudo_user playbook " src="./resources/ansible_create_user_run_result.png" width=900 /></p>
+1. SSH into your other nodes and verify that the users have been correctly
 
-Verify user `team_lead` was created on compute node and it on a `wheel` group 
-
-<p align="center"><img alt=" user team lead exist on ansible client " src="./resources/ansible_team_lead_user_verification.png" width=900 /></p>
-```bash
-ssh compute
-id 
-```
+Congratulations on successfully running your first Ansible playbook.
 
 # WirGuard VPN Cluster Access
 
