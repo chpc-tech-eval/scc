@@ -12,12 +12,12 @@
     1. [System Libraries](#system-libraries)
     1. [Configure and Run HPL on Compute Node](#configure-and-run-hpl-on-compute-node)
 1. [Building and Compiling OpenBLAS and OpenMPI Libraries from Source](#building-and-compiling-openblas-and-openmpi-libraries-from-source)
-1. [Intel OneAPI Toolkits and Compiler Suite](#intel-oneapi-toolkits-and-compiler-suite)
+1. [Intel oneAPI Toolkits and Compiler Suite](#intel-oneapi-toolkits-and-compiler-suite)
     1. [Configure and Install Intel oneAPI Base and HPC Toolkits](#configure-and-install-intel-oneapi-base-and-hpc-toolkits)
     1. [Configuring and Running HPL with Intel OneAPI Toolkit and MKL](#configuring-and-running-hpl-with-intel-oneapi-toolkit-and-mkl)
 1. [LinPACK Theoretical Peak Performance](#linpack-theoretical-peak-performance)
     1. [Top500 List](#top500-list)
-1. [Spinning Up a Second Compute Node](#spinning-up-a-second-compute-node)
+1. [Spinning Up a Second Compute Node Using a Snapshot](#spinning-up-a-second-compute-node-using-a-snapshot)
     1. [Running HPL Across Multiple Nodes](#running-hpl-across-multiple-nodes)
 1. [HPC Challenge](#hpc-challenge)
 1. [Application Benchmarks and System Evaluation](#application-benchmarks-and-system-evaluation)
@@ -526,13 +526,13 @@ After you've successfully completed the previous section, you will be ready to r
    From your `~/hpl` folder, with a properly configured environment, copy and edit the configuration
    ```bash
    # Copy a setup configuration script to use as a template
-   cp setup/Make.Linux64 ./
+   cp setup/Make.Linux_Intel64 ./
 
    # Edit the configuration file to make use of your Intel oneAPI Toolkit
    nano Make.Linux64
    ```
 
-1. Configure your `Make.Linux64`
+1. Configure your `Make.Linux_Intel64`
 
    Ensure that you make the following changes and amendments:
    ```conf
@@ -543,7 +543,7 @@ After you've successfully completed the previous section, you will be ready to r
 
 1. Compile your HPL Binary using the Intel oneAPI Toolkit
    ```bash
-   make arch=Linux64
+   make arch=Linux_Intel64
    ```
 
 1. Reuse your `HPL.dat` from when you compiled OpenMPI and OpenBLAS from source.
@@ -555,7 +555,7 @@ After you've successfully completed the previous section, you will be ready to r
 
 It is useful to know what the theoretical FLOPS performance (RPeak) of your hardware is when trying to obtain the highest benchmark result (RMax). RPeak can be derived from the formula:
 
-**RPeak = CPU Frequency [GHz] * Num CPU Cores * OPS/cycle**
+**RPeak = CPU Frequency [GHz] x Num CPU Cores x OPS/cycle**
 
 Newer CPU architectures allow for 'wider' instruction sets which execute multiple instructions per CPU cycle. The table below shows the floating point operations per cycle of various instruction sets:
 
@@ -598,17 +598,17 @@ The [TOP500 list](https://top500.org/lists/top500/2024/06/) is a project that ra
    |      |                                                 |           |                       |                          |
 
 > [!IMPORTANT]
-> You do **NOT** need to try and Rank you VM's HPL performance. Cores and threads are used interchangeably in this context. Following the recommended configuration and guides, your head node has one CPU package with two compute cores / threads. Continuing this same analogy, your compute node has one CPU with six cores / threads.
+> You do **NOT** need to try and Rank you VM's HPL performance. Cores and threads are used interchangeably in this context. Following the recommended configuration and guides, your head node has one CPU package with two compute cores (or threads). Continuing this same analogy, your compute node has one CPU with six cores (or threads).
 
-# Spinning Up a Second Compute Node
+# Spinning Up a Second Compute Node Using a Snapshot
 
-* Using a Snapshot
+At this point you are ready to run HPL on your cluster with two compute nodes. From your OpenStack workspace, navigate to `Compute` &rarr; `Instances` and create a snapshot from your compute node.
 
-At this point you are ready to run HPL on your cluster with two compute nodes. It's time to deploy a second compute node in Open Stack.
+Launch a new instance, as you did in [Tutorial 1](../tutorial1/README.md#launch-a-new-instance) and [Tutorial 2](../tutorial2/README.md#spinning-up-a-compute-node-on-sebowaopenstack) only this time you'll be using the snapshot that you have just created as boot source.
 
-Pay careful attention to the hostname, network and other configuration settings that may be specific to and may conflict with your initial node. Once your two compute nodes have been successfully deployed, are accessible from the head node and added to SLURM, you can continue with running HPL across multiple nodes.
+<p align="center"><img alt="OpenStack create instance from Snapshot." src="./resources/openstack_instance_snapshot.png" width=900 /></p>
 
-As a sanity check repeat Steps 10-12 of the previous task: [Message Passing Interface (MPI)](#message-passing-interface-mpi), but this time do it for **two** compute nodes and check the new results of your benchmark.
+Pay careful attention to the hostname, network and other configuration settings that may be specific to and may conflict with your initial node. Once your two compute nodes have been successfully deployed, are accessible from the head node and added to your MPI `hosts` file, you can continue with running HPL across multiple nodes.
 
 ## Running HPL Across Multiple Nodes
 
@@ -640,7 +640,7 @@ HPC Challenge (or HPCC) is benchmark suite which contains 7 micro-benchmarks use
 
 1. Install `perl` on your head node.
 
-1. Run the [format.pl script](./format.pl) with to format your benchmark results into a readable format. Compare your HPL score with your standalone HPL.
+1. Run the [format.pl script](resources/format.pl) with to format your benchmark results into a readable format. Compare your HPL score with your standalone HPL.
    ```bash
    ./format.pl -w -f hpccoutf.txt
    ```
@@ -706,6 +706,103 @@ You may modify the `mpirun` command to optimise performance (significantly) but 
 
 ## LAMMPS (Lennard-Jones)
 
+[LAMMPS](https://docs.lammps.org) (Large-scale Atomic/Molecular Massively Parallel Simulator) is a classical molecular dynamics simulation code designed for simulating particles in a variety of fields including materials science, chemistry, physics, and biology. It was originally developed at Sandia National Laboratories and is now maintained by a community of developers. LAMMPS runs on single processors or in parallel using message-passing techniques and a spatial-decomposition of the simulation domain.
+
+The purpose of this benchmark is to demonstrate to you that there are often multiple way to build and compile many applications.
+
+1. Configure prerequisites and install dependencies
+   * DNF / YUM
+   ```bash
+   # RHEL, Rocky, Alma, CentOS Stream
+   sudo dnf groupinstall 'Development Tools' -y
+   sudo dnf install cmake git -y
+   sudo dnf install fftw-devel libjpeg-devel libpng-devel libtiff-devel libX11-devel libXext-devel libXrender-devel -y
+   ```
+   * APT
+   ```bash
+   # Ubuntu
+   sudo apt install build-essential cmake git -y
+   sudo apt install libfftw3-dev libjpeg-dev libpng-dev libtiff-dev libx11-dev libxext-dev libxrender-dev -y
+   ```
+   * Pacman
+   ```bash
+   # Arch
+   sudo pacman -S base-devel cmake git -y
+   sudo pacman -S fftw libjpeg-turbo libpng libtiff libx11 libxext libxrender -y
+   ```
+1. Clone, build and compile LAMMPS with `make`
+
+   Building LAMMPS with traditional Makefiles requires that you have a `Makefile.<machine>` file appropriate for your system in either the `src` folder.
+   ```bash
+   # Ensure that the correct paths are exported
+
+   git clone -b stable https://github.com/lammps/lammps.git
+   cd lammps/src
+
+   # List the different make options
+   make
+
+   # Build a serial LAMMPS executable using GNU g++
+   # Remember to monitor top / htop / btop in another tmux pane
+   make serial
+
+   # Build a parallel LAMMPS executable with MPI
+   # If you were frustrated at how long the previous make build took,
+   # try to build and compile using the -j<num_threads> switch
+   make mpi
+   ```
+1. Copy the executable binaries to the benchmarks folder
+   ```bash
+   cp lmp_serial ../bench
+   cp lmp_mpi ../bench
+   ```
+
+1. Execute the Lennard Jones benchmarks
+   ```bash
+   cd ../bench
+
+   # Verify that only one thread is utilized
+   ./lmp_serial -in in.lj
+
+   # Verify the number of OpenMP threads utilized
+   export OMP_NUM_THREADS=<num_threads>
+   mpirun -np <num_procs> lmp_mpi -in in.lj
+   ```
+1. Rerun your binaries against the Rhodopsin Structure benchmark
+
+   The Lennard Jones benchmark might be too short for proper evaluation. These small bencharks are often used for an installation validation test.
+   ```bash
+   # Save the output for submission
+   ./lmp_serial < in.rhodo > lmp_serial_rhodo.out
+   mpirun -np <num_procs> lmp_mpi -in in.rhodo > lmp_mpi_rhodo.out
+   ```
+
+> [!IMPORTANT]
+> The following section is included here for illustrative purposes. If you feel that you are falling behind in the competition, you may read through this section without completing it. Limited instructions will be provided, and you will be required to take decisions in terms of choice of compiler, MPI implementation, FFTW library. This will be good practice for what benchmarks *might* look like in the Nationals Round of the Student Cluster Competition.
+>
+> 1. Build LAMMPS with GCC, OpenMP and OpenMPI using CMake
+>   * In addition to a choice of `gcc`, `MPI` implementation and an `FFTW` library, you'll need to also install `cmake`.
+>   * If you're using the same checkout as before, you need to purge your `src` directory
+>   ```bash
+>   cd lammps/src
+>
+>   # Remove conflicting files from the previous build, uninstall all packages
+>   # make no-all purge
+>   ```
+>   * Configure the build with CMake, then compile and install
+>   ```bash
+>   cmake ../cmake -D BUILD_MPI=on -D BUILD_OMP=on -D CMAKE_C_COMPILER=gcc -D CMAKE_CXX_COMPILER=g++ -D MPI_C_COMPILER=mpicc -D MPI_CXX_COMPILER=mpicxx
+>
+>   make -j$(nproc)
+>
+>   make DESTDIR=/<path-to-install-dir> install
+>   ```
+>   * Rerun the benchmarks
+>   ```bash
+>   export OMP_NUM_THREADS=<num_threads>
+>   mpirun -np <num_procs> ./lmp -in <input_file>
+>   ```
+
 ## Qiskit (Quantum Volume)
 
 IBM's Qiskit is an open-source [Software Development Kit (SDK)](https://www.ibm.com/quantum/qiskit) for working with quantum computers at the level of circuits, pulses, and algorithms. It provides tools for creating and manipulating quantum programs and running them on prototype quantum devices on IBM Quantum Platform or on simulators on a local computer.
@@ -714,7 +811,7 @@ IBM's Qiskit is an open-source [Software Development Kit (SDK)](https://www.ibm.
 
 **Quantum Volume (QV)** is a single-number metric that can be measured using a concrete protocol on near-term quantum computers of modest size. The QV method quantifies the largest random circuit of equal width and depth that the computer successfully implements. Quantum computing systems with high-fidelity operations, high connectivity, large calibrated gate sets, and circuit rewriting tool chains are expected to have higher quantum volumes. Simply put, Quantum Volume is a single number meant to encapsulate the performance of today’s quantum computers, like a classical computer’s transistor count.
 
-For this benchmark, we will be providing you with the details of the script that you will need to write yourself, or [download from the competition GitHub repository](https://github.com/chpc-tech-eval/chpc24-scc-nmu/blob/main/tutorial3/qv_experiment.py) in order to successfully conduct the (Quantum Volume Experiment)(https://qiskit.org/ecosystem/experiments/dev/manuals/verification/quantum_volume.html).
+For this benchmark, we will be providing you with the details of the script that you will need to write yourself, or [download](resources/qv_experiment.py) from the competition GitHub repository in order to successfully conduct the (Quantum Volume Experiment)(https://qiskit.org/ecosystem/experiments/dev/manuals/verification/quantum_volume.html).
 
 1. Configure and install dependencies
    You will be using [Python Pip - PyPI](https://pypi.org/project/pip/) to configure and install Qiskit. `pip` is the official tool for installing and using Python packages from various indexes.
@@ -772,10 +869,10 @@ For this benchmark, we will be providing you with the details of the script that
 
 1. Parameterize the following variables for the QV experiment
 
-  You'll need to parameterize the following variables, in order to generate the QV circuits and run them on a backend and on an ideal simulator:
-  * `qubits`: number or list of physical qubits to be simulated for the experiment,
-  * `depth`: meaning the number of discrete time steps during which the circuit can run gates before the qubits decohere.
-  * `shots`: used for sampling statistics, number of repetitions of each circuit.
+   These are used to generate the QV circuits and run them on a backend and on an ideal simulator:
+   * `qubits`: number or list of physical qubits to be simulated for the experiment,
+   * `depth`: meaning the number of discrete time steps during which the circuit can run gates before the qubits decohere.
+   * `shots`: used for sampling statistics, number of repetitions of each circuit.
 
 1. Run the benchmark by executing the script you've just written:
    ```bash

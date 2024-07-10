@@ -487,6 +487,8 @@ Restart and enable the `nftables` service.
 >}
 ># Remember to include this file in /etc/sysconfig/nftables.conf and to restart the nftables service.
 >```
+>
+> If you are having difficulties configuring your firewall, but would still like to try and attempt this section, you can make use of this [hn.nft](resources/hn.nft) template.
 
 # Network Time Protocol
 
