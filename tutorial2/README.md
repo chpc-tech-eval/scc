@@ -590,6 +590,9 @@ The head node will act as the [NFS server](https://docs.rockylinux.org/guides/fi
    # You cannot mount /home while you are occupying it
    cd /
    sudo mount -t nfs <headnode_ip>:/home /home
+
+   # For SELinux based systems (RHEL, Rocky, Alma, CentOS Stream)
+   sudo setsebool -P use_nfs_home_dirs 1
    ```
 1. Verify that you successfully mounted `/home` export
    ```bash
