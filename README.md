@@ -196,9 +196,9 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
 1. [Ansible User Declaration](tutorial2/README.md#ansible-user-declaration)
     1. [Create User Accounts](tutorial2/README.md#create-user-accounts)
 1. [WirGuard VPN Cluster Access](tutorial2/README.md#wirguard-vpn-cluster-access)
-1. [ZeroTier](tutorial2/README.md#zerotier**
+1. [ZeroTier](tutorial2/README.md#zerotier)
 
-**Tutorial 3**
+**Tutorial 3** will demonstrate how to configure, build, compile and install a number of applications. You will also be building these applications with different tools. Finally, you will learn how to run applications across your cluster.
 
 
 1. [Checklist](tutorial3/README.md#checklist)

@@ -266,19 +266,15 @@ We need to install the statically `($(LIBdir)/libhpl.a)` and dynamically`($(LAdi
      * ***"Memory Usage"*** is proportional to `N x N`.
 
    <p align="center"><img alt="P x Q Matrix Decomposition" src="./resources/An-example-of-P-by-Q-partitioning-of-a-HPL-matrix-in-6-processes-2x3-decomposition.png" width=300 /></p>
-   The image depicts an example of P by Q partitioning of an HPL matrix in 6 processes. In this case they've been decomposed into 2 x 3. The image is from a journal article publication, *'Gaining asynchrony by using hybrid UPC/SMPSs'* by [J Labarta et. al.](https://www.researchgate.net/publication/228524393_Gaining_asynchrony_by_using_hybrid_UPCSMPSs)
+   The image depicts an example of P by Q partitioning of an HPL matrix in 6 processes. In this case they've been decomposed into 2 x 3. The image is from a journal article publication, [Gaining asynchrony by using hybrid UPC/SMPSs](https://www.researchgate.net/publication/228524393_Gaining_asynchrony_by_using_hybrid_UPCSMPSs)
 
     We can observe that if you we to *double* `N`, your run would take **four** times as long. If you **tippled** `N`, your run would use **nine times as much** memory. If you made `N` **ten times larger**, your run would use **hundred times** more memory, and would take **hundred times** as long to run.
    * `NB` defines the block (or chunk) size into which the array is divided. The optimal value is determined by the CPU architecture such that the block fits in cache. For best performance `N` should be a multiple of `NB`.
    * `P x Q` define the domains (in two dimensions) for how the array is partitioned on a distributed memory system. Therefore `P x Q` typically should equate more or less to the number of MPI ranks, or number of nodes, or number of NUMA domains. For example, if you have 4 single CPU nodes, the permutations for `P` and `Q` include [1, 4] and [2, 2]. Similarly, if you have 4 dual socket nodes, the permutations for `P` and `Q` include [1,8], [2, 4], etc...
 
-
-
 1. Prepare your environment to rerun your `xhpl` binary on your **compute node**
 
-   Make sure to open an additional ssh session to your compute node, so that you can monitor your CPU utilization using `top # preferably btop / htop`, refer to Discussion
-
-   TODO: Link discussion
+   Make sure to open an additional ssh session to your compute node, so that you can monitor your CPU utilization using `top # preferably btop / htop`.
 
    ```bash
    # Export the path to the OpenMPI Library
