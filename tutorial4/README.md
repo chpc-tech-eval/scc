@@ -20,10 +20,7 @@
         1. [Node Exporter](#node-exporter)
         1. [Grafana](#grafana)
     1. [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
-        1. [Prometheus](#prometheus-1)
-        1. [Node Exporter](#node-exporter-1)
-            1. [SSH Tunneling](#ssh-tunneling)
-        1. [Grafana](#grafana-1)
+    1. [Legacy Approach](#legacy-approach)
 1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
     1. [Prerequisites](#prerequisites)
     1. [Head Node Configuration (Server) ](#head-node-configuration-server)
@@ -449,6 +446,7 @@ Then you should see:
 > [!NOTE]
 > Should you have any difficulties running the above configuration, use the alternative process below to deploy your monitoring stack. Click on the heading to reveal content.
 
+## Legacy Approach
 <details>
 <summary>Installing your monitoring stack from pre-compiled binaries</summary>
 For this tutorial we will install from pre-complied binaries.
