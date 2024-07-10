@@ -3,6 +3,7 @@
 ## Table of Contents
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+
 1. [Checklist](#checklist)
 1. [Managing Your Environment](#managing-your-environment)
     1. [NFS Mounted Shared `home` folder and the `PATH` Variable](#nfs-mounted-shared-home-folder-and-the-path-variable)
@@ -14,7 +15,7 @@
 1. [Building and Compiling OpenBLAS and OpenMPI Libraries from Source](#building-and-compiling-openblas-and-openmpi-libraries-from-source)
 1. [Intel oneAPI Toolkits and Compiler Suite](#intel-oneapi-toolkits-and-compiler-suite)
     1. [Configure and Install Intel oneAPI Base and HPC Toolkits](#configure-and-install-intel-oneapi-base-and-hpc-toolkits)
-    1. [Configuring and Running HPL with Intel OneAPI Toolkit and MKL](#configuring-and-running-hpl-with-intel-oneapi-toolkit-and-mkl)
+    1. [Configuring and Running HPL with Intel oneAPI Toolkit and MKL](#configuring-and-running-hpl-with-intel-oneapi-toolkit-and-mkl)
 1. [LinPACK Theoretical Peak Performance](#linpack-theoretical-peak-performance)
     1. [Top500 List](#top500-list)
 1. [Spinning Up a Second Compute Node Using a Snapshot](#spinning-up-a-second-compute-node-using-a-snapshot)
@@ -40,7 +41,7 @@ In this tutorial you will:
 - [ ] Install, configure and use Lmod.
 - [ ] Understand some of the fundamental considerations around optimizing HPL.
 - [ ] Understand the pros and cons of compiling libraries from source.
-- [ ] Install and make use of Intel's OneAPI framework to run HPL.
+- [ ] Install and make use of Intel's oneAPI framework to run HPL.
 - [ ] Understand theoretical system peak performance.
 - [ ] Appreciate the significance of the Top500 list and bencmarking.
 - [ ] Standup and Configure a Second Compute Node, and running applications across a cluster.
@@ -517,7 +518,7 @@ You will be making use of the **2024-2** versions of the Intel oneAPI and HPC To
 
 You have successfully installed the Intel oneAPI Base and HPC Toolkits, including Intel Compiler Suite and Math Kernel Libraries.
 
-## Configuring and Running HPL with Intel OneAPI Toolkit and MKL
+## Configuring and Running HPL with Intel oneAPI Toolkit and MKL
 
 After you've successfully completed the previous section, you will be ready to recompile HPL with Intel's `icx` compiler and `mkl` math kernel libraries.
 
@@ -612,41 +613,54 @@ Pay careful attention to the hostname, network and other configuration settings 
 
 ## Running HPL Across Multiple Nodes
 
+Everything is now in place for you to run HPL across your two compute nodes. You must ensure that all libraries and dependencies are satisfied across your cluster. You must also ensure that your passwordless SSH is properly configured. Your NFS mounted `/home` directory must be properly configured.
+
 * Configuring OpenMPI Hosts File
 
-* Runtime Configuration Options for `mpirun`
+  You must configure a `hosts` (or `machinefile`) file which contains the IP addresses or hostnames of your compute nodes.
+  ```conf
+  # The slots value indicates the number of processes to run on each node.
+  # Adjust this number based on the number of CPU cores available on each node.
+  compute01 slots=1
+  compute02 slots=1
+  ```
 
+* Runtime and Environment Configuration Options for `mpirun`
+
+  You compute nodes each have a single CPU with multiple OpenMP threads. It is critical that your `environment` is correctly configured to you to run HPL across your two compute nodes.
+
+  * Navigate to the directory where your HPL executable and `HPL.dat` file are located. Use `mpirun` to run HPL across the nodes specified in the hosts file
+  * Edit your `~/.profile` to set environment variables when `mpirun` creates a new shell
+  * Execute `mpirun`
+  ```bash
+  mpirun -np 2 --hostfile hosts ./xhpl
+  ```
 # HPC Challenge
 
 HPC Challenge (or HPCC) is benchmark suite which contains 7 micro-benchmarks used to test various performance aspects of your cluster. HPCC includes HPL which it uses to access FLOPs performance. Having successfully compiled and executed HPL, the process is fairly straight forward to setup HPCC (it uses the same Makefile structure).
 
 1. Download HPCC from https://icl.utk.edu/hpcc/software/index.html
 
-1. Extract the file, then enter the `hpl/` sub-directory.
+1. Extract the file, then enter the `hpcc/` sub-directory.
 
-1. Copy and modify the Makefile as your did for the HPL benchmark, but in this case also add "-std=c99" to the "CCFLAGS" line in the Makefile.
+1. Copy and modify the `Makefile.<arch>` as your did for the HPL benchmark
 
 1. Compile HPCC from the base directory using
-
-    ```bash
-    make arch=<architecture>
-    ```
-
-1. Edit the `hpccinf.txt` file (same as `HPL.dat`)
-
-1. HPCC replies on the input parameter file `hpccinf.txt` (same as `HPL.dat`). Run HPCC as you did HPL.
-
-1. Download this script which formats the output into a readable format [https://tinyurl.com/y65p2vv5](https://tinyurl.com/y65p2vv5).
-
-1. Install `perl` on your head node.
-
-1. Run the [format.pl script](resources/format.pl) with to format your benchmark results into a readable format. Compare your HPL score with your standalone HPL.
    ```bash
+   make arch=<arch>
+   ```
+1. Edit the `hpccinf.txt` file
+
+   HPCC replies on the input parameter file `hpccinf.txt` (same as `HPL.dat`). Run HPCC as you did HPL.
+
+1. Prepare and format your output
+
+   Run the [format.pl script](resources/format.pl) with to format your benchmark results into a readable format. Compare your HPL score with your standalone HPL.
+   ```bash
+   # You may need to install perl
    ./format.pl -w -f hpccoutf.txt
    ```
-
 Have the output `hpccoutf.txt` and your `Make.<architecture>` ready for the instructors to view on request.
-
 
 # Application Benchmarks and System Evaluation
 
@@ -668,29 +682,13 @@ Detailed installation instructions can be found at: http://manual.gromacs.org/cu
 
 3. Compile GROMACS **with MPI support** from source using `cmake`.
 
-
-TODO Explain what an application benchmark is here.
-
 You have been provided two **GROMACS** benchmarks. The first benchmark **(adh_cubic)** should complete within a few minutes and has a small memory footprint, it is intended to demonstrate that your installation is working properly. The second benchmark **(1.5M_water)** uses more memory and takes considerably longer to complete. The metric which will be used to assess your performance is the **ns/day** (number of nanoseconds the model is simulated for per day of computation), quoted at the end of the simulation output. **Higher is better**.
 
 Ensure that your GROMACS /**bin** directory is exported to your **PATH**. You should be able to type `gmx_mpi --version` in your terminal and have the application information displayed correctly. The first task is to pre-process the input data into a usable format, using the `grompp` tool:
 
 ```bash
-[...@node ~]$ gmx_mpi grompp -f pme_verlet.mdp -c conf.gro -p topol.top -o md_0_1.tpr
-```
+gmx_mpi grompp -f pme_verlet.mdp -c conf.gro -p topol.top -o md_0_1.tpr
 
-You will need to prepare a **Slurm batch script**, `gromacs_mpi.sh`. Modify the variables to appropriate values.
-
-```bash
-#!/bin/bash
-#SBATCH --nodes=XXXX
-#SBATCH --ntasks-per-node=XXXX
-#SBATCH --cpus-per-task=XXXX
-
-# !!!! Depending on your environment configuration, uncomment or add the following
-# --------------------------------------------------------------------------------
-#module load gromacs
-#ml load gromacs
 #export PATH and LD_LIBRARY_PATH
 mpirun gmx_mpi mdrun -nsteps 5000 -s md_0_1.tpr -g gromacs.log
 ```
