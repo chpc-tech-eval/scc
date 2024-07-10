@@ -174,7 +174,7 @@ Over the course of the lecture content and the tutorials, you will be making ext
 > When you are presented with foldable code blocks, you must pick and implement only **one** of the options presented, which is suitable to your current configuration and/or circumstance.
 
 > [!TIP]
-> A number [encryption algorithms](https://en.wikipedia.org/wiki/Public-key_cryptography) exist for securing your SSH connections. [Elliptic Curve Digital Signature Algorithm (ECDSA)](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) is secure and simple enough should you need to copy the public key manually. Nonetheless however, you are free to use whichever algorithm you choose to.
+> A number [encryption algorithms](https://en.wikipedia.org/wiki/Public-key_cryptography) exist for securing your SSH connections. [Elliptic Curve Digital Signature Algorithm (ECDSA)](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) is secure and simple enough should you need to copy the public key manually. Nonetheless, you are free to use whichever algorithm you choose to.
 
 From the `Start` menu, open the Windows `PowerShell` application:
 These commands are the same if you are commenting from a Linux, Unix or MacOS Terminal, and Moba XTerm.
@@ -613,7 +613,7 @@ You will now install and run HPL on your **head node**.
    ```bash
    # Ubuntu
    sudo apt update
-   sudo apt install openmpi libatlas-base-dev
+   sudo apt install build-essential openmpi-bin libopenmpi-dev libatlas-base-dev
    ```
    * Pacman
    ```bash
