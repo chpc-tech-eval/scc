@@ -582,7 +582,7 @@ The head node will act as the [NFS server](https://docs.rockylinux.org/guides/fi
 
 1. Export the shares, then start and enable the `nfs-server` service using `systemctl` on the head node.
    ```bash
-   exportfs -ar
+   sudo exportfs -ar
    sudo systemctl enable nfs-server
    ```
 1. Mount the NFS export on your compute node
