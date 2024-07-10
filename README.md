@@ -41,7 +41,7 @@ You are strongly encouraged to get help and even assist others by [Opening and P
 
 ## Timetable
 
-Everyday will comprise of four lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](resources/CHPC_2024_SCC_Local_Selection_Round_Timetable.pdf) is available for you to download.
+Everyday will comprise of four lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](./resources/CHPC_2024_SCC_Local_Selection_Round_Timetable.pdf) is available for you to download.
 
 <p align="center"><img alt="Timetable." src="resources/CHPC_2024_SCC_Local_Selection_Round_Timetable.png" width=900 /></p>
 
