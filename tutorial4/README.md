@@ -20,7 +20,8 @@
         1. [Node Exporter](#node-exporter)
         1. [Grafana](#grafana)
     1. [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
-    1. [Legacy Approach](#legacy-approach)
+    1. [Going Beyond](#going-beyond)
+    1. [Legacy Approach for the Brave](#legacy-approach-for-the-brave)
 1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
     1. [Prerequisites](#prerequisites)
     1. [Head Node Configuration (Server) ](#head-node-configuration-server)
@@ -445,6 +446,10 @@ Then you should see:
 
 > [!NOTE]
 > Should you have any difficulties running the above configuration, use the alternative process below to deploy your monitoring stack. Click on the heading to reveal content.
+
+## Going Beyond
+Now having set up a dashboard for monitoring your headnode, figure out what to do to add your compute node(s) into your
+existing dashboard so that you're able to monitor them as well.
 
 ## Legacy Approach
 <details>
