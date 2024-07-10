@@ -451,7 +451,7 @@ Then you should see:
 Now having set up a dashboard for monitoring your headnode, figure out what to do to add your compute node(s) into your
 existing dashboard so that you're able to monitor them as well.
 
-## Legacy Approach
+## Legacy Approach for the Brave
 <details>
 <summary>Installing your monitoring stack from pre-compiled binaries</summary>
 For this tutorial we will install from pre-complied binaries.
