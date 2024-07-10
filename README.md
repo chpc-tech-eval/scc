@@ -19,7 +19,7 @@ The goal of this document is to introduce you to the competition platform and fa
     1. [Cluster Design Assignment](#cluster-design-assignment)
     1. [Technical Knowledge Assessment](#technical-knowledge-assessment)
     1. [Tutorials](#tutorials)
-1. [Links to Livestreams and Lecture Recordings](#links-to-livestreams-and-lecture-recordings)
+1. [Lecture Recordings](#lecture-recordings)
 1. [Contributing to the Project](#contributing-to-the-project)
     1. [Steps to follow when editing existing content](#steps-to-follow-when-editing-existing-content)
     1. [Syntax and Style](#syntax-and-style)
@@ -196,7 +196,33 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
 1. [Ansible User Declaration](tutorial2/README.md#ansible-user-declaration)
     1. [Create User Accounts](tutorial2/README.md#create-user-accounts)
 1. [WirGuard VPN Cluster Access](tutorial2/README.md#wirguard-vpn-cluster-access)
-1. [ZeroTier](tutorial2/README.md#zerotier)
+1. [ZeroTier](tutorial2/README.md#zerotier**
+
+**Tutorial 3**
+
+
+1. [Checklist](tutorial3/README.md#checklist)
+1. [Managing Your Environment](tutorial3/README.md#managing-your-environment)
+    1. [NFS Mounted Shared `home` folder and the `PATH` Variable](tutorial3/README.md#nfs-mounted-shared-home-folder-and-the-path-variable)
+1. [Install Lmod](tutorial3/README.md#install-lmod)
+    1. [Lmod Usage](tutorial3/README.md#lmod-usage)
+1. [Running the High Performance LINPACK (HPL) Benchmark on Your Compute Node](tutorial3/README.md#running-the-high-performance-linpack-hpl-benchmark-on-your-compute-node)
+    1. [System Libraries](tutorial3/README.md#system-libraries)
+    1. [Configure and Run HPL on Compute Node](tutorial3/README.md#configure-and-run-hpl-on-compute-node)
+1. [Building and Compiling OpenBLAS and OpenMPI Libraries from Source](tutorial3/README.md#building-and-compiling-openblas-and-openmpi-libraries-from-source)
+1. [Intel oneAPI Toolkits and Compiler Suite](tutorial3/README.md#intel-oneapi-toolkits-and-compiler-suite)
+    1. [Configure and Install Intel oneAPI Base and HPC Toolkits](tutorial3/README.md#configure-and-install-intel-oneapi-base-and-hpc-toolkits)
+    1. [Configuring and Running HPL with Intel oneAPI Toolkit and MKL](tutorial3/README.md#configuring-and-running-hpl-with-intel-oneapi-toolkit-and-mkl)
+1. [LinPACK Theoretical Peak Performance](tutorial3/README.md#linpack-theoretical-peak-performance)
+    1. [Top500 List](tutorial3/README.md#top500-list)
+1. [Spinning Up a Second Compute Node Using a Snapshot](tutorial3/README.md#spinning-up-a-second-compute-node-using-a-snapshot)
+    1. [Running HPL Across Multiple Nodes](tutorial3/README.md#running-hpl-across-multiple-nodes)
+1. [HPC Challenge](tutorial3/README.md#hpc-challenge)
+1. [Application Benchmarks and System Evaluation](tutorial3/README.md#application-benchmarks-and-system-evaluation)
+    1. [GROMACS (ADH Cubic)](tutorial3/README.md#gromacs-adh-cubic)
+    1. [LAMMPS (Lennard-Jones)](tutorial3/README.md#lammps-lennard-jones)
+    1. [Qiskit (Quantum Volume)](tutorial3/README.md#qiskit-quantum-volume)
+
 
 # Lecture Recordings
 
