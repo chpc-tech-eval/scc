@@ -907,7 +907,7 @@ The following steps can be employed to utilize WireGuard in order to setup a bas
    ```
    * Create a public key
    ```bash
-   wg pubkey < headnode.key > peerA.pub
+   wg pubkey < headnode.key > headnode.pub
    ```
 1. Peer Configuration
 
@@ -918,9 +918,9 @@ The following steps can be employed to utilize WireGuard in order to setup a bas
    sudo ip addr add 10.0.0.1/24 dev wg0
 
    # Create a WireGuard "Server" on your head node
-   sudo wg set wg0 listen-port 9993 private-key /path/to/peer_A.key
+   sudo wg set wg0 listen-port 9993 private-key </path/to/headnode.key>
 
-   # If you were staying at the City Lodge in Gqeberha, for exmaple, you endpoint (public ip) would be as follows:
+   # If you were staying at the City Lodge in Gqeberha, or from your residence for exmaple, **YOUR** endpoint (public IP - remember WhatIsMyWiFI) would be as follows:
    sudo wg set wg0 peer PEER_B_PUBLIC_KEY endpoint 102.64.114.107:51900 allowed-ips 10.0.0.2/32
 
    # Your laptop is roaming "dynamic" and does not have a fixed IP or endpoint
