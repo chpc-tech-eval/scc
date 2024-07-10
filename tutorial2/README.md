@@ -782,10 +782,10 @@ In this tutorial you will be installing Ansible and using it to automate the cre
    ansible -i inventory compute -m ping
 
    #access as an individual host
-   ansible -m ping compute
+   ansible -i inventory 10.50.100.0 -m ping
 
    #run command on hosts
-   ansible -m shell -a 'free -m' compute
+   ansible -i inventory compute -m shell -a 'free -m'
    ```
 
 ## Create User Accounts
