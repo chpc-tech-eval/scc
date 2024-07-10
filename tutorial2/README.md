@@ -843,7 +843,7 @@ You will now create a new user and add them to the `wheel` group so they have `s
 1. Run the playbook
 
    ```bash
-   ansible-playbook -i inventory compute ~/playbooks/create_sudo_users.yml
+   ansible-playbook -i inventory ~/playbooks/create_sudo_users.yml
    ```
 
 1. SSH into your other nodes and verify that the users have been correctly
