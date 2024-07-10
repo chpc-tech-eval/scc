@@ -456,13 +456,11 @@ Stateful packet inspection, also referred to as dynamic packet filtering, is a n
    ```
 1. You can now save your configuration to an output file
    ```bash
-   sudo nft -s list ruleset | tee hn.nft
+   sudo nft -s list ruleset | sudo tee /etc/nftables/hn.nft
    ```
 1. Edit your head node's nft file and modify the policy for `input` and `forward ` to be `drop`
    ```bash
-   nano hn.nft
-
-   sudo mv hn.nft /etc/nftables/
+   sudo nano /etc/nftables/hn.nft
    ```
 1. Amend the configuration file to include your changes when the service is restarted
    * Edit `nftables.conf`
