@@ -131,6 +131,13 @@ In the event that you manage to lock yourselves out of your VMs, from your team'
 > ```conf
 > PasswordAuthentication yes
 > ```
+> * Configure the following SELinux (Security Engine) settings
+> ```bash
+> # RHEL, Rocky, Alma, CentOS Stream
+> chmod 700 ~/.ssh/
+> chmod 600 ~/.ssh/authorized_keys
+> sudo restorecon -R -v ~/.ssh
+> ```
 > * Restart the SSH daemon on your compute node
 > ```bash
 > sudo systemctl restart sshd
@@ -344,11 +351,13 @@ You can check your network interfaces by using the `ip a` command after logging 
 
   * Configure the DNS Servers
 
-    - You will now configure the connection to make use of Google's free public DNS servers. Hit enter on <Show> to the right of <IPv4 CONFIGURATION> and scroll down to the DNS servers> section.
+    - If, for example, you wanted to configure the connection to make use of Google's free public DNS servers. Hit enter on <Show> to the right of <IPv4 CONFIGURATION> and scroll down to the DNS servers> section.
 
     - Click <Add> and enter <8.8.8.8>, then click <OK> at the bottom of the screen.
 
     - Exit `nmtui` and check the networking setup is correct.
+
+    Your DNS has already been configured in OpenStack and the above example is only included for demonstration purposes. You may proceed with the remainder of the tutorial.
 
 > [!CAUTION]
 > Configuring and managing you network setup is a crucial and fundamental aspect that you will need to understand in order to be successful in this competition. Your VM instances make use of a virtual network (or VLAN), that manages the routing and configuration aspects on your behalf.
@@ -478,6 +487,8 @@ Restart and enable the `nftables` service.
 >}
 ># Remember to include this file in /etc/sysconfig/nftables.conf and to restart the nftables service.
 >```
+>
+> If you are having difficulties configuring your firewall, but would still like to try and attempt this section, you can make use of this [hn.nft](resources/hn.nft) template.
 
 # Network Time Protocol
 
@@ -524,22 +535,23 @@ NTP let's you to synchronise the time across all the computers in your network. 
    sudo systemctl restart chronyd
    ```
    * Verify the sources of the NTP server
-     ```bash
-     #
-     sudo chronyc sources
-     ```
+   ```bash
+   #
+   sudo chronyc sources
+   ```
 
 1. Firewall Configure on Head Node
    * Check `chronyc clients` again
    * Edit `/etc/nftables/hn.nft` and accept incoming traffic on port 123 UDP
-     ```conf
-     chain hn_udp_chain {
-             udp dport 123 accept
-     }
-     ```
+   ```conf
+   chain hn_udp_chain {
+           udp dport 123 accept
+   }
+   ```
    * Restart `nftables`
 
 1. Restart `chronyd` daemon on your compute node and recheck `chronyc sources`.
+
 1. Verify that `chronyc clients` is now working correctly on your head node.
 
 # Network File System
@@ -613,7 +625,14 @@ Just as you did so in the previous tutorial when you generated SSH keys [on your
 
    Since your `/home` directory is shared with your compute node, this will look the same on the compute node.
 
-1. SELinux, the security engine, may complain about permissions for this directory if you try to use public key authentication now. To fix this, run the following commands on your **head node**:
+1. For RHEL, Rocky, Alma and CentOS Stream, run for following commands for SELinux
+   * SSH to the **compute node** passwordless If you are prompted with a password it means that something is not set up correctly. Login through the VNC session and run the following command:
+
+      ```bash
+      sudo setsebool -P use_nfs_home_dirs 1
+      ```
+
+   * SELinux, the security engine, may complain about permissions for this directory if you try to use public key authentication now. To fix this, run the following commands on your **head node**:
 
    ```bash
    chmod 700 ~/.ssh/
@@ -621,11 +640,6 @@ Just as you did so in the previous tutorial when you generated SSH keys [on your
    sudo restorecon -R -v ~/.ssh
    ```
 
-1. SSH to the **compute node** passwordless If you are prompted with a password it means that something is not set up correctly. Login through the VNC session and run the following command:
-
-   ```bash
-   sudo setsebool -P use_nfs_home_dirs 1
-   ```
 1. Editing `/etc/hosts` File
 
    You can avoid having to try an memorize your node's IP addressing, by making the following amendments to your `/etc/hosts` file on both head and compute nodes:
