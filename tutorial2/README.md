@@ -456,13 +456,11 @@ Stateful packet inspection, also referred to as dynamic packet filtering, is a n
    ```
 1. You can now save your configuration to an output file
    ```bash
-   sudo nft -s list ruleset | tee hn.nft
+   sudo nft -s list ruleset | sudo tee /etc/nftables/hn.nft
    ```
 1. Edit your head node's nft file and modify the policy for `input` and `forward ` to be `drop`
    ```bash
-   nano hn.nft
-
-   sudo mv hn.nft /etc/nftables/
+   sudo nano /etc/nftables/hn.nft
    ```
 1. Amend the configuration file to include your changes when the service is restarted
    * Edit `nftables.conf`
@@ -584,7 +582,7 @@ The head node will act as the [NFS server](https://docs.rockylinux.org/guides/fi
 
 1. Export the shares, then start and enable the `nfs-server` service using `systemctl` on the head node.
    ```bash
-   exportfs -ar
+   sudo exportfs -ar
    sudo systemctl enable nfs-server
    ```
 1. Mount the NFS export on your compute node
@@ -592,6 +590,9 @@ The head node will act as the [NFS server](https://docs.rockylinux.org/guides/fi
    # You cannot mount /home while you are occupying it
    cd /
    sudo mount -t nfs <headnode_ip>:/home /home
+
+   # For SELinux based systems (RHEL, Rocky, Alma, CentOS Stream)
+   sudo setsebool -P use_nfs_home_dirs 1
    ```
 1. Verify that you successfully mounted `/home` export
    ```bash
