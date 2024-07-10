@@ -13,11 +13,12 @@
         1. [What is Docker and Docker Compose and How We Will Use It](#what-is-docker-and-docker-compose-and-how-we-will-use-it)
     1. [How to use the notes](#how-to-use-the-notes)
     1. [Pre-requisites](#pre-requisites)
-    1. [Installing Monitoring Stack](#installing-monitoring-stack)
+    1. [Installing the Monitoring Stack](#installing-the-monitoring-stack)
     1. [Start the services](#start-the-services)
-    1. [Prometheus](#prometheus)
-    1. [Node Exporter](#node-exporter)
-    1. [Grafana](#grafana)
+    1. [Verify that the services are running/accessible](#verify-that-the-services-are-running-accessible)
+        1. [Prometheus](#prometheus)
+        1. [Node Exporter](#node-exporter)
+        1. [Grafana](#grafana)
     1. [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
         1. [Prometheus](#prometheus-1)
         1. [Node Exporter](#node-exporter-1)
@@ -300,7 +301,9 @@ ea730ef94381   prom/prometheus      "/bin/prometheus --c…"   6 days ago   Up 1
 
 Now let us verify the services!
 
-## Prometheus
+## Verify that the services are running/accessible
+
+### Prometheus
 
 Input:
 ```
@@ -328,7 +331,7 @@ go_gc_duration_seconds{quantile="0.25"} 0.000135
 ...
 ```
 
-## Node Exporter
+### Node Exporter
 
 Input:
 ```
@@ -353,7 +356,7 @@ go_gc_duration_seconds_count 157
 # HELP go_goroutines Number of goroutines that currently exist
 ```
 
-## Grafana
+### Grafana
 
 Input:
 ```
