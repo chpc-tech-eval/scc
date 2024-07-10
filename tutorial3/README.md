@@ -255,7 +255,7 @@ We need to install the statically `($(LIBdir)/libhpl.a)` and dynamically`($(LAdi
      # Arch
      sudo pacman -Syu
      sudo pacman -S base-devel openmpi atlas-lapack nano wget
-   ```
+     ```
 
 1. Configuring and Tuning HPL
 
@@ -266,7 +266,7 @@ We need to install the statically `($(LIBdir)/libhpl.a)` and dynamically`($(LAdi
      * ***"Memory Usage"*** is proportional to `N x N`.
 
    <p align="center"><img alt="P x Q Matrix Decomposition" src="./resources/An-example-of-P-by-Q-partitioning-of-a-HPL-matrix-in-6-processes-2x3-decomposition.png" width=300 /></p>
-   The image depicts an example of P by Q partitioning of an HPL matrix in 6 processes. In this case they've been decomposed into 2 x 3. The image is from a journal article publication, [Gaining asynchrony by using hybrid UPC/SMPSs](https://www.researchgate.net/publication/228524393_Gaining_asynchrony_by_using_hybrid_UPCSMPSs)
+   The image depicts an example of P by Q partitioning of an HPL matrix in 6 processes. In this case they've been decomposed into 2 x 3. The image is from a journal article publication, [Gaining asynchrony by using hybrid UPC SMPSs](https://www.researchgate.net/publication/228524393_Gaining_asynchrony_by_using_hybrid_UPCSMPSs)
 
     We can observe that if you we to *double* `N`, your run would take **four** times as long. If you **tippled** `N`, your run would use **nine times as much** memory. If you made `N` **ten times larger**, your run would use **hundred times** more memory, and would take **hundred times** as long to run.
    * `NB` defines the block (or chunk) size into which the array is divided. The optimal value is determined by the CPU architecture such that the block fits in cache. For best performance `N` should be a multiple of `NB`.
@@ -581,18 +581,18 @@ The [TOP500 list](https://top500.org/lists/top500/2024/06/) is a project that ra
 
    Populate the following table by recording your Rmax from HPL results, and calculating your expected Rpeak value.
 
-   | Rank | System                                          | Threads     | Rmax (GFlops/s)       | Rpeak (GFlops/s)         |
-   |------|-------------------------------------------------|-----------|-----------------------|--------------------------|
-   | 1    | Frontier - HPE - United States                  | 8 699 904 | 1206 x 10<sup>6</sup> | 1714.81 x 10<sup>6</sup> |
+| Rank | System                                          | Threads   | Rmax (GFlops/s)       | Rpeak (GFlops/s)         |
+|------|-------------------------------------------------|-----------|-----------------------|--------------------------|
+| 1    | Frontier - HPE - United States                  | 8 699 904 | 1206 x 10<sup>6</sup> | 1714.81 x 10<sup>6</sup> |
 |      |                                                 |           |                       |                          |
-   | 2    |                                                 |           |                       |                          |
-   | 3    |                                                 |           |                       |                          |
-   |      | Head node                                       | 2         |                       |                          |
-   |      | Compute node using head node `xhpl` binary      |           |                       |                          |
-   |      | Compute node using custom compiled MPI and BLAS |           |                       |                          |
-   |      | Compute node using Intel oneAPI Toolkits        |           |                       |                          |
-   |      | Across two compute nodes                        |           |                       |                          |
-   |      |                                                 |           |                       |                          |
+| 2    |                                                 |           |                       |                          |
+| 3    |                                                 |           |                       |                          |
+|      | Head node                                       | 2         |                       |                          |
+|      | Compute node using head node `xhpl` binary      |           |                       |                          |
+|      | Compute node using custom compiled MPI and BLAS |           |                       |                          |
+|      | Compute node using Intel oneAPI Toolkits        |           |                       |                          |
+|      | Across two compute nodes                        |           |                       |                          |
+|      |                                                 |           |                       |                          |
 
 > [!IMPORTANT]
 > You do **NOT** need to try and Rank you VM's HPL performance. Cores and threads are used interchangeably in this context. Following the recommended configuration and guides, your head node has one CPU package with two compute cores (or threads). Continuing this same analogy, your compute node has one CPU with six cores (or threads).
@@ -678,7 +678,7 @@ Detailed installation instructions can be found at: http://manual.gromacs.org/cu
 
 3. Compile GROMACS **with MPI support** from source using `cmake`.
 
-You have been provided two **GROMACS** benchmarks. The first benchmark **(adh_cubic)** should complete within a few minutes and has a small memory footprint, it is intended to demonstrate that your installation is working properly. The second benchmark **(1.5M_water)** uses more memory and takes considerably longer to complete. The metric which will be used to assess your performance is the **ns/day** (number of nanoseconds the model is simulated for per day of computation), quoted at the end of the simulation output. **Higher is better**.
+The benchmark **(adh_cubic)** should complete within a few minutes and has a small memory footprint, it is intended to demonstrate that your installation is working properly. The metric which will be used to assess your performance is the **ns/day** (number of nanoseconds the model is simulated for per day of computation), quoted at the end of the simulation output. **Higher is better**.
 
 Ensure that your GROMACS /**bin** directory is exported to your **PATH**. You should be able to type `gmx_mpi --version` in your terminal and have the application information displayed correctly. The first task is to pre-process the input data into a usable format, using the `grompp` tool:
 
@@ -697,10 +697,8 @@ You may modify the `mpirun` command to optimise performance (significantly) but 
 "5000 steps,     10.0 ps."
 ```
 
-<span style="color: #800000">
-  !!! Please be able to present the instructors with the output of `gmx_mpi --version`. Also be able to present the instructors with your Slurm batch script and `gromacs_log` files for the **adh_cubic** benchmark.
-</span>
-
+> [!NOTE]
+> Please be able to present the instructors with the output of `gmx_mpi --version`. Also be able to present the instructors with your Slurm batch script and `gromacs_log` files for the **adh_cubic** benchmark.
 
 ## LAMMPS (Lennard-Jones)
 
