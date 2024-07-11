@@ -220,7 +220,9 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
 1. [Application Benchmarks and System Evaluation](tutorial3/README.md#application-benchmarks-and-system-evaluation)
     1. [GROMACS (ADH Cubic)](tutorial3/README.md#gromacs-adh-cubic)
     1. [LAMMPS (Lennard-Jones)](tutorial3/README.md#lammps-lennard-jones)
-    1. [Qiskit (Quantum Volume)](tutorial3/README.md#qiskit-quantum-volume)
+    1. [Qiskit (Quantum Volume)](tutorial3/README.md#qiskit-quantum-volume**
+
+**Tutorial 4** demonstrates how to configure docker containers to deploy a monitoring stack, comprising of a metrics database service, an exporting / scraping service and a metric visualization services. You will then learn the very basics of how to visualize and interpret data. You will then learn how to automate the deployment of your Sebowa OpenStack infrastructure. Lastly, you'll deploy a scheduler and submit a job to it.
 
 1. [Checklist](tutorial4/README.md#checklist)
 1. [Cluster Monitoring](tutorial4/README.md#cluster-monitoring)
