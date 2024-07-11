@@ -57,6 +57,9 @@ In this tutorial you will:
     - [ ] Login to the Grafana endpoint (via your browser)
     - [ ] Import the appropriate Node-Exporter dashboard
     - [ ] Check that the dashboard is working as expected
+- [ ] Prepare, install and configure remote JupyterLab server
+  - [ ] Connect to JupyterLab and visualize benchmarking results
+- [ ] Automate the provisioning and deployment of your Sebowa OpenStack infrastructure
 - [ ] Install the Slurm workload manager across your cluster.
 - [ ] Submit a test job to run on your cluster through the newly-configured workload manager.
 
