@@ -6,22 +6,22 @@
 
 1. [Checklist](#checklist)
 1. [Cluster Monitoring](#cluster-monitoring)
-    1. [Importance of Cluster Monitoring on Linux Machines](#importance-of-cluster-monitoring-on-linux-machines)
-    1. [Traditional Approach Using top or htop](#traditional-approach-using-top-or-htop)
-    1. [Using Grafana, Prometheus, and Node Exporter](#using-grafana-prometheus-and-node-exporter)
-    1. [What is Docker and Docker Compose and How We Will Use It](#what-is-docker-and-docker-compose-and-how-we-will-use-it)
-1. [How to use the notes](#how-to-use-the-notes)
-1. [Pre-requisites](#pre-requisites)
-1. [Installing Monitoring Stack](#installing-monitoring-stack)
-1. [Start the services](#start-the-services)
-1. [Prometheus](#prometheus)
-1. [Node Exporter](#node-exporter)
-1. [Grafana](#grafana)
-1. [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
-    1. [Prometheus](#prometheus-1)
-    1. [Node Exporter](#node-exporter-1)
-        1. [SSH Tunneling](#ssh-tunneling)
-    1. [Grafana](#grafana-1)
+    1. [Introduction](#introduction)
+        1. [Importance of Cluster Monitoring on Linux Machines](#importance-of-cluster-monitoring-on-linux-machines)
+        1. [Traditional Approach Using top or htop](#traditional-approach-using-top-or-htop)
+        1. [Using Grafana, Prometheus, and Node Exporter](#using-grafana-prometheus-and-node-exporter)
+        1. [What is Docker and Docker Compose and How We Will Use It](#what-is-docker-and-docker-compose-and-how-we-will-use-it)
+    1. [How to use the notes](#how-to-use-the-notes)
+    1. [Pre-requisites](#pre-requisites)
+    1. [Installing the Monitoring Stack](#installing-the-monitoring-stack)
+    1. [Start the services](#start-the-services)
+    1. [Verify that the services are running/accessible](#verify-that-the-services-are-running-accessible)
+        1. [Prometheus](#prometheus)
+        1. [Node Exporter](#node-exporter)
+        1. [Grafana](#grafana)
+    1. [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
+    1. [Going Beyond](#going-beyond)
+    1. [Legacy Approach for the Brave](#legacy-approach-for-the-brave)
 1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
     1. [Prerequisites](#prerequisites)
     1. [Head Node Configuration (Server) ](#head-node-configuration-server)
@@ -74,32 +74,33 @@ In this tutorial you will:
 
 # Cluster Monitoring
 
-## Importance of Cluster Monitoring on Linux Machines
+## Introduction
+### Importance of Cluster Monitoring on Linux Machines
 Cluster monitoring is crucial for managing Linux machines. Effective monitoring helps detect and resolve issues promptly, provides insights into resource usage (CPU, memory, disk, network), aids in capacity planning, and ensures infrastructure scales with workload demands. By monitoring system performance and health, administrators can prevent downtime, reduce costs, and improve efficiency.
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/f951e4b7-20ff-49a4-b9a7-28aa57e51f5b)
 
-## Traditional Approach Using top or htop
+### Traditional Approach Using top or htop
 Traditionally, Linux system monitoring involves command-line tools like top or htop. These tools offer real-time system performance insights, displaying active processes, resource usage, and system load. While invaluable for monitoring individual machines, they lack the ability to aggregate and visualize data across multiple nodes in a cluster, which is essential for comprehensive monitoring in larger environments.
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/7e0c8b92-adc2-4106-94ee-ca4ee78a13f5)
 
-## Using Grafana, Prometheus, and Node Exporter
+### Using Grafana, Prometheus, and Node Exporter
 Modern solutions use Grafana, Prometheus, and Node Exporter for robust and scalable monitoring. Prometheus collects and stores metrics, Node Exporter provides system-level metrics, and Grafana visualizes this data. This combination enables comprehensive cluster monitoring with historical data analysis, alerting capabilities, and customizable visualizations, facilitating better decision-making and faster issue resolution.
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/3f64a8bd-87fa-4b51-9576-b28da3af632b)
 
 
-## What is Docker and Docker Compose and How We Will Use It
+### What is Docker and Docker Compose and How We Will Use It
 Docker is a platform for creating, deploying, and managing containerized applications. Docker Compose defines and manages multi-container applications using a YAML file. For cluster monitoring on a Rocky Linux head node, we will use Docker and Docker Compose to bundle Grafana, Prometheus, and Node Exporter into deployable containers. This approach simplifies installation and configuration, ensuring all components are up and running quickly and consistently, streamlining the deployment of the monitoring stack.
 
-# How to use the notes
+## How to use the notes
 
 When the word **Input:** is mentioned, excpect the next line to have commands that you need to copy and paste into your own terminal.
 
 When the word **Output:** is mentioned **DON'T** copy and paste anything below this word as this is just the expected output.
 
-# Pre-requisites
+## Pre-requisites
 
 1. Rocky 9.03 VM and ssh keys working
 2. Have nano installed, if not installed use this:
@@ -168,7 +169,7 @@ $ docker compose version
 Docker Compose version v2.28.1
 ```
 
-# Installing Monitoring Stack
+## Installing Monitoring Stack
 - Pre-requisites: each host involved needs to have docker-ce and docker-compose installed as mentioned in the previous section
 - Create a suitable directory, e.g. /opt/monitoring_stack, in which you’ll keep a
 number of important configuration files.
@@ -261,7 +262,7 @@ datasources:
     url: http://prometheus:9090
 ```
 
-# Start the services
+## Start the services
 
 Input:
 ```
@@ -298,7 +299,9 @@ ea730ef94381   prom/prometheus      "/bin/prometheus --c…"   6 days ago   Up 1
 
 Now let us verify the services!
 
-# Prometheus
+## Verify that the services are running/accessible
+
+### Prometheus
 
 Input:
 ```
@@ -326,7 +329,7 @@ go_gc_duration_seconds{quantile="0.25"} 0.000135
 ...
 ```
 
-# Node Exporter
+### Node Exporter
 
 Input:
 ```
@@ -351,7 +354,7 @@ go_gc_duration_seconds_count 157
 # HELP go_goroutines Number of goroutines that currently exist
 ```
 
-# Grafana
+### Grafana
 
 Input:
 ```
@@ -402,7 +405,7 @@ http://localhost:3000
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/abee2bcd-3f6c-437b-aee7-edfa31550d42)
 
 
-# Create a Dashboard in Grafana
+## Create a Dashboard in Grafana
 
 Go to a browser and input:
 
@@ -444,11 +447,16 @@ Then you should see:
 > [!NOTE]
 > Should you have any difficulties running the above configuration, use the alternative process below to deploy your monitoring stack. Click on the heading to reveal content.
 
+## Going Beyond
+Now having set up a dashboard for monitoring your headnode, figure out what to do to add your compute node(s) into your
+existing dashboard so that you're able to monitor them as well.
+
+## Legacy Approach for the Brave
 <details>
 <summary>Installing your monitoring stack from pre-compiled binaries</summary>
 For this tutorial we will install from pre-complied binaries.
 
-## Prometheus
+### Prometheus
 The installation and the configuration of Prometheus should be done on your headnode.
 
 1. Create a Prometheus user without login access, this will be done manually as shown below:
@@ -561,7 +569,7 @@ sudo systemctl start prometheus
 
 Verify that your prometheus configuration is working navigating to `http://<headnode_ip>:9090` in your web browser, access prometheus web interface. Ensure that the `headnode_ip` is the public facing ip.
 
-## Node Exporter
+### Node Exporter
 Node Exporter is a Prometheus exporter specifically designed for hardware and OS metrics exposed by Unix-like kernels. It collects detailed system metrics such as CPU usage, memory usage, disk I/O, and network statistics. These metrics are exposed via an HTTP endpoint, typically accessible at `<node_ip>:9100/metrics`. The primary role of Node Exporter is to provide a source of system-level metrics that Prometheus can scrape and store. This exporter is crucial for gaining insights into the health and performance of individual nodes within a network.
 
 The installation and the configuration node exporter will be done on the **compute node/s**
@@ -618,7 +626,7 @@ sudo systemctl start node_exporter
   ```bash
   sudo systemctl status node_exporter
   ``` 
-### SSH Tunneling
+#### SSH Tunneling
 In order to verify that node exporter is set up correctly we need to access `<node_ip>:9100/metrics`. This can only been done by simply going to your broswer and putting it in as we did with Prometheus, we need to use a SSH tunnel.
 
 **What is SSH Tunneling?** \
@@ -645,7 +653,7 @@ user@headnode_ip: The SSH connection details for the headnode.
   2. By navigating to http://localhost:9100/metrics in your web browser, you can access the Node Exporter metrics from the compute node as if the service were running locally on your machine.
 
 
-## Grafana
+### Grafana
 Grafana is an open-source platform for monitoring and observability, known for its capability to create interactive and customizable dashboards. It integrates seamlessly with various data sources, including Prometheus. Through its user-friendly interface, Grafana allows users to build and execute queries to visualize data effectively. Beyond visualization, Grafana also supports alerting based on the visualized data, enabling users to set up notifications for specific conditions. This makes Grafana a powerful tool for both real-time monitoring and historical analysis of system performance.
 
 Now we go back to the headnode for the installation and the configuration of Grafana
