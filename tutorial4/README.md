@@ -2,27 +2,31 @@
 
 ## Table of Contents
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-1. [Checklist](#checklist)
-1. [Cluster Monitoring](#cluster-monitoring)
-    1. [Install Docker Engine, Containerd and Docker Compose](#install-docker-engine-containerd-and-docker-compose)
-    1. [Installing your Monitoring Stack](#installing-your-monitoring-stack)
-    1. [Startup and Test the Monitoring Services](#startup-and-test-the-monitoring-services)
-    1. [SSH Port Local Forwarding Tunnel](#ssh-port-local-forwarding-tunnel)
-    1. [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
-    1. [Success State, Next Steps and Troubleshooting](#success-state-next-steps-and-troubleshooting)
-1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
-    1. [Prerequisites](#prerequisites)
-    1. [Head Node Configuration (Server) ](#head-node-configuration-server)
-    1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
-1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
-    1. [Protein Visualization](#protein-visualization)
-    1. [Benchmark 2 (1.5M Water)](#benchmark-2-15m-water)
-1. [Configuring and Connecting to your Remote JupyterLab Server](#configuring-and-connecting-to-your-remote-jupyterlab-server)
-    1. [Visualize Your HPL Benchmark Results](#visualize-your-hpl-benchmark-results)
-    1. [Visualize Your Qiskit Results](#visualize-your-qiskit-results)
-1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
-1. [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
-1. [Automating the Configuration of your VMs Using Ansible](#automating-the-configuration-of-your-vms-using-ansible)
+**Table of Contents**
+
+- [Student Cluster Competition - Tutorial 4](#student-cluster-competition---tutorial-4)
+    - [Table of Contents](#table-of-contents)
+- [Checklist](#checklist)
+- [Cluster Monitoring](#cluster-monitoring)
+    - [Install Docker Engine, Containerd and Docker Compose](#install-docker-engine-containerd-and-docker-compose)
+    - [Installing your Monitoring Stack](#installing-your-monitoring-stack)
+    - [Startup and Test the Monitoring Services](#startup-and-test-the-monitoring-services)
+    - [SSH Port Local Forwarding Tunnel](#ssh-port-local-forwarding-tunnel)
+    - [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
+    - [Success State, Next Steps and Troubleshooting](#success-state-next-steps-and-troubleshooting)
+- [Configuring and Connecting to your Remote JupyterLab Server](#configuring-and-connecting-to-your-remote-jupyterlab-server)
+    - [Visualize Your HPL Benchmark Results](#visualize-your-hpl-benchmark-results)
+    - [Visualize Your Qiskit Results](#visualize-your-qiskit-results)
+- [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
+- [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
+- [Automating the Configuration of your VMs Using Ansible](#automating-the-configuration-of-your-vms-using-ansible)
+- [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
+    - [Prerequisites](#prerequisites)
+    - [Head Node Configuration (Server)](#head-node-configuration-server)
+    - [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
+- [GROMACS Application Benchmark](#gromacs-application-benchmark)
+    - [Protein Visualization](#protein-visualization)
+    - [Benchmark 2 (1.5M Water)](#benchmark-2-15m-water)
 
 <!-- markdown-toc end -->
 
@@ -611,196 +615,6 @@ sudo systemctl status grafana-server
 
 </details>
 
-# Slurm Scheduler and Workload Manager
-
-The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource Management), is a free and open-source job scheduler for Linux, used by many of the world's supercomputers/computer clusters. It allows you to manage the resources of a cluster by deciding how users get access for some duration of time so they can perform work. To find out more, please visit the [Slurm Website](https://slurm.schedmd.com/documentation.html).
-
-## Prerequisites
-
-1. Make sure the clocks, i.e. chrony daemons, are synchronized across the cluster.
-
-2. Generate a **SLURM** and **MUNGE** user on all of your nodes:
-
-    - **If you have Ansible User Module working**
-        - Create the users as shown in tutorial 2 **Do NOT add them to the sysadmin group**.
-    - **If you do NOT have your Ansible User Module working**
-       - `useradd slurm`
-       - Ensure that users and groups (UIDs and GIDs) are synchronized across the cluster. Read up on the appropriate [/etc/shadow](https://linuxize.com/post/etc-shadow-file/) and [/etc/password](https://www.cyberciti.biz/faq/understanding-etcpasswd-file-format/) files.
-
-## Head Node Configuration (Server) 
-
-
-1. Install the [MUNGE](https://dun.github.io/munge/) package. MUNGE is an authentication service that makes sure user credentials are valid and is specifically designed for HPC use.
-
-    First, we will enable the **EPEL** _(Extra Packages for Enterprise Linux)_ repository for `dnf`, which contains extra software that we require for MUNGE and Slurm:
-
-    ```bash
-      sudo dnf install epel-release
-    ```
-
-    Then we can install MUNGE, pulling the development source code from the `crb` "CodeReady Builder" repository:
-
-    ```bash
-      sudo dnf config-manager --set-enabled crb
-      sudo dnf install munge munge-libs munge-devel
-    ```
-
-2. Generate a MUNGE key for client authentication:
-
-    ```bash
-      sudo /usr/sbin/create-munge-key -r
-      sudo chown munge:munge /etc/munge/munge.key
-      sudo chmod 600 /etc/munge/munge.key
-    ```
-
-3. Using `scp`, copy the MUNGE key to your compute node to allow it to authenticate:
-
-    1. SSH into your compute node and create the directory `/etc/munge`. Then exit back to the head node.
-   
-    2. Since, munge has not yet been installed on your compute node, first transfer the file to a temporary location
-    ```bash
-      sudo cp /etc/munge/munge.key /tmp/munge.key && sudo chown user:user /tmp/munge.key
-    ```
-    **Replace user with the name of the user that you are running these commands as**
-
-    3. Move the file to your compute node
-    ```bash
-      scp /etc/munge/munge.key <compute_node_name_or_ip>:/etc/tmp/munge.key
-    ```
-
-    4. Move the file to the correct location
-    ```bash
-      ssh <computenode hostname or ip> 'sudo mv /tmp/munge.key /etc/munge/munge.key' 
-    ```
-
-4. **Start** and **enable** the `munge` service
-
-5. Install dependency packages:
-
-    ```bash
-    sudo dnf install gcc openssl openssl-devel pam-devel numactl numactl-devel hwloc lua readline-devel ncurses-devel man2html libibmad libibumad rpm-build perl-Switch libssh2-devel mariadb-devel perl-ExtUtils-MakeMaker rrdtool-devel lua-devel hwloc-devel
-    ```
-
-6. Download the 20.11.9 version of the Slurm source code tarball (.tar.bz2) from https://download.schedmd.com/slurm/. Copy the URL for `slurm-20.11.9.tar.bz2` from your browser and use the `wget` command to easily download files directly to your VM.
-
-7. Environment variables are a convenient way to store a name and value for easier recovery when they're needed. Export the version of the tarball you downloaded to the environment variable VERSION. This will make installation easier as you will see how we reference the environment variable instead of typing out the version number at every instance.
-
-    ```bash
-      export VERSION=20.11.9
-    ```
-
-8. Build RPM packages for Slurm for installation
-
-    ```bash
-      sudo rpmbuild -ta slurm-$VERSION.tar.bz2
-    ```
-
-    This should successfully generate Slurm RPMs in the directory that you invoked the `rpmbuild` command from.
-    
-9.  Copy these RPMs to your compute node to install later, using `scp`.
-
-10. Install Slurm server
-
-    ```bash
-      sudo dnf localinstall ~/rpmbuild/RPMS/x86_64/slurm-$VERSION*.rpm \
-                            ~/rpmbuild/RPMS/x86_64/slurm-devel-$VERSION*.rpm \
-                            ~/rpmbuild/RPMS/x86_64/slurm-example-configs-$VERSION*.rpm \
-                            ~/rpmbuild/RPMS/x86_64/slurm-perlapi-$VERSION*.rpm \
-                            ~/rpmbuild/RPMS/x86_64/slurm-slurmctld-$VERSION*.rpm
-    ```
-
-11. Setup Slurm server
-
-    ```bash
-      sudo cp /etc/slurm/slurm.conf.example /etc/slurm/slurm.conf
-    ```
-
-    Edit this file (`/etc/slurm/slurm.conf`) and set appropriate values for:
-
-    ```conf
-    ClusterName=      #Name of your cluster (whatever you want)
-    ControlMachine=   #DNS name of the head node
-    ```
-
-    Populate the nodes and partitions at the bottom with the following two lines:
-
-    ```conf
-    NodeName=<computenode> Sockets=<num_sockets> CoresPerSocket=<num_cpu_cores> \ 
-    ThreadsPerCore=<num_threads_per_core> State=UNKNOWN
-    ```
-
-    ```conf
-    PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
-    ```
-
-    **To check how many cores your compute node has, run `lscpu` on the compute node.** You will get output including `CPU(s)`, `Thread(s) per core`, `Core(s) per socket` and more that will help you determine what to use for the Slurm configuration.
-
-    **Hint: if you overspec your compute resources in the definition file then Slurm will not be able to use the nodes.**
-
-12. Create Necessary Directories and Set Permissions:
-  ```bash
-    sudo mkdir -p /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
-    sudo chown -R slurm:slurm /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
-  ```
-
-13. **Start** and **enable** the `slurmctld` service on the head node.
-
-## Compute Node Configuration (Clients)
-
-1. Setup MUNGE:
-
-    ```bash
-     sudo dnf install munge munge-libs
-      sudo scp /etc/munge/munge.key <compute_node_name_or_ip>:/etc/munge/munge.key
-      sudo chown munge:munge /etc/munge/munge.key
-      sudo chmod 400 /etc/munge/munge.key
-     ```
-
-2. Install Slurm Client
-  ```bash
-    sudo dnf localinstall ~/rpmbuild/RPMS/x86_64/slurm-$VERSION*.rpm \
-                     ~/rpmbuild/RPMS/x86_64/slurm-slurmd-$VERSION*.rpm \
-                     ~/rpmbuild/RPMS/x86_64/slurm-pam_slurm-$VERSION*.rpm
-  ```
-
-3. Copy `/etc/slurm/slurm.conf` from head node to compute node.
-
-4. Create necessary directories:
-    ```bash
-    sudo mkdir -p /var/spool/slurm/d
-    sudo chown slurm:slurm /var/spool/slurm/d
-    ```
-
-5. **Start** and **enable** the `slurmd` service.
-
-Return to your head node. To demonstrate that your scheduler is working you can run the following command as your normal user:
-
-```bash
-  sinfo 
-```
-
-You should see your compute node in an idle state.
-
-Slurm allows for jobs to be submitted in _batch_ (set-and-forget) or _interactive_ (real-time response to the user) modes. Start an interactive session on your compute node via the scheduler with
-
-```bash
-  srun -N 1 --pty bash 
-```
-
-You should automatically be logged into your compute node. This is done via Slurm. Re-run `sinfo` now and also run the command `squeue`. Here you will see that your compute node is now allocated to this job.
-
-To finish, type `exit` and you'll be placed back on your head node. If you run `squeue` again, you will now see that the list is empty.
-
-<div style="page-break-after: always;"></div>
-
-To confirm that your node configuration is correct, you can run the following command on the head node:
-
-```bash
-sinfo -alN
-```
-
-The `S:C:T` column means "sockets, cores, threads" and your numbers for your compute node should match the settings that you made in the `slurm.conf` file.
-
 # Configuring and Connecting to your Remote JupyterLab Server
 
 [Project Jupyter](https://jupyter.org/) provides powerful tools for scientific investigations due to their interactive and flexible nature. Here are some key reasons why they are favored in scientific research.
@@ -946,65 +760,6 @@ You are now going to extend your `qv_experiment` and plot your results, by drawi
    python qv_experiment.py
    ```
 
-# GROMACS Application Benchmark
-
-You will now be extending some of your earlier work from [Tutorial 3](../tutorial3/README.md#gromacs-adh-cubic)
-
-## Protein Visualization
-
-> [!NOTE] You will need to work on your or laptop to complete this section, not on your head node nor compute node.
-
-You are able to score bonus points for this tutorial by submitting a visualisation of your **adh_cubic** benchmark run. Follow the instructions below to accomplish this and upload the visualisation.
-
-Download and install the VMD visualization tool by selecting the correct version for your operating system. For example, for a Windows machine with an Nvidia GPU select the “Windows OpenGL, CUDA” option. You may need to register on the website.
-
-```http
-https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD
-```
-
-Use the `WinSCP` application for Windows, or the `scp` command for Linux to copy the output file `confout.gro` of the **adh_cubic** benchmark from your cluster to your PC. Attempting to visualise the larger "1.5M_water" simulation is not necessary and not recommended due to memory limitations of most PCs.
-
-1. Open VMD, select **File** then **New Module...**, click **Browse...** and select your `.gro` file.
-
-2. Ensure the filetype was detected as **Gromacs GRO** then click **Load**. In the main VMD window you will see that 134177 particles have been loaded. You should also see the display window has been populated with your simulation particle data.
-
-    You can manipulate the data with your mouse cursor: zoom with the mouse wheel or rotate it by dragging with the left mouse button held down. This visualisation presents a naturally occurring protein (blue/green) found in the human body, suspended in a solution of water molecules (red/white).
-
-3. From the main VMD window, select **Graphics** then **Representations..**.
-
-4. Under **Selected Atoms**, replace **all** with **not resname SOL** and click **apply**. You will notice the water solution around your protein has been removed, allowing you to better examine the protein.
-
-5. In the same window, select the dropdown **Drawing Method** and try out a few different options. Select **New Cartoon** before moving on.
-
-6. From the main VMD window, once again select **Graphics** then **Colors**. Under **Categories**, select **Display**, then **Background**, followed by **8 white**.
-
-7. Finally, you are ready to render a snapshot of your visualisation. From the main window, select **File** then **Render...**, ensure **Snapshot...** is selected and enter an appropriate filename. Click **Start Rendering**.
-
-Simulations like this are used to to develop and prototype experimental pharmaceutical drug designs. By visualising the output, researchers are able to better interpret simulation results.
-
-[!TIP]
-> Copy the resulting `.bmp` file(s) from yout cluster to your local computer or laptop and demonstrate this to your instructors for bonus points.
-
-
-## Benchmark 2 (1.5M Water)
-
-> [!CAUTION]
-> This is a large benchmark and can possibly take some time. Complete the next sections and come back to this if you feel as though your time is limited.
-
-Pre-process the input data using the `grompp` command
-
-```bash
-gmx_mpi grompp -f pme_verlet.mdp -c out.gro -p topol.top -o md_0_1.tpr
-```
-
-Using a batch script similar to the one above, run the benchmark. You may modify the mpirun command to optimise performance (significantly) but in order to produce a valid result, the simulation must run for 5,000 steps. Quoted in the output as:
-
-```text
-"5000 steps,     10.0 ps."
-```
-
-> [!NOTE]
-> Please be ready to present the `gromacs_log` files for the **1.5M_water** benchmark to the instructors.
 
 # Automating the Deployment of your OpenStack Instances Using Terraform
 
@@ -1064,7 +819,7 @@ In this section of the tutorial, you will be deploying an additional compute nod
        openstack = {
          source = "terraform-provider-openstack/openstack"
          version = "1.46.0"
-       g}
+       }
      }
    }
    ```
@@ -1113,7 +868,7 @@ In this section of the tutorial, you will be deploying an additional compute nod
      image_id = "33b938c8-6c07-45e3-8f2a-cc8dcb6699de"
      flavor_id = "4a126f4f-7df6-4f95-b3f3-77dbdd67da34"
      key_pair = "nlisa at mancave"
-     security_groups = ["default", "ssh & web services"]
+     security_groups = ["default", "ssc24_sq"]
 
      network {
        name = "nlisa-vxlan"
@@ -1151,7 +906,7 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
 1. Create GitHub Repository
    If you haven't already done so, sign up for a [GitHub Account](https://github.com/). Then create an empty private repository with a suitable name, i.e. `deploy_compute_node`:
 
-   <p align="center"><img alt="Github Create" src="./resources/github_create_new_repo.png" width=900 /></p>
+   <p align="center"><img alt="Github Create" src="./resources/github_create_new_repo.png" width=600 /></p>
 
 1. Add your team members to the repository to provide them with access:
    <p align="center"><img alt="Github Manage Access" src="./resources/github_manage_access.png" width=900 /></p>
@@ -1168,25 +923,25 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
    mkdir ~/deploy_compute_node
    cd ~/deploy_compute_node
    ```
-   
+
    Copy the `providers.tf` and `main.tf` files you had previously generated:
-   
+
    ```bash
    cp ~/terraform/providers.tf ./
    cp ~/terraform/main.tf ./
    vim main.tf
    ```
-   
+
 1. Create `.circleci/config.yml` File
-   
+
    The `.circle/config.yml` configuration file is where you define your build, test and deployment process. From your head node, you are going to be `pushing` your Infrastructure as Code to your private GitHub repository. This will then automatically trigger the CircleCI deployment of a Docker container which has been tailored for Terraform operations and instructions that will deploy your Sebowa OpenStack compute node instance.
-   
+
    Create and edit `.circleci/config.yml`:
    ```bash
    mkdir .circleci
    vim .circleci/config.yml # Remember that if you are not comfortable using Vim, install and make use of Nano
    ```
-   
+
    Copy the following configuration into `.circle/config.yml`:
    ```conf
    version: 2.1
@@ -1197,7 +952,7 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
          - image: hashicorp/terraform:latest
        steps:
          - checkout
-   
+
          - run:
              name: Create clouds.yaml
              command: |
@@ -1212,15 +967,15 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
                    interface: "public"
                    identity_api_version: 3
                    auth_type: "v3applicationcredential"" > ~/.config/openstack/clouds.yaml
-   
+
          - run:
              name: Terraform Init
              command: terraform init
-   
+
          - run:
              name: Terraform Apply
              command: terraform apply -auto-approve
-             
+
    workflows:
      version: 2
      deploy_workflow:
@@ -1234,7 +989,7 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
        * `checkout`: Clone and checkout the code from the repository.
        * `run`: Executes a number of shell commands to create the `clouds.yaml` file, then initialize and apply the Terraform configuration.
      - **Workflows**: Defines the workflow(s) that CircleCI will follow, where in this instance there is a single workflow specified `deploy_workflow`, that runs the `deploy` job.
-   
+
 1. `Init`ialize the Git Repository, `add` the files you've just created and `push` to GitHub:
    Following the instructions from the previous section where you created a new GitHub repo, execute the following commands from your head node, inside the `deploy_compute_node` folder:
    ```bash
@@ -1250,12 +1005,17 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
 
 1. Create a CircleCI Account and Add a Project
    Navigate to [CircleCI.com](https://circleci.com)
-   
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_organization.png" width=900 /></p>
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project00.png" width=900 /></p>
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project01.png" width=900 /></p>
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project02.png" width=900 /></p>
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project03.png" width=900 /></p>
+   * Create a new organization and give it a suitable name
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_organization.png" width=600 /></p>
+   * Once you've logged into your workspace, go to projects and create a new project
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project00.png" width=600 /></p>
+   * Create a new IaC Project
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project01.png" width=600 /></p>
+   * If your repository is on GitHub, create a corresponding project
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project02.png" width=600 /></p>
+   * Pick a project name and a repository to associate it to
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project03.png" width=600 /></p>
+   * 
    <p align="center"><img alt="CircleCI" src="./resources/circleci_successful_deploy.png" width=900 /></p>
 
 # Automating the Configuration of your VMs Using Ansible
@@ -1270,3 +1030,251 @@ Use Ansible to install and configure NTP Client
    }
 
    ```
+# Slurm Scheduler and Workload Manager
+
+The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource Management), is a free and open-source job scheduler for Linux, used by many of the world's supercomputers/computer clusters. It allows you to manage the resources of a cluster by deciding how users get access for some duration of time so they can perform work. To find out more, please visit the [Slurm Website](https://slurm.schedmd.com/documentation.html).
+
+## Prerequisites
+
+1. Make sure the clocks, i.e. chrony daemons, are synchronized across the cluster.
+
+2. Generate a **SLURM** and **MUNGE** user on all of your nodes:
+
+    - **If you have Ansible User Module working**
+        - Create the users as shown in tutorial 2 **Do NOT add them to the sysadmin group**.
+    - **If you do NOT have your Ansible User Module working**
+       - `useradd slurm`
+       - Ensure that users and groups (UIDs and GIDs) are synchronized across the cluster. Read up on the appropriate [/etc/shadow](https://linuxize.com/post/etc-shadow-file/) and [/etc/password](https://www.cyberciti.biz/faq/understanding-etcpasswd-file-format/) files.
+
+## Head Node Configuration (Server)
+
+
+1. Install the [MUNGE](https://dun.github.io/munge/) package. MUNGE is an authentication service that makes sure user credentials are valid and is specifically designed for HPC use.
+
+    First, we will enable the **EPEL** _(Extra Packages for Enterprise Linux)_ repository for `dnf`, which contains extra software that we require for MUNGE and Slurm:
+
+    ```bash
+      sudo dnf install epel-release
+    ```
+
+    Then we can install MUNGE, pulling the development source code from the `crb` "CodeReady Builder" repository:
+
+    ```bash
+      sudo dnf config-manager --set-enabled crb
+      sudo dnf install munge munge-libs munge-devel
+    ```
+
+2. Generate a MUNGE key for client authentication:
+
+    ```bash
+      sudo /usr/sbin/create-munge-key -r
+      sudo chown munge:munge /etc/munge/munge.key
+      sudo chmod 600 /etc/munge/munge.key
+    ```
+
+3. Using `scp`, copy the MUNGE key to your compute node to allow it to authenticate:
+
+    1. SSH into your compute node and create the directory `/etc/munge`. Then exit back to the head node.
+
+    2. Since, munge has not yet been installed on your compute node, first transfer the file to a temporary location
+    ```bash
+      sudo cp /etc/munge/munge.key /tmp/munge.key && sudo chown user:user /tmp/munge.key
+    ```
+    **Replace user with the name of the user that you are running these commands as**
+
+    3. Move the file to your compute node
+    ```bash
+      scp /etc/munge/munge.key <compute_node_name_or_ip>:/etc/tmp/munge.key
+    ```
+
+    4. Move the file to the correct location
+    ```bash
+      ssh <computenode hostname or ip> 'sudo mv /tmp/munge.key /etc/munge/munge.key'
+    ```
+
+4. **Start** and **enable** the `munge` service
+
+5. Install dependency packages:
+
+    ```bash
+    sudo dnf install gcc openssl openssl-devel pam-devel numactl numactl-devel hwloc lua readline-devel ncurses-devel man2html libibmad libibumad rpm-build perl-Switch libssh2-devel mariadb-devel perl-ExtUtils-MakeMaker rrdtool-devel lua-devel hwloc-devel
+    ```
+
+6. Download the 20.11.9 version of the Slurm source code tarball (.tar.bz2) from https://download.schedmd.com/slurm/. Copy the URL for `slurm-20.11.9.tar.bz2` from your browser and use the `wget` command to easily download files directly to your VM.
+
+7. Environment variables are a convenient way to store a name and value for easier recovery when they're needed. Export the version of the tarball you downloaded to the environment variable VERSION. This will make installation easier as you will see how we reference the environment variable instead of typing out the version number at every instance.
+
+    ```bash
+      export VERSION=20.11.9
+    ```
+
+8. Build RPM packages for Slurm for installation
+
+    ```bash
+      sudo rpmbuild -ta slurm-$VERSION.tar.bz2
+    ```
+
+    This should successfully generate Slurm RPMs in the directory that you invoked the `rpmbuild` command from.
+
+9.  Copy these RPMs to your compute node to install later, using `scp`.
+
+10. Install Slurm server
+
+    ```bash
+      sudo dnf localinstall ~/rpmbuild/RPMS/x86_64/slurm-$VERSION*.rpm \
+                            ~/rpmbuild/RPMS/x86_64/slurm-devel-$VERSION*.rpm \
+                            ~/rpmbuild/RPMS/x86_64/slurm-example-configs-$VERSION*.rpm \
+                            ~/rpmbuild/RPMS/x86_64/slurm-perlapi-$VERSION*.rpm \
+                            ~/rpmbuild/RPMS/x86_64/slurm-slurmctld-$VERSION*.rpm
+    ```
+
+11. Setup Slurm server
+
+    ```bash
+      sudo cp /etc/slurm/slurm.conf.example /etc/slurm/slurm.conf
+    ```
+
+    Edit this file (`/etc/slurm/slurm.conf`) and set appropriate values for:
+
+    ```conf
+    ClusterName=      #Name of your cluster (whatever you want)
+    ControlMachine=   #DNS name of the head node
+    ```
+
+    Populate the nodes and partitions at the bottom with the following two lines:
+
+    ```conf
+    NodeName=<computenode> Sockets=<num_sockets> CoresPerSocket=<num_cpu_cores> \
+    ThreadsPerCore=<num_threads_per_core> State=UNKNOWN
+    ```
+
+    ```conf
+    PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
+    ```
+
+    **To check how many cores your compute node has, run `lscpu` on the compute node.** You will get output including `CPU(s)`, `Thread(s) per core`, `Core(s) per socket` and more that will help you determine what to use for the Slurm configuration.
+
+    **Hint: if you overspec your compute resources in the definition file then Slurm will not be able to use the nodes.**
+
+12. Create Necessary Directories and Set Permissions:
+  ```bash
+    sudo mkdir -p /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
+    sudo chown -R slurm:slurm /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
+  ```
+
+13. **Start** and **enable** the `slurmctld` service on the head node.
+
+## Compute Node Configuration (Clients)
+
+1. Setup MUNGE:
+
+    ```bash
+     sudo dnf install munge munge-libs
+      sudo scp /etc/munge/munge.key <compute_node_name_or_ip>:/etc/munge/munge.key
+      sudo chown munge:munge /etc/munge/munge.key
+      sudo chmod 400 /etc/munge/munge.key
+     ```
+
+2. Install Slurm Client
+  ```bash
+    sudo dnf localinstall ~/rpmbuild/RPMS/x86_64/slurm-$VERSION*.rpm \
+                     ~/rpmbuild/RPMS/x86_64/slurm-slurmd-$VERSION*.rpm \
+                     ~/rpmbuild/RPMS/x86_64/slurm-pam_slurm-$VERSION*.rpm
+  ```
+
+3. Copy `/etc/slurm/slurm.conf` from head node to compute node.
+
+4. Create necessary directories:
+    ```bash
+    sudo mkdir -p /var/spool/slurm/d
+    sudo chown slurm:slurm /var/spool/slurm/d
+    ```
+
+5. **Start** and **enable** the `slurmd` service.
+
+Return to your head node. To demonstrate that your scheduler is working you can run the following command as your normal user:
+
+```bash
+  sinfo
+```
+
+You should see your compute node in an idle state.
+
+Slurm allows for jobs to be submitted in _batch_ (set-and-forget) or _interactive_ (real-time response to the user) modes. Start an interactive session on your compute node via the scheduler with
+
+```bash
+  srun -N 1 --pty bash
+```
+
+You should automatically be logged into your compute node. This is done via Slurm. Re-run `sinfo` now and also run the command `squeue`. Here you will see that your compute node is now allocated to this job.
+
+To finish, type `exit` and you'll be placed back on your head node. If you run `squeue` again, you will now see that the list is empty.
+
+<div style="page-break-after: always;"></div>
+
+To confirm that your node configuration is correct, you can run the following command on the head node:
+
+```bash
+sinfo -alN
+```
+
+The `S:C:T` column means "sockets, cores, threads" and your numbers for your compute node should match the settings that you made in the `slurm.conf` file.
+
+# GROMACS Application Benchmark
+
+You will now be extending some of your earlier work from [Tutorial 3](../tutorial3/README.md#gromacs-adh-cubic).
+
+## Protein Visualization
+
+> [!NOTE] You will need to work on your or laptop to complete this section, not on your head node nor compute node.
+
+You are able to score bonus points for this tutorial by submitting a visualisation of your **adh_cubic** benchmark run. Follow the instructions below to accomplish this and upload the visualisation.
+
+Download and install the VMD visualization tool by selecting the correct version for your operating system. For example, for a Windows machine with an Nvidia GPU select the “Windows OpenGL, CUDA” option. You may need to register on the website.
+
+```http
+https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD
+```
+
+Use the `WinSCP` application for Windows, or the `scp` command for Linux to copy the output file `confout.gro` of the **adh_cubic** benchmark from your cluster to your PC. Attempting to visualise the larger "1.5M_water" simulation is not necessary and not recommended due to memory limitations of most PCs.
+
+1. Open VMD, select **File** then **New Module...**, click **Browse...** and select your `.gro` file.
+
+2. Ensure the filetype was detected as **Gromacs GRO** then click **Load**. In the main VMD window you will see that 134177 particles have been loaded. You should also see the display window has been populated with your simulation particle data.
+
+    You can manipulate the data with your mouse cursor: zoom with the mouse wheel or rotate it by dragging with the left mouse button held down. This visualisation presents a naturally occurring protein (blue/green) found in the human body, suspended in a solution of water molecules (red/white).
+
+3. From the main VMD window, select **Graphics** then **Representations..**.
+
+4. Under **Selected Atoms**, replace **all** with **not resname SOL** and click **apply**. You will notice the water solution around your protein has been removed, allowing you to better examine the protein.
+
+5. In the same window, select the dropdown **Drawing Method** and try out a few different options. Select **New Cartoon** before moving on.
+
+6. From the main VMD window, once again select **Graphics** then **Colors**. Under **Categories**, select **Display**, then **Background**, followed by **8 white**.
+
+7. Finally, you are ready to render a snapshot of your visualisation. From the main window, select **File** then **Render...**, ensure **Snapshot...** is selected and enter an appropriate filename. Click **Start Rendering**.
+
+Simulations like this are used to to develop and prototype experimental pharmaceutical drug designs. By visualising the output, researchers are able to better interpret simulation results.
+
+[!TIP]
+> Copy the resulting `.bmp` file(s) from yout cluster to your local computer or laptop and demonstrate this to your instructors for bonus points.
+
+## Benchmark 2 (1.5M Water)
+
+> [!CAUTION]
+> This is a large benchmark and can possibly take some time. Complete the next sections and come back to this if you feel as though your time is limited.
+
+Pre-process the input data using the `grompp` command
+
+```bash
+gmx_mpi grompp -f pme_verlet.mdp -c out.gro -p topol.top -o md_0_1.tpr
+```
+
+Using a batch script similar to the one above, run the benchmark. You may modify the mpirun command to optimise performance (significantly) but in order to produce a valid result, the simulation must run for 5,000 steps. Quoted in the output as:
+
+```text
+"5000 steps,     10.0 ps."
+```
+
+> [!NOTE]
+> Please be ready to present the `gromacs_log` files for the **1.5M_water** benchmark to the instructors.
