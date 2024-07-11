@@ -1,4 +1,4 @@
-# Student Cluster Competition - Tutorial 3
+Student Cluster Competition - Tutorial 3
 
 ## Table of Contents
 
@@ -43,7 +43,7 @@ In this tutorial you will:
 - [ ] Understand the pros and cons of compiling libraries from source.
 - [ ] Install and make use of Intel's oneAPI framework to run HPL.
 - [ ] Understand theoretical system peak performance.
-- [ ] Appreciate the significance of the Top500 list and bencmarking.
+- [ ] Appreciate the significance of the Top500 list and benchmarking.
 - [ ] Standup and Configure a Second Compute Node, and running applications across a cluster.
 - [ ] Download and compile the High Performance Computing Challenge (HPCC) benchmark.
 - [ ] Understand that scientific computer applications are primarily used to conduct scientific research, and can also evaluate system performance.
@@ -131,7 +131,7 @@ In this section, you are going to be building and compiling Lmod from source. Lm
      sudo dnf install -y epel-release
      sudo dnf install -y tcl-devel tcl tcllib  bc
      sudo dnf install -y lua lua-posix lua-term
-     sduo dnf --enable-repo=devel install lua-devel
+     sudo dnf --enable-repo=devel install lua-devel
      ```
    * APT
      ```bash
@@ -526,7 +526,7 @@ After you've successfully completed the previous section, you will be ready to r
    cp setup/Make.Linux_Intel64 ./
 
    # Edit the configuration file to make use of your Intel oneAPI Toolkit
-   nano Make.Linux64
+   nano Make.Linux_Intel64
    ```
 
 1. Configure your `Make.Linux_Intel64`
@@ -592,7 +592,6 @@ The [TOP500 list](https://top500.org/lists/top500/2024/06/) is a project that ra
 |      | Compute node using custom compiled MPI and BLAS |           |                       |                          |
 |      | Compute node using Intel oneAPI Toolkits        |           |                       |                          |
 |      | Across two compute nodes                        |           |                       |                          |
-|      |                                                 |           |                       |                          |
 
 > [!IMPORTANT]
 > You do **NOT** need to try and Rank you VM's HPL performance. Cores and threads are used interchangeably in this context. Following the recommended configuration and guides, your head node has one CPU package with two compute cores (or threads). Continuing this same analogy, your compute node has one CPU with six cores (or threads).

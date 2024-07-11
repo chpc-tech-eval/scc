@@ -198,8 +198,7 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
 1. [WirGuard VPN Cluster Access](tutorial2/README.md#wirguard-vpn-cluster-access)
 1. [ZeroTier](tutorial2/README.md#zerotier)
 
-**Tutorial 3** will demonstrate how to configure, build, compile and install a number of applications. You will also be building these applications with different tools. Finally, you will learn how to run applications across your cluster.
-
+**Tutorial 3** will demonstrate how to configure, build, compile and install a number of various system software and applications. You will also be building these applications with different tools. Finally, you will learn how to run applications across your cluster.
 
 1. [Checklist](tutorial3/README.md#checklist)
 1. [Managing Your Environment](tutorial3/README.md#managing-your-environment)
@@ -221,39 +220,67 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
 1. [Application Benchmarks and System Evaluation](tutorial3/README.md#application-benchmarks-and-system-evaluation)
     1. [GROMACS (ADH Cubic)](tutorial3/README.md#gromacs-adh-cubic)
     1. [LAMMPS (Lennard-Jones)](tutorial3/README.md#lammps-lennard-jones)
-    1. [Qiskit (Quantum Volume)](tutorial3/README.md#qiskit-quantum-volume)
+    1. [Qiskit (Quantum Volume)](tutorial3/README.md#qiskit-quantum-volume**
 
+**Tutorial 4** demonstrates how to configure docker containers to deploy a monitoring stack, comprising of a metrics database service, an exporting / scraping service and a metric visualization services. You will then learn the very basics of how to visualize and interpret data. You will then learn how to automate the deployment of your Sebowa OpenStack infrastructure. Lastly, you'll deploy a scheduler and submit a job to it.
 
+1. [Checklist](tutorial4/README.md#checklist)
+1. [Cluster Monitoring](tutorial4/README.md#cluster-monitoring)
+    1. [Install Docker Engine, Containerd and Docker Compose](tutorial4/README.md#install-docker-engine-containerd-and-docker-compose)
+    1. [Installing your Monitoring Stack](tutorial4/README.md#installing-your-monitoring-stack)
+    1. [Startup and Test the Monitoring Services](tutorial4/README.md#startup-and-test-the-monitoring-services)
+    1. [SSH Port Local Forwarding Tunnel](tutorial4/README.md#ssh-port-local-forwarding-tunnel)
+    1. [Create a Dashboard in Grafana](tutorial4/README.md#create-a-dashboard-in-grafana)
+    1. [Success State, Next Steps and Troubleshooting](tutorial4/README.md#success-state-next-steps-and-troubleshooting)
+1. [Configuring and Connecting to your Remote JupyterLab Server](tutorial4/README.md#configuring-and-connecting-to-your-remote-jupyterlab-server)
+    1. [Visualize Your HPL Benchmark Results](tutorial4/README.md#visualize-your-hpl-benchmark-results)
+    1. [Visualize Your Qiskit Results](tutorial4/README.md#visualize-your-qiskit-results)
+1. [Automating the Deployment of your OpenStack Instances Using Terraform](tutorial4/README.md#automating-the-deployment-of-your-openstack-instances-using-terraform)
+    1. [Install and Initialize Terraform](tutorial4/README.md#install-and-initialize-terraform)
+    1. [Generate `clouds.yml` and `main.tf` Files](tutorial4/README.md#generate-cloudsyml-and-maintf-files)
+    1. [Generate, Deploy and Apply Terraform Plan](tutorial4/README.md#generate-deploy-and-apply-terraform-plan)
+1. [Continuous Integration Using CircleCI](tutorial4/README.md#continuous-integration-using-circleci)
+    1. [Prepare GitHub Repository](tutorial4/README.md#prepare-github-repository)
+    1. [Reuse `providers.tf` and `main.tf` Terraform Configurations](tutorial4/README.md#reuse-providerstf-and-maintf-terraform-configurations)
+    1. [Create `.circleci/config.yml` File and `push` Project to GitHub](tutorial4/README.md#create-circleciconfigyml-file-and-push-project-to-github)
+    1. [Create CircleCI Account and Add Project](tutorial4/README.md#create-circleci-account-and-add-project)
+1. [Slurm Scheduler and Workload Manager](tutorial4/README.md#slurm-scheduler-and-workload-manager)
+    1. [Prerequisites](tutorial4/README.md#prerequisites)
+    1. [Head Node Configuration (Server)](tutorial4/README.md#head-node-configuration-server)
+    1. [Compute Node Configuration (Clients)](tutorial4/README.md#compute-node-configuration-clients)
+1. [GROMACS Application Benchmark](tutorial4/README.md#gromacs-application-benchmark)
+    1. [Protein Visualization](tutorial4/README.md#protein-visualization)
+    1. [Benchmark 2 (1.5M Water)](tutorial4/README.md#benchmark-2-15m-water)
 # Lecture Recordings
 
 In this section you will finds links to all of the livestreams of the lectures (Teams Meetings) and subsequent recordings for you to refer back to.
 
-1. Day 1 - Welcome, Introduction and Getting Started
-   * **08:30 - 09:30**: [Welcome and Introduction](https://youtu.be/T68pHDdZW3s)
-   * **09:30 - 10:30**: [Getting Started](https://youtu.be/cIB9Gtpifpk)
-   * **11:00 - 12:00**: [Intro to Linux & Services](https://youtu.be/pbpjAw9eVcM)
-   * **12:00 - 13:30**: [Intro to Tools for the Modern IT Engineer](https://youtu.be/t4hD6NMw9Xg)
+1. Welcome, Introduction and Getting Started
+   * [Welcome and Introduction](https://youtu.be/T68pHDdZW3s)
+   * [Getting Started](https://youtu.be/cIB9Gtpifpk)
+   * [Intro to Linux & Services](https://youtu.be/pbpjAw9eVcM)
+   * [Intro to Tools for the Modern IT Engineer](https://youtu.be/t4hD6NMw9Xg)
 
-2. Day 2 - HPC Hardware, HPC Networking and Systems Administration
-   * **08:30 - 09:30**: [HPC Hardware]()
-   * **09:30 - 10:30**: [HPC Networking]()
-   * **11:00 - 12:00**: [System Administration & Configuration Management]()
-   * **12:00 - 13:30**: [Standing up a Compute Node]()
+2. HPC Hardware, HPC Networking and Systems Administration
+   * [HPC Hardware](https://youtu.be/gkZCrdTuvrc)
+   * [HPC Networking](https://youtu.be/pGzQutsk2-A)
+   * [System Administration & Configuration Management](https://youtu.be/YY6D-0e5iHw)
+   * [Standing up a Compute Node](https://youtu.be/V6bx86qJwHE)
 
-3. Day 3 - Benchmarking, Compilation and Parallel Computing
-   * **08:30 - 09:30**: [HPC Benchmarking]()
-   * **09:30 - 10:30**: [Code Compilation]()
-   * **11:00 - 12:00**: [Parallel Computing and Intro to QC]()
-   * **12:00 - 13:30**: [Applications: LAMMPS & Qiskit]()
+3. Benchmarking, Compilation and Parallel Computing
+   * [HPC Benchmarking]()
+   * [Code Compilation]()
+   * [Parallel Computing and Intro to QC]()
+   * [Applications: LAMMPS & Qiskit]()
 
-4. Day 4 - HPC Administration and Application Visualization
-   * **08:30 - 09:30**: [Cluster Admin, Ansible & Containers]()
-   * **09:30 - 10:30**: [Monitoring]()
-   * **11:00 - 12:00**: [Schedulers]()
-   * **12:00 - 13:30**: [Data Visualization & Jupyter Lab]()
+4. Administration and Application Visualization
+   * [Cluster Admin, Ansible & Containers]
+   * [Monitoring]()
+   * [Schedulers]
+   * [Data Visualization & Jupyter Lab]
 
-5. Day 5 - Career Guidance
-   * **08:30 - 10:30** [HPC Career Panel]()
+5. Career Guidance
+   * [HPC Career Panel]()
 
 # Contributing to the Project
 
