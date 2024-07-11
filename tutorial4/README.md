@@ -2,31 +2,34 @@
 
 ## Table of Contents
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-**Table of Contents**
 
-- [Student Cluster Competition - Tutorial 4](#student-cluster-competition---tutorial-4)
-    - [Table of Contents](#table-of-contents)
-- [Checklist](#checklist)
-- [Cluster Monitoring](#cluster-monitoring)
-    - [Install Docker Engine, Containerd and Docker Compose](#install-docker-engine-containerd-and-docker-compose)
-    - [Installing your Monitoring Stack](#installing-your-monitoring-stack)
-    - [Startup and Test the Monitoring Services](#startup-and-test-the-monitoring-services)
-    - [SSH Port Local Forwarding Tunnel](#ssh-port-local-forwarding-tunnel)
-    - [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
-    - [Success State, Next Steps and Troubleshooting](#success-state-next-steps-and-troubleshooting)
-- [Configuring and Connecting to your Remote JupyterLab Server](#configuring-and-connecting-to-your-remote-jupyterlab-server)
-    - [Visualize Your HPL Benchmark Results](#visualize-your-hpl-benchmark-results)
-    - [Visualize Your Qiskit Results](#visualize-your-qiskit-results)
-- [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
-- [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
-- [Automating the Configuration of your VMs Using Ansible](#automating-the-configuration-of-your-vms-using-ansible)
-- [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
-    - [Prerequisites](#prerequisites)
-    - [Head Node Configuration (Server)](#head-node-configuration-server)
-    - [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
-- [GROMACS Application Benchmark](#gromacs-application-benchmark)
-    - [Protein Visualization](#protein-visualization)
-    - [Benchmark 2 (1.5M Water)](#benchmark-2-15m-water)
+1. [Checklist](#checklist)
+1. [Cluster Monitoring](#cluster-monitoring)
+    1. [Install Docker Engine, Containerd and Docker Compose](#install-docker-engine-containerd-and-docker-compose)
+    1. [Installing your Monitoring Stack](#installing-your-monitoring-stack)
+    1. [Startup and Test the Monitoring Services](#startup-and-test-the-monitoring-services)
+    1. [SSH Port Local Forwarding Tunnel](#ssh-port-local-forwarding-tunnel)
+    1. [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
+    1. [Success State, Next Steps and Troubleshooting](#success-state-next-steps-and-troubleshooting)
+1. [Configuring and Connecting to your Remote JupyterLab Server](#configuring-and-connecting-to-your-remote-jupyterlab-server)
+    1. [Visualize Your HPL Benchmark Results](#visualize-your-hpl-benchmark-results)
+    1. [Visualize Your Qiskit Results](#visualize-your-qiskit-results)
+1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
+    1. [Install and Initialize Terraform](#install-and-initialize-terraform)
+    1. [Generate `clouds.yml` and `main.tf` Files](#generate-cloudsyml-and-maintf-files)
+    1. [Generate, Deploy and Apply Terraform Plan](#generate-deploy-and-apply-terraform-plan)
+1. [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
+    1. [Prepare GitHub Repository](#prepare-github-repository)
+    1. [Reuse `providers.tf` and `main.tf` Terraform Configurations](#reuse-providerstf-and-maintf-terraform-configurations)
+    1. [Create `.circleci/config.yml` File and `push` Project to GitHub](#create-circleciconfigyml-file-and-push-project-to-github)
+    1. [Create CircleCI Account and Add Project](#create-circleci-account-and-add-project)
+1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
+    1. [Prerequisites](#prerequisites)
+    1. [Head Node Configuration (Server)](#head-node-configuration-server)
+    1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
+1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
+    1. [Protein Visualization](#protein-visualization)
+    1. [Benchmark 2 (1.5M Water)](#benchmark-2-15m-water)
 
 <!-- markdown-toc end -->
 
@@ -722,7 +725,7 @@ You are now going to extend your `qv_experiment` and plot your results, by drawi
    ```
 1. You may need to install additional dependencies
    ```bash
-   pip install matplotlib
+   pip install matplotlib jupyterlab
    ```
 
 1. Append the following to your `qv_experiment.py` script:
@@ -760,17 +763,21 @@ You are now going to extend your `qv_experiment` and plot your results, by drawi
    python qv_experiment.py
    ```
 
-
 # Automating the Deployment of your OpenStack Instances Using Terraform
 
 Terraform is a piece of software that allows one to write out their cloud infrastructure and deployments as code, [IaC](https://en.wikipedia.org/wiki/Infrastructure_as_code). This allows the deployments of your cloud virtual machine instances to be shared, iterated, automated as needed and for software development practices to be applied to your infrastructure.
 
 In this section of the tutorial, you will be deploying an additional compute node from your `head node` using Terraform.
 
-> [!TIP]
-> The machine that you use to provision you infrastructure could also be your local laptop. You will be making use of you head node for this purpose to further demonstrate how it can be utilized as an administrative node.
+> [!CAUTION]
+> In the following section, **you must request additional resources from the instructors**. This additional node will be experimental, and you will be deleting and reinitializing this instance often. Make sure you understand how to [Delete Instance](../tutorial1/README.md#troubleshooting).
+
+## Install and Initialize Terraform
+
+You will now prepare, install and initialize Terraform on your head node. You will define and configure a `providers.tf` file, to configure OpenStack instances (as Sebowa is an OpenStack based cloud).
 
 1. Use your operating system's package manager to install Terraform
+
    This could be your workstation or one of your VMs. The machine must be connected to the internet and have access to your OpenStack workspace, i.e. https://sebowa.nicis.ac.za
    * DNF / YUM
    ```bash
@@ -804,7 +811,7 @@ In this section of the tutorial, you will be deploying an additional compute nod
    ```
 
 1. Create a Terraform directory, descend into it and Edit the `providers.tf` file
-   In order to efficiently manage your
+
    ```bash
    mkdir terraform
    cd terraform
@@ -812,6 +819,7 @@ In this section of the tutorial, you will be deploying an additional compute nod
    ```
 
 1. You must specify a [Terraform Provider](https://registry.terraform.io/browse/providers)
+
    These can vary from MS Azure, AWS, Google, Kubernetes etc... We will be implementing an OpenStack provider as this is what is implemented on the Sebowa cloud platform. Add the following to the `providers.tf` file.
    ```conf
    terraform {
@@ -824,16 +832,24 @@ In this section of the tutorial, you will be deploying an additional compute nod
    }
    ```
 1. Initialize Terraform
+
    From the folder with your provider definition, execute the following command:
    ```bash
    terraform init
    ```
+
+## Generate `clouds.yml` and `main.tf` Files
+
+Generate and configure the `cloud.yml` file that will authenticate you against your Sebowa OpenStack workspace, and the `main.tf`files that will define how your infrastructure should be provisioned.
+
 1. Generate OpenStack API Credentials
+
    From _your_ team's Sebowa workspace, navigate to `Identity` &rarr; `Application Credentials`, and generate a set of OpenStack credentials in order to allow you to access and authenticate against your workspace.
 
    <p align="center"><img alt="OpenStack Application Credentials." src="./resources/openstack_application_creds.png" width=900 /></p>
 
 1. Download and Copy the `clouds.yml` File
+
    Copy the `clouds.yml` file to the folder where you initialized terraform. The contents of the of which, should be _similar_ to:
    ```config
    # This is a clouds.yaml file, which can be used by OpenStack tools as a source
@@ -879,6 +895,8 @@ In this section of the tutorial, you will be deploying an additional compute nod
 > [!NOTE]
 > You must specify your own variables for `name`, `image_id`, `flavor_id`, `key_pair` and `network.name`.
 
+## Generate, Deploy and Apply Terraform Plan
+
 1. Generate and Deploy Terraform Plan
    Create a Terraform plan based on the current configuration. This plan will be used to implement changes to your Sebowa OpenStack cloud workspace, and can be reviewed before applying those changes.
    Generate a plan and write it to disk:
@@ -895,13 +913,17 @@ In this section of the tutorial, you will be deploying an additional compute nod
    Finally confirm that your new instance has been successfully created. On your Sebowa OpenStack workspace, navigate to `Project` &rarr; `Compute` &rarr; `Instances`.
 
 > [!TIP]
-> To avoid losing your team's progress, it would be a good idea to create a GitHub repo in order for you to commit and push your changes.
+> To avoid losing your team's progress, it would be a good idea to create a GitHub repo in order for you to commit and push your various scripts and configuration files.
 
 # Continuous Integration Using CircleCI
 
-Circle CI is a Continuous Integration and Continuous Delivery platform that can be utilized to implement DevOps practices.
+Circle CI is a Continuous Integration and Continuous Delivery platform that can be utilized to implement DevOps practices. It helps teams build, test, and deploy applications quickly and reliably.
 
 In this section of the tutorials you're going to be expanding on the OpenStack instance automation with CircleCI `Workflows` and `Pipelines`. For this tutorial you will be using your GitHub account which will integrate directly into CircleCI.
+
+## Prepare GitHub Repository
+
+   You will be integration GitHub into CircleCI workflows, wherein every time you commit changes to your `deploy_compute` GitHub repository, CircleCI will instantiate and trigger Terraform, to create a new compute node VM on Sebowa.
 
 1. Create GitHub Repository
    If you haven't already done so, sign up for a [GitHub Account](https://github.com/). Then create an empty private repository with a suitable name, i.e. `deploy_compute_node`:
@@ -916,15 +938,15 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
 > [!TIP]
 > You will be using your head node to orchestrate and configure your infrastructure. Pay careful attention to ensure that you copy over your **head node**'s public SSH key. Administrating and managing your compute nodes in this manner requires you to think about them as "cattle" and not "pets".
 
-1. Reuse `providers.tf` and `main.tf` Terraform Configurations
+## Reuse `providers.tf` and `main.tf` Terraform Configurations
 
-   On your head node, create a folder that is going to be used to initialize the GitHub repository:
+1. On your head node, create a folder that is going to be used to initialize the GitHub repository:
    ```bash
    mkdir ~/deploy_compute_node
    cd ~/deploy_compute_node
    ```
 
-   Copy the `providers.tf` and `main.tf` files you had previously generated:
+1. Copy the `providers.tf` and `main.tf` files you had previously generated:
 
    ```bash
    cp ~/terraform/providers.tf ./
@@ -932,17 +954,17 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
    vim main.tf
    ```
 
-1. Create `.circleci/config.yml` File
+## Create `.circleci/config.yml` File and `push` Project to GitHub
 
    The `.circle/config.yml` configuration file is where you define your build, test and deployment process. From your head node, you are going to be `pushing` your Infrastructure as Code to your private GitHub repository. This will then automatically trigger the CircleCI deployment of a Docker container which has been tailored for Terraform operations and instructions that will deploy your Sebowa OpenStack compute node instance.
 
-   Create and edit `.circleci/config.yml`:
+1. Create and edit `.circleci/config.yml`:
    ```bash
    mkdir .circleci
    vim .circleci/config.yml # Remember that if you are not comfortable using Vim, install and make use of Nano
    ```
 
-   Copy the following configuration into `.circle/config.yml`:
+1. Copy the following configuration into `.circle/config.yml`:
    ```conf
    version: 2.1
 
@@ -1003,33 +1025,29 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
    ```
    The new files should now be available on GitHub.
 
-1. Create a CircleCI Account and Add a Project
-   Navigate to [CircleCI.com](https://circleci.com)
-   * Create a new organization and give it a suitable name
+## Create CircleCI Account and Add Project
+
+   Navigate to [CircleCI.com](https://circleci.com) to create an account, link and add a new GitHub project.
+1.  Create a new organization and give it a suitable name
    <p align="center"><img alt="CircleCI" src="./resources/circleci_create_organization.png" width=600 /></p>
-   * Once you've logged into your workspace, go to projects and create a new project
+1. Once you've logged into your workspace, go to projects and create a new project
    <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project00.png" width=600 /></p>
-   * Create a new IaC Project
+1. Create a new IaC Project
    <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project01.png" width=600 /></p>
-   * If your repository is on GitHub, create a corresponding project
+1. If your repository is on GitHub, create a corresponding project
    <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project02.png" width=600 /></p>
-   * Pick a project name and a repository to associate it to
+1. Pick a project name and a repository to associate it to
    <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project03.png" width=600 /></p>
-   * 
+1. Push the configuration to GitHub to trigger workflow
    <p align="center"><img alt="CircleCI" src="./resources/circleci_successful_deploy.png" width=900 /></p>
 
-# Automating the Configuration of your VMs Using Ansible
-Use Ansible to install and configure NTP Client
+> [!IMPORTANT]
+> You're going to need to delete your experimental compute node instance on your Sebowa OpenStack workspace, each time you want to test or run the CircleCI integration. It has been included here for demonstration purposes, so that you may begin to see the power and utility of CI/CD and automation.
+>
+> Navigate to your Sebowa OpenStack workspace to ensure that they deployment was successful.
+>
+> Consider how you could streamline this process even further using preconfigured instance snapshots, as well as  Ansible after your instances have been deployed.
 
-1. Edit your `main.tf` File
-
-   Add the following configuration to the end of the `main.tf` file, that generates a variable to store the IP address of the newly created instance:
-   ```conf
-   output "instance_ip" {
-     value = openstack_compute_instance_v2.terraform-demo-instance.network.0.fixed_ip_v4
-   }
-
-   ```
 # Slurm Scheduler and Workload Manager
 
 The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource Management), is a free and open-source job scheduler for Linux, used by many of the world's supercomputers/computer clusters. It allows you to manage the resources of a cluster by deciding how users get access for some duration of time so they can perform work. To find out more, please visit the [Slurm Website](https://slurm.schedmd.com/documentation.html).
