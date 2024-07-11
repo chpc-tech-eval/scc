@@ -1,8 +1,7 @@
-# Student Cluster Compeititon - Tutorial 4
+# Student Cluster Competition - Tutorial 4
 
 ## Table of Contents
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-
 1. [Checklist](#checklist)
 1. [Cluster Monitoring](#cluster-monitoring)
     1. [Install Docker Engine, Containerd and Docker Compose](#install-docker-engine-containerd-and-docker-compose)
@@ -10,19 +9,17 @@
     1. [Startup and Test the Monitoring Services](#startup-and-test-the-monitoring-services)
     1. [SSH Port Local Forwarding Tunnel](#ssh-port-local-forwarding-tunnel)
     1. [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
-    1. [Going Beyond](#going-beyond)
-    1. [Legacy Approach for the Brave](#legacy-approach-for-the-brave)
+    1. [Success State, Next Steps and Troubleshooting](#success-state-next-steps-and-troubleshooting)
 1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
     1. [Prerequisites](#prerequisites)
     1. [Head Node Configuration (Server) ](#head-node-configuration-server)
     1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
-    1. [Configure Grafana Dashboard for Slurm](#configure-grafana-dashboard-for-slurm)
 1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
-    1. [Protein Visualisation](#protein-visualisation)
+    1. [Protein Visualization](#protein-visualization)
     1. [Benchmark 2 (1.5M Water)](#benchmark-2-15m-water)
 1. [Configuring and Connecting to your Remote JupyterLab Server](#configuring-and-connecting-to-your-remote-jupyterlab-server)
     1. [Visualize Your HPL Benchmark Results](#visualize-your-hpl-benchmark-results)
-    1. [Visualize You Qiskit Results](#visualize-you-qiskit-results)
+    1. [Visualize Your Qiskit Results](#visualize-your-qiskit-results)
 1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
 1. [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
 1. [Automating the Configuration of your VMs Using Ansible](#automating-the-configuration-of-your-vms-using-ansible)
