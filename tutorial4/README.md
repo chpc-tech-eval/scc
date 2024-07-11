@@ -172,14 +172,11 @@ You will need to have `docker`, `containerd` and `docker-compose` installed on a
    sudo mkdir /opt/monitoring_stack/
    cd /opt/monitoring_stack/
    ```
-
 1. Create and edit your monitoring configurations files
-
-   * `docker-compose.yml`
    ```bash
    sudo nano /opt/monitoring_stack/docker-compose.yml
    ```
-     Add the following to the YAML file
+1. Add the following to the `docker-compose.yml` YAML file
    ```conf
    version: '3'
    services:
@@ -216,14 +213,13 @@ You will need to have `docker`, `containerd` and `docker-compose` installed on a
    networks:
      monitoring-network:
        driver: bridge
-
    ```
-   * `prometheus.yml`
+1. Create and edit your Prometheus configuration files
 
    ```bash
      sudo nano /opt/monitoring_stack/prometheus.yml
    ```
-     Add the following to your Prometheus YAML file
+1. Add the following to your `prometheus.yml` YAML file
    ```conf
    global:
      scrape_interval: 15s
@@ -233,12 +229,11 @@ You will need to have `docker`, `containerd` and `docker-compose` installed on a
        static_configs:
          - targets: ['node-exporter:9100']
    ```
-   * `prometheus-datasource.yaml`
+1. Configure you Promeheus Data Sources
    ```bash
    sudo nano /opt/monitoring_stack/prometheus-datasource.yaml
    ```
-     Add the following yo your Promeheus Data Source.
-
+1. Add the following to your `prometheus-datasource.yaml`.
    ```conf
    apiVersion: 1
    datasources:
@@ -438,7 +433,7 @@ scrape_configs:
     static_configs:
       - targets: ["<compute_node_ip>:9100"]
 ```
-9.  Create a service file to manage Prometheus with `systemctl`, the file can be created with the text editor `nano` (Can use any text editor of your choice)
+9. Create a service file to manage Prometheus with `systemctl`, the file can be created with the text editor `nano` (Can use any text editor of your choice)
  ```bash
 sudo nano /etc/systemd/system/prometheus.service
  ```
@@ -466,22 +461,22 @@ WantedBy=multi-user.target
 10. Reload the systemd daemon, start and enable the service
  ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable prometheus 
+sudo systemctl enable prometheus
 sudo systemctl start prometheus
  ```
 
 11. Check that your service is active by checking the status
   ```bash
   sudo systemctl status prometheus
-  ``` 
+  ```
 
 > [!TIP]
 > If when you check the status and find that the service is not running, ensure SELinux or AppArmor is not restricting Prometheus from running. Try disabling SELinux/AppArmor temporarily to see if it resolves the issue:
-> 
+>
 > ```bash
 > sudo setenforce 0
 > ```
-> 
+>
 > Then repeat steps 10 and 11.
 >
 > If the prometheus service still fails to start properly, run the command `journalctl –u prometheus -f --no-pager` and review the output for errors.
@@ -805,16 +800,16 @@ To finish, type `exit` and you'll be placed back on your head node. If you run `
 To confirm that your node configuration is correct, you can run the following command on the head node:
 
 ```bash
-[...@headnode ~]$ sinfo -alN
+sinfo -alN
 ```
 
 The `S:C:T` column means "sockets, cores, threads" and your numbers for your compute node should match the settings that you made in the `slurm.conf` file.
 
-## Configure Grafana Dashboard for Slurm
-
+> [!TIP]
+> 
 # GROMACS Application Benchmark
 
-## Protein Visualisation
+## Protein Visualization
 
 > **! >>> You will need to work on your personal computer (or laptop) to complete this section.**
 
@@ -855,7 +850,7 @@ Simulations like this are used to to develop and prototype experimental pharmace
 Pre-process the input data using the `grompp` command
 
 ```bash
-[...@node ~]$ gmx_mpi grompp -f pme_verlet.mdp -c out.gro -p topol.top -o md_0_1.tpr
+gmx_mpi grompp -f pme_verlet.mdp -c out.gro -p topol.top -o md_0_1.tpr
 ```
 
 Using a batch script similar to the one above, run the benchmark. You may modify the mpirun command to optimise performance (significantly) but in order to produce a valid result, the simulation must run for 5,000 steps. Quoted in the output as:
@@ -867,8 +862,6 @@ Using a batch script similar to the one above, run the benchmark. You may modify
 <span style="color: #800000">
   !!! Please be ready to present the `gromacs_log` files for the **1.5M_water** benchmark to the instructors.
 </span>
-
-
 
 
 <span style="color: #800000">
@@ -970,20 +963,31 @@ You will now visualize the results from the [table you prepared of Rmax (GFlops/
 1. Click on the camera icon to download and save your image.
    Post your results as a comment, replying to this [GitHub discussion thread](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/114).
 
-## Visualize You Qiskit Results
+## Visualize Your Qiskit Results
 
-TODO: WORK IN PROGRESS WILL NEATEN UP 03/07/24
+You are now going to extend your `qv_experiment` and plot your results, by drawing a graph of *"Number of Qubits vs Simulation time to Solution"*:
 
-add jupyter notebook details
+1. Create and Activate a New Python Virtual Environment
+
+   Separate your python projects and ensure that they exist in their own, clean environments:
+
+   ```bash
+   python -m venv
+   source QiskitAer/bin/activate
+   ```
+1. You may need to install additional dependencies
+   ```bash
+   pip install matplotlib
+   ```
 
 1. Append the following to your `qv_experiment.py` script:
 
    ```python
    # number of qubits, for your system see how much higher that 30 your can go...
-   num_qubits = np.arrange(10, 30)
+   num_qubits = np.arrange(2, 10)
 
    # QV Depth
-   qv_depth = 10
+   qv_depth = 5
 
    # For bonus points submit results with up to 20 or even 30 shots
    # Note that this will be more demanding on your system
@@ -997,55 +1001,58 @@ add jupyter notebook details
      result_array[i] = quant_vol(qubits=i, shots=num_shots, depth=qv_depth)
      # for debugging purposes you can optionally print the output
      print(i, result_array[i])
+
+   import matplotlib.pyplot as plt
+   plt.xlabel('Number of qubits')
+   plt.ylabel('Time (sec)')
+   plt.plot(num_qubits, results_array)
+   plt.title('Quantum Volume Experiment with depth=' + str(qv_depth))
+   plt.savefig('qv_experiment.png')
    ```
-
-1. Create and Activate a New Python Virtual Environment
-
-   Separate your python projects and ensure that they exist in their own, clean environments:
-
-   ```bash
-   python -m venv
-   source QiskitAer/bin/activate
-   ```
-
 
 1. Run the benchmark by executing the script you've just written:
-```bash
-$ python qv_experiment.py
-```
-
-1. Append the following to your `qv_experiment.py` script:
-
-```python
-# number of qubits, for your system see how much higher that 30 your can go...
-num_qubits = np.arrange(10, 30)
-
-# QV Depth
-qv_depth = 10
-
-# For bonus points submit results with up to 20 or even 30 shots
-# Note that this will be more demanding on your system
-num_shots = 10
-
-# Array for storing the output results
-result_array = [[], []]
-
-# iterate over qv depth and number of qubits
-for i in num_qubits:
-  result_array[i] = quant_vol(qubits=i, shots=num_shots, depth=qv_depth)
-  # for debugging purposes you can optionally print the output
-  print(i, result_array[i])
-
-```
+   ```bash
+   python qv_experiment.py
+   ```
 # Automating the Deployment of your OpenStack Instances Using Terraform
 
 Terraform is a piece of software that allows one to write out their cloud infrastructure and deployments as code, [IaC](https://en.wikipedia.org/wiki/Infrastructure_as_code). This allows the deployments of your cloud virtual machine instances to be shared, iterated, automated as needed and for software development practices to be applied to your infrastructure.
 
 In this section of the tutorial, you will be deploying an additional compute node from your `head node` using Terraform.
 
+> [!TIP]
+> The machine that you use to provision you infrastructure could also be your local laptop. You will be making use of you head node for this purpose to further demonstrate how it can be utilized as an administrative node.
+
 1. Use your operating system's package manager to install Terraform
-   This could be your workstation or one of your VMs. The machine must be connected to the internet and have access to your
+   This could be your workstation or one of your VMs. The machine must be connected to the internet and have access to your OpenStack workspace, i.e. https://sebowa.nicis.ac.za
+   * DNF / YUM
    ```bash
+   sudo yum update -y
+
+   # Install package to manage repository configurations
+   sudo yum install -y dnf-plugins-core
+
+   # Add the HashiCorp Repo
+   sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+
+   sudo dnf install -y terraform
+   ```
+   * APT
+   ```bash
+   # Update package repository
+   sudo apt-get update
+   sudo apt-get install -y gnupg software-properties-common
+
+   # Add HashiCorp GPG Keys
+   wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+   # Add the official HashiCorp Linux Repo
+   echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+   ```
+   * Pacman
+   ```bash
+   # Arch
    sudo pacman -S terraform
    ```
 
@@ -1079,9 +1086,9 @@ In this section of the tutorial, you will be deploying an additional compute nod
    
 1. Generate OpenStack API Credentials
    From _your_ team's Sebowa workspace, navigate to `Identity` &rarr; `Application Credentials`, and generate a set of OpenStack credentials in order to allow you to access and authenticate against your workspace.
-   
+
    <p align="center"><img alt="OpenStack Application Credentials." src="./resources/openstack_application_creds.png" width=900 /></p>
-   
+
 1. Download and Copy the `clouds.yml` File
    Copy the `clouds.yml` file to the folder where you initialized terraform. The contents of the of which, should be _similar_ to:
    ```config
@@ -1106,25 +1113,25 @@ In this section of the tutorial, you will be deploying an additional compute nod
    ```
 1. Create `main.tf` Terraform File
    Inside your `terraform` folder, you must define a `main.tf` file. This file is used to identify the provider to be implemented as well as the compute resource configuration details of the instance we would like to launch.
-   
+
    You will need to define your own `main.tf` file, but below is an example of one such definition:
    ```config
    provider "openstack" {
      cloud = "openstack"
    }
    resource "openstack_compute_instance_v2" "terraform-demo-instance" {
-     name = "scc24-arch-cn2"
+     name = "scc24-arch-cn03"
      image_id = "33b938c8-6c07-45e3-8f2a-cc8dcb6699de"
      flavor_id = "4a126f4f-7df6-4f95-b3f3-77dbdd67da34"
      key_pair = "nlisa at mancave"
      security_groups = ["default", "ssh & web services"]
-   
+
      network {
        name = "nlisa-vxlan"
      }
    }
    ```
-   
+
 > [!NOTE]
 > You must specify your own variables for `name`, `image_id`, `flavor_id`, `key_pair` and `network.name`.
 
@@ -1134,16 +1141,16 @@ In this section of the tutorial, you will be deploying an additional compute nod
    ```bash
    terraform plan -out ~/terraform/plan
    ```
-   
+
    <p align="center"><img alt="Terraform Plan." src="./resources/terraform_plan.png" width=900 /></p>
-   
+
    Once you are satisfied with the proposed changes, deploy the terraform plan:
    ```bash
    terraform apply ~terraform/plan
    ```
-   
+
    <p align="center"><img alt="Terraform Apply." src="./resources/terraform_install_init.png" width=900 /></p>
-   
+
 1. Verify New Instance Successfully Created by Terraform
    Finally confirm that your new instance has been successfully created. On your Sebowa OpenStack workspace, navigate to `Project` &rarr; `Compute` &rarr; `Instances`.
 
@@ -1158,19 +1165,19 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
 
 1. Create GitHub Repository
    If you haven't already done so, sign up for a [GitHub Account](https://github.com/). Then create an empty private repository with a suitable name, i.e. `deploy_compute_node`:
-   
+
    <p align="center"><img alt="Github Create" src="./resources/github_create_new_repo.png" width=900 /></p>
-   
+
    Add your team members to the repository to provide them with access:
    <p align="center"><img alt="Github Manage Access" src="./resources/github_manage_access.png" width=900 /></p>
-   
+
    If you haven't already done so, add your SSH key to your GitHub account by following the instructions from [Steps to follow when editing existing content](../README.md#steps-to-follow-when-editing-existing-content).
-   
+
 > [!TIP]
 > You will be using your head node to orchestrate and configure your infrastructure. Pay careful attention to ensure that you copy over your **head node**'s public SSH key. Administrating and managing your compute nodes in this manner requires you to think about them as "cattle" and not "pets".
 
 1. Reuse `providers.tf` and `main.tf` Terraform Configurations
-   
+
    On your head node, create a folder that is going to be used to initialize the GitHub repository:
    ```bash
    mkdir ~/deploy_compute_node
