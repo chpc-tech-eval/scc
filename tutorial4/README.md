@@ -2,23 +2,13 @@
 
 ## Table of Contents
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-**Table of Contents**
 
 1. [Checklist](#checklist)
 1. [Cluster Monitoring](#cluster-monitoring)
-    1. [Introduction](#introduction)
-        1. [Importance of Cluster Monitoring on Linux Machines](#importance-of-cluster-monitoring-on-linux-machines)
-        1. [Traditional Approach Using top or htop](#traditional-approach-using-top-or-htop)
-        1. [Using Grafana, Prometheus, and Node Exporter](#using-grafana-prometheus-and-node-exporter)
-        1. [What is Docker and Docker Compose and How We Will Use It](#what-is-docker-and-docker-compose-and-how-we-will-use-it)
-    1. [How to use the notes](#how-to-use-the-notes)
-    1. [Pre-requisites](#pre-requisites)
-    1. [Installing the Monitoring Stack](#installing-the-monitoring-stack)
-    1. [Start the services](#start-the-services)
-    1. [Verify that the services are running/accessible](#verify-that-the-services-are-running-accessible)
-        1. [Prometheus](#prometheus)
-        1. [Node Exporter](#node-exporter)
-        1. [Grafana](#grafana)
+    1. [Install Docker Engine, Containerd and Docker Compose](#install-docker-engine-containerd-and-docker-compose)
+    1. [Installing your Monitoring Stack](#installing-your-monitoring-stack)
+    1. [Startup and Test the Monitoring Services](#startup-and-test-the-monitoring-services)
+    1. [SSH Port Local Forwarding Tunnel](#ssh-port-local-forwarding-tunnel)
     1. [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
     1. [Going Beyond](#going-beyond)
     1. [Legacy Approach for the Brave](#legacy-approach-for-the-brave)
@@ -96,6 +86,8 @@ Cluster monitoring is crucial for managing Linux machines. Effective monitoring 
 > When the word **Input:** is mentioned, excpect the next line to have commands that you need to copy and paste into your own terminal.
 >
 > Whenever the word **Output:** is mentioned **DON'T** copy and paste anything below this word as this is just the expected output.
+>
+> The following configuration is for your **head node**. You will be advised of the steps you need to take to monitor your **compute node(s)** at the end.
 
 ## Install Docker Engine, Containerd and Docker Compose
 
@@ -155,18 +147,22 @@ You will need to have `docker`, `containerd` and `docker-compose` installed on a
    sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -Po '"tag_name": "\K.*\d')/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
    sudo chmod +x /usr/local/bin/docker-compose
    ```
-1. Verify that the Docker Engine installation was successful by running the hello-world image
+1. Verify that the Docker Engine installation was successful by running the `hello-world` image
 
-   This command downloads a test image and runs it in a container. When the container runs, it prints a confirmation message and exits.
+   Download and deploy a test image and run it inside a container. When the container runs, it prints a confirmation message and exits.
    ```bash
+   # Check the verions of Docker
    docker --version
+
+   # Download and deplpoy a test image
    sudo docker run hello-world
 
+   # Check your version of Docker Compose
    docker-compose --version
    ```
    You have now successfully installed and started Docker Engine.
 
-## Installing Monitoring Stack
+## Installing your Monitoring Stack
 
 1. Create a suitable directory, e.g. `/opt/monitoring_stack`
 
@@ -224,7 +220,7 @@ You will need to have `docker`, `containerd` and `docker-compose` installed on a
    ```
    * `prometheus.yml`
 
-   ```
+   ```bash
    sudo nano /opt/monitoring_stack/prometheus.yml
    ```
      Add the following to your Prometheus YAML file
@@ -241,7 +237,7 @@ You will need to have `docker`, `containerd` and `docker-compose` installed on a
    ```bash
    sudo nano /opt/monitoring_stack/prometheus-datasource.yaml
    ```
-      Add the following yo your Promeheus Data Source
+      Add the following yo your Promeheus Data Source.
 
    ```conf
    apiVersion: 1
@@ -303,50 +299,47 @@ SSH port forwarding, also known as SSH tunneling, is a method of creating a secu
 
 ## Create a Dashboard in Grafana
 
-Go to a browser and input:
-
-```
-http://localhost:3000
-```
+1. Go to a browser and login to Grafana:
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/abee2bcd-3f6c-437b-aee7-edfa31550d42)
 
+```
 username: admin
 password: admin
+```
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/52010bd5-e9fd-4ee1-9703-352507a1e72d)
 
-Go to Dashboards
+1. Go to Dashboards
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/083f2bc3-247a-40ad-b923-2b2007fe9b70)
 
-Click on New then Import
+1. Click on New then Import
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/4efa0d71-7278-454d-a815-8b6f1f1c72a3)
 
-Input: 1860 and click Load
+1. Input: 1860 and click Load
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/d8cda594-0468-4ec0-876a-7beeaf79589f)
 
-Click on source: "Prometheus"
+1. Click on source: "Prometheus"
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/257351d2-f078-4140-9a37-0b8a4b1b59b8)
 
-Click on Import:
+1. Click on Import:
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/f078be7e-2663-4947-b8fd-fc6c6d548513)
 
-Then you should see:
+## Success State, Next Steps and Troubleshooting
+
+Congratulations on successfully deploying your monitoring stack and adding Grafana Dashboards to visualize this.
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/0568acc5-5248-4b90-8803-5f58d2af11e2)
 
+If you've managed to successfully configure your dash boards for your head node, repeat
+
 > [!NOTE]
 > Should you have any difficulties running the above configuration, use the alternative process below to deploy your monitoring stack. Click on the heading to reveal content.
-
-## Going Beyond
-Now having set up a dashboard for monitoring your head node, figure out what to do to add your compute node(s) into your existing dashboard so that you're able to monitor them as well.
-
-## Legacy Approach for the Brave
 <details>
 <summary>Installing your monitoring stack from pre-compiled binaries</summary>
 For this tutorial we will install from pre-complied binaries.
