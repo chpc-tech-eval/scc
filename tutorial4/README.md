@@ -289,8 +289,7 @@ SSH port forwarding, also known as SSH tunneling, is a method of creating a secu
 > # Connect to Grafana's (head node) service directly from your workstation
 > [http://localhost:3000] ---- SSH Forwarding Tunnel ----> [Grafana (head node)]
 > ```
-
-> [!TIP]
+>
 > Make sure that you understand the above concepts, as it will facilitate your understanding of the following considerations:
 > * If you have successfully configured [WireGuard](../tutorial2/README.md#wirguard-vpn-cluster-access)
 > ```css
@@ -314,10 +313,10 @@ SSH port forwarding, also known as SSH tunneling, is a method of creating a secu
 > Take the time now however, to ensure that all of your team members understand that there are a number of methods with which you can access remote services on your head node:
 > * http://154.114.57.x:3000
 > * http://localhost:3000
-> * http://<headnode wireguard ip>:3000
-> * http://<head node's internal zerotier ip>:3000
+> * http://`<headnode wireguard ip>`:3000
+> * http://`<headnode zerotier ip>`:3000
 
-Once you have understood the above considerations, you may proceed to create a TCPort Forwarding tunnel, to connect your workstation's port, directly to your head node's, over a tunnel.
+Once you have understood the above considerations, you may proceed to create a TCP Port Forwarding tunnel, to connect your workstation's port, directly to your head node's, over a tunnel.
 
 1. Create SSH Port Forwarding Tunnel on your local workstation
 
@@ -334,6 +333,7 @@ Once you have understood the above considerations, you may proceed to create a T
 
    ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/abee2bcd-3f6c-437b-aee7-edfa31550d42)
 
+1. Login to you Grafana dashboards
    ```
    username: admin
    password: <YOUR_GRAFANA_PASSWORD>
@@ -565,7 +565,6 @@ user@headnode_ip: The SSH connection details for the headnode.
 - -N: Tells SSH to not execute any commands, just set up the tunnel.
 
   2. By navigating to http://localhost:9100/metrics in your web browser, you can access the Node Exporter metrics from the compute node as if the service were running locally on your machine.
-
 
 ### Grafana
 Grafana is an open-source platform for monitoring and observability, known for its capability to create interactive and customizable dashboards. It integrates seamlessly with various data sources, including Prometheus. Through its user-friendly interface, Grafana allows users to build and execute queries to visualize data effectively. Beyond visualization, Grafana also supports alerting based on the visualized data, enabling users to set up notifications for specific conditions. This makes Grafana a powerful tool for both real-time monitoring and historical analysis of system performance.
@@ -802,71 +801,6 @@ sinfo -alN
 
 The `S:C:T` column means "sockets, cores, threads" and your numbers for your compute node should match the settings that you made in the `slurm.conf` file.
 
-> [!TIP]
-> 
-# GROMACS Application Benchmark
-
-## Protein Visualization
-
-> **! >>> You will need to work on your personal computer (or laptop) to complete this section.**
-
-You are able to score bonus points for this tutorial by submitting a visualisation of your **adh_cubic** benchmark run. Follow the instructions below to accomplish this and upload the visualisation.
-
-Download and install the VMD visualization tool by selecting the correct version for your operating system. For example, for a Windows machine with an Nvidia GPU select the “Windows OpenGL, CUDA” option. You may need to register on the website.
-
-```http
-https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD
-```
-
-Use the `WinSCP` application for Windows, or the `scp` command for Linux to copy the output file `confout.gro` of the **adh_cubic** benchmark from your cluster to your PC. Attempting to visualise the larger "1.5M_water" simulation is not necessary and not recommended due to memory limitations of most PCs.
-
-1. Open VMD, select **File** then **New Module...**, click **Browse...** and select your `.gro` file.
-
-2. Ensure the filetype was detected as **Gromacs GRO** then click **Load**. In the main VMD window you will see that 134177 particles have been loaded. You should also see the display window has been populated with your simulation particle data.
-
-    You can manipulate the data with your mouse cursor: zoom with the mouse wheel or rotate it by dragging with the left mouse button held down. This visualisation presents a naturally occurring protein (blue/green) found in the human body, suspended in a solution of water molecules (red/white).
-
-3. From the main VMD window, select **Graphics** then **Representations..**.
-
-4. Under **Selected Atoms**, replace **all** with **not resname SOL** and click **apply**. You will notice the water solution around your protein has been removed, allowing you to better examine the protein.
-
-5. In the same window, select the dropdown **Drawing Method** and try out a few different options. Select **New Cartoon** before moving on.
-
-6. From the main VMD window, once again select **Graphics** then **Colors**. Under **Categories**, select **Display**, then **Background**, followed by **8 white**.
-
-7. Finally, you are ready to render a snapshot of your visualisation. From the main window, select **File** then **Render...**, ensure **Snapshot...** is selected and enter an appropriate filename. Click **Start Rendering**.
-
-Simulations like this are used to to develop and prototype experimental pharmaceutical drug designs. By visualising the output, researchers are able to better interpret simulation results.
-
-<span style="color: #800000">
-  > Copy the resulting `.bmp` file(s) from yout cluster to your local computer or laptop and demonstrate this to your instructors for bonus points.
-</span>
-
-## Benchmark 2 (1.5M Water)
-
-Pre-process the input data using the `grompp` command
-
-```bash
-gmx_mpi grompp -f pme_verlet.mdp -c out.gro -p topol.top -o md_0_1.tpr
-```
-
-Using a batch script similar to the one above, run the benchmark. You may modify the mpirun command to optimise performance (significantly) but in order to produce a valid result, the simulation must run for 5,000 steps. Quoted in the output as:
-
-```text
-"5000 steps,     10.0 ps."
-```
-
-<span style="color: #800000">
-  !!! Please be ready to present the `gromacs_log` files for the **1.5M_water** benchmark to the instructors.
-</span>
-
-
-<span style="color: #800000">
-  !!! Take a Screenshot of this, save it in `png` format and upload it into your teams private Gitlab repository under the `Zabbix` folder.
-</span>
-
-<div style="page-break-after: always;"></div>
-
 # Configuring and Connecting to your Remote JupyterLab Server
 
 [Project Jupyter](https://jupyter.org/) provides powerful tools for scientific investigations due to their interactive and flexible nature. Here are some key reasons why they are favored in scientific research.
@@ -1011,6 +945,67 @@ You are now going to extend your `qv_experiment` and plot your results, by drawi
    ```bash
    python qv_experiment.py
    ```
+
+# GROMACS Application Benchmark
+
+You will now be extending some of your earlier work from [Tutorial 3](../tutorial3/README.md#gromacs-adh-cubic)
+
+## Protein Visualization
+
+> [!NOTE] You will need to work on your or laptop to complete this section, not on your head node nor compute node.
+
+You are able to score bonus points for this tutorial by submitting a visualisation of your **adh_cubic** benchmark run. Follow the instructions below to accomplish this and upload the visualisation.
+
+Download and install the VMD visualization tool by selecting the correct version for your operating system. For example, for a Windows machine with an Nvidia GPU select the “Windows OpenGL, CUDA” option. You may need to register on the website.
+
+```http
+https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD
+```
+
+Use the `WinSCP` application for Windows, or the `scp` command for Linux to copy the output file `confout.gro` of the **adh_cubic** benchmark from your cluster to your PC. Attempting to visualise the larger "1.5M_water" simulation is not necessary and not recommended due to memory limitations of most PCs.
+
+1. Open VMD, select **File** then **New Module...**, click **Browse...** and select your `.gro` file.
+
+2. Ensure the filetype was detected as **Gromacs GRO** then click **Load**. In the main VMD window you will see that 134177 particles have been loaded. You should also see the display window has been populated with your simulation particle data.
+
+    You can manipulate the data with your mouse cursor: zoom with the mouse wheel or rotate it by dragging with the left mouse button held down. This visualisation presents a naturally occurring protein (blue/green) found in the human body, suspended in a solution of water molecules (red/white).
+
+3. From the main VMD window, select **Graphics** then **Representations..**.
+
+4. Under **Selected Atoms**, replace **all** with **not resname SOL** and click **apply**. You will notice the water solution around your protein has been removed, allowing you to better examine the protein.
+
+5. In the same window, select the dropdown **Drawing Method** and try out a few different options. Select **New Cartoon** before moving on.
+
+6. From the main VMD window, once again select **Graphics** then **Colors**. Under **Categories**, select **Display**, then **Background**, followed by **8 white**.
+
+7. Finally, you are ready to render a snapshot of your visualisation. From the main window, select **File** then **Render...**, ensure **Snapshot...** is selected and enter an appropriate filename. Click **Start Rendering**.
+
+Simulations like this are used to to develop and prototype experimental pharmaceutical drug designs. By visualising the output, researchers are able to better interpret simulation results.
+
+[!TIP]
+> Copy the resulting `.bmp` file(s) from yout cluster to your local computer or laptop and demonstrate this to your instructors for bonus points.
+
+
+## Benchmark 2 (1.5M Water)
+
+> [!CAUTION]
+> This is a large benchmark and can possibly take some time. Complete the next sections and come back to this if you feel as though your time is limited.
+
+Pre-process the input data using the `grompp` command
+
+```bash
+gmx_mpi grompp -f pme_verlet.mdp -c out.gro -p topol.top -o md_0_1.tpr
+```
+
+Using a batch script similar to the one above, run the benchmark. You may modify the mpirun command to optimise performance (significantly) but in order to produce a valid result, the simulation must run for 5,000 steps. Quoted in the output as:
+
+```text
+"5000 steps,     10.0 ps."
+```
+
+> [!NOTE]
+> Please be ready to present the `gromacs_log` files for the **1.5M_water** benchmark to the instructors.
+
 # Automating the Deployment of your OpenStack Instances Using Terraform
 
 Terraform is a piece of software that allows one to write out their cloud infrastructure and deployments as code, [IaC](https://en.wikipedia.org/wiki/Infrastructure_as_code). This allows the deployments of your cloud virtual machine instances to be shared, iterated, automated as needed and for software development practices to be applied to your infrastructure.
@@ -1078,9 +1073,6 @@ In this section of the tutorial, you will be deploying an additional compute nod
    ```bash
    terraform init
    ```
-
-   <p align="center"><img alt="Terraform install and initialize." src="./resources/terraform_install_init.png" width=900 /></p>
-   
 1. Generate OpenStack API Credentials
    From _your_ team's Sebowa workspace, navigate to `Identity` &rarr; `Application Credentials`, and generate a set of OpenStack credentials in order to allow you to access and authenticate against your workspace.
 
@@ -1139,14 +1131,10 @@ In this section of the tutorial, you will be deploying an additional compute nod
    terraform plan -out ~/terraform/plan
    ```
 
-   <p align="center"><img alt="Terraform Plan." src="./resources/terraform_plan.png" width=900 /></p>
-
-   Once you are satisfied with the proposed changes, deploy the terraform plan:
+1. Once you are satisfied with the proposed changes, deploy the terraform plan:
    ```bash
    terraform apply ~terraform/plan
    ```
-
-   <p align="center"><img alt="Terraform Apply." src="./resources/terraform_install_init.png" width=900 /></p>
 
 1. Verify New Instance Successfully Created by Terraform
    Finally confirm that your new instance has been successfully created. On your Sebowa OpenStack workspace, navigate to `Project` &rarr; `Compute` &rarr; `Instances`.
@@ -1165,10 +1153,10 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
 
    <p align="center"><img alt="Github Create" src="./resources/github_create_new_repo.png" width=900 /></p>
 
-   Add your team members to the repository to provide them with access:
+1. Add your team members to the repository to provide them with access:
    <p align="center"><img alt="Github Manage Access" src="./resources/github_manage_access.png" width=900 /></p>
 
-   If you haven't already done so, add your SSH key to your GitHub account by following the instructions from [Steps to follow when editing existing content](../README.md#steps-to-follow-when-editing-existing-content).
+1. If you haven't already done so, add your SSH key to your GitHub account by following the instructions from [Steps to follow when editing existing content](../README.md#steps-to-follow-when-editing-existing-content).
 
 > [!TIP]
 > You will be using your head node to orchestrate and configure your infrastructure. Pay careful attention to ensure that you copy over your **head node**'s public SSH key. Administrating and managing your compute nodes in this manner requires you to think about them as "cattle" and not "pets".
