@@ -228,32 +228,32 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
 
 In this section you will finds links to all of the livestreams of the lectures (Teams Meetings) and subsequent recordings for you to refer back to.
 
-1. Day 1 - Welcome, Introduction and Getting Started
-   * **08:30 - 09:30**: [Welcome and Introduction](https://youtu.be/T68pHDdZW3s)
-   * **09:30 - 10:30**: [Getting Started](https://youtu.be/cIB9Gtpifpk)
-   * **11:00 - 12:00**: [Intro to Linux & Services](https://youtu.be/pbpjAw9eVcM)
-   * **12:00 - 13:30**: [Intro to Tools for the Modern IT Engineer](https://youtu.be/t4hD6NMw9Xg)
+1. Welcome, Introduction and Getting Started
+   * [Welcome and Introduction](https://youtu.be/T68pHDdZW3s)
+   * [Getting Started](https://youtu.be/cIB9Gtpifpk)
+   * [Intro to Linux & Services](https://youtu.be/pbpjAw9eVcM)
+   * [Intro to Tools for the Modern IT Engineer](https://youtu.be/t4hD6NMw9Xg)
 
-2. Day 2 - HPC Hardware, HPC Networking and Systems Administration
-   * **08:30 - 09:30**: [HPC Hardware]()
-   * **09:30 - 10:30**: [HPC Networking]()
-   * **11:00 - 12:00**: [System Administration & Configuration Management]()
-   * **12:00 - 13:30**: [Standing up a Compute Node]()
+2. HPC Hardware, HPC Networking and Systems Administration
+   * [HPC Hardware](https://youtu.be/gkZCrdTuvrc)
+   * [HPC Networking](https://youtu.be/pGzQutsk2-A)
+   * [System Administration & Configuration Management](https://youtu.be/YY6D-0e5iHw)
+   * [Standing up a Compute Node](https://youtu.be/V6bx86qJwHE)
 
-3. Day 3 - Benchmarking, Compilation and Parallel Computing
-   * **08:30 - 09:30**: [HPC Benchmarking]()
-   * **09:30 - 10:30**: [Code Compilation]()
-   * **11:00 - 12:00**: [Parallel Computing and Intro to QC]()
-   * **12:00 - 13:30**: [Applications: LAMMPS & Qiskit]()
+3. Benchmarking, Compilation and Parallel Computing
+   * [HPC Benchmarking]()
+   * [Code Compilation]()
+   * [Parallel Computing and Intro to QC]()
+   * [Applications: LAMMPS & Qiskit]()
 
-4. Day 4 - HPC Administration and Application Visualization
-   * **08:30 - 09:30**: [Cluster Admin, Ansible & Containers]()
-   * **09:30 - 10:30**: [Monitoring]()
-   * **11:00 - 12:00**: [Schedulers]()
-   * **12:00 - 13:30**: [Data Visualization & Jupyter Lab]()
+4. Administration and Application Visualization
+   * [Cluster Admin, Ansible & Containers]
+   * [Monitoring]()
+   * [Schedulers]
+   * [Data Visualization & Jupyter Lab]
 
-5. Day 5 - Career Guidance
-   * **08:30 - 10:30** [HPC Career Panel]()
+5. Career Guidance
+   * [HPC Career Panel]()
 
 # Contributing to the Project
 

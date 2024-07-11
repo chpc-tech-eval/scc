@@ -63,239 +63,207 @@ In this tutorial you will:
 > [!TIP]
 > You're going to be manipulating both your headnode, as well as your compute node(s) in this tutorial.
 >
-> You are *strongly* advised to make use of a terminal multiplexer, such as `tmux` before making a connection to your VMs.
->
+> You are **strongly** advised to make use of a terminal multiplexer, such as `tmux` before making a connection to your VMs. Once you're logged into your head node, initiate a `tmux` session:
 >```bash
->$ tmux
+>tmux
 >```
->
-> Split the window into two separate panes with `ctrl + b |`.
-> SSH into your headnode, on the one pane, and ssh into your compute node with a hop over your headnode, recall the jumpbox directive.
+> Then split the window into two separate panes with `ctrl + b %`.
+> SSH into your compute node on the other pane.
 
 # Cluster Monitoring
 
-## Introduction
-### Importance of Cluster Monitoring on Linux Machines
 Cluster monitoring is crucial for managing Linux machines. Effective monitoring helps detect and resolve issues promptly, provides insights into resource usage (CPU, memory, disk, network), aids in capacity planning, and ensures infrastructure scales with workload demands. By monitoring system performance and health, administrators can prevent downtime, reduce costs, and improve efficiency.
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/f951e4b7-20ff-49a4-b9a7-28aa57e51f5b)
 
-### Traditional Approach Using top or htop
-Traditionally, Linux system monitoring involves command-line tools like top or htop. These tools offer real-time system performance insights, displaying active processes, resource usage, and system load. While invaluable for monitoring individual machines, they lack the ability to aggregate and visualize data across multiple nodes in a cluster, which is essential for comprehensive monitoring in larger environments.
+* Traditional Approach Using `top` or `htop`
 
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/7e0c8b92-adc2-4106-94ee-ca4ee78a13f5)
+  Traditionally, Linux system monitoring involves command-line tools like `top` or `htop`. These tools offer real-time system performance insights, displaying active processes, resource usage, and system load. While invaluable for monitoring individual machines, they lack the ability to aggregate and visualize data across multiple nodes in a cluster, which is essential for comprehensive monitoring in larger environments.
 
-### Using Grafana, Prometheus, and Node Exporter
-Modern solutions use Grafana, Prometheus, and Node Exporter for robust and scalable monitoring. Prometheus collects and stores metrics, Node Exporter provides system-level metrics, and Grafana visualizes this data. This combination enables comprehensive cluster monitoring with historical data analysis, alerting capabilities, and customizable visualizations, facilitating better decision-making and faster issue resolution.
+  ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/7e0c8b92-adc2-4106-94ee-ca4ee78a13f5)
 
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/3f64a8bd-87fa-4b51-9576-b28da3af632b)
+* Using Grafana, Prometheus, and Node Exporter
 
+  Modern solutions use Grafana, Prometheus, and Node Exporter for robust and scalable monitoring. Prometheus collects and stores metrics, Node Exporter provides system-level metrics, and Grafana visualizes this data. This combination enables comprehensive cluster monitoring with historical data analysis, alerting capabilities, and customizable visualizations, facilitating better decision-making and faster issue resolution.
 
-### What is Docker and Docker Compose and How We Will Use It
-Docker is a platform for creating, deploying, and managing containerized applications. Docker Compose defines and manages multi-container applications using a YAML file. For cluster monitoring on a Rocky Linux head node, we will use Docker and Docker Compose to bundle Grafana, Prometheus, and Node Exporter into deployable containers. This approach simplifies installation and configuration, ensuring all components are up and running quickly and consistently, streamlining the deployment of the monitoring stack.
+  ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/3f64a8bd-87fa-4b51-9576-b28da3af632b)
 
-## How to use the notes
+* What is Docker and Docker Compose and How We Will Use It
 
-When the word **Input:** is mentioned, excpect the next line to have commands that you need to copy and paste into your own terminal.
+  Docker is a platform for creating, deploying, and managing containerized applications. Docker Compose defines and manages multi-container applications using a YAML file. For cluster monitoring on a Rocky Linux head node, we will use Docker and Docker Compose to bundle Grafana, Prometheus, and Node Exporter into deployable containers. This approach simplifies installation and configuration, ensuring all components are up and running quickly and consistently, streamlining the deployment of the monitoring stack.
 
-When the word **Output:** is mentioned **DON'T** copy and paste anything below this word as this is just the expected output.
+> [!NOTE]
+> When the word **Input:** is mentioned, excpect the next line to have commands that you need to copy and paste into your own terminal.
+>
+> Whenever the word **Output:** is mentioned **DON'T** copy and paste anything below this word as this is just the expected output.
 
-## Pre-requisites
+## Install Docker Engine, Containerd and Docker Compose
 
-1. Rocky 9.03 VM and ssh keys working
-2. Have nano installed, if not installed use this:
+You will need to have `docker`, `containerd` and `docker-compose` installed on all the nodes that you want to eventually monitor, i.e. your head node and compute node(s).
 
-Input:
-```
-sudo yum install nano -y
-```
+1. Prerequisites and dependencies
 
-3. Install Docker Engine and Docker Compose:
-based on following: [https://docs.docker.com/engine/install/rhel/#install-using-the-repository](https://docs.docker.com/engine/install/rhel/#install-using-the-repository)
+   Refer to the following [RHEL Guide](https://docs.docker.com/engine/install/rhel/#install-using-the-repository)
 
-Install steps:
+   * DNF / YUM
+   ```bash
+   # The yum-utils package which provides the yum-config-manager utility
+   sudo yum install -y yum-utils
 
-- Install the yum-utils package (which provides the yum-config-manager utility) and set up the repository.
+   # Add and set up the repository for use.
+   sudo yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+   ```
+   * APT
+   ```bash
+   # Install required package dependencies
+   sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
 
-Input:
-```
-sudo yum install -y yum-utils
-```
+   # Add the Docker repository
+   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+   sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
-Input:
-```
-sudo yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
-```
+   ```
 
-- Install Docker Engine, containerd, and Docker Compose:
+1. Installation
 
-Input:
-```
-sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-```
+   * DNF / YUM
+   ```bash
+   # If prompted to accept the GPG key, verify that the fingerprint matches, accept it.
+   sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+   ```
+   * APT
+   ```bash
+   sudo apt update
+   sudo apt install docker-ce docker-ce-cli containerd.io -y
+   ```
+   * Arch
+   ```bash
+   sudo pacman -S docker
 
-If prompted to accept the GPG key, verify that the fingerprint matches, accept it.
+   # You need to start and enable docker, prior to installing containerd and docker-compose
+   sudo pacman -S containerd docker-compose
+   ```
 
-This command installs Docker, but it doesn't start Docker. It also creates a docker group, however, it doesn't add any users to the group by default.
+1. Start and Enable Docker:
+   ```bash
+   sudo systemctl start docker
+   sudo systemctl enable docker
+   ```
+1. Install Docker-Compose on Ubuntu
+   * APT
+   ```bash
+   sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -Po '"tag_name": "\K.*\d')/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+   sudo chmod +x /usr/local/bin/docker-compose
+   ```
+1. Verify that the Docker Engine installation was successful by running the hello-world image
 
-- Start Docker:
+   This command downloads a test image and runs it in a container. When the container runs, it prints a confirmation message and exits.
+   ```bash
+   docker --version
+   sudo docker run hello-world
 
-Input:
-```
-sudo systemctl start docker
-```
-
-- Verify that the Docker Engine installation is successful by running the hello-world image:
-
-Input:
-```
-sudo docker run hello-world
-```
-
-This command downloads a test image and runs it in a container. When the container runs, it prints a confirmation message and exits.
-
-You have now successfully installed and started Docker Engine.
-
-- Confirm you have docker compose:
-
-Input:
-```
-docker compose version
-```
-
-Output:
-```
-$ docker compose version
-Docker Compose version v2.28.1
-```
+   docker-compose --version
+   ```
+   You have now successfully installed and started Docker Engine.
 
 ## Installing Monitoring Stack
-- Pre-requisites: each host involved needs to have docker-ce and docker-compose installed as mentioned in the previous section
-- Create a suitable directory, e.g. /opt/monitoring_stack, in which you’ll keep a
-number of important configuration files.
 
-Input:
-```
-sudo mkdir /opt/monitoring_stack/
-cd /opt/monitoring_stack/
-```
+1. Create a suitable directory, e.g. `/opt/monitoring_stack`
 
-- In /opt/monitoring_stack/, create a docker-compose.yml file containing the
-following lines:
+   This which you’ll keep a number of important configuration files.
 
-Input:
-```
-sudo nano /opt/monitoring_stack/docker-compose.yml
-```
+   ```bash
+   sudo mkdir /opt/monitoring_stack/
+   cd /opt/monitoring_stack/
+   ```
 
-Input into file:
-```
-version: '3'
-services:
-  node-exporter:
-    image: prom/node-exporter
-    ports:
-      - "9100:9100"
-    restart: always
-    networks:
-      - monitoring-network
+1. Create and edit your configurations files
 
-  prometheus:
-    image: prom/prometheus
-    ports:
-      - "9090:9090"
-    restart: always
-    volumes:
-      - /opt/monitoring_stack/prometheus.yml:/etc/prometheus/prometheus.yml
-    networks:
-      - monitoring-network
+   * `docker-compose.yml`
+   ```bash
+   sudo nano /opt/monitoring_stack/docker-compose.yml
+   ```
+     Add the following to eh YAML file
+   ```conf
+   version: '3'
+   services:
+     node-exporter:
+       image: prom/node-exporter
+       ports:
+         - "9100:9100"
+       restart: always
+       networks:
+         - monitoring-network
 
-  grafana:
-    image: grafana/grafana
-    ports:
-      - "3000:3000"
-    restart: always
-    environment:
-      GF_SECURITY_ADMIN_PASSWORD: admin
-    volumes:
-      - /opt/monitoring_stack/prometheus-datasource.yaml:/etc/grafana/provisioning/datasources/prometheus-datasource.yaml
-    networks:
-      - monitoring-network
+     prometheus:
+       image: prom/prometheus
+       ports:
+         - "9090:9090"
+       restart: always
+       volumes:
+         - /opt/monitoring_stack/prometheus.yml:/etc/prometheus/prometheus.yml
+       networks:
+         - monitoring-network
 
-networks:
-  monitoring-network:
-    driver: bridge
-```
+     grafana:
+       image: grafana/grafana
+       ports:
+         - "3000:3000"
+       restart: always
+       environment:
+         GF_SECURITY_ADMIN_PASSWORD: admin
+       volumes:
+         - /opt/monitoring_stack/prometheus-datasource.yaml:/etc/grafana/provisioning/datasources/prometheus-datasource.yaml
+       networks:
+         - monitoring-network
 
-- We then need to create two additional files, firstly:
+   networks:
+     monitoring-network:
+       driver: bridge
 
-Input:
-```
-sudo nano /opt/monitoring_stack/prometheus.yml
-```
+   ```
+   * `prometheus.yml`
 
-Input into file:
-```
-global:
-  scrape_interval: 15s
+   ```
+   sudo nano /opt/monitoring_stack/prometheus.yml
+   ```
+     Add the following to your Prometheus YAML file
+   ```conf
+   global:
+     scrape_interval: 15s
 
-scrape_configs:
-  - job_name: 'node-exporter'
-    static_configs:
-      - targets: ['node-exporter:9100']
-```
+   scrape_configs:
+     - job_name: 'node-exporter'
+       static_configs:
+         - targets: ['node-exporter:9100']
+   ```
+   * `prometheus-datasource.yaml`
+   ```bash
+   sudo nano /opt/monitoring_stack/prometheus-datasource.yaml
+   ```
+      Add the following yo your Promeheus Data Source
 
-- secondly:
+   ```conf
+   apiVersion: 1
+   datasources:
+     - name: Prometheus
+       type: prometheus
+       access: proxy
+       url: http://prometheus:9090
+   ```
 
-Input:
-```
-sudo nano /opt/monitoring_stack/prometheus-datasource.yaml
-```
+## Start the Monitoring Services
 
-Input into file:
-```
-apiVersion: 1
-datasources:
-  - name: Prometheus
-    type: prometheus
-    access: proxy
-    url: http://prometheus:9090
-```
+Bring up your monitoring stack and verify that the have been correctly configured
 
-## Start the services
-
-Input:
-```
+```bash
 sudo docker compose up -d
 ```
 
-You should then see:
-
-Output:
-```
-$ sudo docker compose up -d
-[+] Running 4/4
-✔ Network monitoring_stack_monitoring-network Created 0.3s
-✔ Container monitoring_stack-grafana-1 Started 0.2s
-✔ Container monitoring_stack-prometheus-1 Started 0.3s
-✔ Container monitoring_stack-node-exporter-1 Started 0.2s
-```
-
-Then do 
-
-Input:
-```
+```bash
 sudo docker ps
 ```
-
-Output:
-```
-/opt/monitoring_stack$ sudo docker ps
-CONTAINER ID   IMAGE                COMMAND                  CREATED      STATUS        PORTS                                       NAMES
-2b707570dc41   grafana/grafana      "/run.sh"                6 days ago   Up 12 hours   0.0.0.0:3000->3000/tcp, :::3000->3000/tcp   monitoring_stack-grafana-1
-ea730ef94381   prom/prometheus      "/bin/prometheus --c…"   6 days ago   Up 10 hours   0.0.0.0:9090->9090/tcp, :::9090->9090/tcp   monitoring_stack-prometheus-1
-704dfa94ecf3   prom/node-exporter   "/bin/node_exporter"     6 days ago   Up 12 hours   0.0.0.0:9100->9100/tcp, :::9100->9100/tcp   monitoring_stack-node-exporter-1
-```
+Post the output of the above commands as comments to the [Discussion](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/158) on GitHub.
 
 Now let us verify the services!
 
