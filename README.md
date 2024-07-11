@@ -198,8 +198,7 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
 1. [WirGuard VPN Cluster Access](tutorial2/README.md#wirguard-vpn-cluster-access)
 1. [ZeroTier](tutorial2/README.md#zerotier)
 
-**Tutorial 3** will demonstrate how to configure, build, compile and install a number of applications. You will also be building these applications with different tools. Finally, you will learn how to run applications across your cluster.
-
+**Tutorial 3** will demonstrate how to configure, build, compile and install a number of various system software and applications. You will also be building these applications with different tools. Finally, you will learn how to run applications across your cluster.
 
 1. [Checklist](tutorial3/README.md#checklist)
 1. [Managing Your Environment](tutorial3/README.md#managing-your-environment)
@@ -223,7 +222,33 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
     1. [LAMMPS (Lennard-Jones)](tutorial3/README.md#lammps-lennard-jones)
     1. [Qiskit (Quantum Volume)](tutorial3/README.md#qiskit-quantum-volume)
 
-
+1. [Checklist](tutorial4/README.md#checklist)
+1. [Cluster Monitoring](tutorial4/README.md#cluster-monitoring)
+    1. [Install Docker Engine, Containerd and Docker Compose](tutorial4/README.md#install-docker-engine-containerd-and-docker-compose)
+    1. [Installing your Monitoring Stack](tutorial4/README.md#installing-your-monitoring-stack)
+    1. [Startup and Test the Monitoring Services](tutorial4/README.md#startup-and-test-the-monitoring-services)
+    1. [SSH Port Local Forwarding Tunnel](tutorial4/README.md#ssh-port-local-forwarding-tunnel)
+    1. [Create a Dashboard in Grafana](tutorial4/README.md#create-a-dashboard-in-grafana)
+    1. [Success State, Next Steps and Troubleshooting](tutorial4/README.md#success-state-next-steps-and-troubleshooting)
+1. [Configuring and Connecting to your Remote JupyterLab Server](tutorial4/README.md#configuring-and-connecting-to-your-remote-jupyterlab-server)
+    1. [Visualize Your HPL Benchmark Results](tutorial4/README.md#visualize-your-hpl-benchmark-results)
+    1. [Visualize Your Qiskit Results](tutorial4/README.md#visualize-your-qiskit-results)
+1. [Automating the Deployment of your OpenStack Instances Using Terraform](tutorial4/README.md#automating-the-deployment-of-your-openstack-instances-using-terraform)
+    1. [Install and Initialize Terraform](tutorial4/README.md#install-and-initialize-terraform)
+    1. [Generate `clouds.yml` and `main.tf` Files](tutorial4/README.md#generate-cloudsyml-and-maintf-files)
+    1. [Generate, Deploy and Apply Terraform Plan](tutorial4/README.md#generate-deploy-and-apply-terraform-plan)
+1. [Continuous Integration Using CircleCI](tutorial4/README.md#continuous-integration-using-circleci)
+    1. [Prepare GitHub Repository](tutorial4/README.md#prepare-github-repository)
+    1. [Reuse `providers.tf` and `main.tf` Terraform Configurations](tutorial4/README.md#reuse-providerstf-and-maintf-terraform-configurations)
+    1. [Create `.circleci/config.yml` File and `push` Project to GitHub](tutorial4/README.md#create-circleciconfigyml-file-and-push-project-to-github)
+    1. [Create CircleCI Account and Add Project](tutorial4/README.md#create-circleci-account-and-add-project)
+1. [Slurm Scheduler and Workload Manager](tutorial4/README.md#slurm-scheduler-and-workload-manager)
+    1. [Prerequisites](tutorial4/README.md#prerequisites)
+    1. [Head Node Configuration (Server)](tutorial4/README.md#head-node-configuration-server)
+    1. [Compute Node Configuration (Clients)](tutorial4/README.md#compute-node-configuration-clients)
+1. [GROMACS Application Benchmark](tutorial4/README.md#gromacs-application-benchmark)
+    1. [Protein Visualization](tutorial4/README.md#protein-visualization)
+    1. [Benchmark 2 (1.5M Water)](tutorial4/README.md#benchmark-2-15m-water)
 # Lecture Recordings
 
 In this section you will finds links to all of the livestreams of the lectures (Teams Meetings) and subsequent recordings for you to refer back to.
