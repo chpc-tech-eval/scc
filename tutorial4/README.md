@@ -1037,7 +1037,7 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
 ## Create CircleCI Account and Add Project
 
    Navigate to [CircleCI.com](https://circleci.com) to create an account, link and add a new GitHub project.
-1.  Create a new organization and give it a suitable name
+1. Create a new organization and give it a suitable name
    <p align="center"><img alt="CircleCI" src="./resources/circleci_create_organization.png" width=600 /></p>
 1. Once you've logged into your workspace, go to projects and create a new project
    <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project00.png" width=600 /></p>
