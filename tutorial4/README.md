@@ -221,7 +221,7 @@ You will need to have `docker`, `containerd` and `docker-compose` installed on a
    * `prometheus.yml`
 
    ```bash
-   sudo nano /opt/monitoring_stack/prometheus.yml
+     sudo nano /opt/monitoring_stack/prometheus.yml
    ```
      Add the following to your Prometheus YAML file
    ```conf
@@ -237,7 +237,7 @@ You will need to have `docker`, `containerd` and `docker-compose` installed on a
    ```bash
    sudo nano /opt/monitoring_stack/prometheus-datasource.yaml
    ```
-      Add the following yo your Promeheus Data Source.
+     Add the following yo your Promeheus Data Source.
 
    ```conf
    apiVersion: 1
@@ -322,7 +322,7 @@ SSH port forwarding, also known as SSH tunneling, is a method of creating a secu
 > Take the time now however, to ensure that all of your team members understand that there are a number of methods with which you can access remote services on your head node:
 > * http://154.114.57.x:3000
 > * http://localhost:3000
-> * http://<head node's internal wireguard ip>:3000
+> * http://<headnode wireguard ip>:3000
 > * http://<head node's internal zerotier ip>:3000
 
 Once you have understood the above considerations, you may proceed to create a TCPort Forwarding tunnel, to connect your workstation's port, directly to your head node's, over a tunnel.
@@ -334,49 +334,40 @@ Once you have understood the above considerations, you may proceed to create a T
    ```
    ssh -L 3000:localhost:3000 rocky@157.114.57.x
    ```
-
-1. Navigate to the Grafana dashboard on your head node
-
-   Open a browser on your local workstation and navigate to the following address:
-
-   ```
-   http://localhost:3000
-   ```
-
-   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/abee2bcd-3f6c-437b-aee7-edfa31550d42)
-
 ## Create a Dashboard in Grafana
+
+1. From a browser on your **workstation** navigate to the Grafana dashboard on your head node
 
 1. Go to a browser and login to Grafana:
 
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/abee2bcd-3f6c-437b-aee7-edfa31550d42)
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/abee2bcd-3f6c-437b-aee7-edfa31550d42)
 
-```
-username: admin
-password: <YOUR_GRAFANA_PASSWORD>
-```
+   ```
+   username: admin
+   password: <YOUR_GRAFANA_PASSWORD>
+   ```
 
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/52010bd5-e9fd-4ee1-9703-352507a1e72d)
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/52010bd5-e9fd-4ee1-9703-352507a1e72d)
 
 1. Go to Dashboards
 
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/083f2bc3-247a-40ad-b923-2b2007fe9b70)
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/083f2bc3-247a-40ad-b923-2b2007fe9b70)
 
 1. Click on New then Import
 
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/4efa0d71-7278-454d-a815-8b6f1f1c72a3)
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/4efa0d71-7278-454d-a815-8b6f1f1c72a3)
 
 1. Input: 1860 and click Load
 
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/d8cda594-0468-4ec0-876a-7beeaf79589f)
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/d8cda594-0468-4ec0-876a-7beeaf79589f)
 
 1. Click on source: "Prometheus"
 
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/257351d2-f078-4140-9a37-0b8a4b1b59b8)
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/257351d2-f078-4140-9a37-0b8a4b1b59b8)
 
 1. Click on Import:
 
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/f078be7e-2663-4947-b8fd-fc6c6d548513)
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/f078be7e-2663-4947-b8fd-fc6c6d548513)
 
 ## Success State, Next Steps and Troubleshooting
 
