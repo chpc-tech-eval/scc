@@ -179,7 +179,7 @@ You will need to have `docker`, `containerd` and `docker-compose` installed on a
    ```bash
    sudo nano /opt/monitoring_stack/docker-compose.yml
    ```
-     Add the following to eh YAML file
+     Add the following to the YAML file
    ```conf
    version: '3'
    services:
@@ -207,7 +207,7 @@ You will need to have `docker`, `containerd` and `docker-compose` installed on a
          - "3000:3000"
        restart: always
        environment:
-         GF_SECURITY_ADMIN_PASSWORD: admin
+         GF_SECURITY_ADMIN_PASSWORD: <SET_YOUR_GRAFANA_PASSWORD>
        volumes:
          - /opt/monitoring_stack/prometheus-datasource.yaml:/etc/grafana/provisioning/datasources/prometheus-datasource.yaml
        networks:
@@ -250,26 +250,32 @@ You will need to have `docker`, `containerd` and `docker-compose` installed on a
 
 ## Startup and Test the Monitoring Services
 
+> [!TIP]
+> If you've successfully configured nftables, you will be required to open the following TCP ports 3000, 9090, 9100.
+
 Bring up your monitoring stack and verify that the have been correctly configured
 
-```bash
-sudo docker compose up -d
-```
+* Bring up your monitoring stack
+  ```bash
+  sudo docker compose up -d
+  ```
 
-```bash
-sudo docker ps
-```
+* Confirm the status of your Docker Containers
+  ```bash
+  sudo docker ps
+  ```
 
-```bash
-# Prometheus
-curl -s localhost:9090/metrics | head
+* Dump the metrics that are being monitored from your services
+  ```bash
+  # Prometheus
+  curl -s localhost:9090/metrics | head
 
-# Node Exporte
-curl -s localhost:9100/metrics | head
+  # Node Exporter
+  curl -s localhost:9100/metrics | head
 
-# Grafana
-curl -s localhost:3000 | head
-```
+  # Grafana
+  curl -s localhost:3000 | head
+  ```
 
 Post the output of the above commands as comments to the [Discussion](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/158) on GitHub.
 
@@ -279,13 +285,55 @@ Congratulations on correctly configuring your monitoring services!
 
 SSH port forwarding, also known as SSH tunneling, is a method of creating a secure connection between a local computer and a remote machine through an SSH (Secure Shell) connection. Local port forwarding allows you to forward a port on your local machine to a port on a remote machine. It is commonly used to access services behind a firewall or NAT.
 
+> [!IMPORTANT]
+> The following is included to demonstrate the concept of TCP Port Forwarding. In the next section, your are:
+> * Opening a TCP Forwarding Port and listening on Port 3000 on your **workstation**, i.e. http://localhost:3000
+> * You are then binding this ***SOCKET*** to TCP Port 3000 on your **head node**.
+>
+> The following diagram may facilitate the discussion and illustrate the scenario:
+> ```css
+> [workstation:3000] ---- SSH Forwarding Tunnel ----> [head node:3000] ---- Grafana Service on head node
+>
+> # Connect to Grafana's (head node) service directly from your workstation
+> [http://localhost:3000] ---- SSH Forwarding Tunnel ----> [Grafana (head node)]
+> ```
+
+> [!TIP]
+> Make sure that you understand the above concepts, as it will facilitate your understanding of the following considerations:
+> * If you have successfully configured [WireGuard](../tutorial2/README.md#wirguard-vpn-cluster-access)
+> ```css
+> [workstation:3000] ---- WireGuard VPN ----> [head node:3000] ---- Grafana Service on head node
+>
+> # Connect to Grafana's (head node) service directly from your workstation
+> [http://<head node (private wiregaurd ip)>:3000] ---- WireGuard VPN ----> [Grafana (head node)]
+>
+> ```
+> * And / or if you have successfully configured [ZeroTier](../tutorial2/README.md#zerotier)
+> ```css
+> [workstation:3000] ---- ZeroTier VPN ----> [head node:3000] ---- Grafana Service on head node
+>
+> # Connect to Grafana's (head node) service directly from your workstation
+> [http://<head node (private zerotier ip)>:3000] ---- ZeroTier VPN ----> [Grafana (head node)]
+> ```
+
+> [!CAUTION]
+> You need to ensure that you have understood the above discussions. This section on port forwarding, is included for situations where you do know have `sudo` rights on the machine your are working on and cannot open ports or install applications via `sudo`, then you can forward ports over SSH.
+>
+> Take the time now however, to ensure that all of your team members understand that there are a number of methods with which you can access remote services on your head node:
+> * http://154.114.57.x:3000
+> * http://localhost:3000
+> * http://<head node's internal wireguard ip>:3000
+> * http://<head node's internal zerotier ip>:3000
+
+Once you have understood the above considerations, you may proceed to create a TCPort Forwarding tunnel, to connect your workstation's port, directly to your head node's, over a tunnel.
+
 1. Create SSH Port Forwarding Tunnel on your local workstation
 
-  Open a new terminal and run the tunnel command (replace 157.114.57.x with your unique IP):
+   Open a new terminal and run the tunnel command (replace 157.114.57.x with your unique IP):
 
-  ```
-  ssh -L 3000:localhost:3000 rocky@157.114.57.x
-  ```
+   ```
+   ssh -L 3000:localhost:3000 rocky@157.114.57.x
+   ```
 
 1. Navigate to the Grafana dashboard on your head node
 
@@ -305,7 +353,7 @@ SSH port forwarding, also known as SSH tunneling, is a method of creating a secu
 
 ```
 username: admin
-password: admin
+password: <YOUR_GRAFANA_PASSWORD>
 ```
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/52010bd5-e9fd-4ee1-9703-352507a1e72d)
@@ -336,7 +384,7 @@ Congratulations on successfully deploying your monitoring stack and adding Grafa
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/0568acc5-5248-4b90-8803-5f58d2af11e2)
 
-If you've managed to successfully configure your dash boards for your head node, repeat
+If you've managed to successfully configure your dash boards for your head node, repeat the steps for deploying **Node Exporter** on your compute node(s).
 
 > [!NOTE]
 > Should you have any difficulties running the above configuration, use the alternative process below to deploy your monitoring stack. Click on the heading to reveal content.
@@ -355,7 +403,7 @@ sudo useradd --no-create-home --shell /sbin/nologin prometheus
  ```bash
 wget https://github.com/prometheus/prometheus/releases/download/v2.33.1/prometheus-2.33.1.linux-amd64.tar.gz
  ```
-3. Long list file to verify Prometheus was downloaded 
+3. Long list file to verify Prometheus was downloaded
  ```bash
 ll
  ```
@@ -363,27 +411,27 @@ ll
 ```bash
 tar -xvzf prometheus-2.33.1.linux-amd64.tar.gz
 cd prometheus-2.33.1.linux-amd64
-sudo mv prometheus promtool /usr/local/bin/ 
+sudo mv prometheus promtool /usr/local/bin/
 ```
 5. Move back to the home directory, create directorise for prometheus.
  ```bash
 cd ~
-sudo mkdir /etc/prometheus 
-sudo mkdir /var/lib/prometheus 
+sudo mkdir /etc/prometheus
+sudo mkdir /var/lib/prometheus
  ```
 6. Set the correct ownership for the prometheus directories
  ```bash
-sudo chown prometheus:prometheus /etc/prometheus/ 
+sudo chown prometheus:prometheus /etc/prometheus/
 sudo chown prometheus:prometheus /var/lib/prometheus
  ```
-7. Move the configuration file and set the correct permissions 
+7. Move the configuration file and set the correct permissions
  ```bash
-cd prometheus-2.33.1.linux-amd64 
-sudo mv consoles/ console_libraries/ prometheus.yml /etc/prometheus/ 
-sudo chown -R prometheus:prometheus /etc/prometheus/ 
+cd prometheus-2.33.1.linux-amd64
+sudo mv consoles/ console_libraries/ prometheus.yml /etc/prometheus/
+sudo chown -R prometheus:prometheus /etc/prometheus/
  ```
 8. Configure Prometheus \
-  Edit the `/etc/prometheus/prometheus.yml` file to configure your targets(compute node) 
+  Edit the `/etc/prometheus/prometheus.yml` file to configure your targets(compute node)
 
     *Hint : Add the job configuration for the compute_node in the scrape_configs section of your Prometheus YAML configuration file. Ensure that all necessary configurations for this job are correctly placed within the relevant sections of the YAML file.*:
 
@@ -448,12 +496,7 @@ sudo systemctl start prometheus
 > If the prometheus service still fails to start properly, run the command `journalctl –u prometheus -f --no-pager` and review the output for errors.
 
 > [!IMPORTANT]
-> If firewalld is enabled and running, add a rule for port 9090
-> 
-> ```bash
-> sudo firewall-cmd --permanent --zone=public --add-port=9090/tcp
-> sudo firewall-cmd --reload 
-> ```
+> If you have a firewall running, add a TCP rule for port 9090
 
 Verify that your prometheus configuration is working navigating to `http://<headnode_ip>:9090` in your web browser, access prometheus web interface. Ensure that the `headnode_ip` is the public facing ip.
 
@@ -477,7 +520,7 @@ sudo tar xvf node_exporter-1.6.1.linux-amd64.tar.gz
 3. Next, move the node exporter binary file to the directory '/usr/local/bin' using the following command
 ```bash
 mv node_exporter-*/node_exporter /usr/local/bin
-``` 
+```
 4.  Create a service file to manage Node Exporter with `systemctl`, the file can be created with the text editor `nano` (Can use any text editor of your choice)
  ```bash
 sudo nano /etc/systemd/system/node_exporter.service
