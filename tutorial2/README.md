@@ -3,10 +3,7 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 
 # Table of Contents
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-**Table of Contents**
 
-1. [Tutorial 2: Standing Up a Compute Node and Configuring Users and Services](#tutorial-2-standing-up-a-compute-node-and-configuring-users-and-services)
-1. [Table of Contents](#table-of-contents)
 1. [Checklist](#checklist)
 1. [Spinning Up a Compute Node on Sebowa(OpenStack)](#spinning-up-a-compute-node-on-sebowaopenstack)
     1. [Compute Node Considerations](#compute-node-considerations)
@@ -23,9 +20,7 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 1. [User Account Management](#user-account-management)
     1. [Out-Of-Sync Users and Groups](#out-of-sync-users-and-groups)
 1. [Ansible User Declaration](#ansible-user-declaration)
-    1. [Installing and Configuring Ansible](#installing-and-configuring-ansible)
-    1. [configuring Ansible](#configuring-ansible)
-    1. [Create Team Member Accounts](#create-team-member-accounts)
+    1. [Create User Accounts](#create-user-accounts)
 1. [WirGuard VPN Cluster Access](#wirguard-vpn-cluster-access)
 1. [ZeroTier](#zerotier)
 
@@ -33,17 +28,26 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 
 # Checklist
 
-This tutorial will demonstrate how to access web services that are on your virtual cluster via the web browser on your local computer. It will also cover basic authentication and central authentication.
+This tutorial will demonstrate how to setup, configure and deploy your **compute node.** From the previous Tutorial, you should have a good understanding of the requirements and considerations to take into account when deploying additional nodes.
+
+You will also learn more about [Public Key Cryptography](https://en.wikipedia.org/wiki/Public-key_cryptography), as you'll be using SSH directives to `ProxyJump` through your head node, whereby you're going to be transparently creating an SSH forwarding tunnel, prior to accessing your compute node.
+
+Once you can access your compute node, you will learn additional Linux systems administrations and experiment with a number of useful tasks and utilities. It is crucial, that you understand and appreciate the specific roles of the head node and your compute node(s).
+
+You will then be deploying a number of fundamental services, that are central to the functioning of your virtual cluster. These include setup and configuration of a firewall, networked time protocol and a network file system. You will also be deploying Ansible, for user account management. Lastly you'll explore two methods for accessing your virtual cluster over a VPN.
 
 <u>In this tutorial you will:</u>
 
-- [ ] Install a web server.
-- [ ] Create an SSH tunnel to access your web service.
-- [ ] Create new local user accounts.
-- [ ] Add local system users to sudoers file for root access.
-- [ ] Share directories between computers.
-- [ ] Connect to machines without a password using public key based authentication.
-- [ ] Install and use central authentication.
+- [ ] Deploy a Compute Node.
+- [ ] Create an SSH tunnel to access your compute node from your workstation.
+- [ ] Understand the roles and purposes of your head node and compute node(s).
+- [ ] Learn additional Linux administration and test a number of utilities.
+- [ ] Configure a simple stateful firewall.
+- [ ] Install and configure a network time service.
+- [ ] Install and configure a network file sharing service.
+- [ ] Understand the interaction between an NFS exported `/home` directly and your SSH keys.
+- [ ] Install, configure and deploy Ansible, and use it to manage your users.
+- [ ] Deploy a VPN service to join (or route) traffic between your workstation and cluster's internal networks.
 
 # Spinning Up a Compute Node on Sebowa(OpenStack)
 
@@ -96,7 +100,7 @@ The following diagram may facilitate the discussion and illustrate the scenario:
 > Remember to use the **SSH keys**, **usernames** and **ip addresses** corresponding to *your* nodes! You have been **STRONGLY** advised to make use of the **SAME SSH KEY** on your compute node as you had used on your head node. Should you insist on using different SSH keys for you nodes, refer to the hidden description that follows. Reveal the hidden text by clicking on the description.
 
 <details>
-<summary>Head node and compute node deployed using different SSH key pairs *Click to reveal*</summary>
+<summary>Head node and compute node deployed using different SSH key pairs</summary>
 
 ```bash
 ssh -o ProxyCommand="ssh -i <path to head node ssh key> -l <user> -W %h:%p <head node ip>" -i <path to  compute node ip> <user>@<compute node ip>
@@ -115,9 +119,29 @@ In the event that you manage to lock yourselves out of your VMs, from your team'
 <p align="center"><img alt="OpenStack VNC." src="./resources/openstack_vnc_access.png" width=900 /></p>
 
 > [!IMPORTANT]
-> You will not be able to login into your SSH servers on your head (and compute) nodes using a password. This is a security feature by default. Should you have a ***very good reason*** for wanting to utilize password enabled SSH access, discuss this with the instructors.
+> You will not be able to login into your SSH servers on your head (and *generally speaking* your compute) nodes using a password. This is a security feature by default. Should you have a ***very good reason*** for wanting to utilize password enabled SSH access, discuss this with the instructors.
 >
 > The reason why you are setting a password at this stage, is because the following set of tasks could potentially break your SSH access and lock you out of your node(s).
+>
+> * Edit your /etc/ssh/sshd_config and enable password authentication
+> ```bash
+> sudo nano /etc/ssh/sshd_config
+> ```
+> * And uncomment #PasswordAuthentication
+> ```conf
+> PasswordAuthentication yes
+> ```
+> * Configure the following SELinux (Security Engine) settings
+> ```bash
+> # RHEL, Rocky, Alma, CentOS Stream
+> chmod 700 ~/.ssh/
+> chmod 600 ~/.ssh/authorized_keys
+> sudo restorecon -R -v ~/.ssh
+> ```
+> * Restart the SSH daemon on your compute node
+> ```bash
+> sudo systemctl restart sshd
+> ```
 
 # Understanding the Roles of the Head Node and Compute Node
 
@@ -225,7 +249,7 @@ For the tutorials you are encouraged to use tmux.
 
 1. SSH into your **compute node** and install [`htop`](https://htop.dev/):
    ```bash
-   ssh <user>@<compute node ip>
+   ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no <user>@<compute node ip>
    ```
 
    Once you are successfully logged into your compute node:
@@ -298,27 +322,28 @@ Here is a list of Linux commands and utilities that you will use often during th
 
 # Verifying Networking Setup
 
-Your VMs have been assigned an external or publicly facing, floating IP address. Navigate to `Compute  ->  Instances` on your OpenStack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for your head node) and one IP address (for your compute node) with their respective networks. The head node's IP addresses will look like `10.100.50.x` and `154.114.57.y` where `x` denotes your specific VM's address on the respective subnet. Each team has been allocated a private `10.100.50.*` network is for internal, private use and a public facing IP address `154.114.72.x` for external access from your local workstation.
+Your VMs have been assigned an external or publicly facing, floating IP address. Navigate to `Compute  ->  Instances` on your OpenStack dashboard. Click the any name of the virtual machine instance to see an overview of your virtual machine specifications, under `IP Addresses` you will see two IP addresses (IPs) (for your head node) and one IP address (for your compute node) with their respective networks. The head node's IP addresses will look like `10.100.50.x` and `154.114.57.y` where `x` denotes your specific VM's address on the respective subnet. Each team has been allocated a private `10.100.50.*` network is for internal, private use and a public facing IP address `154.114.57.x` for external access from your local workstation.
 
 <p align="center"><img alt="OpenStack Success State with Compute and Head nodes" src="./resources/openstack_verify_network.png" width=900 /></p>
 
 You can check your network interfaces by using the `ip a` command after logging in to your head node or commpute node.
 
-> [!TIP] **Rocky 9** uses [Network Manager](https://docs.rockylinux.org/guides/network/basic_network_configuration/) to manage network settings. `NetworkManager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
+> [!TIP]
+> **Rocky 9** uses [Network Manager](https://docs.rockylinux.org/guides/network/basic_network_configuration/) to manage network settings. `NetworkManager` is a service created to simplify the management and addressing of networks and network interfaces on Linux machines.
 
 * Head Node
 
   * Verify that your network interfaces are indeed managed by `NetworkManager`.
 
-    ```bash
-    nmcli dev
-    ```
+  ```bash
+  nmcli dev
+  ```
 
   * `nmtui` is a terminal or console-based tool used to configure and manage network connections for Network Manager.
 
-    ```bash
-    sudo nmtui
-    ```
+  ```bash
+  sudo nmtui
+  ```
 
   * Example Editing Network Configuration
 
@@ -326,14 +351,16 @@ You can check your network interfaces by using the `ip a` command after logging 
 
   * Configure the DNS Servers
 
-    - You will now configure the connection to make use of Google's free public DNS servers. Hit enter on <Show> to the right of <IPv4 CONFIGURATION> and scroll down to the DNS servers> section.
+    - If, for example, you wanted to configure the connection to make use of Google's free public DNS servers. Hit enter on <Show> to the right of <IPv4 CONFIGURATION> and scroll down to the DNS servers> section.
 
     - Click <Add> and enter <8.8.8.8>, then click <OK> at the bottom of the screen.
 
     - Exit `nmtui` and check the networking setup is correct.
 
+    Your DNS has already been configured in OpenStack and the above example is only included for demonstration purposes. You may proceed with the remainder of the tutorial.
+
 > [!CAUTION]
-> Configuring and managing you network setup is a crucial and fundamental aspect that you will need to understand in order to be successful in this competition. Your VM instances make use of a virtual network (or CLAN), that manages the routing and configuration aspects on your behalf.
+> Configuring and managing you network setup is a crucial and fundamental aspect that you will need to understand in order to be successful in this competition. Your VM instances make use of a virtual network (or VLAN), that manages the routing and configuration aspects on your behalf.
 >
 > The example configuration steps above will have little to no impact on your existing network setup, however you must appreciate that `nmtui` and / or `nmcli`, (i.e. Network Manger), are power tools that can add and bring interface, configure static IP address, configure routing tables, and much more. Please refer to [Set Static IP Rocky Linux Examples](https://www.golinuxcloud.com/set-static-ip-rocky-linux-examples/) and [What is IP Routing](https://study-ccna.com/what-is-ip-routing/) for detailed explanations.
 
@@ -346,24 +373,24 @@ Stateful packet inspection, also referred to as dynamic packet filtering, is a n
 > [!WARNING]
 > You must ensure that you have [configured a password so you can access your head node through VNC](../tutorial1/README.md#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc), as there is a high risk of locking yourself out of SSH.
 >
-> You may skip this section and it will not hinder your progress throughout the remainder of the tutorials, however you are strongly advised to complete this section as it contains a number of key fundamentals.
+> You may skip this section and it will not hinder your progress throughout the remainder of the tutorials, however you are strongly advised to complete this section as it contains a number of key fundamentals that you must learn not only for HPC, but for general systems administration, IT and cloud engineering.
 
 1. Install the userspace utilities package
    * DNF / YUM
-     ```bash
-     # RHEL, Rocky, Alma, CentOS
-     sudo dnf install
-     ```
+   ```bash
+   # RHEL, Rocky, Alma, CentOS
+   sudo dnf install nftables
+   ```
    * APT
-     ```bash
-     # Ubuntu
-     sudo apt install nftables
-     ```
+   ```bash
+   # Ubuntu
+   sudo apt install nftables
+   ```
    * Pacman
-     ```bash
-     # Arch
-     sudo pacman -S nftables
-     ```
+   ```bash
+   # Arch
+   sudo pacman -S nftables
+   ```
 1. Check and clear the existing firewall configuration
    ```bash
    sudo nft list ruleset
@@ -376,12 +403,12 @@ Stateful packet inspection, also referred to as dynamic packet filtering, is a n
 
 1. Create a new `table` to house the rules for your head node
    ```bash
-   sudo nft add table inet my_table
+   sudo nft add table inet hn_table
    ```
 1. Add the `input`, `forward`, and `output` base chains.
-   * input chain refers to inbound packets and traffic arriving *into* your head node,
-   * forward chain refers to packets and traffic passing *through* your head node, and
-   * output chain refers to outbound packets and traffic originating *from* your head node.
+   * `input` chain refers to inbound packets and traffic arriving *into* your head node,
+   * `forward` chain refers to packets and traffic passing *through* your head node, and
+   * `output` chain refers to outbound packets and traffic originating *from* your head node.
 
    The policy for `input` and `forward` will be initially set to `accept`, and then `drop` thereafter. The policy for `output` will be to `accept`.
    ```bash
@@ -429,24 +456,22 @@ Stateful packet inspection, also referred to as dynamic packet filtering, is a n
    ```
 1. You can now save your configuration to an output file
    ```bash
-   sudo nft -s list ruleset | tee hn.nft
+   sudo nft -s list ruleset | sudo tee /etc/nftables/hn.nft
    ```
 1. Edit your head node's nft file and modify the policy for `input` and `forward ` to be `drop`
    ```bash
-   nano hn.nft
-
-   sudo mv hn.nft /etc/nftables/
+   sudo nano /etc/nftables/hn.nft
    ```
 1. Amend the configuration file to include your changes when the service is restarted
    * Edit `nftables.conf`
-     ```bash
-     sudo nano /etc/sysconfig/nftables.conf
-     ```
+   ```bash
+   sudo nano /etc/sysconfig/nftables.conf
+   ```
    * Add the following:
-     ```conf
-     flush ruleset
-     include "/etc/nftables/hn.nft"
-     ```
+   ```conf
+   flush ruleset
+   include "/etc/nftables/hn.nft"
+   ```
 Restart and enable the `nftables` service.
 
 > [!NOTE]
@@ -455,11 +480,13 @@ Restart and enable the `nftables` service.
 >table inet my_nat {
 >  chain my_masquerade {
 >    type nat hook postrouting priority srcnat;
->    oifname "enp2s0" masquerade
+>    oifname "<public facing WAN>" masquerade
 >  }
 >}
 ># Remember to include this file in /etc/sysconfig/nftables.conf and to restart the nftables service.
 >```
+>
+> If you are having difficulties configuring your firewall, but would still like to try and attempt this section, you can make use of this [hn.nft](resources/hn.nft) template.
 
 # Network Time Protocol
 
@@ -468,16 +495,16 @@ NTP let's you to synchronise the time across all the computers in your network. 
 1. Install `chrony` on both your head and compute nodes
 
    ```bash
-   sudo dnf install chrony 
+   sudo dnf install chrony
    ```
 
 1. Head Node
    * Edit the file `/etc/chrony.conf`
 
-   Modify the `allow` declaration to include the internal subnet of your cluster (uncomment or remove the "#" in front of `allow` if it's there, otherwise this is ignored).
+     Modify the `allow` declaration to include the internal subnet of your cluster (uncomment or remove the "#" in front of `allow` if it's there, otherwise this is ignored).
 
    ```bash
-   allow 10.50.100.0/24
+   allow 10.100.50.0/24
    ```
    * Start and enable the `chronyd` service
    ```bash
@@ -497,29 +524,32 @@ NTP let's you to synchronise the time across all the computers in your network. 
    * Edit the file `/etc/chrony.conf`
 
      Comment out (add a "#" in front of) all the `pool` and `server` declarations and add this new line to the file:
-     ```bash
-     server <headnode_ip>
-     ```
+   ```bash
+   server <headnode_ip>
+   ```
    * Restart and enable the `chronyd` service
-     ```bash
-     sudo systemctl enable chronyd
-     sudo systemctl restart chronyd
-     ```
+   ```bash
+   sudo systemctl enable chronyd
+   sudo systemctl restart chronyd
+   ```
    * Verify the sources of the NTP server
-     ```bash
-     sudo chronyc sources```
+   ```bash
+   #
+   sudo chronyc sources
+   ```
 
 1. Firewall Configure on Head Node
    * Check `chronyc clients` again
    * Edit `/etc/nftables/hn.nft` and accept incoming traffic on port 123 UDP
-     ```conf
-     chain hn_udp_chain {
-             udp dport 123 accept
-     }
-     ```
+   ```conf
+   chain hn_udp_chain {
+           udp dport 123 accept
+   }
+   ```
    * Restart `nftables`
 
 1. Restart `chronyd` daemon on your compute node and recheck `chronyc sources`.
+
 1. Verify that `chronyc clients` is now working correctly on your head node.
 
 # Network File System
@@ -552,7 +582,7 @@ The head node will act as the [NFS server](https://docs.rockylinux.org/guides/fi
 
 1. Export the shares, then start and enable the `nfs-server` service using `systemctl` on the head node.
    ```bash
-   exportfs -ar
+   sudo exportfs -ar
    sudo systemctl enable nfs-server
    ```
 1. Mount the NFS export on your compute node
@@ -560,6 +590,9 @@ The head node will act as the [NFS server](https://docs.rockylinux.org/guides/fi
    # You cannot mount /home while you are occupying it
    cd /
    sudo mount -t nfs <headnode_ip>:/home /home
+
+   # For SELinux based systems (RHEL, Rocky, Alma, CentOS Stream)
+   sudo setsebool -P use_nfs_home_dirs 1
    ```
 1. Verify that you successfully mounted `/home` export
    ```bash
@@ -593,7 +626,14 @@ Just as you did so in the previous tutorial when you generated SSH keys [on your
 
    Since your `/home` directory is shared with your compute node, this will look the same on the compute node.
 
-1. SELinux, the security engine, may complain about permissions for this directory if you try to use public key authentication now. To fix this, run the following commands on your **head node**:
+1. For RHEL, Rocky, Alma and CentOS Stream, run for following commands for SELinux
+   * SSH to the **compute node** passwordless If you are prompted with a password it means that something is not set up correctly. Login through the VNC session and run the following command:
+
+      ```bash
+      sudo setsebool -P use_nfs_home_dirs 1
+      ```
+
+   * SELinux, the security engine, may complain about permissions for this directory if you try to use public key authentication now. To fix this, run the following commands on your **head node**:
 
    ```bash
    chmod 700 ~/.ssh/
@@ -601,11 +641,6 @@ Just as you did so in the previous tutorial when you generated SSH keys [on your
    sudo restorecon -R -v ~/.ssh
    ```
 
-1. SSH to the **compute node** passwordless If you are prompted with a password it means that something is not set up correctly. Login through the VNC session and run the following command:
-
-   ```bash
-   sudo setsebool -P use_nfs_home_dirs 1
-   ```
 1. Editing `/etc/hosts` File
 
    You can avoid having to try an memorize your node's IP addressing, by making the following amendments to your `/etc/hosts` file on both head and compute nodes:
@@ -693,160 +728,318 @@ Check `ls -ln /home/outofsync` on the **head node** and you'll see that the `tes
 >- `unwittinguser` on the compute node.
 >- `outofsync` on the compute node.
 
-# Ansible User Declaration
+# Ansible's Builtin User Module
 
-Ansible is a powerful configuration management tool used for automating the deployment, configuration, and management of software systems. It allows you to control many different systems from one central location. 
+Ansible is a powerful configuration management tool used for automating the deployment, configuration, and management of software systems. It allows you to control many different systems from one central location.
 
-In this tutorial we will install ansible and use it to automate the creation of user accounts as well a other system task 
+In this tutorial you will be installing Ansible and using it to automate the creation of user accounts as well as completing a number of administrative tasks. Your Ansible control host (head node) must be able connect to Ansible clients (compute nodes) over SSH, *preferably passwordless*.
 
-## Installing and Configuring Ansible
-Prerequisites :
- 1. ansible control host should be able connect to ansible clients over SSH preferably passwordless,
- 2. via a user account with sudo or root privileges 
- 3. atleast one ansible client
-
-1. Ensure that the Rocky Linux 9 EPEL repository is installed using `dnf`:
-
-```bash
-sudo dnf install epel-release
-```
-
-1. Once the repository is install Ansible 
-
+1. Install Ansible on your head node (it is not required on your compute node)
+   * DNF / YUM
    ```bash
-   sudo dnf install ansible
+   # RHEL, Rocky, Alma, CentOS Stream
+   sudo dnf install epel-release
+   sudo dnf install python ansible
+   ```
+   * APT
+   ```bash
+   # Ubuntu
+   sudo apt update
+   sudo apt install software-properties-common
+   sudo add-apt-repository --yes --update ppa:ansible/ansible
+   sudo apt install python ansible
+   ```
+   * Pacman
+   ```bash
+   # Arch
+   sudo pacman -Syu ansible
    ```
 
-## configuring Ansible
+1. Configure your inventory file
 
-1. Setup ansible host file  with hosts/client machines ansible should connect to, add all hosts to `/etc/ansible/hosts` file. The file has a lot of example to help you   learn ansible configurations
-
+   Setup an Ansible inventory file which contains a list of nodes or *hosts*, that you will be managing.
+   * Open a file in your `/home` directory
    ```bash
-   #open ansible host file
-   sudo vi /etc/ansible/hosts
+   nano ~/inventory
+   ```
+   * Describe your custom inventory file using your cluster's internal network, in the `INI` format
+   ```ini
+   [head]
+   # Only the head node's IP or hostname, when you need stricly management tasks
+   10.100.50.10
 
-   #add ansible hosts/clients under servers group
-   [servers]
-   compute1 ansible_ssh_host=10.100.50.5
-   compute2 ansible_ssh_host=10.100.50.10
+   [compute]
+   # List of all of your COMPUTE nodes
+   # Depending on your cluster design, your head node may also be compute
+   10.100.50.20
+   10.100.50.30
    ```
 
-   The servers is a group_name tag that lets you refer to any host (ansible clients) listed under it with one word. 
-
-2. Setup a ansible user with sudo or root privileges that ansible will use to e   xecute ansible tasks and connect with other ansible clients, the user must also exist on all ansible clients on ansible hosts under `servers` group
-
-   create a directory `group_vars` under ansible configuration structure `/etc/ansible` for creating YAML-formatted config files for each group you want to configure  
+1. Test to see if your Ansible control host can access all nodes listed in the inventory file
 
    ```bash
-   sudo mkdir /etc/ansible/group_vars
-
-   #create a servers file for configuring servers in the ansible hosts file 
-   vi mkdir /etc/ansible/group_vars/servers
-   ```
-
-   Add the following code to the file. YAML files start with ---
-
-   ```text
-   ---
-   ansible_ssh_user: ansibe_user
-   ```
-
-   save and exit the file. In vi, you can do this by pressing ESC and then :x.
-   If the user you are currenlty logged in as has sudo privileges and exists on all ansible hosts then there no need to do number 2.
-
-3. test ansible if ansible control host can access all clients hosts under group servers in the ansible host file
-
-   ```bash
-   #access as a group
-   ansible -m ping servers
+   # access as a group
+   ansible -i inventory compute -m ping
 
    #access as an individual host
-   ansible -m ping compute
+   ansible -i inventory 10.50.100.0 -m ping
 
    #run command on hosts
-   ansible -m shell -a 'free -m' compute
+   ansible -i inventory compute -m shell -a 'free -m'
    ```
-   <p align="center"><img alt="ansible testing hosts client connection " src="./resources/ansible_ping_servers.png" width=900 /></p>
 
-   <p align="center"><img alt="ansible testing individual host client connection " src="./resources/ansible_individual_host_access.png" width=900 /></p>
+## Create User Accounts
 
-   <p align="center"><img alt="run command on ansible clients" src="./resources/ansible_run_command_on_hosts.png" width=900 /></p>
+You will now use Ansible to create user accounts on ***all*** clients. To achieve this you will need to create Ansible YML scripts called `ansible playbooks` used for automating administrative tasks.
 
-<p align="center"><img alt="ansible testing hosts client connection " src="./resources/ansible_ping_feedback.png" width=900 /></p>
-
-## Create Team Member Accounts
-We will use ansible to create user accounts on remote ansible clients, to achive this we need to create ansible YML scripts called `ansible playbooks` used for automating admin tasks. 
-
-In this section you will learn to:
-Create a playbook that will perform the following actions on all Ansible hosts/clients:
-    1. Create a new sudo user and granting sudo priviledges.
-    2. Copy a local SSH public key and include it in the `authorized_keys` file for the new administrative user on the remote host.
+> [!TIP]
+> You could use an LDAP service or something similar for identities management, such as [FreeIPA](https://www.freeipa.org/page/Main_Page), however due to the small scale of your cluster, and the limited number of users, [Ansible's Builtin User Module](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html) is more than adequate for managing your team's user accounts.
 
 
-1. Create an ansible working directory in your `/home/rocky`, this is where all ansible playbooks will reside.
+You will now create a new user and add them to the `wheel` group so they have `sudo` or `root` privileges.
 
-```bash
-#create the ansible playbooks directory
-sudo mkdir -p /home/rocky/ansible/playbooks
+1. Create an Ansilble working directory in your user's `/home`, to house your playbooks
 
-#creating the sudo users ansible playbook script, 
-vi /home/rocky/ansible/playbooks/sudo_users.yml
+   ```bash
+   # Create the ansible playbooks directory
+   mkdir -p ~/playbooks
 
-# add the below content
----
-- hosts: all
-  become: true
-  vars:
-    created_username: team_lead
+   # Creating the sudo users ansible playbook script
+   nano ~/playbooks/create_sudo_users.yml
+   ```
 
-```
+1. Add your user name to the `YML` file. A typical convention will have you user your initial and surname, for example "Zama Mtshali" would have username "zmtshali".
 
-The above says in `all hosts` create user team_lead, `become` states whether commands are done with sudo priviledges. `var` stores data in variables so that you only edit that line when you decide to change 
+   ```yml
+   # Add the below content
+   ---
+   - hosts: all
+     become: true
+     vars:
+       add_sudo_user: zmtshali
+       del_user: unwittinguser
 
-Granting user team_lead with sudo privileges by adding:
+     tasks:
 
-```bash
+       - name: Ensure sudo user is present on system
+         user:
+           name: "{{ add_sudo_user }}"
+           state: present
+           groups: wheel
+           append: true
+           create_home: true
 
-# create user team_lead, execute tasks to grand sudo priviledge 
----
-- hosts: all
-  become: true
-  vars:
-    created_username: team_lead
-  
-  tasks:
-    - name: create user with sudo priviledges 
-      user: 
-        name: "{{ created_username }}"
-        state: present 
-        groups: wheel
-        append: true
-        create_home: true 
-    
-    - name: Set authorized key for remote user
-      ansible.posix.authorized_key:
-        user: "{{ created_username }}"
-        state: present
-        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
-     
-```
+       - name: Remove user from system
+         user:
+           name: "{{ del_user }}"
+           state: absent
+           remove: yes
+   ```
 
-Run the playbook script 
+   * Where the keyword `all` is used to apply the playbook to all hosts, `become` determines whether commands are executed with `sudo` privileges and `vars` defines variables for the playbook.
 
-```bash
-ansible-playbook /home/rocky/ansible/playbooks/sudo_users.yml -l servers
-```
+   * The playbook is comprised of a two `tasks`, that are given a `name` and in this instance, make use of the [ansible.builtin.user](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html) module.
 
-<p align="center"><img alt=" run the sudo_user playbook " src="./resources/ansible_create_user_run_result.png" width=900 /></p>
+1. Run the playbook
 
-Verify user `team_lead` was created on compute node and it on a `wheel` group 
+   ```bash
+   ansible-playbook -i inventory ~/playbooks/create_sudo_users.yml
+   ```
 
-<p align="center"><img alt=" user team lead exist on ansible client " src="./resources/ansible_team_lead_user_verification.png" width=900 /></p>
-```bash
-ssh compute
-id 
-```
+1. SSH into your other nodes and verify that the users have been correctly
+
+   Congratulations on successfully running your first Ansible playbook.
 
 # WirGuard VPN Cluster Access
 
+WireGuard is a modern, high-performance, and easy-to-use VPN (Virtual Private Network) protocol that aims to provide a simple yet secure way to create encrypted network connections. WireGuard uses a combination of public and private keys for each peer.
+
+Each device generates its own key pair, and peers exchange public keys. This key exchange process is secure and ensures that only authorized devices can communicate. WireGuard is stateless between packets, which means that it does not maintain session state between the communication of two peers, meaning that sessions persist even when roaming or through network disruptions.
+
+Some of the benefits and key features of WireGuard include:
+
+* **Ease of Setup and Management**: WireGuard is designed to be easy to configure and deploy. Its configuration is straightforward and involves only a few steps, making it accessible even for users who are not experts in networking.
+
+* **Cross-Platform Compatibility**: WireGuard is cross-platform and can run on various operating systems, including Linux, Windows, macOS, iOS, and Android. This makes it versatile and suitable for a wide range of devices.
+
+* **Security**: WireGuard employs modern, state-of-the-art cryptographic primitives. This ensures robust security for all communications.
+
+* **Simplicity**: WireGuard is designed to be simple and minimalistic, with a codebase that is significantly smaller than other VPN protocols like OpenVPN and IPSec. This simplicity helps in reducing the attack surface and makes the protocol easier to audit and maintain.
+
+* **Performance**: WireGuard is known for its high performance and low overhead. It uses state-of-the-art cryptographic algorithms and efficient networking techniques to ensure fast and secure connections.
+
+* **Open Source**: WireGuard is free and open-source, which allows for transparency, community contributions, and customization.
+
+The following steps can be employed to utilize WireGuard in order to setup a basic tunnel between two or more peers:
+
+| Peer               | External (Public) IP Address | New Internal (WireGuard) IP Address | Port      |
+|--------------------|------------------------------|-------------------------------------|-----------|
+| Peer A (head node) | 154114.57.x                  | 10.0.0.1/24                         | UDP/9993  |
+| Peer B (desktop)   | 102.64.114.107               | 10.0.0.2/24                         | UDP/51900 |
+| Peer C (laptop)    | *dynamic*                    | 10.0.0.3/24                         | UDP/51902 |
+|                    |                              |                                     |           |
+
+> [!TIP]
+> The UDP Ports do not have to be different. The same UDP port could have been used for all three peers.
+
+1. Installation
+   * DNF / YUM
+   ```bash
+   # RHEL, Rocky, Alma CentOS Stream
+   sudo dnf install epel-release
+   sudo dnf install wireguard-tools
+   ```
+   * APT
+   ```bash
+   # Ubuntu
+   sudo apt update
+   sudo apt install wireguard-tools
+   ```
+   * Pacman
+   ```bash
+   sudo pacman -S wireguard-tools
+   ```
+1. Create a private and public key for **each** peer
+   * Create a private key
+   ```bash
+   # We want to restrict reading and writing to the owner, so we temporarily alter the umask with the sub-shell.
+   (umask 0077; wg genkey > headnode.key)
+   ```
+   * Create a public key
+   ```bash
+   wg pubkey < headnode.key > headnode.pub
+   ```
+1. Peer Configuration
+
+   In this setup, your *head node* is listening on port 9993 (remember to open this UDP port), and will accept connections from  your *laptop* / *desktop*.
+   ```bash
+   # Create a new WireGuard connection and bind an IP address to it
+   sudo ip link add dev wg0 type wireguard
+   sudo ip addr add 10.0.0.1/24 dev wg0
+
+   # Create a WireGuard "Server" on your head node
+   sudo wg set wg0 listen-port 9993 private-key </path/to/headnode.key>
+
+   # If you were staying at the City Lodge in Gqeberha, or from your residence for exmaple, **YOUR** endpoint (public IP - remember WhatIsMyWiFI) would be as follows:
+   sudo wg set wg0 peer PEER_B_PUBLIC_KEY endpoint 102.64.114.107:51900 allowed-ips 10.0.0.2/32
+
+   # Your laptop is roaming "dynamic" and does not have a fixed IP or endpoint
+   sudo wg set wg0 peer PEER_C_PUBLIC_KEY allowed-ips 10.0.0.3/32
+
+   # Bring up your new WireGuard tunnel device
+   sudo ip link set wg0 up
+   ```
+
+   Your head node is now listening for incoming connections.
+
+1. Verify the configuration settings
+   ```bash
+   # Verify that the device has been correctly created
+   ip a
+
+   # Check to see whether your head node is listening for incoming connections
+   wg
+   ```
+
+1. Repeat the above steps for Peers B and C.
+   * This time when you run the `wg` to verify the configuration settings, you should see active connections.
+
+1. Test the WirGuard Connection
+   ```bash
+   # From your head node
+   ping 10.0.0.2
+   ping 10.0.0.3
+
+   # Similarly, do the same from the other nodes
+   ```
+You have successfully configured your WireGuard VPN Tunnel.
+
 # ZeroTier
+
+> [!CAUTION]
+> If you have successfully configured WireGuard, generally speaking you will not need additional VPN configurations. Disable the WireGuard service to continue to experiment with this example. You and your team will then decide on the preferred method.
+
+ZeroTier is a software-based network virtualization solution that allows you to create and manage secure virtual networks across different devices and platforms. It combines features of traditional VPNs with modern software-defined networking (SDN) to provide a flexible, efficient, and secure way to connect devices over the internet.
+
+Some of the benefits and key features of ZeroTier include:
+* **Easy Setup and Management**: ZeroTier simplifies the process of setting up virtual networks. It provides a user-friendly interface for creating and managing networks, adding devices, and configuring settings.
+
+* **Cross-Platform Compatibility**: ZeroTier works on a variety of operating systems, including Windows, macOS, Linux, Android, and iOS. This ensures that you can connect virtually any device to your network.
+
+* **Security**: ZeroTier uses strong encryption to secure your connections, ensuring that data transmitted between devices is protected from unauthorized access.
+
+* **Performance**: Unlike traditional VPNs that can introduce latency and reduce performance, ZeroTier is designed to optimize network performance by using peer-to-peer technology and intelligent routing.
+
+    * **Scalability**: ZeroTier can scale from small home networks to large enterprise deployments. Its flexible architecture allows it to handle a wide range of network sizes and configurations.
+
+* **Open Source**: The core ZeroTier engine is open source, which allows for transparency, community contributions, and customization.
+
+* **Use Cases**: ZeroTier can be used for a variety of purposes, such as remote access, site-to-site VPNs, IoT networking, multiplayer gaming, and secure peer-to-peer communications. You will be using ZeroTier to create a VPN between your laptops and your head node, regardless of where you are in the world...
+
+You will be able to create Virtual Private Networks (VPN) between systems you might have local network access to, but where you traditionally do not have external network access to. Let's demonstrate this with an example by creating your first ZeroTier network:
+
+1. Create a service account
+
+   Navigate to [my.zerotier.com](https://my.zerotier.com/) and create an account.
+
+1. Create a `zerotier` network from the Networks tab
+
+   Click the `Create A Network` button.
+   <p align="center"><img alt="ZeroTier Create a network." src="./resources/zerotier-networks-empty.png" width=900 /></p>
+
+1. Configure and edit your new network, by clicking on it
+
+   Give it an appropriate name and description
+
+   <p align="center"><img alt="ZeroTier new newtwork name." src="./resources/zerotier_new_network.png" width=900 /></p>
+
+   * Scroll down to the `Members Section`
+
+1. Install ZeroTier on each device that you intend to connect to your new ZeroTier network
+
+   * Use the respective app store for mobile devices
+   * Navigate to [Download ZeroTier](zerotier.com/download) for other devices
+
+     For example, on your head node:
+   ```bash
+   curl -s https://install.zerotier.com | sudo bash
+   ```
+1. Copy the network id from the Networks tab, on your [ZeroTier account page](https://my.zerotier.com)
+
+   i.e. `93afae59635c6f4b` in this example.
+
+1. Join your ZeroTier network from your devices
+
+   * On macOS, Windows, Android and iOS: Use the menu / tray / app icon and `join` your network using your network id.
+   * On your head node and other Linux machines
+   ```bash
+   # You must take note of the unique address indicated from the `info` switch
+   sudo zerotier-cli info
+
+   # Join you zerotier network
+   sudo zerotier-cli join 93afae59635c6f4b
+
+   # Verify whether or not your client is authorized
+   sudo zerotier-cli listnetworks
+   ```
+
+1. Go back to the `Members Section` on your account page:
+
+   * Authorize the devices that you would like to join your ZeroTier network
+   * Provide a name and description to the devices
+   * Assigned `Managed IPs` if they are not automatically assigned
+
+   <p align="center"><img alt="ZeroTier authorize." src="./resources/zerotier_auth.png" width=900 /></p>
+
+1. Confirm the status on your devices
+
+   Should now read `OK` instead of `ACCESS DENIED`
+   ```bash
+   sudo zerotier-cli listnetworks
+   ```
+
+1. Test connectivity between the *Managed IPs* using `ping`.
+
+   * Make sure to open *UDP Port 9993* on your head node and restart the `nfstables` service.
+
+You have successfully created a ZeroTier VPN network.

@@ -174,7 +174,7 @@ Over the course of the lecture content and the tutorials, you will be making ext
 > When you are presented with foldable code blocks, you must pick and implement only **one** of the options presented, which is suitable to your current configuration and/or circumstance.
 
 > [!TIP]
-> A number [encryption algorithms](https://en.wikipedia.org/wiki/Public-key_cryptography) exist for securing your SSH connections. [Elliptic Curve Digital Signature Algorithm (ECDSA)](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) is secure and simple enough should you need to copy the public key manually. Nonetheless however, you are free to use whichever algorithm you choose to.
+> A number [encryption algorithms](https://en.wikipedia.org/wiki/Public-key_cryptography) exist for securing your SSH connections. [Elliptic Curve Digital Signature Algorithm (ECDSA)](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) is secure and simple enough should you need to copy the public key manually. Nonetheless, you are free to use whichever algorithm you choose to.
 
 From the `Start` menu, open the Windows `PowerShell` application:
 These commands are the same if you are commenting from a Linux, Unix or MacOS Terminal, and Moba XTerm.
@@ -295,21 +295,21 @@ The following table summarizes the various permutations and allocations that can
 | Cluster Configurations     | Instance Flavor | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
 |----------------------------|:---------------:|:---------------:|:------------:|:--------------:|
 |                            |                 |                 |              |                |
-| Dedicated Head Node        | scc.C2.M4.S60    | 2               | 4 GB         | 60 GB          |
-| Compute Node 01            | scc.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
-| Compute Node 02            | scc.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
+| Dedicated Head Node        | scc24.C2.M4.S60    | 2               | 4 GB         | 60 GB          |
+| Compute Node 01            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
+| Compute Node 02            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 |                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc.C6.M12.S60    | 6               | 12 GB        | 60 GB          |
-| Compute Node 01            | scc.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
-| Compute Node 02            | scc.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
+| Hybrid Head / Compute Node | scc24.C6.M12.S60    | 6               | 12 GB        | 60 GB          |
+| Compute Node 01            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
+| Compute Node 02            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 |                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc.C10.M20.S60   | 10              | 20 GB        | 60 GB          |
-| Compute Node 01            | scc.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
+| Hybrid Head / Compute Node | scc24.C10.M20.S60   | 10              | 20 GB        | 60 GB          |
+| Compute Node 01            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 
-Type *"scc"* in the search bar and select the **scc.C2.M4.S60** instance flavor.
+Type *"scc"* in the search bar and select the **scc24.C2.M4.S60** instance flavor.
 
 <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_instance_flavor.png" width=900 /></p>
 
@@ -322,7 +322,7 @@ Under the *Networks* settings, make sure to select the `vxlan` that corresponds 
 
 <p align="center"><img alt="OpenStack Networks Selection." src="./resources/openstack_networks.png" width=900 /></p>
 
-No configurations are required for *Network Ports*, however you must ensure that you have selected `ssh & web services` under *Security Groups*.
+No configurations are required for *Network Ports*, however you must ensure that you have selected `scc24_sg` under *Security Groups*.
 
 <p align="center"><img alt="OpenStack Security Groups Selection." src="./resources/openstack_security_groups.png" width=900 /></p>
 
@@ -528,8 +528,9 @@ From this point onward, you're going to need to pay extra attention to the comma
 > [!WARNING]
 > Do not try to type the following arbitrary commands into your head node's terminal. They are merely included here for illustration purposes.
 
+* DNF / YUM
 ```bash
-# DNF / YUM (RHEL, Alma, Rocky, Centos, etc)
+# RHEL, Alma, Rocky, Centos
 # You are strongly recommended to use one of the distros mentioned above.
 # This will always be the first example use case given for any scenario and
 # the recommended approach to follow
@@ -537,8 +538,11 @@ From this point onward, you're going to need to pay extra attention to the comma
 sudo dnf update
 sudo dnf install <PACKAGE_NAME>
 sudo dnf remove <PACKAGE_NAME>
+```
+* APT-based systems
+```bash
 
-# APT-based systems (Ubuntu)
+# Ubuntu
 # Another really good choice and strong recommendation to adopt is Ubuntu.
 # Ubuntu has many users, and many first time Linux users, start their
 # journeys into Linux through APT (or Ubuntu) based distros.
@@ -547,8 +551,11 @@ sudo dnf remove <PACKAGE_NAME>
 sudo apt update
 sudo apt install <PACKAGE_NAME>
 sudo apt remove <PACKAGE_NAME>
+```
+* Pacman-based systems
+```bash
 
-# Pacman-based systems (Arch-Like Linux)
+# Arch-Like Linux
 # Arch Linux is one of the most "flexible and succinct" Linux distros
 # available today. It popularity stems not only from the fact that is has
 # excellent documentation, but it's "keep it straight and simple" approach.
@@ -606,7 +613,7 @@ You will now install and run HPL on your **head node**.
    ```bash
    # Ubuntu
    sudo apt update
-   sudo apt install openmpi libatlas-base-dev
+   sudo apt install build-essential openmpi-bin libopenmpi-dev libatlas-base-dev
    ```
    * Pacman
    ```bash
