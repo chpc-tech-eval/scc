@@ -647,18 +647,33 @@ You will now install and run HPL on your **head node**.
    ```
 
    You need to carefully edit your `Make.<TEAM_NAME>` file, ensuring that you make the following changes:
-   ```conf
-   ARCH               = <TEAM_NAME>
+   * RHEL, Rocky, Alma, CentOS Stream based systems
+     ```conf
+     ARCH               = <TEAM_NAME>
 
-   MPdir              = /usr/lib64/openmpi
+     MPdir              = /usr/lib64/openmpi
 
-   LAdir              = /usr/lib64/atlas
-   LAlib              = $(LAdir)/libtatlas.so $(LAdir)/libsatlas.so
+     LAdir              = /usr/lib64/atlas
+     LAlib              = $(LAdir)/libtatlas.so $(LAdir)/libsatlas.so
 
-   CC                 = mpicc
+     CC                 = mpicc
 
-   LINKER             = mpicc
-   ```
+     LINKER             = mpicc
+     ```
+   * Ubuntu based systems
+     ```conf
+     ARCH               = <TEAM_NAME>
+
+     MPdir              = /usr/lib/x86_64-linux-gnu/openmpi
+
+     LAdir              = /usr/lib/x86_64-linux-gnu/atlas/
+     LAlib              = $(LAdir)/libblas.so $(LAdir)/liblapack.so
+
+     CC                 = mpicc
+
+     LINKER             = mpicc
+     ```
+
 1. Temporarily edit your `PATH` variable
 
    You are almost ready to compile HPL, you will need to modify your path variable in order for your MPI C Compiler `mpicc` to be a recognized binary.
