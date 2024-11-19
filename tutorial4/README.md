@@ -18,6 +18,7 @@
     1. [Install and Initialize Terraform](#install-and-initialize-terraform)
     1. [Generate `clouds.yml` and `main.tf` Files](#generate-cloudsyml-and-maintf-files)
     1. [Generate, Deploy and Apply Terraform Plan](#generate-deploy-and-apply-terraform-plan)
+1. [Automating HPL Runs Using Ansible Playbooks](#automating-hpl-runs-using-ansible-playbooks)
 1. [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
     1. [Prepare GitHub Repository](#prepare-github-repository)
     1. [Reuse `providers.tf` and `main.tf` Terraform Configurations](#reuse-providerstf-and-maintf-terraform-configurations)
@@ -923,6 +924,42 @@ Generate and configure the `cloud.yml` file that will authenticate you against y
 
 > [!TIP]
 > To avoid losing your team's progress, it would be a good idea to create a GitHub repo in order for you to commit and push your various scripts and configuration files.
+
+# Automating HPL Runs Using Ansible Playbooks
+
+You will now be installing Ansible and using it to automate the HPL runs. Refer to tutorial 1 again on how to install Ansible.
+
+```
+cd ~/playbook
+```
+```
+vim inventory.yml
+```
+```
+all:
+  hosts:
+    headnode:
+      ansible_host: <your ip address>
+    compute1:
+      ansible_host: <your ip address>
+    compute2:
+      ansible_host: <your ip address> # use yadada command
+  children:
+    compute:
+      hosts:
+        compute1:
+        compute2:
+```
+```
+vim install_hpl.yml
+```
+And copy and paste the code from the attached `install_hpl.yml` file.
+
+```
+ansible-playbook -i inventory.yml install_hpl.yml
+```
+
+
 
 # Continuous Integration Using CircleCI
 
