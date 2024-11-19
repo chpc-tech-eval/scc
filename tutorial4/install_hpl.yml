@@ -1,0 +1,304 @@
+- name: Install prerequisites on all nodes
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install dependencies on Debian-based systems
+      apt:
+        name:
+          - git
+          - make
+          - gcc
+          - gfortran
+          - build-essential 
+          - hwloc 
+          - libhwloc-dev 
+          - libevent-dev 
+          - wget
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Install dependencies on RedHat-based systems
+      dnf:
+        name:
+          - "@Development Tools"
+          - git
+          - make
+          - gcc
+          - gfortran
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "RedHat"
+
+    - name: Install dependencies on Pacman-based systems
+      pacman:
+        name:
+          - base-devel
+          - gfortran
+          - git
+          - gcc
+          - wget
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Archlinux"
+
+
+- name: Install OpenBLAS on headnode
+  hosts: compute1
+  gather_facts: yes
+  tasks:
+    - name: Clone OpenBLAS repository
+      git:
+        repo: "https://github.com/xianyi/OpenBLAS.git"
+        dest: "{{ ansible_env.HOME }}/OpenBLAS"
+        version: "v0.3.26"
+      register: clone_result
+
+    - name: Build OpenBLAS
+      make:
+        chdir: "{{ ansible_env.HOME }}/OpenBLAS"
+        target: all
+      when: clone_result.changed
+
+    - name: Install OpenBLAS to custom directory
+      make:
+        chdir: "{{ ansible_env.HOME }}/OpenBLAS"
+        target: install
+        params:
+          PREFIX: "{{ ansible_env.HOME }}/opt/openblas"
+      when: clone_result.changed
+
+- name: Install OpenMPI on headnode
+  hosts: compute1
+  gather_facts: yes
+  tasks:
+    - name: Check if OpenMPI is already installed
+      stat:
+        path: "{{ ansible_env.HOME }}/opt/openmpi/bin"
+      register: openmpi_installed
+    
+    - name: Download OpenMPI source files
+      get_url:
+        url: "https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.4.tar.gz"
+        dest: "{{ ansible_env.HOME }}/openmpi-4.1.4.tar.gz"
+        mode: '0755'
+      when: not openmpi_installed.stat.exists
+    - name: Create destination directory for unzipping
+      file:
+        path: "{{ ansible_env.HOME }}/openmpi-4.1.4"
+        state: directory
+        mode: '0755'
+      when: not openmpi_installed.stat.exists
+    - name: Unzip the downloaded file
+      unarchive:
+        src: "{{ ansible_env.HOME }}/openmpi-4.1.4.tar.gz"
+        dest: "{{ ansible_env.HOME }}"
+        remote_src: yes
+      when: not openmpi_installed.stat.exists
+    - name: Configure OpenMPI with CFLAGS
+      command: "./configure --prefix={{ ansible_env.HOME }}/opt/openmpi"
+      args: 
+        chdir: "{{ ansible_env.HOME }}/openmpi-4.1.4"
+      environment:
+        CFLAGS: "-Ofast -march=native -mtune=native"
+      when: not openmpi_installed.stat.exists
+    - name: Compile OpenMPI
+      make:
+        chdir: "{{ ansible_env.HOME }}/openmpi-4.1.4"
+        jobs: "{{ ansible_processor_cores | default(6) }}"
+      when: not openmpi_installed.stat.exists
+    - name: Install OpenMPI
+      make:
+        chdir: "{{ ansible_env.HOME }}/openmpi-4.1.4"
+        target: install
+      when: not openmpi_installed.stat.exists
+
+- name: Install HPL on headnode
+  hosts: headnode
+  gather_facts: yes
+  tasks:
+    - name: Remove hpl and hpl-2.3 directories
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/{{ item }}"
+        state: absent
+      with_items:
+        - hpl
+        - hpl-2.3
+
+    - name: Download HPL source files
+      get_url:
+        url: "http://www.netlib.org/benchmark/hpl/hpl-2.3.tar.gz"
+        dest: "{{ ansible_env.HOME }}/hpl-2.3.tar.gz"
+        mode: '0755'
+    - name: Create destination directory for unzipping
+      file:
+        path: "{{ ansible_env.HOME }}/hpl-2.3"
+        state: directory
+        mode: '0755'
+    - name: Unzip the downloaded file
+      unarchive:
+        src: "{{ ansible_env.HOME }}/hpl-2.3.tar.gz"
+        dest: "{{ ansible_env.HOME }}"
+        remote_src: yes
+    - name: Rename folder using mv command
+      command: mv "{{ ansible_env.HOME }}/hpl-2.3" "{{ ansible_env.HOME }}/hpl"
+
+    - name: Copy Makefile template
+      copy:
+        src: "{{ ansible_env.HOME }}/hpl/setup/Make.Linux_PII_CBLAS_gm" # Path to the Makefile on the head node
+        dest: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"  # Destination path where you want to copy it
+        mode: '0644'
+        remote_src: yes
+    - name: Configure Makefile
+      replace:
+        path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+        regexp: '^ARCH\s*=\s*.*'  
+        replace: 'ARCH = compile_BLAS_MPI'
+    - name: Set MPdir variable
+      replace:
+        path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+        regexp: '^MPdir\s*=.*'
+        replace: 'MPdir        = $(HOME)/opt/openmpi'
+
+    - name: Set MPinc variable
+      replace:
+        path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+        regexp: '^MPinc\s*=.*'
+        replace: 'MPinc        = -I$(MPdir)/include'
+
+    - name: Set MPlib variable
+      replace:
+        path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+        regexp: '^MPlib\s*=.*'
+        replace: 'MPlib        = $(MPdir)/lib/libmpi.so'
+
+    - name: Set LAdir variable
+      replace:
+        path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+        regexp: '^LAdir\s*=.*'
+        replace: 'LAdir        = $(HOME)/opt/openblas'
+
+    - name: Set LAinc variable
+      replace:
+        path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+        regexp: '^LAinc\s*=.*'
+        replace: 'LAinc        ='
+
+    - name: Set LAlib variable
+      replace:
+        path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+        regexp: '^LAlib\s*=.*'
+        replace: 'LAlib        = $(LAdir)/lib/libopenblas.a -lm'
+
+    - name: Set CC variable
+      replace:
+        path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+        regexp: '^CC\s*=.*'
+        replace: 'CC           = mpicc'
+
+    - name: Set CCFLAGS variable
+      replace:
+        path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+        regexp: '^CCFLAGS\s*=.*'
+        replace: 'CCFLAGS      = $(HPL_DEFS) -O3 -march=native -mtune=native -fopenmp -fomit-frame-pointer -funroll-loops -W -Wall'
+
+    - name: Set LDFLAGS variable
+      replace:
+        path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+        regexp: '^LDFLAGS\s*=.*'
+        replace: 'LDFLAGS      = -O3 -fopenmp'
+
+    - name: Set LINKER variable
+      replace:
+        path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+        regexp: '^LINKER\s*=.*'
+        replace: 'LINKER       = $(CC)'
+
+- name: Compile HPL
+  hosts: headnode
+  gather_facts: yes
+  tasks:
+    - name: Run make 
+      shell: |
+        export PATH=~/opt/openmpi/bin:~/opt/openblas:$PATH
+        export LD_LIBRARY_PATH=~/opt/openmpi/lib:~/opt/openblas/lib:$LD_LIBRARY_PATH
+        export MPI_HOME=~/opt/openmpi
+        make arch=compile_BLAS_MPI
+      args:
+        chdir: "{{ ansible_env.HOME }}/hpl"  # Directory containing the Makefile
+
+
+- name: Create HPL.dat file with specific content
+  hosts: headnode
+  gather_facts: yes
+  tasks:
+    - name: Write HPL.dat file
+      copy:
+        dest: "{{ ansible_env.HOME }}/hpl/bin/compile_BLAS_MPI/HPL.dat"  # Specify the desired path for HPL.dat
+        content: |
+            HPLinpack benchmark input file
+            Innovative Computing Laboratory, University of Tennessee
+            HPL.out      output file name (if any) 
+            6            device out (6=stdout,7=stderr,file)
+            1            # of problems sizes (N)
+            21976         Ns
+            1            # of NBs
+            164           NBs
+            0            PMAP process mapping (0=Row-,1=Column-major)
+            1            # of process grids (P x Q)
+            4            Ps
+            4            Qs
+            16.0         threshold
+            1            # of panel fact
+            2            PFACTs (0=left, 1=Crout, 2=Right)
+            1            # of recursive stopping criterium
+            4            NBMINs (>= 1)
+            1            # of panels in recursion
+            2            NDIVs
+            1            # of recursive panel fact.
+            1            RFACTs (0=left, 1=Crout, 2=Right)
+            1            # of broadcast
+            1            BCASTs (0=1rg,1=1rM,2=2rg,3=2rM,4=Lng,5=LnM)
+            1            # of lookahead depth
+            1            DEPTHs (>=0)
+            2            SWAP (0=bin-exch,1=long,2=mix)
+            64           swapping threshold
+            0            L1 in (0=transposed,1=no-transposed) form
+            0            U  in (0=transposed,1=no-transposed) form
+            1            Equilibration (0=no,1=yes)
+            8            memory alignment in double (> 0)
+  
+- name: Run HPL across nodes
+  hosts: headnode
+  gather_facts: yes
+  tasks:
+    - name: Create a hostfile for mpirun
+      copy:
+        dest: "{{ ansible_env.HOME }}/hpl/bin/compile_BLAS_MPI/hostfile"
+        content: |
+          {% for host in groups['compute'] %}
+          {{ hostvars[host]['ansible_host'] }} slots=8
+          {% endfor %}
+      delegate_to: localhost
+
+    - name: Execute HPL benchmark
+      shell: | 
+        export PATH=~/opt/openmpi/bin:~/opt/openblas:$PATH
+        export LD_LIBRARY_PATH=~/opt/openmpi/lib:~/opt/openblas/lib:$LD_LIBRARY_PATH
+        export MPI_HOME=~/opt/openmpi
+        mpirun -np 16 --hostfile ~/hpl/bin/compile_BLAS_MPI/hostfile --prefix ~/opt/openmpi ~/hpl/bin/compile_BLAS_MPI/xhpl
+      args:
+        executable: /bin/bash
+        chdir: "{{ ansible_env.HOME }}/hpl/bin/compile_BLAS_MPI"
+      register: hpl_result
+
+    - name: Display HPL output
+      debug:
+        var: hpl_result.stdout
+
+    - name: Save HPL result to a ~/hpl/bin/compile_BLAS_MPI/hpl_output.txt
+      copy:
+         dest: "{{ ansible_env.HOME }}/hpl/bin/compile_BLAS_MPI/hpl_output.txt"
+         content: "{{ hpl_result.stdout }}"
+      delegate_to: localhost
+
