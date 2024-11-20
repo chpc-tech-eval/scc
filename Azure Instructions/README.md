@@ -2,4 +2,4 @@
 
 Step 1:
 Create a free azure account using this link: https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account?icid=azurefreeaccount
-Once created you should be taken to this page: <img alt="Screenshot of home page on azure." src="./resources/azure_homepage.png" />
+Once created you should be taken to this page: <img alt="Screenshot of home page on azure." src="./resources/azurehomepage.png" />
