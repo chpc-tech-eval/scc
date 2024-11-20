@@ -20,7 +20,7 @@ The key should then appear on your dashboard.
 >If it takes time to appear, keep refreshing.
 
 <b>Launching a New Instances</b>
-From the Azure dashboard, go to Virtual machines -> Create -> Azure virtual machine.
+From the Azure dashboard, go to <ins>Virtual machines -> Create -> Azure virtual machine.</ins>
 Within the current window assign an appropriate name which will describe what the VM's intended purpose is meant to be and help you to remember it's primary function.              
 
 >[!TIP]
