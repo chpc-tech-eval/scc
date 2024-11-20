@@ -15,7 +15,9 @@ You may need to create a new resource group. Under Resource group simply create 
 
 Fill in all the fields with your groups information and Upload the newly created public key 'id_ed25519.pub'. <img alt="Creating an SSH key page 1." src="./create_SSHKey.png"/>
 Click **review + create.** Ensure it passes validation and click create.<img alt="Creating an SSH key page 2." src="./SSHKey_create.png"/>
-The key should then appear on your dashboard (if it takes time to appear, keep refreshing).
+The key should then appear on your dashboard.
+>[!TIP]
+>If it takes time to appear, keep refreshing.
 
 <b>Launching a New Instances</b>
 From the Azure dashboard, go to Virtual machines -> Create -> Azure virtual machine.
