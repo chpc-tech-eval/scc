@@ -9,7 +9,7 @@ Once created you should be taken to this page: <img alt="Screenshot of home page
 
 <b>Generating SSH keys</b>
 
-Navigate to SSH keys using the search bar .This page will appear:<img alt="Screenshot of SSH keys page on azure." src="./SSHkeys_page.png"/> **click Create SSH key.** 
+Navigate to SSH keys using the search bar .This page will appear:<img alt="Screenshot of SSH keys page on azure." src="./SSHkeys_page.png"/> click **Create SSH key.** 
 
 You may need to create a new resource group. Under Resource group simply create a new group with an appropriate name which can be associated with all future tasks for this project. 
 
