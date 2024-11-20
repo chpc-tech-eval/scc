@@ -14,12 +14,14 @@ Navigate to SSH keys using the search bar .This page will appear:<img alt="Scree
 You may need to create a new resource group. Under Resource group simply create a new group with an appropriate name which can be associated with all future tasks for this project. 
 
 Fill in all the fields with your groups information and Upload the newly created public key 'id_ed25519.pub'. <img alt="Creating an SSH key page 1." src="./create_SSHKey.png"/>
-Click review + create. Ensure it passes validation and click create.<img alt="Creating an SSH key page 2." src="./SSHKey_create.png"/>
+Click **review + create.** Ensure it passes validation and click create.<img alt="Creating an SSH key page 2." src="./SSHKey_create.png"/>
 The key should then appear on your dashboard (if it takes time to appear, keep refreshing).
 
 <b>Launching a New Instances</b>
 From the Azure dashboard, go to Virtual machines -> Create -> Azure virtual machine.
-Within the current window assign an appropriate name which will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be <b>headnode</b>.
+Within the current window assign an appropriate name which will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. 
+---
+>In this case, a suitable name for your instance would be <b>headnode</b>.
 <img alt="Creating a VM (headnode)." src="./headnode_create.png"/>
 Under Resource Group, pick the one created earlier and under Region, pick South Africa.
 
