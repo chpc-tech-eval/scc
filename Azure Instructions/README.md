@@ -9,6 +9,45 @@ Once created you should be taken to this page: <img alt="Screenshot of home page
 
 ### Generating SSH key
 
+ SSH keys allows you to authenticate against a remote SSH server, without the use of a password.
+
+> [!IMPORTANT]
+> When you are presented with foldable code blocks, you must pick and implement only **one** of the options presented, which is suitable to your current configuration and/or circumstance.
+
+> [!TIP]
+> A number [encryption algorithms](https://en.wikipedia.org/wiki/Public-key_cryptography) exist for securing your SSH connections. [Elliptic Curve Digital Signature Algorithm (ECDSA)](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) is secure and simple enough should you need to copy the public key manually. Nonetheless, you are free to use whichever algorithm you choose to.
+
+From the `Start` menu, open the Windows `PowerShell` application:
+These commands are the same if you are commenting from a Linux, Unix or MacOS Terminal, and Moba XTerm.
+1. Generate an SSH key pair:
+   ```bash
+   ssh-keygen -t ed25519
+   ```
+1. When prompted to _"Enter file in which to save the key"_, press `Enter`,
+1. When prompted to _"Enter a passphrase"_, press `Enter`, and `Enter` again to verify it.
+
+   <p align="center"><img alt="Windows Powershell SSH Keygen." src="./resources/windows_powershell_sshkeygen.png" width=900 /></p>
+
+> [!TIP]
+> Below is an example using Windows PuTTY. It is hidden and you must click the heading to reveal it's contents. You are strongly encourage to use either Windows PowerShell or Moba XTerm instead.
+
+<details>
+<summary>Windows PuTTY</summary>
+
+[PuTTY](https://putty.org/) is a Windows-based SSH and Telnet client. From the `Start` menu, open the `PuTTYgen` application.
+1. Generate an SSH key pair using the `Ed25519` encryption algorithm.
+1. Generate the necessary entropy by moving your mouse pointer over the `Key` section until the green bar is filled.
+   <p align="center"><img alt="PuTTYgen Generate." src="./resources/windows_puttygen_generate.png" width=900 /></p>
+1. Proceed to **Save** both the `Private Key` and `Public Key`.
+   <p align="center"><img alt="PuTTYgen Generate Save." src="./resources/windows_puttygen_save.png" width=900 /></p>
+</details>
+
+You **MUST** take note of the location and paths to **BOTH** your public and private keys. Your public key will be shared and distributed to the SSH servers you want to authenticate against. Your private key must be kept secure within your team, and must not be shared or distributed to anyone.
+
+Once you have successfully generated an SSH key pair, navigate to `Compute` &rarr; `Key Pairs` and import the **public** key `id_ed25519.pub` into your Team's Project Workspace within OpenStack.
+
+<p align="center"><img alt="Import id_25519.pub into OpenStack." src="./resources/openstack_import_public_key_highlight.png" width=900 /></p>
+
 Navigate to SSH keys using the search bar .This page will appear:<img alt="Screenshot of SSH keys page on azure." src="./SSHkeys_page.png"/> Click **Create SSH key.** 
 
 You may need to create a new resource group. Under Resource group simply create a new group with an appropriate name which can be associated with all future tasks for this project. 
