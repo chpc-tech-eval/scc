@@ -88,3 +88,8 @@ Then navigate to the newly created disk and click **+ Create VM.** Ensure that e
 <img alt="Step two of creating the VM." src="./create_vm.png"/>
 
 Navigate back to the Virtual Machine dashboard and your second compute node should be <b>deployed and running.</b> 
+
+
+1. James Madison
+2. James Monroe
+3. John Quincy Adams
