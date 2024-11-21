@@ -31,7 +31,7 @@ Within the current window assign an appropriate name which will describe what th
 <img alt="Creating a VM (headnode)." src="./headnode_create.png"/>
 Under Resource Group, pick the one created earlier and under Region, pick South Africa.
 
-### Linux Flavours and Distributions</
+### Linux Flavours and Distributions
 Under Image select the desired distribution.
 
 ### Azure Instance Sizes
