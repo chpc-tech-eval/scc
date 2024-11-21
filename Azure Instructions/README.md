@@ -22,7 +22,7 @@ The key should then appear on your dashboard.
 >[!TIP]
 >If it takes time to appear, keep refreshing.
 
-<b>Launching a New Instances</b>
+### Launching a New Instances
 From the Azure dashboard, go to <ins>Virtual machines -> Create -> Azure virtual machine.</ins>
 Within the current window assign an appropriate name which will describe what the VM's intended purpose is meant to be and help you to remember it's primary function.              
 
@@ -54,7 +54,7 @@ Under *Networking*, ensure the following options are configured:
     1.*Virtual network* is set to <b>your team’s network</b> 
     2.*Subnet* can be the default 
     3.*NIC network security group* is set to <ins>Advanced</ins> and the corresponding group is applied
-    
+
 <img alt="Networking and Security." src="./setting_up_network.png"/>
 
 >[!IMPORTANT]
