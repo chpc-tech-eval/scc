@@ -46,17 +46,17 @@ Still under the Basics tab, associate the SSH Key that you created earlier to yo
 ## Disks,Networking and Security 
 ### Disks 
 Under *Disks*, ensure that the following options are configured:  
-    1.*OS Disk Type is set to <ins>Standard SSD</ins>,*
-    2.*Delete with VM is NOT checked*
+1. *OS Disk Type is set to <ins>Standard SSD</ins>,*
+2. *Delete with VM is NOT checked*
 
 <img alt="Disks." src="./setting_up_disks.png"/>
 
 ### Networking and Security
 Under *Networking*, ensure the following options are configured:
-    1.*Virtual network* is set to <b>your team’s network</b> 
-    2.*Subnet* can be the default 
-    3.*NIC network security group* is set to <ins>Advanced</ins> and the corresponding group is applied
-
+1. Virtual network* is set to <b>your team’s network</b> 
+2. *Subnet* can be the default 
+3. *NIC network security group* is set to <ins>Advanced</ins> and the corresponding group is applied
+    
 <img alt="Networking and Security." src="./setting_up_network.png"/>
 
 >[!IMPORTANT]
@@ -90,6 +90,3 @@ Then navigate to the newly created disk and click **+ Create VM.** Ensure that e
 Navigate back to the Virtual Machine dashboard and your second compute node should be <b>deployed and running.</b> 
 
 
-1. James Madison
-2. James Monroe
-3. John Quincy Adams
