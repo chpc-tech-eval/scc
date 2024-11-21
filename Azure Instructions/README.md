@@ -5,7 +5,7 @@
 
 Create a free azure account using this link: <a href="https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account?icid=azurefreeaccount">Sign Up for Azure</a>
 
-Once created you should be taken to this page:<p align="center"><img alt="Screenshot of home page on azure." src="./azurehomepage.png"width=900/></p>
+Once created you should be taken to this page:<p align="center"><img alt="Screenshot of home page on azure." src="./azurehomepage.png" width=900 /></p>
 
 ### Generating SSH key
 
