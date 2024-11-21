@@ -1,12 +1,13 @@
 
 # Creating Azure Account
-## <b>Steps to creating an Azure Account</b>
+
+### Steps to creating an Azure Account
 
 Create a free azure account using this link: <a href="https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account?icid=azurefreeaccount">Sign Up for Azure</a>
 
 Once created you should be taken to this page: <img alt="Screenshot of home page on azure." src="./azurehomepage.png"/>
 
-## Generating SSH key
+### Generating SSH key
 
 Navigate to SSH keys using the search bar .This page will appear:<img alt="Screenshot of SSH keys page on azure." src="./SSHkeys_page.png"/> Click **Create SSH key.** 
 
@@ -16,6 +17,7 @@ Fill in all the fields with your groups information and Upload the newly created
 
 Click **review + create.** 
 Ensure it passes validation and click create.
+
 <img alt="Creating an SSH key page 2." src="./SSHkey_create.png"/>
 
 The key should then appear on your dashboard.
