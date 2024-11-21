@@ -76,7 +76,7 @@ Under Resource Group, pick the one created earlier and under Region, pick <b>Sou
 > [!NOTE]
 > Below is a summary of Linux Distributions. It is hidden and you must click the heading to reveal it's contents.
 <details>
-<summary>Summary of Linux Distributions</summary> 
+<summary><b>Summary of Linux Distributions</b></summary> 
 
 A Linux distribution, is a collection of software that is at the very leased comprised of a [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) and a [package manager](https://en.wikipedia.org/wiki/Package_manager). A package manager is responsible for automating the process of installing, configuring, upgrading, downgrading and removing software programs and associated components from a computer's operating system.
 
