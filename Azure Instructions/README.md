@@ -28,10 +28,10 @@ Within the current window assign an appropriate name which will describe what th
 <img alt="Creating a VM (headnode)." src="./headnode_create.png"/>
 Under Resource Group, pick the one created earlier and under Region, pick South Africa.
 
-<b>Linux Flavours and Distributions<b>
+<b>Linux Flavours and Distributions</b>
 Under Image select the desired distribution.
 
-<b>Azure Instance Sizes<b>
+<b>Azure Instance Sizes</b>
 Under Size click the desired instance size.
 
 <b>Key Pair</b>
