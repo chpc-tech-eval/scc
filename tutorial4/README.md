@@ -23,6 +23,7 @@
     1. [Reuse `providers.tf` and `main.tf` Terraform Configurations](#reuse-providerstf-and-maintf-terraform-configurations)
     1. [Create `.circleci/config.yml` File and `push` Project to GitHub](#create-circleciconfigyml-file-and-push-project-to-github)
     1. [Create CircleCI Account and Add Project](#create-circleci-account-and-add-project)
+    1. [How to use Ansible and GitHub Actions to run HPL](#how-to-use-ansible-and-github-actions-to-run-hpl)
 1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
     1. [Prerequisites](#prerequisites)
     1. [Head Node Configuration (Server)](#head-node-configuration-server)
@@ -1056,6 +1057,32 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
 > Navigate to your Sebowa OpenStack workspace to ensure that they deployment was successful.
 >
 > Consider how you could streamline this process even further using preconfigured instance snapshots, as well as  Ansible after your instances have been deployed.
+
+# How to use Ansible and GitHub Actions to run HPL
+
+We want to use ansible to automate our deployment of scripts and applications.
+
+It would be advantages to modify the /etc/hosts file to use as a type of DNS services, so we dont have to work/remember ip address but can work with nodes names instead.
+
+>sudo nano /etc/hosts
+
+add all the nodes in the following format
+
+```
+#IP		      NAME
+10.100.50.x	  head
+10.100.50.x	  com1
+```
+
+One last pre-requisite is to make sure the user running ansible can ssh between nodes using its ssh-keys.
+
+>ssh com1
+
+the above command should work to jump from the head node to com1 for example. If the same user and its keys are loaded correctly.
+
+If ansible was installed and setup correctly as showed in [tutorial 2](../tutorial2/README.md), we can continue onto the next steps.
+
+Running ansible scripts on the cluster is very simple, 
 
 # Slurm Scheduler and Workload Manager
 
