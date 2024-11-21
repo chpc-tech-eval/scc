@@ -25,7 +25,7 @@ These commands are the same if you are commenting from a Linux, Unix or MacOS Te
 1. When prompted to _"Enter file in which to save the key"_, press `Enter`,
 1. When prompted to _"Enter a passphrase"_, press `Enter`, and `Enter` again to verify it.
 
-   <p align="center"><img alt="Windows Poweshell SSH Keygen.." src="./windows_powershell_sshkeygen.png"/></p>
+   <p align="center"><img alt="Windows Poweshell SSH Keygen.." src="./resources/windows_powershell_sshkeygen.png"/></p>
 
 > [!TIP]
 > Below is an example using Windows PuTTY. It is hidden and you must click the heading to reveal it's contents. You are strongly encourage to use either Windows PowerShell or Moba XTerm instead.
@@ -36,10 +36,10 @@ These commands are the same if you are commenting from a Linux, Unix or MacOS Te
 [PuTTY](https://putty.org/) is a Windows-based SSH and Telnet client. From the `Start` menu, open the `PuTTYgen` application.
 1. Generate an SSH key pair using the `Ed25519` encryption algorithm.
 1. Generate the necessary entropy by moving your mouse pointer over the `Key` section until the green bar is filled.
-   <p align="center"><img alt="PuTTYgen Generate." src="./windows_puttygen_generate.png" width=900 /></p>
+   <p align="center"><img alt="PuTTYgen Generate." src="./resources/windows_puttygen_generate.png" width=900 /></p>
 
 1. Proceed to **Save** both the `Private Key` and `Public Key`.
-   <p align="center"><img alt="PuTTYgen Generate Save." src="./windows_puttygen_save.png" width=900 /></p>
+   <p align="center"><img alt="PuTTYgen Generate Save." src="./resources/windows_puttygen_save.png" width=900 /></p>
 </details>
 
 You **MUST** take note of the location and paths to **BOTH** your public and private keys. Your public key will be shared and distributed to the SSH servers you want to authenticate against. Your private key must be kept secure within your team, and must not be shared or distributed to anyone.
