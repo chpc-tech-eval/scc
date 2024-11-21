@@ -37,3 +37,9 @@ Under Size click the desired instance size.
 <b>Key Pair<b>
 Still under the Basics tab, associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance.
 <img alt="Key Pair screen." src="./key_pair.png"/>
+
+## Disks,Networking and Security 
+### Disks 
+<img alt="Disks." src="./setting_up_disks.png"/>
+
+### Networking 
