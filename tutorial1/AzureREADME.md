@@ -50,12 +50,12 @@ Navigate to SSH keys using the search bar .This page will appear:<img alt="Scree
 
 You may need to create a new resource group. Under Resource group simply create a new group with an appropriate name which can be associated with all future tasks for this project. 
 
-Fill in all the fields with your groups information and Upload the newly created public key 'id_ed25519.pub'. <img alt="Creating an SSH key page 1." src="./create_SSHKey.png"/>
+Fill in all the fields with your groups information and Upload the newly created public key 'id_ed25519.pub'. <img alt="Creating an SSH key page 1." src="./resources/create_SSHKey.png"/>
 
 Click **review + create.** 
 Ensure it passes validation and click create.
 
-<img alt="Creating an SSH key page 2." src="./SSHkey_create.png"/>
+<img alt="Creating an SSH key page 2." src="./resources/SSHkey_create.png"/>
 
 The key should then appear on your dashboard.
 >[!TIP]
@@ -67,7 +67,7 @@ Within the current window assign an appropriate name which will describe what th
 
 >[!TIP]
 >In this case, a suitable name for your instance would be <b>headnode</b>.
-<img alt="Creating a VM (headnode)." src="./headnode_create.png"/>
+<img alt="Creating a VM (headnode)." src="./resources/headnode_create.png"/>
 Under Resource Group, pick the one created earlier and under Region, pick <b>South Africa.</b>
 
 ### Linux Flavours and Distributions
@@ -120,7 +120,7 @@ An important aspect of system administration is resource monitoring, management 
 
 ### Key Pair 
 Still under the Basics tab, associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance.
-<img alt="Key Pair screen." src="./key_pair.png"/>
+<img alt="Key Pair screen." src="./resources/key_pair.png"/>
 
 ## Disks,Networking and Security 
 ### Disks 
@@ -128,7 +128,7 @@ Under *Disks*, ensure that the following options are configured:
 1. *OS Disk Type is set to `Standard SSD`,*
 2. *Delete with VM is <b>NOT</b> checked*
 
-<img alt="Disks." src="./setting_up_disks.png"/>
+<img alt="Disks." src="./resources/setting_up_disks.png"/>
 
 ### Networking and Security
 Under *Networking*, ensure the following options are configured:
@@ -136,11 +136,11 @@ Under *Networking*, ensure the following options are configured:
 2. *Subnet* can be the default 
 3. *NIC network security group* is set to `Advanced` and the corresponding group is applied
     
-<img alt="Networking and Security." src="./setting_up_network.png"/>
+<img alt="Networking and Security." src="./resources/setting_up_network.png"/>
 
 >[!NOTE]
 >If your team does not have a <b>Virtual Network or Security Group<> already configured, simply create</b> one at this stage which can be related to all future creations under the same project. 
 
 >[!IMPORTANT]
 >Verify that your instance was successfully Deployed and Launched
-<img alt="Headnode Status." src="./headnode_status.png"/>
+<img alt="Headnode Status." src="./resources/headnode_status.png"/>
