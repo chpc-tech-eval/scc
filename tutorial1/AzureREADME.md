@@ -74,7 +74,7 @@ Under Resource Group, pick the one created earlier and under Region, pick <b>Sou
 
 <p align="center"><img alt="Screenshot of home page on azure." src="./resources/distro.png" width=900 /></p>
 
-**Under Image select the desired distribution.**
+Under **Image** select the *desired distribution.*
 
 > [!NOTE]
 > Below is a summary of Linux Distributions. It is hidden and you must click the heading to reveal it's contents.
@@ -121,7 +121,7 @@ An important aspect of system administration is resource monitoring, management 
 
 <p align="center"><img alt="Screenshot of home page on azure." src="./resources/size.png" width=900 /></p>
 
-**Under Size click the desired instance size.**
+Under **Size** click the *desired instance size.*
 
 ### Key Pair 
 Still under the Basics tab, associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance.
