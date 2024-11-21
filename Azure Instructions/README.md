@@ -45,6 +45,7 @@ Still under the Basics tab, associate the SSH Key that you created earlier to yo
 ### Networking and Security
 <img alt="Networking and Security." src="./setting_up_network.png"/>
 
+>[!IMPORTANT]
 <b> Verify that your instance was successfully Deployed and Launched<b>
 <img alt="Headnode Status." src="./headnode_status.png"/>
 
