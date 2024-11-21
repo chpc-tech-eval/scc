@@ -53,7 +53,7 @@ Under *Disks*, ensure that the following options are configured:
 
 ### Networking and Security
 Under *Networking*, ensure the following options are configured:
-1. Virtual network* is set to <b>your team’s network</b> 
+1. *Virtual network* is set to <b>your team’s network</b> 
 2. *Subnet* can be the default 
 3. *NIC network security group* is set to <ins>Advanced</ins> and the corresponding group is applied
     
