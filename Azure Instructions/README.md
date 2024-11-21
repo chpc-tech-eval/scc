@@ -25,7 +25,7 @@ The key should then appear on your dashboard.
 >If it takes time to appear, keep refreshing.
 
 ### Launching a New Instances
-From the Azure dashboard, go to <ins>Virtual machines -> Create -> Azure virtual machine.</ins>
+From the Azure dashboard, go to `Virtual machines -> Create -> Azure virtual machine.`
 Within the current window assign an appropriate name which will describe what the VM's intended purpose is meant to be and help you to remember it's primary function.              
 
 >[!TIP]
@@ -60,7 +60,7 @@ Under *Networking*, ensure the following options are configured:
 <img alt="Networking and Security." src="./setting_up_network.png"/>
 
 >[!NOTE]
->If your team does not have a Virtual Network or Security Group already configured, simply create one at this stage which can be related to all future creations under the same project. 
+>If your team does not have a <b>Virtual Network or Security Group<> already configured, simply create</b> one at this stage which can be related to all future creations under the same project. 
 
 >[!IMPORTANT]
 >Verify that your instance was successfully Deployed and Launched
@@ -68,7 +68,7 @@ Under *Networking*, ensure the following options are configured:
 
 # Creating a Snapshot
 
-At this point you are ready to run HPL on your cluster with two compute nodes. From your Virtual Machine dasboard on Azure, navigate to the node which you wish to create a snapshot of. Go to <b><ins> Disk -> Name of the actual Disk -> +Create Snapshot.</ins></b>
+At this point you are ready to run HPL on your cluster with two compute nodes. From your Virtual Machine dasboard on Azure, navigate to the node which you wish to create a snapshot of. Go to <b>`Disk -> Name of the actual Disk -> +Create Snapshot.`</b>
 <img alt="ComputeNode1 Disks." src="./computenode_disks.png"/>
 
 Once there, simply choose an adequate Name for the snapshot, ensure that the *Snapshot Type* is ‘Full’ and 
@@ -90,6 +90,6 @@ Then navigate to the newly created disk and click **+ Create VM.** Ensure that e
 
 <img alt="Step two of creating the VM." src="./create_vm.png"/>
 
-Navigate back to the Virtual Machine dashboard and your second compute node should be <b>deployed and running.</b> 
+Navigate back to the Virtual Machine dashboard and your second compute node should be<b>deployed and running.</b> 
 
 
