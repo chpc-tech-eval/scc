@@ -73,23 +73,8 @@ Under Resource Group, pick the one created earlier and under Region, pick <b>Sou
 
 ### Linux Flavours and Distributions
 
-After configuring your new VM name under instance details, you will need to select the template that will be used to create the instance from the *Source* menu. Before selection a [Linux Operating System Distribution](https://en.wikipedia.org/wiki/Linux_distribution) for your new instance, ensure that the default *Source* options are correctly configured:
-1. *Select Boot Source* is set to `Image`,
-1. *Create New Volume* is `Yes`,
-1. *Delete Volume on Instance Delete* is `No`, and
-1. *Volume Size (GB)* will be set when you configure the instance flavor.
-
-There are a number of considerations that must be taken into account when selecting a Linux distribution that will be appropriate for your requirements and needs. [Since June 2017](https://www.top500.org/statistics/details/osfam/1/) **all** of the systems on the Top500 list make use of a Linux-based Operating System. Familiarity and proficiency with Linux-based operating systems and their derivatives is a mandatory requirement for gaining expertise in Software Development, Systems Administration and Networking.
-
-An argument could be made, that the best way to acquire Linux systems administration skills, is to make daily use of a Linux Distribution by running it on your personal laptop, desktop or workstation at home / school.
-
-This is something for you and your team to investigate after the competition and will not be covered in these tutorials. If you feel that you are not comfortable completely migrating to a Linux-based environment, there are a number of methods that can be implemented to assist you in transitioning from Windows to a Linux (or macOS) based *'Daily Driver*:
-* Dual-boot Linux alongside your Windows environment,
-* Windows Subsystem for Linux [(WSL)](https://learn.microsoft.com/en-us/linux/install),
-* Running Linux VM's locally within your Windows environment,
-* Running Linux VM's through cloud-based solutions, and Virtual Private Servers [(VPS)](https://en.wikipedia.org/wiki/Virtual_private_server), as you are doing for the competition. There are many commercial and free-tier services available, e.g. [Amazon AWS](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=*all), [Google Cloud](https://cloud.google.com/free) and [Microsoft Azure](https://azure.microsoft.com/en-us/free).
-
-### Summary of Linux Distributions
+<details>
+<summary>Summary of Linux Distributions</summary> 
 
 A Linux distribution, is a collection of software that is at the very leased comprised of a [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) and a [package manager](https://en.wikipedia.org/wiki/Package_manager). A package manager is responsible for automating the process of installing, configuring, upgrading, downgrading and removing software programs and associated components from a computer's operating system.
 
@@ -119,58 +104,17 @@ The following list provides a few examples of Linux distros that *may* be availa
 * **Portage** is a package management system originally created for and used by  [Gentoo Linux](https://www.gentoo.org/) and also by ChromeOS. Definitely not recommended for beginners.
 
 * **Source-Based**: [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/) is a project that teaches you how to create your own Linux system from source code, using another Linux system. Learn how to install, configure and customize LFS and BLFS, and use tools for automation and management. Once you are **very** familiar with Linux, LFS is an excellent medium term side project that you peruse in you own time. Only Linux experts need apply.
-
-Type *"Rocky"* in the search bar, and select the **Rocky-9.3** cloud image as a boot source.
-
+</details>
 
 **Under Image select the desired distribution.**
 
 ### Azure Instance Sizes
 
-An important aspect of system administration is resource monitoring, management and utilization. Each Team will be required to manage their available resources and ensure that the resources of their clusters are utilized in such a way as to maximize system performance. You have been allocated a pool of resources which you will need to decide how you are going to allocate the sizing of the compute, memory and storage across your head node and compute node(s).
-
-1. Compute (vCPUs)
-   You have been allocated a pool totaling **18 vCPUs**, which would permit the following configurations:
-   1. Head Node (2 vCPUs) and 2 x Compute Nodes (8 vCPUs each),
-   1. Head node (6 vCPUs) and 2 x Compute Nodes (6 vCPUs each),
-   1. Head node (10 vCPUs) and 1 x Compute Node (8 vCPUs).
-
-1. Memory (RAM)
-   You have been allocated a pool totaling **36 GB** of RAM, which would permit the following configurations:
-   1. Head Node (4 GB RAM) and 2 x Compute Nodes (16 GB RAM each),
-   1. Head node (12 GB RAM) and 2 x Compute Nodes (12 GB RAM each),
-   1. Head node (20 GB RAM) and 1 x Compute Node (16 GB RAM).
-
-1. Storage (DISK)
-   You have been allocated a pool of 50 GB of storage, which can be distributed in the following configurations:
-   1. Head Node (60 GB of storage) and 2 x Compute Nodes (10 GB of storage each),
-   1. Head Node (60 GB of storage) and 2 x Compute Nodes (10 GB of storage each), and
-   1. Head Node (60 GB of storage) and 1 x Compute Node (10 GB of storage).
-
-The following table summarizes the various permutations and allocations that can be used for designing your clusters within your Team's Project Workspace on Sebowa's OpenStack cloud platform.
-
-| Cluster Configurations     | Instance Flavor | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
-|----------------------------|:---------------:|:---------------:|:------------:|:--------------:|
-|                            |                 |                 |              |                |
-| Dedicated Head Node        | scc24.C2.M4.S60    | 2               | 4 GB         | 60 GB          |
-| Compute Node 01            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
-| Compute Node 02            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
-|                            |                 |                 |              |                |
-|                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C6.M12.S60    | 6               | 12 GB        | 60 GB          |
-| Compute Node 01            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
-| Compute Node 02            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
-|                            |                 |                 |              |                |
-|                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C10.M20.S60   | 10              | 20 GB        | 60 GB          |
-| Compute Node 01            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
-|                            |                 |                 |              |                |
-
-Type *"scc"* in the search bar and select the **scc24.C2.M4.S60** instance flavor.
+An important aspect of system administration is resource monitoring, management and utilization. 
 
 
 > [!TIP]
-> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of starting with this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the **scc24.C2.M4.S60** flavor with *2 vCPUs* and *4 GB RAM*.
+> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System).
 
 **Under Size click the desired instance size.**
 
