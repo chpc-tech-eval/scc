@@ -47,7 +47,7 @@ Still under the Basics tab, associate the SSH Key that you created earlier to yo
 ### Disks 
 Under *Disks*, ensure that the following options are configured:  
 1. *OS Disk Type is set to `Standard SSD`,*
-2. *Delete with VM is NOT checked*
+2. *Delete with VM is <b>NOT</b> checked*
 
 <img alt="Disks." src="./setting_up_disks.png"/>
 
