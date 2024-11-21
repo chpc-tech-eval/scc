@@ -79,14 +79,14 @@ click **Review + Create.**
 
 <img alt="Creating a snapshot." src="./create_snapshot.png"/>
 
-Creating the actual VM from the snapshot requires two steps. First navigate to the snapshot and click **+ Create Disk.** 
+Creating the actual VM from the snapshot requires two steps. First navigate to the snapshot and click **`+ Create Disk.`**
 
 >[!TIP]
 >Simply choose an adequate name (no other changes need to be made) when creating the disk. 
 
 <img alt="Step one of creating the VM." src="./create_disk.png"/>
 
-Then navigate to the newly created disk and click **+ Create VM.** Ensure that everything is set up as in Tutorial 1, choosing an adequate name once again, and then *Review + Create.*
+Then navigate to the newly created disk and click **`+ Create VM.`** Ensure that everything is set up as in Tutorial 1, choosing an adequate name once again, and then *Review + Create.*
 
 <img alt="Step two of creating the VM." src="./create_vm.png"/>
 
