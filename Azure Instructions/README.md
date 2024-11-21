@@ -1,4 +1,3 @@
-<img alt="Diagram loosely describing process behind browsing to Google.com. You have no information about the computers and servers behind 72.14.222.1, just as Google has no information about your workstation’s internal IP." src="./resources/browsing_internet_light.png" />
 
 # Creating Azure Account
 ## <b>Steps to creating an Azure Account</b>
@@ -7,14 +6,17 @@ Create a free azure account using this link: <a href="https://azure.microsoft.co
 
 Once created you should be taken to this page: <img alt="Screenshot of home page on azure." src="./azurehomepage.png"/>
 
-<b>Generating SSH keys</b>
+## Generating SSH key
 
-Navigate to SSH keys using the search bar .This page will appear:<img alt="Screenshot of SSH keys page on azure." src="./SSHkeys_page.png"/> click **Create SSH key.** 
+Navigate to SSH keys using the search bar .This page will appear:<img alt="Screenshot of SSH keys page on azure." src="./SSHkeys_page.png"/> Click **Create SSH key.** 
 
 You may need to create a new resource group. Under Resource group simply create a new group with an appropriate name which can be associated with all future tasks for this project. 
 
 Fill in all the fields with your groups information and Upload the newly created public key 'id_ed25519.pub'. <img alt="Creating an SSH key page 1." src="./create_SSHKey.png"/>
-Click **review + create.** Ensure it passes validation and click create.<img alt="Creating an SSH key page 2." src="./SSHKey_create.png"/>
+
+Click **review + create.** 
+Ensure it passes validation and click create.
+<img alt="Creating an SSH key page 2." src="./SSHkey_create.png"/>
 The key should then appear on your dashboard.
 >[!TIP]
 >If it takes time to appear, keep refreshing.
@@ -28,18 +30,20 @@ Within the current window assign an appropriate name which will describe what th
 <img alt="Creating a VM (headnode)." src="./headnode_create.png"/>
 Under Resource Group, pick the one created earlier and under Region, pick South Africa.
 
-<b>Linux Flavours and Distributions</b>
+### Linux Flavours and Distributions</
 Under Image select the desired distribution.
 
-<b>Azure Instance Sizes</b>
+### Azure Instance Sizes
 Under Size click the desired instance size.
 
-<b>Key Pair</b>
+### Key Pair 
 Still under the Basics tab, associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance.
 <img alt="Key Pair screen." src="./key_pair.png"/>
 
 ## Disks,Networking and Security 
 ### Disks 
+Unde *Disks*, ensure that the following options are configured:  
+1.*OS Disk Type is set to Standard SSD,*
 <img alt="Disks." src="./setting_up_disks.png"/>
 
 ### Networking and Security
