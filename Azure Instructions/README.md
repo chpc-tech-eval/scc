@@ -55,7 +55,7 @@ Under *Disks*, ensure that the following options are configured:
 Under *Networking*, ensure the following options are configured:
 1. *Virtual network* is set to <b>your team’s network</b> 
 2. *Subnet* can be the default 
-3. *NIC network security group* is set to <ins>Advanced</ins> and the corresponding group is applied
+3. *NIC network security group* is set to `#Advanced` and the corresponding group is applied
     
 <img alt="Networking and Security." src="./setting_up_network.png"/>
 
