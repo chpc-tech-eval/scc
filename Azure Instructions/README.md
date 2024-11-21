@@ -5,7 +5,7 @@
 
 Create a free azure account using this link: <a href="https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account?icid=azurefreeaccount">Sign Up for Azure</a>
 
-Once created you should be taken to this page:<p align="center"><img alt="Screenshot of home page on azure." src="./azurehomepage.png"/></p>
+Once created you should be taken to this page:<p align="center"><img alt="Screenshot of home page on azure." src="./azurehomepage.png"width=900/></p>
 
 ### Generating SSH key
 
@@ -40,7 +40,7 @@ These commands are the same if you are commenting from a Linux, Unix or MacOS Te
    <p align="center"><img alt="PuTTYgen Generate." src="./windows_puttygen_generate.png" width=900 /></p>
 
 1. Proceed to **Save** both the `Private Key` and `Public Key`.
-   <p align="center"><img alt="PuTTYgen Generate Save." src="./resources/windows_puttygen_save.png" width=900 /></p>
+   <p align="center"><img alt="PuTTYgen Generate Save." src="./windows_puttygen_save.png" width=900 /></p>
 </details>
 
 You **MUST** take note of the location and paths to **BOTH** your public and private keys. Your public key will be shared and distributed to the SSH servers you want to authenticate against. Your private key must be kept secure within your team, and must not be shared or distributed to anyone.
