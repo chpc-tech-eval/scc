@@ -5,7 +5,7 @@
 
 Create a free azure account using this link: <a href="https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account?icid=azurefreeaccount">Sign Up for Azure</a>
 
-Once created you should be taken to this page: <img alt="Screenshot of home page on azure." src="./azurehomepage.png"/>
+Once created you should be taken to this page:<p align="center"><img alt="Screenshot of home page on azure." src="./azurehomepage.png"/></p>
 
 ### Generating SSH key
 
@@ -38,6 +38,7 @@ These commands are the same if you are commenting from a Linux, Unix or MacOS Te
 1. Generate an SSH key pair using the `Ed25519` encryption algorithm.
 1. Generate the necessary entropy by moving your mouse pointer over the `Key` section until the green bar is filled.
    <p align="center"><img alt="PuTTYgen Generate." src="./resources/windows_puttygen_generate.png" width=900 /></p>
+
 1. Proceed to **Save** both the `Private Key` and `Public Key`.
    <p align="center"><img alt="PuTTYgen Generate Save." src="./resources/windows_puttygen_save.png" width=900 /></p>
 </details>
