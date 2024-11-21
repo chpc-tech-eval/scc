@@ -17,6 +17,7 @@ Fill in all the fields with your groups information and Upload the newly created
 Click **review + create.** 
 Ensure it passes validation and click create.
 <img alt="Creating an SSH key page 2." src="./SSHkey_create.png"/>
+
 The key should then appear on your dashboard.
 >[!TIP]
 >If it takes time to appear, keep refreshing.
