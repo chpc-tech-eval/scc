@@ -51,13 +51,16 @@ Still under the Basics tab, associate the SSH Key that you created earlier to yo
 
 # Creating a Snapshot
 
-At this point you are ready to run HPL on your cluster with two compute nodes. From your Virtual Machine dasboard on Azure, navigate to the node which you wish to create a snapshot of. Go to <ins> Disk -> Name of the actual Disk -> +Create Snapshot.</ins>
+<b>At this point you are ready to run HPL on your cluster with two compute nodes. From your Virtual Machine dasboard on Azure, navigate to the node which you wish to create a snapshot of. Go to <ins> Disk -> Name of the actual Disk -> +Create Snapshot.</ins></b>
 <img alt="ComputeNode1 Disks." src="./computenode_disks.png"/>
 
-Once there, simply choose an adequate Name for the snapshot, ensure that the Snapshot Type is ‘Full’ and 
+Once there, simply choose an adequate Name for the snapshot, ensure that the *Snapshot Type* is ‘Full’ and 
 click **Review + Create.**
 
 >[!TIP]
 > A suitable name for the snapshot would be computenode2
 
 <img alt="Creating a snapshot." src="./create_snapshot.png"/>
+
+Creating the actual VM from the snapshot requires two steps. First navigate to the snapshot and click **+ Create Disk.** Simply choose an adequate name (no other changes need to be made) when creating the disk. 
+
