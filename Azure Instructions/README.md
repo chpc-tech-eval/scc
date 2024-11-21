@@ -29,7 +29,7 @@ Within the current window assign an appropriate name which will describe what th
 >[!TIP]
 >In this case, a suitable name for your instance would be <b>headnode</b>.
 <img alt="Creating a VM (headnode)." src="./headnode_create.png"/>
-Under Resource Group, pick the one created earlier and under Region, pick South Africa.
+Under Resource Group, pick the one created earlier and under Region, pick <b>South Africa.</b>
 
 ### Linux Flavours and Distributions
 Under Image select the desired distribution.
