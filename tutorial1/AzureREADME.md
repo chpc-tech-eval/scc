@@ -120,7 +120,7 @@ An important aspect of system administration is resource monitoring, management 
 
 ### Key Pair 
 Still under the Basics tab, associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance.
-<img alt="Key Pair screen." src="./resources/key_pair.png"/>
+<img alt="Key Pair screen." src="./resources/resources/key_pair.png"/>
 
 ## Disks,Networking and Security 
 ### Disks 
