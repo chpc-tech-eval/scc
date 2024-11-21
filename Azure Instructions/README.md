@@ -37,7 +37,7 @@ These commands are the same if you are commenting from a Linux, Unix or MacOS Te
 [PuTTY](https://putty.org/) is a Windows-based SSH and Telnet client. From the `Start` menu, open the `PuTTYgen` application.
 1. Generate an SSH key pair using the `Ed25519` encryption algorithm.
 1. Generate the necessary entropy by moving your mouse pointer over the `Key` section until the green bar is filled.
-   <p align="center"><img alt="PuTTYgen Generate." src="./resources/windows_puttygen_generate.png" width=900 /></p>
+   <p align="center"><img alt="PuTTYgen Generate." src="./windows_puttygen_generate.png" width=900 /></p>
 
 1. Proceed to **Save** both the `Private Key` and `Public Key`.
    <p align="center"><img alt="PuTTYgen Generate Save." src="./resources/windows_puttygen_save.png" width=900 /></p>
