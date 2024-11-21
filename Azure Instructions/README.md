@@ -59,6 +59,9 @@ Under *Networking*, ensure the following options are configured:
     
 <img alt="Networking and Security." src="./setting_up_network.png"/>
 
+>[!NOTE]
+>If your team does not have a Virtual Network or Security Group already configured, simply create one at this stage which can be related to all future creations under the same project. 
+
 >[!IMPORTANT]
 >Verify that your instance was successfully Deployed and Launched
 <img alt="Headnode Status." src="./headnode_status.png"/>
