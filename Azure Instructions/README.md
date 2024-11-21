@@ -73,6 +73,8 @@ Under Resource Group, pick the one created earlier and under Region, pick <b>Sou
 
 ### Linux Flavours and Distributions
 
+> [!NOTE]
+> Below is a summary of Linux Distributions. It is hidden and you must click the heading to reveal it's contents.
 <details>
 <summary>Summary of Linux Distributions</summary> 
 
