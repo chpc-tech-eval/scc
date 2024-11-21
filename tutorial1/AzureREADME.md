@@ -72,6 +72,10 @@ Under Resource Group, pick the one created earlier and under Region, pick <b>Sou
 
 ### Linux Flavours and Distributions
 
+<p align="center"><img alt="Screenshot of home page on azure." src="./resources/distro.png" width=900 /></p>
+
+**Under Image select the desired distribution.**
+
 > [!NOTE]
 > Below is a summary of Linux Distributions. It is hidden and you must click the heading to reveal it's contents.
 
@@ -106,10 +110,6 @@ The following list provides a few examples of Linux distros that *may* be availa
 
 * **Source-Based**: [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/) is a project that teaches you how to create your own Linux system from source code, using another Linux system. Learn how to install, configure and customize LFS and BLFS, and use tools for automation and management. Once you are **very** familiar with Linux, LFS is an excellent medium term side project that you peruse in you own time. Only Linux experts need apply.
 </details>
-
-<p align="center"><img alt="Screenshot of home page on azure." src="./resources/distro.png" width=900 /></p>
-
-**Under Image select the desired distribution.**
 
 ### Azure Instance Sizes
 
