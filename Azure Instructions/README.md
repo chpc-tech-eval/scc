@@ -64,7 +64,7 @@ click **Review + Create.**
 
 Creating the actual VM from the snapshot requires two steps. First navigate to the snapshot and click **+ Create Disk.** 
 
->[!TIP ]
+>[!TIP]
 >Simply choose an adequate name (no other changes need to be made) when creating the disk. 
 
 <img alt="Step one of creating the VM." src="./create_disk.png"/>
