@@ -28,6 +28,8 @@ These commands are the same if you are commenting from a Linux, Unix or MacOS Te
 
    <p align="center"><img alt="Windows Powershell SSH Keygen." src="./resources/windows_powershell_sshkeygen.png" width=900 /></p>
 
+   <img alt="Windows Poweshell SSH Keygen.." src="./windows_powershell_sshkeygen.png"/>
+
 > [!TIP]
 > Below is an example using Windows PuTTY. It is hidden and you must click the heading to reveal it's contents. You are strongly encourage to use either Windows PowerShell or Moba XTerm instead.
 
