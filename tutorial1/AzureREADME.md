@@ -5,11 +5,14 @@ In this section you will be configuring and launching your first Virtual Machine
 
 Open your web browser and navigate to the Azure platform to create a free account using this link: <a href="https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account?icid=azurefreeaccount">Sign Up for Azure</a>
 
-Once created you should be taken to the Azure dashboard which will look something like this:<p align="center"><img alt="Screenshot of home page on azure." src="./resources/azurehomepage.png" height="400" /></p>
+Once created you should be taken to the Azure dashboard which will look something like this:<p align="center"><img alt="Screenshot of home page on azure." src="./resources/azurehomepage.png" width=900 /></p>
 
 ## Generating SSH keys
 
  SSH keys allows you to authenticate against a remote SSH server, without the use of a password.
+
+> [!IMPORTANT]
+> When you are presented with foldable code blocks, you must pick and implement only **one** of the options presented, which is suitable to your current configuration and/or circumstance.
 
 > [!TIP]
 > A number [encryption algorithms](https://en.wikipedia.org/wiki/Public-key_cryptography) exist for securing your SSH connections. [Elliptic Curve Digital Signature Algorithm (ECDSA)](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) is secure and simple enough should you need to copy the public key manually. Nonetheless, you are free to use whichever algorithm you choose to.
@@ -51,7 +54,7 @@ Fill in all the required fields with your groups information as in the image bel
 > [!NOTE]
 > You may need to create a new resource group. Under *Resource group*, simply create a new group with an appropriate name which can be associated with all future tasks for this project. 
 
-<p align="center"><img alt="Creating an SSH key page 1." src="./resources/create_SSHKey.png" height="500"/></p>
+<img alt="Creating an SSH key page 1." src="./resources/create_SSHKey.png"/>
 
 `Review + create` and ensure it passes validation before clicking `Create` again.
 The key should now appear on your SSH Keys dashboard.
@@ -62,9 +65,8 @@ The key should now appear on your SSH Keys dashboard.
 From the Azure dashboard, navigate to `Virtual machines -> Create -> Azure virtual machine.`
 Within the new window (as shown below), assign an appropriate name which will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be <b>headnode</b>.
 
-As shown below, under *Resource Group* pick the one created earlier with the SSH Key and under *Region* pick `South Africa North`.
-
-<img alt="Creating a VM (headnode)." src="./resources/headnode_create.png"/>
+<img alt="Creating a VM (headnode)." src="./resources/instance.png"/>
+Under *Resource Group*, pick the one created earlier with the SSH Key and under *Region*, pick `South Africa North`.
 
 ## Linux Flavours and Distributions
 Each team can choose the Linux distribution they are most comfortable with.
@@ -124,7 +126,7 @@ Still under the Basics tab, ensure that your *Authentication type* is set to `SS
 > [!CAUTION]
 > You must ensure that you associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance
 
-<p align="center"><img alt="Key Pair screen." src="./resources/key_pair.png" height="500"/></p>
+<img alt="Key Pair screen." src="./resources/key_pair.png"/>
 
 ## Disks, Networking and Security 
 ### Disks 
@@ -132,7 +134,7 @@ Under *Disks*, ensure that the following options are configured:
 1. *OS Disk Type* is set to `Standard SSD`
 2. *Delete with VM* is <b>NOT</b> checked
 
-<p align="center"><img alt="Disks." src="./resources/setting_up_disks.png" height="500"/></p>p
+<img alt="Disks." src="./resources/setting_up_disks.png"/>
 
 ### Networking and Security
 Under *Networking*, ensure the following options are configured:
@@ -140,7 +142,7 @@ Under *Networking*, ensure the following options are configured:
 2. *Subnet* can be the default 
 3. *NIC network security group* is set to `Advanced` and the corresponding group is applied
     
-<p align="center"><img alt="Networking and Security." src="./resources/setting_up_network.png" height="500"/></p>p
+<img alt="Networking and Security." src="./resources/setting_up_network.png"/>
 
 >[!NOTE]
 >If your team does not have a *Virtual Network* or *Security Group* already configured, simply create one at this stage which can be related to all future creations under the same project. 
@@ -165,4 +167,4 @@ When all else fails and you would like to reattempt the creation of your nodes f
   
 By default, your VM's storage and Public IP address have been configured to linger even after deleting. However, if you would like to remove these as well, simply check the required boxes which appear on the window when confirming the deletion of your Instance.
 
-<p align="center"><img alt="Delete disks" src="./resources/compnode1.png" height="400"/></p>
+<img alt="Delete disks" src="./resources/compnode1.png"/>
