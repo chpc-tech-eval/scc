@@ -82,8 +82,7 @@ how your infrastructure should be provisioned.
    ```
    az login
    ```
->[!NOTE]
->Follow the instructions which appear once running this line as stipulated to authenticate yourself.
+<b>Follow the instructions which appear once running this line as stipulated to authenticate yourself.</b>
 
 >[!IMPORTANT]
 >It is possible that your laptops do not have Azure CLI installed already. If not follow the following steps.
@@ -92,3 +91,21 @@ how your infrastructure should be provisioned.
     ```
     sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
     ```
+
+1. Add Azure CLI repository
+    ```
+    sudo dnf install -y https://packages.microsoft.com/config/rhel/8/packages-microsoft-
+    prod.rpm
+    ```
+1. Install Azure
+    ```
+    sudo dnf update -y
+    sudo dnf install -y azure-cli
+    ```
+1. Verify Install
+    ```
+    az--version
+    ```
+
+
+
