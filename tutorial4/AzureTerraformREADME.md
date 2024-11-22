@@ -190,8 +190,7 @@ source_image_reference {
 
 ## Generate, Deploy and Apply Terraform Plan
 
-1. Generate Terraform Plan
-   Create a Terraform plan based on the current configuration. This plan will be used to implement changes to your Azure workspace and can be reviewed before applying those changes.
+1. Create a Terraform plan based on the current configuration. This plan will be used to implement changes to your Azure workspace and can be reviewed before applying those changes.
    Generate a plan and write it to disk:
    ```bash
    terraform plan -out ~/terraform/plan
