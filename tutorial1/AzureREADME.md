@@ -148,9 +148,21 @@ Under *Networking*, ensure the following options are configured:
 >If your team does not have a *Virtual Network* or *Security Group* already configured, simply create one at this stage which can be related to all future creations under the same project. 
 
 ## Verify that your Instance was Successfully Deployed and Launched
-Congratulations! Once your VM instance has completed it's building, block device mapping and deployment phase, and if your *Status* indicates Running, then you have successfully launched your very first Azure instance.
+Congratulations! Once your VM instance has completed it's deployment phase, and if your *Status* indicates Running, then you have successfully launched your very first Azure instance.
 
 <img alt="Headnode Status." src="./resources/headnode_status.png"/>
 
 
 ## Troubleshooting
+> [!CAUTION]
+> The following section is strictly for debugging and troubleshooting purposes. You **MUST** discuss your circumstances with an instructor before proceeding with this section.
+
+* Deleting Instances
+When all else fails and you would like to reattempt the creation of your nodes from a clean start, Select the VM you want to remove and click `Delete` at the top
+
+INSERT PIC 1
+
+* Deleting Disks and Dissociating Public IP
+By default, your VM's storage and Public IP address have been configured to linger even after deleting. However, If you would like to remove these whilst in the process of deleting the VM, simply check the required boxes before confirming the deletion of your Instance.
+
+INSERT PIC 2
