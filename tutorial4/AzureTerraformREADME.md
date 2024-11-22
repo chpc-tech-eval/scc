@@ -8,7 +8,7 @@ You will now prepare, install and initialize Terraform on your head node. You wi
 
 1. Use your operating system's package manager to install Terraform
 
-   This could be your workstation or one of your VMs. The machine must be connected to the internet and have access to your OpenStack workspace, i.e. https://sebowa.nicis.ac.za
+   This could be your workstation or one of your VMs. The machine must be connected to the internet and have access to your Azure workspace, i.e. https://portal.azure.com 
    * DNF / YUM
    ```bash
    sudo yum update -y
