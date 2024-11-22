@@ -48,4 +48,18 @@ You will now prepare, install and initialize Terraform on your head node. You wi
    vim providers.tf
    ```
 
-1. You must specify a [Terraform Provider]   
+1. You must specify a [Terraform Provider] 
+    These can vary from MS Azure, AWS, Google, Kubernetes etc... We will be implementing an Azure provider. Add the following to the `providers.tf` file.
+    ```conf
+    terraform {
+        required_providers {
+        azurem = {
+            source = "hashicorp/azurerm"
+            version = "~?3.0"
+        }
+        }
+    }
+    provider "azurerm"{
+        features{}
+    }
+    ```  
