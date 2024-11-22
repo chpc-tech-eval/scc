@@ -115,6 +115,8 @@ After completing the above steps, you may proceed.
 2. Inside your terraform folder, you must create a `main.tf` file. This is a file used to idenitfy the provider to be implemented as well as the copute resource configuration details of the instance we would like to launch.
 
 You will need to define your own `main.tf` file, but below is an example of one such definition:
+>[!NOTE]
+>Where there is <>, you must specify your own choices
 
 ```
 resource "azurerm_resource_group" "example" {
@@ -188,8 +190,8 @@ source_image_reference {
 }
 ```
 
->[!NOTE]
->Where there are <>, you must specify your own choices
+>[!TIP]
+>When choosing your source image, running `az vm image list` is helpful as it displays available and compatible images in your Azure Subscription (and helps with the correct syntax when specifying your `source_image_reference` block)
 
 ## Generate, Deploy and Apply Terraform Plan
 
