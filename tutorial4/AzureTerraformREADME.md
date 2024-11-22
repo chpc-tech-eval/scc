@@ -106,8 +106,9 @@ how your infrastructure should be provisioned.
     ```
     az--version
     ```
+After completing the above steps, you may proceed with the following. 
 
-2. Inside your terraform folder, you must create a `main.tf` file. This is file used to idenitfy the provider to be implemented as well as the copute resource configuration details of the instance we would like to launch.
+1. Inside your terraform folder, you must create a `main.tf` file. This is file used to idenitfy the provider to be implemented as well as the copute resource configuration details of the instance we would like to launch.
 
 You will need to define your own `main.tf` file, but below is an example of one such definition:
 
