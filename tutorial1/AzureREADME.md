@@ -1,12 +1,13 @@
-# Creating Azure Account
+# Launching your First Azure Virtual Machine Instance
+In this section you will be configuring and launching your first Virtual Machine instance using Microsoft Azure. This allows you to use a portion of another computer's resources, to host another Operating System as though it were running on its own dedicated hardware resources.
 
-### Steps to creating an Azure Account
+## Accessing Microsoft Azure
 
-Create a free azure account using this link: <a href="https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account?icid=azurefreeaccount">Sign Up for Azure</a>
+Open your web browser and navigate to the Azure platform to create a free account using this link: <a href="https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account?icid=azurefreeaccount">Sign Up for Azure</a>
 
-Once created you should be taken to this page:<p align="center"><img alt="Screenshot of home page on azure." src="./resources/azurehomepage.png" width=900 /></p>
+Once created you should be taken to the Azure dashboard which will look something like this:<p align="center"><img alt="Screenshot of home page on azure." src="./resources/azurehomepage.png" width=900 /></p>
 
-### Generating SSH key
+## Generating SSH keys
 
  SSH keys allows you to authenticate against a remote SSH server, without the use of a password.
 
@@ -44,33 +45,26 @@ These commands are the same if you are commenting from a Linux, Unix or MacOS Te
 
 You **MUST** take note of the location and paths to **BOTH** your public and private keys. Your public key will be shared and distributed to the SSH servers you want to authenticate against. Your private key must be kept secure within your team, and must not be shared or distributed to anyone.
 
-Once you have successfully generated an SSH key pair, navigate to `Compute` &rarr; `Key Pairs` and import the **public** key `id_ed25519.pub` into your Team's Project Workspace within Azure.
+Once you have successfully generated an SSH key pair, navigate to Azure's SSH keys page using the search bar. This page will appear:<img alt="Screenshot of SSH keys page on azure." src="./resources/SSHkeys_page.png"/> Click `Create SSH key`. 
 
-Navigate to SSH keys using the search bar .This page will appear:<img alt="Screenshot of SSH keys page on azure." src="./resources/SSHkeys_page.png"/> Click **Create SSH key.** 
+> [!NOTE]
+> You may need to create a new resource group. Under *Resource group*, simply create a new group with an appropriate name which can be associated with all future tasks for this project. 
 
-You may need to create a new resource group. Under Resource group simply create a new group with an appropriate name which can be associated with all future tasks for this project. 
+Fill in all the required fields with your groups information as below and upload the newly created public key `id_ed25519.pub`. <img alt="Creating an SSH key page 1." src="./resources/create_SSHKey.png"/>
 
-Fill in all the fields with your groups information and Upload the newly created public key 'id_ed25519.pub'. <img alt="Creating an SSH key page 1." src="./resources/create_SSHKey.png"/>
-
-Click **review + create.** 
-Ensure it passes validation and click create.
-
-<img alt="Creating an SSH key page 2." src="./resources/SSHkey_create.png"/>
-
-The key should then appear on your dashboard.
+`Review + create` and ensure it passes validation before clicking `Create` again.
+The key should now appear on your SSH Keys dashboard.
 >[!TIP]
->If it takes time to appear, keep refreshing.
+>If it takes time to appear, just keep refreshing.
 
-### Launching a New Instances
-From the Azure dashboard, go to `Virtual machines -> Create -> Azure virtual machine.`
-Within the current window assign an appropriate name which will describe what the VM's intended purpose is meant to be and help you to remember it's primary function.              
+## Launch a New Instance
+From the Azure dashboard, navigate to `Virtual machines -> Create -> Azure virtual machine.`
+Within the new window (as shown below), assign an appropriate name which will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be <b>headnode</b>.
 
->[!TIP]
->In this case, a suitable name for your instance would be <b>headnode</b>.
 <img alt="Creating a VM (headnode)." src="./resources/headnode_create.png"/>
-Under Resource Group, pick the one created earlier and under Region, pick <b>South Africa.</b>
+Under *Resource Group*, pick the one created earlier with the SSH Key and under *Region*, pick `South Africa North`.
 
-### Linux Flavours and Distributions
+## Linux Flavours and Distributions
 
 <p align="center"><img alt="Screenshot of home page on azure." src="./resources/distro.png" width=900 /></p>
 
