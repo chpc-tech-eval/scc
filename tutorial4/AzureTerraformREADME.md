@@ -87,6 +87,8 @@ how your infrastructure should be provisioned.
 >[!IMPORTANT]
 >It is possible that your laptops do not have Azure CLI installed already. If not follow the following steps.
 
+<details>
+<summary>Install Azure CLI</summary>
 1. Import Microsoft GPG key
     ```
     sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
@@ -106,7 +108,8 @@ how your infrastructure should be provisioned.
     ```
     az--version
     ```
-After completing the above steps, you may proceed with the following. 
+After completing the above steps, you may proceed with the following.
+</details>
 
 2. Inside your terraform folder, you must create a `main.tf` file. This is file used to idenitfy the provider to be implemented as well as the copute resource configuration details of the instance we would like to launch.
 
