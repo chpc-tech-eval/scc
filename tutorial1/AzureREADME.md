@@ -45,12 +45,11 @@ These commands are the same if you are commenting from a Linux, Unix or MacOS Te
 
 You **MUST** take note of the location and paths to **BOTH** your public and private keys. Your public key will be shared and distributed to the SSH servers you want to authenticate against. Your private key must be kept secure within your team, and must not be shared or distributed to anyone.
 
-Once you have successfully generated an SSH key pair, navigate to Azure's SSH keys page using the search bar. This page will appear:
+Once you have successfully generated an SSH key pair, navigate to Azure's SSH keys page using the search bar. This page will appear and Click `Create SSH key`.
 
 <p align="center"><img alt="Screenshot of SSH keys page on azure." src="./resources/SSHkeys_page.png" height="400"/></p>
- Click `Create SSH key`. 
 
-Fill in all the required fields with your groups information as in the image below and upload the newly created public key `id_ed25519.pub`.
+Fill in all the required fields with your group's information as in the image below and upload the newly created public key `id_ed25519.pub`.
 
 > [!NOTE]
 > You may need to create a new resource group. Under *Resource group*, simply create a new group with an appropriate name which can be associated with all future tasks for this project. 
@@ -63,18 +62,18 @@ The key should now appear on your SSH Keys dashboard.
 >If it takes time to appear, just keep refreshing.
 
 ## Launch a New Instance
-From the Azure dashboard, navigate to `Virtual machines -> Create -> Azure virtual machine.`
+From the Azure dashboard, navigate to `Virtual machines` &rarr; `Create` &rarr; `Azure virtual machine`.
 Within the new window (as shown below), assign an appropriate name which will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be <b>headnode</b>.
 
 <p align="center"><img alt="Creating a VM (headnode)." src="./resources/instance.png" height="400"/></p>
 
-Under **Resource Group**, pick the one created earlier with the SSH Key and under *Region*, pick `South Africa North`.
+Under *Resource Group* pick the one created earlier with the SSH Key and under *Region* pick `South Africa North`.
 
 ## Linux Flavours and Distributions
 Each team can choose the Linux distribution they are most comfortable with.
 
 > [!NOTE]
-> Below is a summary of Linux distributions to help you make an informed decision. Click the heading to reveal it's contents.
+> Below is a summary of Linux distributions to help you make an informed decision. Click the heading to reveal its contents.
 
 <details>
 <summary><b>Summary of Linux Distributions</b></summary> 
