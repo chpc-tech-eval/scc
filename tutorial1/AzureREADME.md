@@ -50,7 +50,9 @@ Once you have successfully generated an SSH key pair, navigate to Azure's SSH ke
 > [!NOTE]
 > You may need to create a new resource group. Under *Resource group*, simply create a new group with an appropriate name which can be associated with all future tasks for this project. 
 
-Fill in all the required fields with your groups information as below and upload the newly created public key `id_ed25519.pub`. <img alt="Creating an SSH key page 1." src="./resources/create_SSHKey.png"/>
+Fill in all the required fields with your groups information as below and upload the newly created public key `id_ed25519.pub`.
+
+<img alt="Creating an SSH key page 1." src="./resources/create_SSHKey.png"/>
 
 `Review + create` and ensure it passes validation before clicking `Create` again.
 The key should now appear on your SSH Keys dashboard.
