@@ -45,12 +45,14 @@ These commands are the same if you are commenting from a Linux, Unix or MacOS Te
 
 You **MUST** take note of the location and paths to **BOTH** your public and private keys. Your public key will be shared and distributed to the SSH servers you want to authenticate against. Your private key must be kept secure within your team, and must not be shared or distributed to anyone.
 
-Once you have successfully generated an SSH key pair, navigate to Azure's SSH keys page using the search bar. This page will appear:<img alt="Screenshot of SSH keys page on azure." src="./resources/SSHkeys_page.png"/> Click `Create SSH key`. 
+Once you have successfully generated an SSH key pair, navigate to Azure's SSH keys page using the search bar. This page will appear:
+
+<img alt="Screenshot of SSH keys page on azure." src="./resources/SSHkeys_page.png"/> Click `Create SSH key`. 
+
+Fill in all the required fields with your groups information as in the image below and upload the newly created public key `id_ed25519.pub`.
 
 > [!NOTE]
 > You may need to create a new resource group. Under *Resource group*, simply create a new group with an appropriate name which can be associated with all future tasks for this project. 
-
-Fill in all the required fields with your groups information as below and upload the newly created public key `id_ed25519.pub`.
 
 <img alt="Creating an SSH key page 1." src="./resources/create_SSHKey.png"/>
 
@@ -67,13 +69,10 @@ Within the new window (as shown below), assign an appropriate name which will de
 Under *Resource Group*, pick the one created earlier with the SSH Key and under *Region*, pick `South Africa North`.
 
 ## Linux Flavours and Distributions
-
-<p align="center"><img alt="Screenshot of home page on azure." src="./resources/distro.png" width=900 /></p>
-
-Under **Image** select the *desired distribution.*
+Each team can choose the Linux distribution they are most comfortable with.
 
 > [!NOTE]
-> Below is a summary of Linux Distributions. It is hidden and you must click the heading to reveal it's contents.
+> Below is a summary of Linux distributions to help you make an informed decision. Click the heading to reveal it's contents.
 
 <details>
 <summary><b>Summary of Linux Distributions</b></summary> 
@@ -107,41 +106,51 @@ The following list provides a few examples of Linux distros that *may* be availa
 * **Source-Based**: [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/) is a project that teaches you how to create your own Linux system from source code, using another Linux system. Learn how to install, configure and customize LFS and BLFS, and use tools for automation and management. Once you are **very** familiar with Linux, LFS is an excellent medium term side project that you peruse in you own time. Only Linux experts need apply.
 </details>
 
-### Azure Instance Sizes
+Once reaching a decision, under *Image* select the desired distribution as below.
+<p align="center"><img alt="Screenshot of home page on azure." src="./resources/distro.png" width=900 /></p>
 
-An important aspect of system administration is resource monitoring, management and utilization. 
+## Azure Instance Sizes
 
+An important aspect of system administration is resource monitoring, management and utilization. You will be required to manage your available resources and ensure that the resources of your clusters are utilized in such a way as to maximize system performance. Azure has a multitude of size options and you will need to decide how you are going to pick the sizing of the compute, memory and storage across your head node and compute node(s).
 
 > [!TIP]
 > When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System).
 
+Once deciding on a desired size, select it under *Size* as shown below. In this case, Standard_B1s were utilised, but once again it is up to you and your cluster's needs.
+
 <p align="center"><img alt="Screenshot of home page on azure." src="./resources/size.png" width=900 /></p>
 
-Under **Size** click the *desired instance size.*
 
-### Key Pair 
-Still under the Basics tab, associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance.
+## Key Pair 
+Still under the Basics tab, ensure that your *Authentication type* is set to `SSH public key` and then upload the SSH Key that you created earlier as shown below. 
+> [!CAUTION]
+> You must ensure that you associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance
+
 <img alt="Key Pair screen." src="./resources/key_pair.png"/>
 
-## Disks,Networking and Security 
+## Disks, Networking and Security 
 ### Disks 
 Under *Disks*, ensure that the following options are configured:  
-1. *OS Disk Type is set to `Standard SSD`,*
-2. *Delete with VM is <b>NOT</b> checked*
+1. *OS Disk Type* is set to `Standard SSD`
+2. *Delete with VM* is <b>NOT</b> checked
 
 <img alt="Disks." src="./resources/setting_up_disks.png"/>
 
 ### Networking and Security
 Under *Networking*, ensure the following options are configured:
-1. *Virtual network* is set to <b>your team’s network</b> 
+1. *Virtual network* is set to `your team’s network` 
 2. *Subnet* can be the default 
 3. *NIC network security group* is set to `Advanced` and the corresponding group is applied
     
 <img alt="Networking and Security." src="./resources/setting_up_network.png"/>
 
 >[!NOTE]
->If your team does not have a <b>Virtual Network or Security Group<> already configured, simply create</b> one at this stage which can be related to all future creations under the same project. 
+>If your team does not have a *Virtual Network* or *Security Group* already configured, simply create one at this stage which can be related to all future creations under the same project. 
 
->[!IMPORTANT]
->Verify that your instance was successfully Deployed and Launched
+## Verify that your Instance was Successfully Deployed and Launched
+Congratulations! Once your VM instance has completed it's building, block device mapping and deployment phase, and if your *Status* indicates Running, then you have successfully launched your very first Azure instance.
+
 <img alt="Headnode Status." src="./resources/headnode_status.png"/>
+
+
+## Troubleshooting
