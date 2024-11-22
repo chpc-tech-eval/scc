@@ -17,4 +17,27 @@ Then navigate to the newly created disk and click `+ Create VM` as shown below. 
 
 Navigate back to the Virtual Machine dashboard and your second compute node should be <b>deployed and running.</b> 
 
+## Running HPL Across Multiple Nodes
 
+Everything is now in place for you to run HPL across your two compute nodes. You must ensure that all libraries and dependencies are satisfied across your cluster. You must also ensure that your passwordless SSH is properly configured. Your NFS mounted `/home` directory must be properly configured.
+
+* Configuring OpenMPI Hosts File
+
+  You must configure a `hosts` (or `machinefile`) file which contains the IP addresses or hostnames of your compute nodes.
+  ```conf
+  # The slots value indicates the number of processes to run on each node.
+  # Adjust this number based on the number of CPU cores available on each node.
+  compute01 slots=1
+  compute02 slots=1
+  ```
+
+* Runtime and Environment Configuration Options for `mpirun`
+
+  You compute nodes each have a single CPU with multiple OpenMP threads. It is critical that your `environment` is correctly configured to you to run HPL across your two compute nodes.
+
+  * Navigate to the directory where your HPL executable and `HPL.dat` file are located. Use `mpirun` to run HPL across the nodes specified in the hosts file
+  * Edit your `~/.profile` to set environment variables when `mpirun` creates a new shell
+  * Execute `mpirun`
+  ```bash
+  mpirun -np 2 --hostfile hosts ./xhpl
+  ```
