@@ -11,9 +11,6 @@ Once created you should be taken to the Azure dashboard which will look somethin
 
  SSH keys allows you to authenticate against a remote SSH server, without the use of a password.
 
-> [!IMPORTANT]
-> When you are presented with foldable code blocks, you must pick and implement only **one** of the options presented, which is suitable to your current configuration and/or circumstance.
-
 > [!TIP]
 > A number [encryption algorithms](https://en.wikipedia.org/wiki/Public-key_cryptography) exist for securing your SSH connections. [Elliptic Curve Digital Signature Algorithm (ECDSA)](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) is secure and simple enough should you need to copy the public key manually. Nonetheless, you are free to use whichever algorithm you choose to.
 
@@ -56,7 +53,7 @@ Fill in all the required fields with your group's information as in the image be
 
 <p align="center"><img alt="Creating an SSH key page 1." src="./resources/create_SSHKey.png" height="450"/></p>
 
-`Review + create` and ensure it passes validation before clicking `Create` again.
+Click `Review + create` and ensure it passes validation before clicking `Create` again.
 The key should now appear on your SSH Keys dashboard.
 >[!TIP]
 >If it takes time to appear, just keep refreshing.
@@ -117,7 +114,7 @@ An important aspect of system administration is resource monitoring, management 
 > [!TIP]
 > When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System).
 
-Once deciding on a desired size, select it under *Size* as shown below. In this case, Standard_B1s were utilised, but once again it is up to you and your cluster's needs.
+Once deciding on a desired size, select it under *Size* as shown below. In this case, `Standard_B1s` were utilised, but once again it is up to you and your cluster's needs.
 
 <p align="center"><img alt="Screenshot of home page on azure." src="./resources/size.png"/></p>
 
@@ -149,7 +146,7 @@ Under *Networking*, ensure the following options are configured:
 >If your team does not have a *Virtual Network* or *Security Group* already configured, simply create one at this stage which can be related to all future creations under the same project. 
 
 ## Verify that your Instance was Successfully Deployed and Launched
-Congratulations! Once your VM instance has completed it's deployment phase, and if your *Status* indicates Running, then you have successfully launched your very first Azure instance.
+Congratulations! Once your VM instance has completed its deployment phase, and if your *Status* indicates Running, then you have successfully launched your very first Azure instance.
 
 <img alt="Headnode Status." src="./resources/headnode_status.png"/>
 
@@ -160,7 +157,7 @@ Congratulations! Once your VM instance has completed it's deployment phase, and 
 
 * Deleting Instances
 
-When all else fails and you would like to reattempt the creation of your nodes from a clean start, Select the VM you want to remove and click `Delete` at the top
+When all else fails and you would like to reattempt the creation of your nodes from a clean start, select the VM you want to remove and click `Delete` at the top
 
 <img alt= " delete instances" src="./resources/compnode2.png"/>
 
