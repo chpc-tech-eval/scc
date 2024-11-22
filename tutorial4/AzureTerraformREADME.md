@@ -82,7 +82,7 @@ how your infrastructure should be provisioned.
    ```
    az login
    ```
-<b>Follow the instructions which appear once running this line, as stipulated, to authenticate yourself.</b>
+<b>Follow the instructions which appear once running this line to authenticate yourself.</b>
 
 >[!IMPORTANT]
 >It is possible that your laptops do not have Azure CLI installed already. If not carry out the following steps and attempt logging in again.
