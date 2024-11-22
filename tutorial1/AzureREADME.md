@@ -65,8 +65,9 @@ The key should now appear on your SSH Keys dashboard.
 From the Azure dashboard, navigate to `Virtual machines -> Create -> Azure virtual machine.`
 Within the new window (as shown below), assign an appropriate name which will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be <b>headnode</b>.
 
+As shown below, under *Resource Group* pick the one created earlier with the SSH Key and under *Region* pick `South Africa North`.
+
 <img alt="Creating a VM (headnode)." src="./resources/headnode_create.png"/>
-Under *Resource Group*, pick the one created earlier with the SSH Key and under *Region* pick `South Africa North`.
 
 ## Linux Flavours and Distributions
 Each team can choose the Linux distribution they are most comfortable with.
