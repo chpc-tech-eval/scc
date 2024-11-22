@@ -199,7 +199,7 @@ source_image_reference {
    ```
 
 1. Verify New Instance Successfully Created by Terraform
-   Finally confirm that your new instance has been successfully created. On your Sebowa OpenStack workspace, navigate to `Project` &rarr; `Compute` &rarr; `Instances`.
+   Finally confirm that your new instance has been successfully created. On your Azure workspace, navigate to `Virtual Machines`, refresh the page and your new instances should appear.
 
 > [!TIP]
 > To avoid losing your team's progress, it would be a good idea to create a GitHub repo in order for you to commit and push your various scripts and configuration files.
