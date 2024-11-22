@@ -190,19 +190,19 @@ source_image_reference {
 
 ## Generate, Deploy and Apply Terraform Plan
 
-1. Generate and Deploy Terraform Plan
+1. Generate Terraform Plan
    Create a Terraform plan based on the current configuration. This plan will be used to implement changes to your Azure workspace and can be reviewed before applying those changes.
    Generate a plan and write it to disk:
    ```bash
    terraform plan -out ~/terraform/plan
    ```
 
-1. Once you are satisfied with the proposed changes, deploy the terraform plan:
+2. Once you are satisfied with the proposed changes, deploy the terraform plan:
    ```bash
    terraform apply ~terraform/plan
    ```
 
-1. Finally confirm that your new instance has been successfully created by Terraform. On your Azure workspace, navigate to `Virtual Machines`, refresh the page and your new instance should appear.
+3. Finally, confirm that your new instance has been successfully created by Terraform. On your Azure workspace, navigate to `Virtual Machines`, refresh the page and your new instance should appear.
 
 > [!TIP]
 > To avoid losing your team's progress, it would be a good idea to create a GitHub repo in order for you to commit and push your various scripts and configuration files.
