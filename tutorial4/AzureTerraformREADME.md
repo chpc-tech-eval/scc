@@ -40,7 +40,7 @@ You will now prepare, install and initialize Terraform on your head node and you
    sudo pacman -S terraform
    ```
 
-1. Create a Terraform directory, descend into it and Edit the `providers.tf` file
+1. Create a Terraform directory, descend into it and edit the `providers.tf` file
 
    ```bash
    mkdir terraform
@@ -55,7 +55,7 @@ You will now prepare, install and initialize Terraform on your head node and you
         required_providers {
         azurem = {
             source = "hashicorp/azurerm"
-            version = "~?3.0"
+            version = "~>3.0"
         }
         }
     }
@@ -82,7 +82,7 @@ how your infrastructure should be provisioned.
    ```
    az login
    ```
-<b>Follow the instructions which appear once running this line to authenticate yourself.</b>
+<b>Follow the instructions which appear on Powershell after running this line to authenticate yourself.</b>
 
 >[!IMPORTANT]
 >It is possible that your laptops do not have Azure CLI installed already. If not carry out the following steps and attempt logging in again.
@@ -97,8 +97,7 @@ how your infrastructure should be provisioned.
 
 2. Add Azure CLI repository
     ```
-    sudo dnf install -y https://packages.microsoft.com/config/rhel/8/packages-microsoft-
-    prod.rpm
+    sudo dnf install -y https://packages.microsoft.com/config/rhel/8/packages-microsoft-prod.rpm
     ```
 3. Install Azure
     ```
@@ -107,7 +106,7 @@ how your infrastructure should be provisioned.
     ```
 4. Verify Install
     ```
-    az--version
+    az --version
     ```
 After completing the above steps, you may proceed.
 </details>
