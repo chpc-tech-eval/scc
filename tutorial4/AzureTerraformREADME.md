@@ -4,7 +4,7 @@ Terraform is a piece of software that allows one to write out their cloud infras
 
 ## Install and Initialize Terraform
 
-You will now prepare, install and initialize Terraform on your head node. You will define and configure a `providers.tf` file, to configure OpenStack instances (as Sebowa is an OpenStack based cloud).
+You will now prepare, install and initialize Terraform on your head node. You will define and configure a `providers.tf` file, to configure Azure instances.
 
 1. Use your operating system's package manager to install Terraform
 
