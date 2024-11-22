@@ -4,7 +4,7 @@ Terraform is a piece of software that allows one to write out their cloud infras
 
 ## Install and Initialize Terraform
 
-You will now prepare, install and initialize Terraform on your head node. You will define and configure a `providers.tf` file, to configure Azure instances.
+You will now prepare, install and initialize Terraform on your head node. You will define and configure a `providers.tf` file to configure Azure instances.
 
 1. Use your operating system's package manager to install Terraform
 
@@ -112,7 +112,7 @@ how your infrastructure should be provisioned.
 After completing the above steps, you may proceed with the following.
 </details>
 
-2. Inside your terraform folder, you must create a `main.tf` file. This is file used to idenitfy the provider to be implemented as well as the copute resource configuration details of the instance we would like to launch.
+2. Inside your terraform folder, you must create a `main.tf` file. This is a file used to idenitfy the provider to be implemented as well as the copute resource configuration details of the instance we would like to launch.
 
 You will need to define your own `main.tf` file, but below is an example of one such definition:
 
@@ -191,7 +191,7 @@ source_image_reference {
 ## Generate, Deploy and Apply Terraform Plan
 
 1. Generate and Deploy Terraform Plan
-   Create a Terraform plan based on the current configuration. This plan will be used to implement changes to your Sebowa OpenStack cloud workspace, and can be reviewed before applying those changes.
+   Create a Terraform plan based on the current configuration. This plan will be used to implement changes to your Azure workspace and can be reviewed before applying those changes.
    Generate a plan and write it to disk:
    ```bash
    terraform plan -out ~/terraform/plan
@@ -202,7 +202,7 @@ source_image_reference {
    terraform apply ~terraform/plan
    ```
 
-1. Finally confirm that your new instance has been successfully created by Terraform. On your Azure workspace, navigate to `Virtual Machines`, refresh the page and your new instances should appear.
+1. Finally confirm that your new instance has been successfully created by Terraform. On your Azure workspace, navigate to `Virtual Machines`, refresh the page and your new instance should appear.
 
 > [!TIP]
 > To avoid losing your team's progress, it would be a good idea to create a GitHub repo in order for you to commit and push your various scripts and configuration files.
