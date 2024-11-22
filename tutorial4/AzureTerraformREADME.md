@@ -63,3 +63,32 @@ You will now prepare, install and initialize Terraform on your head node. You wi
         features{}
     }
     ```  
+1. Initialize Terraform
+
+   From the folder with your provider definition, execute the following command:
+   ```bash
+   terraform init
+   ```
+
+
+
+## Generate authentication and main.tf file
+
+Authenticate yourself against your Azure workspace and generate the `main.tf` file that will define
+how your infrastructure should be provisioned.
+
+1. Login to Azure CLI through Powershell
+
+   ```
+   az login
+   ```
+>[!NOTE]
+>Follow the instructions which appear once running this line as stipulated to authenticate yourself.
+
+>[!IMPORTANT]
+>It is possible that your laptops do not have Azure CLI installed already. If not follow the following steps.
+
+1. Import Microsoft GPG key
+    ```
+    sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+    ```
