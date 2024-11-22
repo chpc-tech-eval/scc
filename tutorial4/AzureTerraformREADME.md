@@ -176,7 +176,30 @@ source_image_reference {
     publisher = RedHat"
     offer = "RHEL"
     sku = "9-lvm-gen2"
-    version = "latest"
-}
+    version = "latest" 
+    }
 }
 ```
+
+>[!NOTE]
+>Where there are <>, you must specify your own name choices
+
+## Generate, Deploy and Apply Terraform Plan
+
+1. Generate and Deploy Terraform Plan
+   Create a Terraform plan based on the current configuration. This plan will be used to implement changes to your Sebowa OpenStack cloud workspace, and can be reviewed before applying those changes.
+   Generate a plan and write it to disk:
+   ```bash
+   terraform plan -out ~/terraform/plan
+   ```
+
+1. Once you are satisfied with the proposed changes, deploy the terraform plan:
+   ```bash
+   terraform apply ~terraform/plan
+   ```
+
+1. Verify New Instance Successfully Created by Terraform
+   Finally confirm that your new instance has been successfully created. On your Sebowa OpenStack workspace, navigate to `Project` &rarr; `Compute` &rarr; `Instances`.
+
+> [!TIP]
+> To avoid losing your team's progress, it would be a good idea to create a GitHub repo in order for you to commit and push your various scripts and configuration files.
