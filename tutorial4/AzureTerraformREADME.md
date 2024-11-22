@@ -4,7 +4,7 @@ Terraform is a piece of software that allows one to write out their cloud infras
 
 ## Install and Initialize Terraform
 
-You will now prepare, install and initialize Terraform on your head node. You will define and configure a `providers.tf` file to configure Azure instances.
+You will now prepare, install and initialize Terraform on your head node and you will define and configure a `providers.tf` file to configure Azure instances.
 
 1. Use your operating system's package manager to install Terraform
 
@@ -45,7 +45,7 @@ You will now prepare, install and initialize Terraform on your head node. You wi
    ```bash
    mkdir terraform
    cd terraform
-   vim providers.tf
+   nano providers.tf
    ```
 
 1. You must specify a [Terraform Provider](https://registry.terraform.io/browse/providers).
@@ -82,10 +82,10 @@ how your infrastructure should be provisioned.
    ```
    az login
    ```
-<b>Follow the instructions which appear once running this line as stipulated to authenticate yourself.</b>
+<b>Follow the instructions which appear once running this line, as stipulated, to authenticate yourself.</b>
 
 >[!IMPORTANT]
->It is possible that your laptops do not have Azure CLI installed already. If not follow the following steps.
+>It is possible that your laptops do not have Azure CLI installed already. If not carry out the following steps and attempt logging in again.
 
 <details>
 <summary>Install Azure CLI</summary>
@@ -109,7 +109,7 @@ how your infrastructure should be provisioned.
     ```
     az--version
     ```
-After completing the above steps, you may proceed with the following.
+After completing the above steps, you may proceed.
 </details>
 
 2. Inside your terraform folder, you must create a `main.tf` file. This is a file used to idenitfy the provider to be implemented as well as the copute resource configuration details of the instance we would like to launch.
