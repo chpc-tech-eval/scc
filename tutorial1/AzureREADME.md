@@ -66,7 +66,8 @@ From the Azure dashboard, navigate to `Virtual machines -> Create -> Azure virtu
 Within the new window (as shown below), assign an appropriate name which will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be <b>headnode</b>.
 
 <img alt="Creating a VM (headnode)." src="./resources/instance.png"/>
-Under *Resource Group*, pick the one created earlier with the SSH Key and under *Region*, pick `South Africa North`.
+
+Under **Resource Group**, pick the one created earlier with the SSH Key and under *Region*, pick `South Africa North`.
 
 ## Linux Flavours and Distributions
 Each team can choose the Linux distribution they are most comfortable with.
