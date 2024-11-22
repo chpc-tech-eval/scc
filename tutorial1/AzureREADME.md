@@ -161,10 +161,10 @@ Congratulations! Once your VM instance has completed it's deployment phase, and 
 
 When all else fails and you would like to reattempt the creation of your nodes from a clean start, Select the VM you want to remove and click `Delete` at the top
 
-INSERT PIC 1
+<img alt= " delete instances" src="./resources/compnode2.png"/>
 
 * Deleting Disks and Dissociating Public IP
   
 By default, your VM's storage and Public IP address have been configured to linger even after deleting. However, if you would like to remove these as well, simply check the required boxes which appear on the window when confirming the deletion of your Instance.
 
-INSERT PIC 2
+<img alt="Delete disks" src="./resources/compnode1.png"/>
