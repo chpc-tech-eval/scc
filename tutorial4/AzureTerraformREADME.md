@@ -89,22 +89,23 @@ how your infrastructure should be provisioned.
 
 <details>
 <summary>Install Azure CLI</summary>
+   
 1. Import Microsoft GPG key
     ```
     sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
     ```
 
-1. Add Azure CLI repository
+2. Add Azure CLI repository
     ```
     sudo dnf install -y https://packages.microsoft.com/config/rhel/8/packages-microsoft-
     prod.rpm
     ```
-1. Install Azure
+3. Install Azure
     ```
     sudo dnf update -y
     sudo dnf install -y azure-cli
     ```
-1. Verify Install
+4. Verify Install
     ```
     az--version
     ```
