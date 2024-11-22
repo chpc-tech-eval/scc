@@ -165,6 +165,6 @@ INSERT PIC 1
 
 * Deleting Disks and Dissociating Public IP
   
-By default, your VM's storage and Public IP address have been configured to linger even after deleting. However, If you would like to remove these whilst in the process of deleting the VM, simply check the required boxes before confirming the deletion of your Instance.
+By default, your VM's storage and Public IP address have been configured to linger even after deleting. However, if you would like to remove these as well, simply check the required boxes which appear on the window when confirming the deletion of your Instance.
 
 INSERT PIC 2
