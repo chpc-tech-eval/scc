@@ -113,64 +113,70 @@ After completing the above steps, you may proceed with the following.
 You will need to define your own `main.tf` file, but below is an example of one such definition:
 
 ```
-resource &quot;azurerm_resource_group&quot; &quot;example&quot; {
-name = &quot;&lt;resources-name&gt;&quot;
-location = &quot;South Africa North”
-resource &quot;azurerm_virtual_network&quot; &quot;example&quot; {
-name = &quot;&lt;vnet-name&gt;&quot;
-address_space = [&quot;10.0.0.0/24&quot;]
-location = azurerm_resource_group.example.location
-resource_group_name = azurerm_resource_group.example.name
+resource "azurerm_resource_group" "example" {
+    name = "<resources-name>"
+    location = "South Africa North”
+
+resource "azurerm_virtual_network" "example" {
+    name = "<vnet-name>"
+    address_space = ["10.0.0.0/24"]
+    location = azurerm_resource_group.example.location
+    resource_group_name = azurerm_resource_group.example.name
 }
-resource &quot;azurerm_subnet&quot; &quot;example&quot; {
-name = &quot;internal&quot;
-resource_group_name = azurerm_resource_group.example.name
-virtual_network_name = azurerm_virtual_network.example.name
-address_prefixes = [&quot;10.0.0.64/26&quot;] #any address within your vnet address space
+
+resource "azurerm_subnet" "example"   {
+    name = "internal"
+    resource_group_name = azurerm_resource_group.example.name
+    virtual_network_name = azurerm_virtual_network.example.name
+    address_prefixes = ["10.0.0.64/26"] #any address within your vnet address space
 }
-resource &quot;azurerm_public_ip&quot; &quot;example&quot; {
-name = &quot;&lt;ip-name&gt;&quot;
-resource_group_name = azurerm_resource_group.example.name
-location = azurerm_resource_group.example.location
-allocation_method = &quot;Static&quot;
-tags = {
-environment = &quot;Production&quot;
+
+resource "azurerm_public_ip" "example" {
+    name = "<ip-name>"
+    resource_group_name = azurerm_resource_group.example.name
+    location = azurerm_resource_group.example.location
+    allocation_method = "Static"
+    tags = {
+        environment = "Production"
+    }
 }
+
+resource "azurerm_network_interface" "example" {
+    name = "<nic-name>"
+    location = azurerm_resource_group.example.location
+    resource_group_name = azurerm_resource_group.example.name
+
+    ip_configuration {
+    name = "internal"
+    subnet_id = azurerm_subnet.example.id
+    private_ip_address_allocation = "Dynamic”
+    public_ip_address_id = "azurem_pubilc_ip.example.id”
+    }
 }
-resource &quot;azurerm_network_interface&quot; &quot;example&quot; {
-name = &quot;&lt;nic-name&gt;&quot;
-location = azurerm_resource_group.example.location
-resource_group_name = azurerm_resource_group.example.name
-ip_configuration {
-name = &quot;internal&quot;
-subnet_id = azurerm_subnet.example.id
-private_ip_address_allocation = &quot;Dynamic”
-public_ip_address_id = &quot;azurem_pubilc_ip.example.id”
-}
-}
-resource &quot;azurerm_linux_virtual_machine&quot; &quot;example&quot; {
-name = &quot;&lt;vm-name&gt;&quot;
-resource_group_name = azurerm_resource_group.example.name
-location = azurerm_resource_group.example.location
-size = &quot;&lt;size-choice&gt;&quot;
-admin_username = &quot;&lt;adminuser&gt;&quot;
-network_interface_ids = [
-azurerm_network_interface.example.id,
+
+resource " azurerm_linux_virtual_machine" "example" {
+    name = "<vm-name>"
+    resource_group_name = azurerm_resource_group.example.name
+    location = azurerm_resource_group.example.location
+    size = "<size-choice>"
+    admin_username = "<adminuser>"
+    network_interface_ids = [
+        azurerm_network_interface.example.id,
 ]
 admin_ssh_key {
-username = &quot;&lt;adminuser&gt;&quot;
-public_key = file(&quot;&lt;key path&gt;&quot;)
+    username = "<adminuser>"
+    public_key = file("<key path>")
 }
 os_disk {
-caching = &quot;ReadWrite&quot;
-storage_account_type = &quot;Standard_LRS&quot;
+    caching = "ReadWrite"
+    storage_account_type = "Standard_LRS"
 }
 # Pick your preference
 source_image_reference {
-publisher = &quot;RedHat&quot;
-offer = &quot;RHEL&quot;
-sku = &quot;9-lvm-gen2&quot;
-version = &quot;latest&quot;
+    publisher = RedHat"
+    offer = "RHEL"
+    sku = "9-lvm-gen2"
+    version = "latest"
 }
 }
 ```
