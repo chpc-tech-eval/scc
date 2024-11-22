@@ -158,11 +158,13 @@ Congratulations! Once your VM instance has completed it's deployment phase, and 
 > The following section is strictly for debugging and troubleshooting purposes. You **MUST** discuss your circumstances with an instructor before proceeding with this section.
 
 * Deleting Instances
+
 When all else fails and you would like to reattempt the creation of your nodes from a clean start, Select the VM you want to remove and click `Delete` at the top
 
 INSERT PIC 1
 
 * Deleting Disks and Dissociating Public IP
+  
 By default, your VM's storage and Public IP address have been configured to linger even after deleting. However, If you would like to remove these whilst in the process of deleting the VM, simply check the required boxes before confirming the deletion of your Instance.
 
 INSERT PIC 2
