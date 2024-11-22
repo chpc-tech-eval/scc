@@ -11,9 +11,6 @@ Once created you should be taken to the Azure dashboard which will look somethin
 
  SSH keys allows you to authenticate against a remote SSH server, without the use of a password.
 
-> [!IMPORTANT]
-> When you are presented with foldable code blocks, you must pick and implement only **one** of the options presented, which is suitable to your current configuration and/or circumstance.
-
 > [!TIP]
 > A number [encryption algorithms](https://en.wikipedia.org/wiki/Public-key_cryptography) exist for securing your SSH connections. [Elliptic Curve Digital Signature Algorithm (ECDSA)](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) is secure and simple enough should you need to copy the public key manually. Nonetheless, you are free to use whichever algorithm you choose to.
 
