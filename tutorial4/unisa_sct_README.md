@@ -772,7 +772,9 @@ You are now going to extend your `qv_experiment` and plot your results, by drawi
    python qv_experiment.py
    ```
 
-###Section 3iii About Qiskit and Quantum Computing
+## About Qiskit and Quantum Computing in general 
+
+3iii.
 
 Background information on Quantum Computing and why we use Qiskit
 
