@@ -1058,31 +1058,73 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
 >
 > Consider how you could streamline this process even further using preconfigured instance snapshots, as well as  Ansible after your instances have been deployed.
 
+-------------------------------------------------------------------------------------------------------------------------------------
+
 # How to use Ansible and GitHub Actions to run HPL
 
-We want to use ansible to automate our deployment of scripts and applications.
+To run the High-Performance Linpack (HPL) benchmark using Ansible and GitHub Actions, you can follow these steps:
 
-It would be advantages to modify the /etc/hosts file to use as a type of DNS services, so we dont have to work/remember ip address but can work with nodes names instead.
+### 1. **Set Up Your GitHub Repository**
+1. **Create a new repository** on GitHub or use an existing one.
+2. **Add your Ansible playbooks** and inventory files to the repository. For example, your playbook might look like this:
 
->sudo nano /etc/hosts
-
-add all the nodes in the following format
-
+```yaml
+---
+- name: Run HPL benchmark
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install necessary packages
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - hpl
+        - mpich
+    - name: Run HPL
+      command: mpirun -np 4 xhpl
 ```
-#IP		      NAME
-10.100.50.x	  head
-10.100.50.x	  com1
+
+### 2. **Create a GitHub Actions Workflow**
+
+1. **Create a workflow file** in the `.github/workflows` directory of your repository. Name it something like `run_hpl.yml`.
+
+```yaml
+name: Run HPL Benchmark
+
+on: [push]
+
+jobs:
+  run-hpl:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install Ansible
+      run: |
+        python3 -m pip install --upgrade pip
+        pip3 install ansible
+
+    - name: Run Ansible Playbook
+      run: ansible-playbook playbook.yml -i inventory
 ```
 
-One last pre-requisite is to make sure the user running ansible can ssh between nodes using its ssh-keys.
+### 3. **Handle Sensitive Data**
+- **Store sensitive data** like SSH keys or passwords in GitHub Secrets. You can access these secrets in your workflow using `${{ secrets.YOUR_SECRET_NAME }}`.
 
->ssh com1
+### 4. **Deploy and Run the Playbook**
+- **Push your changes** to the repository. This will trigger the GitHub Actions workflow, which will run your Ansible playbook and execute the HPL benchmark on the specified hosts.
 
-the above command should work to jump from the head node to com1 for example. If the same user and its keys are loaded correctly.
+By following these steps, you can automate the deployment and execution of the HPL benchmark using Ansible and GitHub Actions, ensuring a consistent and reproducible setup[1](https://spacelift.io/blog/github-actions-ansible)[2](https://linuxbuz.com/devops/use-ansible-with-github-actions).
 
-If ansible was installed and setup correctly as showed in [tutorial 2](../tutorial2/README.md), we can continue onto the next steps.
-
-Running ansible scripts on the cluster is very simple, 
+--------------------------------------------------------------------------------------------------------------------------------------
 
 # Slurm Scheduler and Workload Manager
 
