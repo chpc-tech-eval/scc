@@ -772,154 +772,88 @@ You are now going to extend your `qv_experiment` and plot your results, by drawi
    python qv_experiment.py
    ```
 
-# Automating the Deployment of your OpenStack Instances Using Terraform
+# Terraform Guide
 
-Terraform is a piece of software that allows one to write out their cloud infrastructure and deployments as code, [IaC](https://en.wikipedia.org/wiki/Infrastructure_as_code). This allows the deployments of your cloud virtual machine instances to be shared, iterated, automated as needed and for software development practices to be applied to your infrastructure.
+### Deploying a Second Compute Node on AWS with Terraform
 
-In this section of the tutorial, you will be deploying an additional compute node from your `head node` using Terraform.
+This guide walks you through creating a Terraform script to deploy a second compute node on AWS.
 
-> [!CAUTION]
-> In the following section, **you must request additional resources from the instructors**. This additional node will be experimental for testing your changes to your cluster before committing them to your active compute nodes. You will be deleting and reinitializing this instance often. Make sure you understand how to [Delete Instance](../tutorial1/README.md#troubleshooting).
+---
 
-## Install and Initialize Terraform
+## **Prerequisites**
 
-You will now prepare, install and initialize Terraform on your head node. You will define and configure a `providers.tf` file, to configure OpenStack instances (as Sebowa is an OpenStack based cloud).
+Before using Terraform, ensure the following are installed and configured on your local machine:
 
-1. Use your operating system's package manager to install Terraform
+1. [Download Terraform](https://www.terraform.io/downloads) and install it.
+2. [Download and configure AWS CLI](https://aws.amazon.com/cli/) on your machine.
 
-   This could be your workstation or one of your VMs. The machine must be connected to the internet and have access to your OpenStack workspace, i.e. https://sebowa.nicis.ac.za
-   * DNF / YUM
+Additionally, you must set up a **Terraform user** in AWS Identity and Access Management (IAM).
+
+---
+
+## **Creating an AWS IAM User**
+
+To create a user account in AWS IAM, follow these steps:
+
+1. Navigate to the AWS Management Console, search for **IAM**, and click to open the IAM dashboard.
+
+   <p align="center">
+      <img alt="IAM Dashboard" src="../documentation/resources/Screenshot 2024-11-23 153119.png" width=900 />
+   </p>
+
+   > **Note:** In this guide, a user already exists (hence "1 user" is displayed). If you're setting this up for the first time, the count will show as "0 users."
+
+2. Click the **Users** section, then select **Create User** on the right-hand side.
+
+3. Provide a name for the new user:
+   
+   <p align="center">
+      <img alt="Naming the user" src="../documentation/resources/Screenshot 2024-11-23 154358.png" width=900 />
+   </p>
+
+4. Assign the user to a group. If you don't have an existing group, create one.
+
+   <p align="center">
+      <img alt="Adding the user to a group" src="../documentation/resources/Screenshot 2024-11-23 154850.png" width=900 />
+   </p>
+
+5. Review the details and complete the user creation process. 
+
+   Once the user is successfully created, note down the **Access Key ID** and **Secret Access Key**, as these will be used for authentication.
+
+6. Configure these credentials in AWS CLI using the following command:
    ```bash
-   sudo yum update -y
+   aws configure
+ ## Creating a Terraform script
 
-   # Install package to manage repository configurations
-   sudo yum install -y dnf-plugins-core
+You have to create a main.tf file to write(It can be any name of your choice as long as t has the .tf extension)
 
-   # Add the HashiCorp Repo
-   sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+Run ***terraform init*** command in the root directory to initialize our Terraform project
 
-   sudo dnf install -y terraform
-   ```
-   * APT
-   ```bash
-   # Update package repository
-   sudo apt-get update
-   sudo apt-get install -y gnupg software-properties-common
+The terraform script looks like the one below
 
-   # Add HashiCorp GPG Keys
-   wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+<p align="center"><img alt="Naming the instance" src="../documentation/resources/Screenshot 2024-11-23 175158.png" width=900 /></p>
 
-   # Add the official HashiCorp Linux Repo
-   echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+> **_NOTE:_** The above picture is my Terraform script therefore yours does not have to look exactly the same 
 
-   ```
-   * Pacman
-   ```bash
-   # Arch
-   sudo pacman -S terraform
+You can run the command the following command if you want to peview the changes
+
+```bash
+   terrafrom plan
+```
+
+After writing the script run the following coammand to launch an instance
+
+```bash
+   terrafrom apply
    ```
 
-1. Create a Terraform directory, descend into it and Edit the `providers.tf` file
 
-   ```bash
-   mkdir terraform
-   cd terraform
-   vim providers.tf
-   ```
+If you want to delete your instance run the following command 
 
-1. You must specify a [Terraform Provider](https://registry.terraform.io/browse/providers)
-
-   These can vary from MS Azure, AWS, Google, Kubernetes etc... We will be implementing an OpenStack provider as this is what is implemented on the Sebowa cloud platform. Add the following to the `providers.tf` file.
-   ```conf
-   terraform {
-     required_providers {
-       openstack = {
-         source = "terraform-provider-openstack/openstack"
-         version = "1.46.0"
-       }
-     }
-   }
-   ```
-1. Initialize Terraform
-
-   From the folder with your provider definition, execute the following command:
-   ```bash
-   terraform init
-   ```
-
-## Generate `clouds.yml` and `main.tf` Files
-
-Generate and configure the `cloud.yml` file that will authenticate you against your Sebowa OpenStack workspace, and the `main.tf`files that will define how your infrastructure should be provisioned.
-
-1. Generate OpenStack API Credentials
-
-   From _your_ team's Sebowa workspace, navigate to `Identity` &rarr; `Application Credentials`, and generate a set of OpenStack credentials in order to allow you to access and authenticate against your workspace.
-
-   <p align="center"><img alt="OpenStack Application Credentials." src="./resources/openstack_application_creds.png" width=900 /></p>
-
-1. Download and Copy the `clouds.yml` File
-
-   Copy the `clouds.yml` file to the folder where you initialized terraform. The contents of the of which, should be _similar_ to:
-   ```config
-   # This is a clouds.yaml file, which can be used by OpenStack tools as a source
-   # of configuration on how to connect to a cloud. If this is your only cloud,
-   # just put this file in ~/.config/openstack/clouds.yaml and tools like
-   # python-openstackclient will just work with no further config. (You will need
-   # to add your password to the auth section)
-   # If you have more than one cloud account, add the cloud entry to the clouds
-   # section of your existing file and you can refer to them by name with
-   # OS_CLOUD=openstack or --os-cloud=openstack
-   clouds:
-     openstack:
-       auth:
-         auth_url: https://sebowa.nicis.ac.za:5000
-         application_credential_id: "<YOUR TEAM's APPLICATION CREDENTIAL ID"
-         application_credential_secret: "<YOUR TEAM's APPLICATION CREDENTIAL SECRET>"
-       region_name: "RegionOne"
-       interface: "public"
-       identity_api_version: 3
-       auth_type: "v3applicationcredential"
-   ```
-1. Create `main.tf` Terraform File
-   Inside your `terraform` folder, you must define a `main.tf` file. This file is used to identify the provider to be implemented as well as the compute resource configuration details of the instance we would like to launch.
-
-   You will need to define your own `main.tf` file, but below is an example of one such definition:
-   ```config
-   provider "openstack" {
-     cloud = "openstack"
-   }
-   resource "openstack_compute_instance_v2" "terraform-demo-instance" {
-     name = "scc24-arch-cn03"
-     image_id = "33b938c8-6c07-45e3-8f2a-cc8dcb6699de"
-     flavor_id = "4a126f4f-7df6-4f95-b3f3-77dbdd67da34"
-     key_pair = "nlisa at mancave"
-     security_groups = ["default", "ssc24_sq"]
-
-     network {
-       name = "nlisa-vxlan"
-     }
-   }
-   ```
-
-> [!NOTE]
-> You must specify your own variables for `name`, `image_id`, `flavor_id`, `key_pair` and `network.name`.
-
-## Generate, Deploy and Apply Terraform Plan
-
-1. Generate and Deploy Terraform Plan
-   Create a Terraform plan based on the current configuration. This plan will be used to implement changes to your Sebowa OpenStack cloud workspace, and can be reviewed before applying those changes.
-   Generate a plan and write it to disk:
-   ```bash
-   terraform plan -out ~/terraform/plan
-   ```
-
-1. Once you are satisfied with the proposed changes, deploy the terraform plan:
-   ```bash
-   terraform apply ~terraform/plan
-   ```
-
-1. Verify New Instance Successfully Created by Terraform
-   Finally confirm that your new instance has been successfully created. On your Sebowa OpenStack workspace, navigate to `Project` &rarr; `Compute` &rarr; `Instances`.
+```bash
+   terrafrom destroy
+```
 
 > [!TIP]
 > To avoid losing your team's progress, it would be a good idea to create a GitHub repo in order for you to commit and push your various scripts and configuration files.
