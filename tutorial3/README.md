@@ -18,8 +18,7 @@ Student Cluster Competition - Tutorial 3
     1. [Configuring and Running HPL with Intel oneAPI Toolkit and MKL](#configuring-and-running-hpl-with-intel-oneapi-toolkit-and-mkl)
 1. [LinPACK Theoretical Peak Performance](#linpack-theoretical-peak-performance)
     1. [Top500 List](#top500-list)
-1. [Spinning Up a Second Compute Node Using a Snapshot](#spinning-up-a-second-compute-node-using-a-snapshot)
-    1. [Running HPL Across Multiple Nodes](#running-hpl-across-multiple-nodes)
+1. [Running HPL Across Multiple Nodes](#running-hpl-across-multiple-nodes)
 1. [HPC Challenge](#hpc-challenge)
 1. [Application Benchmarks and System Evaluation](#application-benchmarks-and-system-evaluation)
     1. [GROMACS (ADH Cubic)](#gromacs-adh-cubic)
@@ -595,16 +594,6 @@ The [TOP500 list](https://top500.org/lists/top500/2024/06/) is a project that ra
 
 > [!IMPORTANT]
 > You do **NOT** need to try and Rank you VM's HPL performance. Cores and threads are used interchangeably in this context. Following the recommended configuration and guides, your head node has one CPU package with two compute cores (or threads). Continuing this same analogy, your compute node has one CPU with six cores (or threads).
-
-# Spinning Up a Second Compute Node Using a Snapshot
-
-At this point you are ready to run HPL on your cluster with two compute nodes. From your OpenStack workspace, navigate to `Compute` &rarr; `Instances` and create a snapshot from your compute node.
-
-Launch a new instance, as you did in [Tutorial 1](../tutorial1/README.md#launch-a-new-instance) and [Tutorial 2](../tutorial2/README.md#spinning-up-a-compute-node-on-sebowaopenstack) only this time you'll be using the snapshot that you have just created as boot source.
-
-<p align="center"><img alt="OpenStack create instance from Snapshot." src="./resources/openstack_instance_snapshot.png" width=900 /></p>
-
-Pay careful attention to the hostname, network and other configuration settings that may be specific to and may conflict with your initial node. Once your two compute nodes have been successfully deployed, are accessible from the head node and added to your MPI `hosts` file, you can continue with running HPL across multiple nodes.
 
 ## Running HPL Across Multiple Nodes
 
