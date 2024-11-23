@@ -17,19 +17,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
 1. [Network Primer](#network-primer)
     1. [Basic Networking Example (WhatIsMyIp.com)](#basic-networking-example-whatismyipcom)
     1. [Terminal, Windows MobaXTerm and PowerShell Commands](#terminal-windows-mobaxterm-and-powershell-commands)
-1. [Launching your First Open Stack Virtual Machine Instance](#launching-your-first-open-stack-virtual-machine-instance)
-    1. [Accessing the NICIS Cloud](#accessing-the-nicis-cloud)
-    1. [Verify your Teams' Project Workspace and Available Resources](#verify-your-teams-project-workspace-and-available-resources)
-    1. [Generating SSH Keys](#generating-ssh-keys)
-    1. [Launch a New Instance](#launch-a-new-instance)
-    1. [Linux Flavors and Distributions](#linux-flavors-and-distributions)
-        1. [Summary of Linux Distributions](#summary-of-linux-distributions)
-    1. [OpenStack Instance Flavors](#openstack-instance-flavors)
-    1. [Networks, Ports, Services and Security Groups](#networks-ports-services-and-security-groups)
-    1. [Key Pair](#key-pair)
-    1. [Verify that your Instance was Successfully Deployed and Launched](#verify-that-your-instance-was-successfully-deployed-and-launched)
-    1. [Associating an Externally Accessible IP Address](#associating-an-externally-accessible-ip-address)
-    1. [Troubleshooting](#troubleshooting)
+1. Launching your First AWS EC2 instance
 1. [Introduction to Basic Linux Administration](#introduction-to-basic-linux-administration)
     1. [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
     1. [Running Basic Linux Commands and Services](#running-basic-linux-commands-and-services)
@@ -146,228 +134,87 @@ You should familiarize yourself with a few basic networking commands that can be
 > [!TIP]
 > Refer to the [Q&A Discussion on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/48) for an example. Post a similar screenshot of your team executing these commands as a comment to that discussion.
 
-# Launching your First Open Stack Virtual Machine Instance
+# **Creating a Cluster on AWS with Limited Resources**
 
-In this section you will be configuring and launching your first [Virtual Machine](https://en.wikipedia.org/wiki/Virtual_machine) instance. This allows you to use a portion of another computer's resources, to host another [Operating System](https://en.wikipedia.org/wiki/Operating_system) as though it were running on its own dedicated hardware resources. For example, your laptops or workstations are running a Windows-based operating system, you _"could"_ use a type of computer software [Hypervisor](https://en.wikipedia.org/wiki/Hypervisor), that runs and creates _virtual machines_, to run a Linux-based operating while your are in your Windows environment.
+This guide walks you through creating a basic cluster on AWS using the **free tier package**, leveraging the following resources:
 
-The physical servers that you will use to spawn your VM's are housed in Rosebank, Cape Town. We will verify this later using [WhatIsMyIp](https://www.whatismyip.com).
+- **Instance Type**: t2.micro
+- **Operating System**: RHEL 9
+- **Specifications**:
+  - 1 vCPU
+  - 1 GiB Memory
+  - 30 GiB EBS Storage
 
-## Accessing the NICIS Cloud
+---
 
-Open your web browser and navigate to the NICIS OpenStack Cloud platform  https://sebowa.nicis.ac.za/, and use the credentials that your team has been provided with to login into your team's project workspace.
+## **Step 1: Setting Up a Virtual Private Cloud (VPC)**
 
-<p align="center"><img alt="Sebowa.nicis.ac.za NICIS OpenStack Cloud." src="./resources/openstack_login.png" width=600 /></p>
+### **1.1 Access the VPC Dashboard**
+1. In the AWS Management Console, search for **VPC** in the search bar.
+2. Navigate to the **VPC Dashboard**. You'll notice a **default VPC**. Ignore it; we'll create a custom VPC.
+3. Click the **Create VPC** button.
 
-## Verify your Teams' Project Workspace and Available Resources
+<p align="center"><img alt="VPC Dashboard" src="../documentation/resources/Screenshot%202024-11-18%20110534.png" width=900 /></p>
 
-Once you've successfully logged in, navigate to `Computer -> Overview` and verify that the Project Workspace corresponds to _YOUR TEAM_ and that you've been allocated the correct number of resources.
+### **1.2 Configure the VPC**
+1. Select **VPC and More**.
+2. Set the **name** of your VPC and specify the **CIDR block** (e.g., `10.0.0.0/16`).
+3. Turn on **Auto-Generate CIDR Blocks** for simplicity.
+4. Leave the **IPv6** and **Tenancy** settings as default.
 
-> [!NOTE]
-> The following screenshot is for illustration purposes only, your actual available resources _may_ differ.
-<p align="center"><img alt="Sebowa.nicis.ac.za NICIS OpenStack Cloud available resources." src="./resources/openstack_overview.png" width=900 /></p>
+<p align="center"><img alt="VPC Configuration" src="../documentation/resources/Screenshot%202024-11-18%20112244.png" width=900 /></p>
 
-## Generating SSH Keys
+5. Choose:
+   - **1 Availability Zone**
+   - **1 Public Subnet**
+   - **1 Private Subnet**
+6. Assign CIDR blocks to the public and private subnets. AWS will automatically configure NAT gateways and routing as needed.
 
-Over the course of the lecture content and the tutorials, you will be making extensive use of [Secure Shell (SSH)](https://en.wikipedia.org/wiki/Secure_Shell) which grants you a [Command-Line Interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface) with which to access your VMs. SSH keys allows you to authenticate against a remote SSH server, without the use of a password.
+<p align="center"><img alt="Subnets Configuration" src="../documentation/resources/Screenshot%202024-11-18%20112307.png" width=900 /></p>
 
-> [!IMPORTANT]
-> When you are presented with foldable code blocks, you must pick and implement only **one** of the options presented, which is suitable to your current configuration and/or circumstance.
+---
 
-> [!TIP]
-> A number [encryption algorithms](https://en.wikipedia.org/wiki/Public-key_cryptography) exist for securing your SSH connections. [Elliptic Curve Digital Signature Algorithm (ECDSA)](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) is secure and simple enough should you need to copy the public key manually. Nonetheless, you are free to use whichever algorithm you choose to.
+## **Step 2: Launching a Headnode Instance**
 
-From the `Start` menu, open the Windows `PowerShell` application:
-These commands are the same if you are commenting from a Linux, Unix or MacOS Terminal, and Moba XTerm.
-1. Generate an SSH key pair:
-   ```bash
-   ssh-keygen -t ed25519
-   ```
-1. When prompted to _"Enter file in which to save the key"_, press `Enter`,
-1. When prompted to _"Enter a passphrase"_, press `Enter`, and `Enter` again to verify it.
+### **2.1 Access the EC2 Dashboard**
+1. In the AWS Management Console, search for **EC2**.
+2. Navigate to the **EC2 Dashboard**.
 
-   <p align="center"><img alt="Windows Powershell SSH Keygen." src="./resources/windows_powershell_sshkeygen.png" width=900 /></p>
+<p align="center"><img alt="EC2 Dashboard" src="../documentation/resources/Screenshot%202024-11-18%20112244.png" width=900 /></p>
 
-> [!TIP]
-> Below is an example using Windows PuTTY. It is hidden and you must click the heading to reveal it's contents. You are strongly encourage to use either Windows PowerShell or Moba XTerm instead.
+### **2.2 Create the Instance**
+1. Click **Launch Instance** and provide the following details:
+   - **Name**: Headnode
+   - **AMI**: Red Hat Enterprise Linux (RHEL) 9
+   - **Instance Type**: t2.micro
+2. Configure **Key Pair**:
+   - Use an existing key pair or create a new one.
+3. Edit **Network Settings**:
+   - Select the VPC you created earlier.
+   - Assign the **public subnet** to the instance.
+   - Enable **Auto-assign Public IP** for SSH access.
+4. Set up the **Security Group**:
+   - Create a new security group and name it appropriately.
+   - Add rules to allow the following:
+     - **SSH (port 22)**: For remote access.
+     - **Custom ICMP-IPv4**: For ping and network communication.
+     - **NFS Ports**:
+       - TCP 2049, UDP 2049
+       - TCP 111, UDP 111
+       - TCP 20048
+   - Restrict traffic using appropriate CIDR blocks.
 
-<details>
-<summary>Windows PuTTY</summary>
+<p align="center"><img alt="Security Group Rules" src="../documentation/resources/Screenshot%202024-11-18%20124934.png" width=900 /></p>
 
-[PuTTY](https://putty.org/) is a Windows-based SSH and Telnet client. From the `Start` menu, open the `PuTTYgen` application.
-1. Generate an SSH key pair using the `Ed25519` encryption algorithm.
-1. Generate the necessary entropy by moving your mouse pointer over the `Key` section until the green bar is filled.
-   <p align="center"><img alt="PuTTYgen Generate." src="./resources/windows_puttygen_generate.png" width=900 /></p>
-1. Proceed to **Save** both the `Private Key` and `Public Key`.
-   <p align="center"><img alt="PuTTYgen Generate Save." src="./resources/windows_puttygen_save.png" width=900 /></p>
-</details>
+5. Configure **Storage**:
+   - Allocate at least 6 GiB for the instance.
 
-You **MUST** take note of the location and paths to **BOTH** your public and private keys. Your public key will be shared and distributed to the SSH servers you want to authenticate against. Your private key must be kept secure within your team, and must not be shared or distributed to anyone.
+<p align="center"><img alt="Storage Configuration" src="../documentation/resources/Screenshot%202024-11-18%20130112.png" width=900 /></p>
 
-Once you have successfully generated an SSH key pair, navigate to `Compute` &rarr; `Key Pairs` and import the **public** key `id_ed25519.pub` into your Team's Project Workspace within OpenStack.
+6. Click **Launch Instance**.
 
-<p align="center"><img alt="Import id_25519.pub into OpenStack." src="./resources/openstack_import_public_key_highlight.png" width=900 /></p>
+---
 
-## Launch a New Instance
-
-From your Team's OpenStack Project Workspace, navigate to `Compute` &#8594; `Instance` and click `Launch Instance**.
-
-<p align="center"><img alt="OpenStack Launch New Instance." src="./resources/openstack_launch_instance_highlight.png" width=900 /></p>
-
-Within the popup window, enter an appropriate name for your instance that will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be **head node**.
-
-## Linux Flavors and Distributions
-
-After configuring your new VM name under instance details, you will need to select the template that will be used to create the instance from the *Source* menu. Before selection a [Linux Operating System Distribution](https://en.wikipedia.org/wiki/Linux_distribution) for your new instance, ensure that the default *Source* options are correctly configured:
-1. *Select Boot Source* is set to `Image`,
-1. *Create New Volume* is `Yes`,
-1. *Delete Volume on Instance Delete* is `No`, and
-1. *Volume Size (GB)* will be set when you configure the instance flavor.
-
-There are a number of considerations that must be taken into account when selecting a Linux distribution that will be appropriate for your requirements and needs. [Since June 2017](https://www.top500.org/statistics/details/osfam/1/) **all** of the systems on the Top500 list make use of a Linux-based Operating System. Familiarity and proficiency with Linux-based operating systems and their derivatives is a mandatory requirement for gaining expertise in Software Development, Systems Administration and Networking.
-
-An argument could be made, that the best way to acquire Linux systems administration skills, is to make daily use of a Linux Distribution by running it on your personal laptop, desktop or workstation at home / school.
-
-This is something for you and your team to investigate after the competition and will not be covered in these tutorials. If you feel that you are not comfortable completely migrating to a Linux-based environment, there are a number of methods that can be implemented to assist you in transitioning from Windows to a Linux (or macOS) based *'Daily Driver*:
-* Dual-boot Linux alongside your Windows environment,
-* Windows Subsystem for Linux [(WSL)](https://learn.microsoft.com/en-us/linux/install),
-* Running Linux VM's locally within your Windows environment,
-* Running Linux VM's through cloud-based solutions, and Virtual Private Servers [(VPS)](https://en.wikipedia.org/wiki/Virtual_private_server), as you are doing for the competition. There are many commercial and free-tier services available, e.g. [Amazon AWS](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsf.Free%20Tier%20Types=*all&awsf.Free%20Tier%20Categories=*all), [Google Cloud](https://cloud.google.com/free) and [Microsoft Azure](https://azure.microsoft.com/en-us/free).
-
-### Summary of Linux Distributions
-
-A Linux distribution, is a collection of software that is at the very leased comprised of a [Linux kernel](https://en.wikipedia.org/wiki/Linux_kernel) and a [package manager](https://en.wikipedia.org/wiki/Package_manager). A package manager is responsible for automating the process of installing, configuring, upgrading, downgrading and removing software programs and associated components from a computer's operating system.
-
-A number of considerations must be taken into account when deciding on choice of Linux distro as a *'daily driver'* and as well as a server. There are subtleties and nuances between the various Linux flavors. These vary from a number of factors, not least of which including:
-* Support - is the project well documented and do the developers respond to queries,
-* Community - is there a large and an active userbase,
-* Driver Compatibility - will the distro *'natively'* run on your hardware without workarounds or custom compilation / installation of various device drivers,
-* Stability and Maturity - is the intended distro and version currently actively supported and maintained, not 'End of Life' and verified to run across a number of different systems and environment configurations. Or do you intend to run a *'bleeding-edge'* distro so that you may in the future, influence the direction of application development and assist developers in identifying bugs in their releases...
-
-You and your Team, together with input and advise from your mentors, must do some research and depending on the intended use case, decide which will be the best choice.
-
-The following list provides a few examples of Linux distros that *may* be available on the Sebowa OpenStack cloud for you to use, and that you *might* consider using as a *'daily driver'*.
-
-> [!TIP]
-> You do not need to decide right now which Linux Flavor you and your team will be installing on you personal / school laptop and desktop computers. The list and corresponding links are provided for later reference, however for the time being you are strongly encouraged to proceed with **Rocky 9.3 image**. If you are already using or familiar with Linux, discuss this with the instructors who will advise you on how to proceed.
-
-* **RPM** or Red Hat Package Manager is a free and open-source package management system. The name RPM refers to the `.rpm` file format and the package manager program itself. Examples include [Red Hat Enterprise Linux](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux), [Rocky Linux](https://rockylinux.org/), [Alma Linux](https://almalinux.org/), [CentOS Stream](https://www.centos.org/centos-stream/) and [Fedora](https://fedoraproject.org/). You can't go wrong with choose of either Red Hat, Alma, ***Rocky*** or CentoS Stream for the competition. You manage packages through tools such at `yum` (Yellowdog Updater, Modified) and / or `dnf` (Dandified YUM).
-
-* **Zypper** is the package manager used by [openSUSE](https://www.opensuse.org/), [SUSE Linux Enterprise (SLE)](https://www.suse.com/), and related distributions. This is another good choice for beginners, however openSUSE is not available as an image for the competition.
-
-* **APT**: In Debian-based distributions, the installation and removal of software are generally managed through the package management system known as the Advanced Package Tool (APT). Examples include [Debian](https://www.debian.org/), [Ubuntu](https://ubuntu.com/), [Linux Mint](https://linuxmint.com/), [Pop! OS](https://pop.system76.com/) and [Kali Linux](https://www.kali.org/). Debian or Ubuntu Based Linux distributions are fantastic options for beginners. If one of your team members are already using such a system, then you are advised to use the provided Ubuntu image for the competition.
-
-* **PkgTool** is a menu-driven package maintenance tool provided with the [Slackware Linux distribution](http://www.slackware.com/). Listed here for interest, not recommended for beginners.
-
-* **Pacman** is a package manager that is used in the [Arch Linux](https://archlinux.org/) distribution and its derivatives such as [Manjaro](https://manjaro.org/). Not recommended for beginners.
-
-* **Portage** is a package management system originally created for and used by  [Gentoo Linux](https://www.gentoo.org/) and also by ChromeOS. Definitely not recommended for beginners.
-
-* **Source-Based**: [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/) is a project that teaches you how to create your own Linux system from source code, using another Linux system. Learn how to install, configure and customize LFS and BLFS, and use tools for automation and management. Once you are **very** familiar with Linux, LFS is an excellent medium term side project that you peruse in you own time. Only Linux experts need apply.
-
-Type *"Rocky"* in the search bar, and select the **Rocky-9.3** cloud image as a boot source.
-
-<p align="center"><img alt="OpenStack Select Source." src="./resources/openstack_source_image.png" width=900 /></p>
-
-## OpenStack Instance Flavors
-
-An important aspect of system administration is resource monitoring, management and utilization. Each Team will be required to manage their available resources and ensure that the resources of their clusters are utilized in such a way as to maximize system performance. You have been allocated a pool of resources which you will need to decide how you are going to allocate the sizing of the compute, memory and storage across your head node and compute node(s).
-
-1. Compute (vCPUs)
-   You have been allocated a pool totaling **18 vCPUs**, which would permit the following configurations:
-   1. Head Node (2 vCPUs) and 2 x Compute Nodes (8 vCPUs each),
-   1. Head node (6 vCPUs) and 2 x Compute Nodes (6 vCPUs each),
-   1. Head node (10 vCPUs) and 1 x Compute Node (8 vCPUs).
-
-1. Memory (RAM)
-   You have been allocated a pool totaling **36 GB** of RAM, which would permit the following configurations:
-   1. Head Node (4 GB RAM) and 2 x Compute Nodes (16 GB RAM each),
-   1. Head node (12 GB RAM) and 2 x Compute Nodes (12 GB RAM each),
-   1. Head node (20 GB RAM) and 1 x Compute Node (16 GB RAM).
-
-1. Storage (DISK)
-   You have been allocated a pool of 50 GB of storage, which can be distributed in the following configurations:
-   1. Head Node (60 GB of storage) and 2 x Compute Nodes (10 GB of storage each),
-   1. Head Node (60 GB of storage) and 2 x Compute Nodes (10 GB of storage each), and
-   1. Head Node (60 GB of storage) and 1 x Compute Node (10 GB of storage).
-
-The following table summarizes the various permutations and allocations that can be used for designing your clusters within your Team's Project Workspace on Sebowa's OpenStack cloud platform.
-
-| Cluster Configurations     | Instance Flavor | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
-|----------------------------|:---------------:|:---------------:|:------------:|:--------------:|
-|                            |                 |                 |              |                |
-| Dedicated Head Node        | scc24.C2.M4.S60    | 2               | 4 GB         | 60 GB          |
-| Compute Node 01            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
-| Compute Node 02            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
-|                            |                 |                 |              |                |
-|                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C6.M12.S60    | 6               | 12 GB        | 60 GB          |
-| Compute Node 01            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
-| Compute Node 02            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
-|                            |                 |                 |              |                |
-|                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C10.M20.S60   | 10              | 20 GB        | 60 GB          |
-| Compute Node 01            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
-|                            |                 |                 |              |                |
-
-Type *"scc"* in the search bar and select the **scc24.C2.M4.S60** instance flavor.
-
-<p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_instance_flavor.png" width=900 /></p>
-
-> [!TIP]
-> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of starting with this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the **scc24.C2.M4.S60** flavor with *2 vCPUs* and *4 GB RAM*.
-
-## Networks, Ports, Services and Security Groups
-
-Under the *Networks* settings, make sure to select the `vxlan` that corresponds to your Team Name.
-
-<p align="center"><img alt="OpenStack Networks Selection." src="./resources/openstack_networks.png" width=900 /></p>
-
-No configurations are required for *Network Ports*, however you must ensure that you have selected `scc24_sg` under *Security Groups*.
-
-<p align="center"><img alt="OpenStack Security Groups Selection." src="./resources/openstack_security_groups.png" width=900 /></p>
-
-## Key Pair
-
-> [!CAUTION]
-> You must ensure that you associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance
-><p align="center"><img alt="OpenStack Key Pair Selection." src="./resources/openstack_key_pair_select.png" width=900 /></p>
-
-## Verify that your Instance was Successfully Deployed and Launched
-
-Congratulations! Once your VM instance has completed it's building, block device mapping  and deployment phase, and if your *Power State* indicates `Running`, then you have successfully launched your very first OpenStack instance.
-
-<p align="center"><img alt="OpenStack Running State." src="./resources/openstack_running.png" width=900 /></p>
-
-## Associating an Externally Accessible IP Address
-
-In order for you to be able to SSH into your newly created OpenStack instance, you'll need to associate a publicly accessible [Floating IP](https://kb.leaseweb.com/network/floating-ips/using-floating-ips) address. This allocates a *virtual IP* address to your *virtual machine*, so that you can access it directly from your laboratory workstation.
-
-1. Select ***Associate Floating IP*** from the *Create Snapshot* dropdown menu, just below the *Actions* tab:
-   <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_associate_floating_ip.png" width=900 /></p>
-1. From the *Manage Floating IP Associations* dialog box, click the "➕" and select *publicnet*:
-   <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_public_net.png" width=900 /></p>
-1. Select the `154.114.57.*` IP address allocated and click on the *Associate* button.
-   <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_added_floating_ip.png" width=900 /></p>
-
-## Troubleshooting
-
-> [!CAUTION]
-> The following section is strictly for debugging and troubleshooting purposes. You **MUST** discuss your circumstances with an instructor before proceeding with this section. If you have successfully launched your head node, proceed to the [Intro on Basic Sys Admin](#introduction-to-basic-linux-administration).
-
-* Deleting Instances
-  - When all else fails and you would like to reattempt the creation of your nodes from a clean start, Select the VM you want to remove and click `Delete Instance` from the drop down menu.
-  - Occasionally you may find yourself accidentally deleting a VM instance. Do not despair, by default `no` is selected on `Delete Volume on Instance Delete` this will leave your storage `volume` intact and you can recover it by launching a new instance from the `volume`. Details will be provided later in [Tutorial 3](#spinning-up-a-second-compute-node).
-  <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_troubleshooting_delete_instance.png" width=900 /></p>
-
-* Deleting Volumes
-
-  When a VM's storage `volume` lingers behind after intentionally deleting a VM, you will need to go to manually remove the volume from your work space.
-  <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_troubleshooting_delete_volume.png" width=900 /></p>
-
-* Dissociating Floating IP
-
-  If your VM is deleted then the floating IP associated with that deleted VM will stay in your project under `Networks -> Floating IPs` for future use. Should you accidentally associate your floating IP to one of your compute nodes, dissociate it as per the diagram below, so that it may be allocated to your head node. Selecting the floating IP and clicking `Release Floating IPs` will send the floating IP back to the pool and you can call a tutor to help you get back your IP.
-  <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_troubleshooting_dissociate_float_ip.png" width=900 /></p>
 
 # Introduction to Basic Linux Administration
 
