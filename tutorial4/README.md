@@ -1058,71 +1058,116 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
 >
 > Consider how you could streamline this process even further using preconfigured instance snapshots, as well as  Ansible after your instances have been deployed.
 
--------------------------------------------------------------------------------------------------------------------------------------
-
 # How to use Ansible and GitHub Actions to run HPL
 
 To run the High-Performance Linpack (HPL) benchmark using Ansible and GitHub Actions, you can follow these steps:
 
-### 1. **Set Up Your GitHub Repository**
-1. **Create a new repository** on GitHub or use an existing one.
-2. **Add your Ansible playbooks** and inventory files to the repository. For example, your playbook might look like this:
+## **Step 1: Set up a GitHub Repo**
+1. Create a Github Repository or you can navigate to an existing Repository.
 
+2. In your Repo, navigate to **Settings** → **Security** → **Secrets and variables** → **Actions**.
+
+3. Click on **New repository secret**, for the title fill in "SSH_PRIVATE_KEY" and for the secrete, fill in the private key you use to connect to the cluster.
+
+<p align="center"><img alt="Creating Github Actions secretes" src="./resources/setting_up_secrets.png" width=900 /></p>
+
+
+## **Step 2: Create a Bash script, Ansible playbook and an Inventory file**
+ Click on **<>Code** in the navigation bar on top of the page.
+
+### Bash script ###
+1. Create a file called : `ansible/run_hpl.sh`
+
+2. Example of file contents: 
+```bash
+#!/bin/bash
+
+# Navigate to the directory that contains your hpl binary file
+cd /home/rocky/hpl/bin/compile_BLAS_MPI/
+
+# Run the HPL benchmark with srun
+srun -n16 ./xhpl
+```
+### Ansible playbook ###
+1. Create a file called `ansible/playbook.yml`
+
+2. Example of file contents: 
 ```yaml
----
 - name: Run HPL benchmark
   hosts: all
-  become: yes
   tasks:
-    - name: Install necessary packages
-      apt:
-        name: "{{ item }}"
-        state: present
-      with_items:
-        - hpl
-        - mpich
-    - name: Run HPL
-      command: mpirun -np 4 xhpl
+    - name: Copy the run_hpl.sh script to remote machine
+      copy:
+        src: run_hpl.sh  # Path to the script in the repo
+        dest: /home/rocky/run_hpl.sh  # Destination path on the remote machine
+        mode: '0755'  # Make the script executable
+
+    - name: Run HPL benchmark
+      shell: |
+        source /home/rocky/.profile
+        /home/rocky/run_hpl.sh
+      become: yes
+```
+### Ansible Inventory File ###
+1. Create a file called `ansible/inventory`
+
+2. Example of file contents:
+```yaml
+[headnode]
+# Only the head node's IP
+154.114.57.146 ansible_user=rocky
 ```
 
-### 2. **Create a GitHub Actions Workflow**
+## **Step 3: Create a Github Actions Workflow**
+1. Click on **<>Code** in the navigation bar on top of the page.
 
-1. **Create a workflow file** in the `.github/workflows` directory of your repository. Name it something like `run_hpl.yml`.
+2. Create a file called:  `.github/workflows/run_hpl.yml`
 
+3. Example of file contents:
 ```yaml
-name: Run HPL Benchmark
+name: Run Ansible Playbook
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  run-hpl:
+  ansible:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-
-    - name: Install Ansible
+    - name: Set up SSH
       run: |
-        python3 -m pip install --upgrade pip
-        pip3 install ansible
+        # Ensure the .ssh directory exists
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+
+        # Write the private key to the correct location
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+        # Add known hosts to the .ssh directory
+        echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+        chmod 644 ~/.ssh/known_hosts
+
+    - name: Test SSH Connection
+      run: |
+        ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no rocky@154.114.57.146 "echo Connected!"
 
     - name: Run Ansible Playbook
-      run: ansible-playbook playbook.yml -i inventory
+      run: ansible-playbook ansible/playbook.yml -i ansible/inventory
 ```
+5. **Commit changes** and push.
 
-### 3. **Handle Sensitive Data**
-- **Store sensitive data** like SSH keys or passwords in GitHub Secrets. You can access these secrets in your workflow using `${{ secrets.YOUR_SECRET_NAME }}`.
+## **Final Remarks**
 
-### 4. **Deploy and Run the Playbook**
-- **Push your changes** to the repository. This will trigger the GitHub Actions workflow, which will run your Ansible playbook and execute the HPL benchmark on the specified hosts.
+After pushing the workflow file, the hpl benchmark will run on all nodes if slurm and openmpi are configured correctly. To confirm if the benchmark is running you can check your cluster monitoring software (Graphana) or do a classic htop/btop on the compute nodes.
 
-By following these steps, you can automate the deployment and execution of the HPL benchmark using Ansible and GitHub Actions, ensuring a consistent and reproducible setup[1](https://spacelift.io/blog/github-actions-ansible)[2](https://linuxbuz.com/devops/use-ansible-with-github-actions).
+The github action workflow is triggered on push commands, this means that if any code is pushed to the Repo, the hpl benchmark will run.
 
 --------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1374,3 +1419,6 @@ Using a batch script similar to the one above, run the benchmark. You may modify
 
 > [!NOTE]
 > Please be ready to present the `gromacs_log` files for the **1.5M_water** benchmark to the instructors.
+
+
+[def]: ./resources/circleci_successful_deploy.png"
