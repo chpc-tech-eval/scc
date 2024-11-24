@@ -596,15 +596,50 @@ The [TOP500 list](https://top500.org/lists/top500/2024/06/) is a project that ra
 > [!IMPORTANT]
 > You do **NOT** need to try and Rank you VM's HPL performance. Cores and threads are used interchangeably in this context. Following the recommended configuration and guides, your head node has one CPU package with two compute cores (or threads). Continuing this same analogy, your compute node has one CPU with six cores (or threads).
 
-# Spinning Up a Second Compute Node Using a Snapshot
+# Spinning Up a Second Compute Node on AWS Using a Snapshot
 
-At this point you are ready to run HPL on your cluster with two compute nodes. From your OpenStack workspace, navigate to `Compute` &rarr; `Instances` and create a snapshot from your compute node.
+To launch a compute node using a snapshot, follow these steps:
 
-Launch a new instance, as you did in [Tutorial 1](../tutorial1/README.md#launch-a-new-instance) and [Tutorial 2](../tutorial2/README.md#spinning-up-a-compute-node-on-sebowaopenstack) only this time you'll be using the snapshot that you have just created as boot source.
+## Step 1: Create a Snapshot
+Start by creating a snapshot of the volume you want to use.
 
-<p align="center"><img alt="OpenStack create instance from Snapshot." src="./resources/openstack_instance_snapshot.png" width=900 /></p>
+1. Navigate to the **Volumes** section in the AWS Management Console.
+2. Select the volume you want to create a snapshot from.
 
-Pay careful attention to the hostname, network and other configuration settings that may be specific to and may conflict with your initial node. Once your two compute nodes have been successfully deployed, are accessible from the head node and added to your MPI `hosts` file, you can continue with running HPL across multiple nodes.
+<p align="center">
+  <img alt="The dashboard of the volumes" src="./resources/Screenshot 2024-11-24 164708.png" width="300" />
+</p>
+
+3. Click on the **Action** tab in the top-right corner and select **Create Snapshot**.
+
+<p align="center">
+  <img alt="Creating snapshot" src="./resources/Screenshot 2024-11-24 164732.png" width="300" />
+</p>
+
+## Step 2: Wait for the Snapshot to Complete
+1. After creating the snapshot, its status will initially show as **Pending**.
+2. Wait for the status to change to **Completed**.
+
+## Step 3: Create an Image from the Snapshot
+1. Once the snapshot is complete, select it.
+2. Click the **Action** button and choose **Create Image**.
+
+<p align="center">
+  <img alt="Creating an image from snapshot" src="./resources/Screenshot 2024-11-24 164732.png" width="300" />
+</p>
+
+## Step 4: Launch a New Instance
+1. Use the AMI (Amazon Machine Image) created from the snapshot to launch a new instance.
+2. During the instance launch process, select the AMI you created from the snapshot.
+
+<p align="center">
+  <img alt="Selecting the AMI that you have created" src="./resources/Screenshot 2024-11-24 165302.png" width="300" />
+</p>
+
+---
+
+You have now successfully created a snapshot and launched a new compute node using the AMI created from it.
+
 
 ## Running HPL Across Multiple Nodes
 
