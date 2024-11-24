@@ -4,32 +4,33 @@
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
 1. [Checklist](#checklist)
-1. [Cluster Monitoring](#cluster-monitoring)
+2. [Cluster Monitoring](#cluster-monitoring)
     1. [Install Docker Engine, Containerd and Docker Compose](#install-docker-engine-containerd-and-docker-compose)
-    1. [Installing your Monitoring Stack](#installing-your-monitoring-stack)
-    1. [Startup and Test the Monitoring Services](#startup-and-test-the-monitoring-services)
-    1. [SSH Port Local Forwarding Tunnel](#ssh-port-local-forwarding-tunnel)
-    1. [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
-    1. [Success State, Next Steps and Troubleshooting](#success-state-next-steps-and-troubleshooting)
-1. [Configuring and Connecting to your Remote JupyterLab Server](#configuring-and-connecting-to-your-remote-jupyterlab-server)
+    2. [Installing your Monitoring Stack](#installing-your-monitoring-stack)
+    3. [Startup and Test the Monitoring Services](#startup-and-test-the-monitoring-services)
+    4. [SSH Port Local Forwarding Tunnel](#ssh-port-local-forwarding-tunnel)
+    5. [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
+    6. [Success State, Next Steps and Troubleshooting](#success-state-next-steps-and-troubleshooting)
+3. [Configuring and Connecting to your Remote JupyterLab Server](#configuring-and-connecting-to-your-remote-jupyterlab-server)
     1. [Visualize Your HPL Benchmark Results](#visualize-your-hpl-benchmark-results)
-    1. [Visualize Your Qiskit Results](#visualize-your-qiskit-results)
-1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
+    2. [Visualize Your Qiskit Results](#visualize-your-qiskit-results)
+4. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
     1. [Install and Initialize Terraform](#install-and-initialize-terraform)
-    1. [Generate `clouds.yml` and `main.tf` Files](#generate-cloudsyml-and-maintf-files)
-    1. [Generate, Deploy and Apply Terraform Plan](#generate-deploy-and-apply-terraform-plan)
-1. [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
+    2. [Generate `clouds.yml` and `main.tf` Files](#generate-cloudsyml-and-maintf-files)
+    3. [Generate, Deploy and Apply Terraform Plan](#generate-deploy-and-apply-terraform-plan)
+5. [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
     1. [Prepare GitHub Repository](#prepare-github-repository)
-    1. [Reuse `providers.tf` and `main.tf` Terraform Configurations](#reuse-providerstf-and-maintf-terraform-configurations)
-    1. [Create `.circleci/config.yml` File and `push` Project to GitHub](#create-circleciconfigyml-file-and-push-project-to-github)
-    1. [Create CircleCI Account and Add Project](#create-circleci-account-and-add-project)
-1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
+    2. [Reuse `providers.tf` and `main.tf` Terraform Configurations](#reuse-providerstf-and-maintf-terraform-configurations)
+    3. [Create `.circleci/config.yml` File and `push` Project to GitHub](#create-circleciconfigyml-file-and-push-project-to-github)
+    4. [Create CircleCI Account and Add Project](#create-circleci-account-and-add-project)
+6. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
     1. [Prerequisites](#prerequisites)
-    1. [Head Node Configuration (Server)](#head-node-configuration-server)
-    1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
-1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
+    2. [Head Node Configuration (Server)](#head-node-configuration-server)
+    3. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
+7. [GROMACS Application Benchmark](#gromacs-application-benchmark)
     1. [Protein Visualization](#protein-visualization)
-    1. [Benchmark 2 (1.5M Water)](#benchmark-2-15m-water)
+    2. [Benchmark 2 (1.5M Water)](#benchmark-2-15m-water)
+8. [Deploying a Kubernetes Cluster](#deploying-a-kubernetes-cluster)
 
 <!-- markdown-toc end -->
 
@@ -1305,3 +1306,746 @@ Using a batch script similar to the one above, run the benchmark. You may modify
 
 > [!NOTE]
 > Please be ready to present the `gromacs_log` files for the **1.5M_water** benchmark to the instructors.
+
+# Deploying a Kubernetes Cluster
+
+## Prerequisites
+
+### Operating System Requirements
+
+Ensure you have one or more machines running one of the following supported operating systems:
+
+- **Ubuntu** 16.04+
+- **Debian** 9+
+- **CentOS** 7
+- **Red Hat Enterprise Linux (RHEL)** 7
+- **Fedora** 25+
+- **HypriotOS** v1.0.1+
+- **Container Linux** (tested with 1800.6.0)
+
+### Hardware Requirements
+
+- **Memory**: 2 GB or more of RAM per machine
+
+- **CPU**: 2 CPUs or more per machine
+- **Networking**: Full network connectivity between all machines in the cluster (public or private network)
+
+### Node Uniqueness Requirements
+
+Each node must have:
+
+1. **Unique hostname**, MAC address, and product UUID:
+
+   - **MAC Address**: Check using:
+
+     ```bash
+     ip link
+     ```
+
+   - **Product UUID**: Check using:
+
+     ```bash
+     sudo cat /sys/class/dmi/id/product_uuid
+     ```
+
+> [!NOTE]  
+> Physical hardware typically has unique values. Virtual machines may share identical values, which can cause Kubernetes installation to fail.
+
+### Network Port Requirements
+Ensure the required ports are open on all machines. Refer to the images below for specific port configurations.
+
+
+**Disable Swap(used when the amount of physical memory (RAM) is full)**
+
+---
+
+## **[01] Update and Upgrade Ubuntu (all nodes)**
+
+Ensure that your system is up to date. Execute the following commands in a terminal:
+
+- Ubuntu/Debian (APT)
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+- RHEL/Rocky (DNF/YUM)
+
+```bash
+sudo dnf update -y
+```
+
+## **[02] Disable Swap (all nodes)**
+
+You must disable swap so that the [kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/) works properly.
+The kubelet is the primary "node agent" that runs on each node.
+
+Run the following commands on all nodes to disable all swap memory:
+```bash
+sudo swapoff -a
+sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+```
+
+## **[03] Add Kernel Parameters (all nodes)**
+
+Load the required kernel modules on all nodes:
+
+```bash
+sudo tee /etc/modules-load.d/containerd.conf <<EOF
+overlay
+br_netfilter
+EOF
+sudo modprobe overlay
+sudo modprobe br_netfilter
+```
+
+Configure the critical kernel parameters for Kubernetes using the following:
+
+```bash
+sudo tee /etc/sysctl.d/kubernetes.conf <<EOF
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+EOF
+```
+
+Then, reload the changes:
+
+```bash
+sudo sysctl --system
+```
+
+## **[04] Install Containerd Runtime (all nodes)**
+
+We are using the containerd runtime. Install containerd and its dependencies with the following commands:
+
+- Ubuntu/Debian (APT)
+
+```bash
+sudo apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
+```
+
+- RHEL/Rocky (DNF/YUM)
+
+```bash
+sudo dnf install -y yum-utils device-mapper-persistent-data lvm2
+```
+
+Enable the Docker repository:
+
+- Ubuntu/Debian (APT)
+
+```bash
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmour -o /etc/apt/trusted.gpg.d/docker.gpg
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+```
+
+- RHEL/Rocky (DNF/YUM)
+
+```bash
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+```
+
+Install containerd:
+
+- Ubuntu/Debian (APT)
+
+```bash
+sudo apt update
+sudo apt install -y containerd.io
+```
+
+- RHEL/Rocky (DNF/YUM)
+
+```bash
+sudo dnf install -y containerd.io
+```
+
+Configure containerd to start using systemd as cgroup:
+
+```bash
+containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
+sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+```
+
+Restart and enable the containerd service:
+
+```bash
+sudo systemctl restart containerd
+sudo systemctl enable containerd
+```
+
+## **[05] Install and Set Up kubectl on Linux (all nodes)**
+
+### Ubuntu/Debian (APT)
+
+Update the `apt` package index and install packages needed to use the Kubernetes `apt` repository:
+
+```bash
+sudo apt update
+# apt-transport-https may be a dummy package; if so, you can skip that package
+sudo apt install -y apt-transport-https ca-certificates curl gnupg
+```
+
+Download the public signing key for the Kubernetes package repositories. The same signing key is used for all repositories so you can disregard the version in the URL:
+
+> [!IMPORTANT]  
+> Before download the public signing key check if the directory `/etc/apt/keyrings`, you may follow the next two code blocks to check and then if it does not exits, to create it.
+
+```bash
+ls /etc/apt/keyrings
+```
+
+If nothing shows up, create the folder by running:
+
+```bash
+sudo mkdir /etc/apt/keyrings
+```
+
+```bash
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg # allow unprivileged APT programs to read this keyring
+```
+
+> [!NOTE]  
+> In releases older than Debian 12 and Ubuntu 22.04, folder `/etc/apt/keyrings` does not exist by default, and it should be created before the curl command.
+
+Add the appropriate Kubernetes `apt` repository. If you want to use Kubernetes version different than v1.31, replace v1.31 with the desired minor version in the command below:
+
+```bash
+# This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list   # helps tools such as command-not-found to work correctly
+```
+
+> [!NOTE]  
+> To upgrade kubectl to another minor release, you'll need to bump the version in `/etc/apt/sources.list.d/kubernetes.list` before running `apt-get update` and `apt-get upgrade`. This procedure is described in more detail in [Changing The Kubernetes Package Repository](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/change-package-repository/).
+
+### RHEL/Rocky (DNF/YUM)
+
+Install required dependencies:
+
+```bash
+sudo dnf install -y curl gnupg2
+```
+
+Add the Kubernetes repository:
+
+```bash
+sudo tee /etc/yum.repos.d/kubernetes.repo <<EOF
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+```
+
+## [06] Update package index, then install kubectl:
+
+- Ubuntu/Debian (APT)
+
+```bash
+sudo apt update
+sudo apt install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+```
+
+- RHEL/Rocky (DNF/YUM)
+
+```bash
+# Install Kubernetes components:
+sudo dnf install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+# Mark them to prevent unintended upgrades:
+sudo dnf versionlock add kubelet kubeadm kubectl
+# Enable and start kubelet:
+sudo systemctl enable kubelet
+sudo systemctl start kubelet
+```
+
+## [07] Initialize Kubernetes Cluster with Kubeadm (head node)
+
+> [!IMPORTANT]
+> After initializing kubernetes cluster with the command below, please make node of the kubeadm... join command, this command will be run on the child nodes.
+
+```bash
+sudo kubeadm init
+```
+
+```bash
+...
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 10.128.0.2:6443 --token w61k05.z1iybakiwtr4x5y8 \
+        --discovery-token-ca-cert-hash sha256:5b345e91b53b3e473edd5d6ebbccf4ee09d0139e2560efe13d42e5dda964f814
+```
+
+Set the config to run on non-sudo privileges
+
+> [!TIP]
+> If you want to only run kubectl as sudo then you do not need to run the command  below.
+
+```bash
+mkdir -p $HOME/.kube
+sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+
+> [!TIP]
+> The bellow commands can be very useful for debugging.
+
+View config
+
+```bash
+kubectl config view
+```
+
+View cluster information
+
+```bash
+kubectl cluster-info
+```
+
+```bash
+...
+Kubernetes control plane is running at https://10.128.0.2:6443
+CoreDNS is running at https://10.128.0.2:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+```
+
+## [08] Check if nodes have connected (head node)
+
+> [!CAUTION]
+> If the below command gives and error, its possibly due one of two reasons (1) You have not disabled swap, (2) Firewall on the nodes or on the network is preventing a connection.
+
+```bash
+kubectl get nodes
+```
+
+> [!NOTE]  
+> The nodes are in a "NotReady" state, this is correct for now as we still need to setup a network plugin (Calico)
+
+```
+...
+NAME    STATUS     ROLES           AGE   VERSION
+node1   NotReady   control-plane   31m   v1.31.3
+node2   NotReady   <none>          7s    v1.31.3
+node3   NotReady   <none>          10m   v1.31.3
+```
+
+## [09] Install Kubernetes Network Plugin (head node)
+
+Install the Tigera Calico operator and custom resource definitions.
+
+```bash
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.29.1/manifests/tigera-operator.yaml
+```
+
+> [!NOTE]  
+> Due to the large size of the CRD bundle, `kubectl apply` might exceed request limits. Instead, use `kubectl create` or `kubectl replace`.
+
+Install Calico by creating the necessary custom resource. For more information on configuration options available in this manifest, see [the installation reference](https://docs.tigera.io/calico/latest/reference/installation/api).
+
+```bash
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.29.1/manifests/custom-resources.yaml
+```
+
+> [!IMPORTANT]  
+> Before creating this manifest, read its contents and make sure its settings are correct for your environment. For example, you may need to change the default IP pool CIDR to match your pod network CIDR.
+
+Confirm that all of the pods are running with the following command.
+
+```bash
+watch kubectl get pods -n calico-system
+```
+
+> [!NOTE]  
+> The above command will re-run every two seconds to check if the calico has been setup, it will be setup ounce it looks like the below response. You may not have as many pods as the one below, that is fine.
+
+```bash
+Every 2.0s: kubectl get pods -n calico-system                                     node1: Sat Nov 23 15:21:17 2024
+
+NAME                                       READY   STATUS    RESTARTS   AGE
+calico-kube-controllers-55f8866c6d-phdvv   1/1     Running   0          29h
+calico-node-h4zw2                          1/1     Running   0          29h
+calico-node-mrw8w                          1/1     Running   0          29h
+calico-node-xr2b5                          1/1     Running   0          29h
+calico-typha-84d9594f9c-8t5ws              1/1     Running   0          29h
+calico-typha-84d9594f9c-b7tnq              1/1     Running   0          29h
+```
+
+**If the above shows nothing:**
+
+Restart the kubelet
+
+```bash
+sudo systemctl restart kubelet
+```
+
+Re apply a new 
+
+```bash
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+```
+
+> [!NOTE]  
+> Wait a bit for it to initialize and run the below, it may take anywhere from a few seconds to a few minutes to initials. We know its initialized when the "READY" column reads "1/1".
+
+```bash
+kubectl get pods -n kube-system
+```
+
+```bash
+...
+kubectl get pods -n kube-system
+NAME                            READY   STATUS    RESTARTS   AGE
+calico-node-d8hv9               1/1     Running   0          31s
+calico-node-kz8wg               1/1     Running   0          31s
+coredns-7c65d6cfc9-d8crs        1/1     Running   0          67m
+coredns-7c65d6cfc9-qtq6k        1/1     Running   0          67m
+etcd-node1                      1/1     Running   0          67m
+kube-apiserver-node1            1/1     Running   0          67m
+kube-controller-manager-node1   1/1     Running   0          67m
+kube-proxy-6z85x                1/1     Running   0          67m
+kube-proxy-pd85v                1/1     Running   0          46m
+kube-proxy-r7885                1/1     Running   0          36m
+kube-scheduler-node1            1/1     Running   0          67m
+```
+
+Get the nodes
+
+```bash
+kubectl get nodes
+```
+
+```bash
+...
+kubectl get nodes
+NAME    STATUS   ROLES           AGE   VERSION
+node1   Ready    control-plane   67m   v1.31.3
+node2   Ready    <none>          36m   v1.31.3
+node3   Ready    <none>          46m   v1.31.3
+```
+
+Now the nodes should be in a `Ready` state.
+
+## [10] **Creating and exploring an nginx deployment (head node)**
+
+You can run an application by creating a Kubernetes Deployment object, and you can describe a Deployment in a YAML file. For example, this YAML file describes a Deployment that runs the nginx:1.14.2 Docker image:
+
+> [!WARNING]  
+> The below `yaml` file may fail or give a warning due to the parameters not being configured correctly. The main parameter is the "replicas:". Simply put if the number is 3 it means your cluster can handle that amount of pods, 2 is a safe number and is recommended for this tutorial.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+```
+
+Create a Deployment based on the YAML file
+
+> [!TIP]
+> If you want to configure the file parameters by yourself, then you should `curl` the below link, edit the file `vim deployment.yaml` and then apply the file with `kubectl apply -f deployment.yaml`.
+
+```bash
+kubectl apply -f https://k8s.io/examples/application/deployment.yaml
+```
+
+Display information about the Deployment:
+
+> [!IMPORTANT]
+> The below command may throw an error/warning, before trying to reconfigure the `yaml` file, firstly continue until the end of the this subsection (10), if your responses from the subsequent commands match then you may ignore these possible warnings/errors.
+
+```bash
+kubectl describe deployment nginx-deployment\
+```
+
+```bash
+...
+Name:                   nginx-deployment
+Namespace:              default
+CreationTimestamp:      Fri, 22 Nov 2024 10:02:53 +0000
+Labels:                 <none>
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=nginx
+Replicas:               2 desired | 2 updated | 2 total | 1 available | 1 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=nginx
+  Containers:
+   nginx:
+    Image:         nginx:1.14.2
+    Port:          80/TCP
+    Host Port:     0/TCP
+    Environment:   <none>
+    Mounts:        <none>
+  Volumes:         <none>
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      False   MinimumReplicasUnavailable
+  Progressing    True    ReplicaSetUpdated
+OldReplicaSets:  <none>
+NewReplicaSet:   nginx-deployment-d556bf558 (2/2 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  5s    deployment-controller  Scaled up replica set nginx-deployment-d556bf558 to 2
+```
+
+Get deployments:
+
+```bash
+kubectl get deployments
+```
+
+```bash
+...
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+nginx-deployment   2/2     2            2           40s
+```
+
+List the Pods created by the deployment:
+
+```bash
+kubectl get pods -l app=nginx
+```
+
+```bash
+...
+NAME                               READY   STATUS    RESTARTS   AGE
+nginx-deployment-d556bf558-d5mtz   1/1     Running   0          50s
+nginx-deployment-d556bf558-fks2s   1/1     Running   0          50s
+```
+
+## [11] Install helm (head node)
+
+
+
+
+Helm is simply a cross platform package manager for Kubernetes.
+
+Download and [install helm](https://helm.sh/docs/intro/install/)
+
+```bash
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
+```
+
+Confirm the installation by checking the version
+
+```bash
+helm version
+```
+
+```bash
+...
+version.BuildInfo{Version:"v3.16.3", GitCommit:"cfd07493f46efc9debd9cc1b02a0961186df7fdf", GitTreeState:"clean", GoVersion:"go1.22.7"}
+```
+
+## [12] Install NGINX Ingress Controller using Helm (head node)
+
+The NGINX Ingress Controller manages external access to Kubernetes services, providing routing, load balancing, and SSL termination.
+
+> [!IMPORTANT]  
+> Due to us making use of 'kubeadm' we will have no option but to use the NodePort controller service, instead of LoadBalancer. This will also be the same if we were running MiniKube.
+
+Add Ingress Nginx to the helm
+
+```bash
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+```
+
+We will install ingress-nginx with the following options
+
+> [!NOTE]  
+> The below command may seem like it is hanging, this is completely normal, the command has not loading indicator.
+
+```bash
+helm install ingress-nginx ingress-nginx/ingress-nginx \
+  --create-namespace \
+  --namespace ingress-nginx \
+  --set controller.service.type=NodePort \
+  --set controller.admissionWebhooks.enabled=false \
+  --set controller.hostNetwork=true
+```
+
+Verify the installation
+
+```bash
+kubectl get pods -n ingress-nginx
+```
+
+```bash
+...
+NAME                                       READY   STATUS    RESTARTS   AGE
+ingress-nginx-controller-cbcf8bf58-wxwf4   1/1     Running   0          68s
+```
+
+Get the node ports
+
+```bash
+kubectl get svc -n ingress-nginx
+```
+
+```bash
+...
+NAME                                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+ingress-nginx-controller             NodePort    10.96.202.64    <none>        80:31256/TCP,443:31634/TCP   101s
+```
+
+> [!NOTE]  
+> The important part to look at is `80:31256/TCP,443:31634/TCP`.
+
+
+Access the service using your cluster node's IP and the NodePort:
+
+> [!IMPORTANT]  
+> The below "new ports" given by ingress are not common and may be different for your specific cluster
+
+| Protocol  | New Port  | How to access |
+| :------------ |:---------------| -----|
+| http (80)     | 31256 | `http://<node-ip>:31876` |
+| https (443)     | 31634  |   `https://<node-ip>:31345` |
+
+> [!TIP]
+> To determine the `<node-ip>` you may find it on the server as either the local or the external "floating ip" depending on how and where you would like to connect from. This ip may also be found as the ip given to the node when we ran `sudo kubeadm init`.
+> [!NOTE]
+> For the https protocol we will need to firstly generate SSL certificates using a software like (Cert-Manager), this will be covered later in the tutorial.
+
+## [13] Confirm Ingress is working
+
+Try to run a demo script that is on NodePort
+
+> [!IMPORTANT]  
+> This is not a requirement but a recommendation, as it is an easy starting point to understanding [deployment using kubernetes and ingress.](https://platform9.com/learn/v1.0/tutorials/nodeport-ingress#step-2---create-a-dns-record)
+
+
+## [14] Install Cert-Manager (head node)
+
+Cert-Manager is sfotware to generate SSL certificates for the cluster to run on https; this will be useful if you wish to use ingress in https mode.
+
+> [!NOTE]  
+> This becomes really useful when you would like to expose an endpoint to other servers, reason being is there is most of the time limitation and restriction to communicating just over http.
+
+
+
+## [Install](https://cert-manager.io/docs/installation/kubectl/) all cert-manager components:
+
+```bash
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
+```
+
+## Verify Install
+
+```bash
+kubectl get pods --namespace cert-manager
+```
+
+```bash
+...
+NAME                                       READY   STATUS    RESTARTS   AGE
+cert-manager-74b56b6655-mx2g4              1/1     Running   0          12s
+cert-manager-cainjector-55d94dc4cc-6r9vs   1/1     Running   0          12s
+cert-manager-startupapicheck-rplfj         1/1     Running   0          24s
+cert-manager-webhook-564f647c66-hhdfm      1/1     Running   0          12s
+```
+
+## [15] Install ranger
+
+[Ranger](https://www.digitalocean.com/community/tutorials/installing-and-using-ranger-a-terminal-file-manager-on-a-ubuntu-vps) is a terminal-based file manager with Vim-style keybindings, leveraging the ncurses library to offer a robust interface for navigating the filesystem.
+
+- Ubuntu/Debian (APT)
+
+Ranger is in Ubuntu's default repositories. It can be installed easily with apt-get.
+
+We will also install some other applications that allow ranger to preview various file formats effectively.
+
+```bash
+sudo apt update 
+sudo apt install ranger caca-utils highlight atool w3m poppler-utils mediainfo -y
+```
+
+- RHEL/Rocky (DNF/YUM)
+
+```bash
+sudo dnf install -y ranger caca-utils highlight atool w3m poppler-utils mediainfo
+```
+
+Start ranger for a moment and exit. This will allow ranger to create the directory structure for its configuration files:
+
+```bash
+ranger Q
+```
+
+Now ranger has created its configuration directory and we can copy its configuration files with the following command:
+
+```bash
+ranger --copy-config=all
+```
+
+```bash
+...
+creating: /home/DemoUser/.config/ranger/apps.py creating: /home/DemoUser/.config/ranger/commands.py creating: /home/DemoUser/.config/ranger/rc.conf creating: /home/DemoUser/.config/ranger/options.py creating: /home/DemoUser/.config/ranger/scope.sh
+```
+
+## [16] Creating and running a containerized HPL benchmark
+
+Creating and running a containerized High Performance Linpack (HPL) benchmark in a Kubernetes environment involves several key components that work together to ensure efficient execution and management. First, Kubernetes is used to orchestrate and manage the containerized applications. A container for the HPL benchmark is created and deployed using `kubectl`, the command-line tool for interacting with Kubernetes clusters. The process begins by setting up a Kubernetes cluster using `kubeadm` to initialize the cluster, configure nodes, and set up networking. The containerized HPL benchmark is then deployed into the cluster, where Ingress is used to manage external access to services within the cluster, such as monitoring or controlling the benchmark's execution.
+
+For additional security and to manage certificates within the Kubernetes environment, Cert Manager can be used to automate the issuance and renewal of SSL/TLS certificates for secure communication between services. During the benchmark execution, ranger can be utilized as a terminal file manager to organize and manage log files, configurations, and other resources related to the benchmark. The HPL benchmark can then be run across multiple nodes in the Kubernetes cluster, leveraging Kubernetes' scaling capabilities for distributed processing, and using `kubectl` to monitor the benchmark’s performance. 
+Finally, the results of the benchmark are collected, and further analysis can be done to assess the system’s floating-point performance. This containerized approach allows for consistent, reproducible testing environments, with easy management and scalability.
+
+For more information on this please make use of the following resources:
+
+- [Configuring Ingress](https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/kubernetes-resources-setup/load-balancer-and-ingress-controller/ingress-configuration)
+
+- [HPL and Docker](https://alan-turing-institute.github.io/data-science-benchmarking/examples/HPL_benchmarks_workflow_example.html)
+
+- [HPL Benchmarking](https://openflighthpc.org/latest/docs/hpc-workflows/hpl/)
+
+# References
+
+- [Installation of Kubernetes cluster with Containerd](https://ammarsuhail155.medium.com/installation-of-kubernetes-windows-linux-cluster-with-containerd-as-runtime-394f73a66ff4)
+- [Installing kubectl on Linux](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management)
