@@ -1,4 +1,4 @@
-# Student Cluster Competition - Tutorial 3
+Student Cluster Competition - Tutorial 3
 
 ## Table of Contents
 
@@ -13,14 +13,12 @@
     1. [System Libraries](#system-libraries)
     1. [Configure and Run HPL on Compute Node](#configure-and-run-hpl-on-compute-node)
 1. [Building and Compiling OpenBLAS and OpenMPI Libraries from Source](#building-and-compiling-openblas-and-openmpi-libraries-from-source)
-1. [Intel OneAPI Toolkits and Compiler Suite](#intel-oneapi-toolkits-and-compiler-suite)
+1. [Intel oneAPI Toolkits and Compiler Suite](#intel-oneapi-toolkits-and-compiler-suite)
     1. [Configure and Install Intel oneAPI Base and HPC Toolkits](#configure-and-install-intel-oneapi-base-and-hpc-toolkits)
-    1. [Configuring and Running HPL with Intel OneAPI Toolkit and MKL](#configuring-and-running-hpl-with-intel-oneapi-toolkit-and-mkl)
+    1. [Configuring and Running HPL with Intel oneAPI Toolkit and MKL](#configuring-and-running-hpl-with-intel-oneapi-toolkit-and-mkl)
 1. [LinPACK Theoretical Peak Performance](#linpack-theoretical-peak-performance)
     1. [Top500 List](#top500-list)
-    1. [Plot a Graph of Your HPL Benchmark Results](#plot-a-graph-of-your-hpl-benchmark-results)
-1. [Spinning Up a Second Compute Node](#spinning-up-a-second-compute-node)
-    1. [Running HPL Across Multiple Nodes](#running-hpl-across-multiple-nodes)
+1. [Running HPL Across Multiple Nodes](#running-hpl-across-multiple-nodes)
 1. [HPC Challenge](#hpc-challenge)
 1. [Application Benchmarks and System Evaluation](#application-benchmarks-and-system-evaluation)
     1. [GROMACS (ADH Cubic)](#gromacs-adh-cubic)
@@ -42,9 +40,9 @@ In this tutorial you will:
 - [ ] Install, configure and use Lmod.
 - [ ] Understand some of the fundamental considerations around optimizing HPL.
 - [ ] Understand the pros and cons of compiling libraries from source.
-- [ ] Install and make use of Intel's OneAPI framework to run HPL.
+- [ ] Install and make use of Intel's oneAPI framework to run HPL.
 - [ ] Understand theoretical system peak performance.
-- [ ] Appreciate the significance of the Top500 list and bencmarking.
+- [ ] Appreciate the significance of the Top500 list and benchmarking.
 - [ ] Standup and Configure a Second Compute Node, and running applications across a cluster.
 - [ ] Download and compile the High Performance Computing Challenge (HPCC) benchmark.
 - [ ] Understand that scientific computer applications are primarily used to conduct scientific research, and can also evaluate system performance.
@@ -107,18 +105,44 @@ In this section, you are going to be building and compiling Lmod from source. Lm
 
 1. Install prerequisites required to build Lmod:
    From one of your **compute nodes**, install the following dependencies
-   ```bash
-   # Rocky (or similar RPM based systems: RHEL, Alma, CentOS Stream)
-   sudo dnf install -y epel-release
-   sudo dnf install -y git gcc make tcl tcl-devel lua lua-posix bc
-
-   # Ubuntu (or similar APT based systems)
-   sudo apt update
-   sudo apt install -y git gcc make tcl tcl-dev lua5.3 lua-posix bc
-
-   # Arch
-   sudo pacman -S git gcc make lua lua-filesystem lua-posix bc
-   ```
+   * DNF / YUM
+     ```bash
+     # Rocky (or similar RPM based systems: RHEL, Alma, CentOS Stream)
+     sudo dnf install -y epel-release
+     sudo dnf install -y git gcc make
+     ```
+   * APT
+     ```bash
+     # Ubuntu (or similar APT based systems)
+     sudo apt update
+     sudo apt install -y git gcc make
+     ```
+   * Pacman
+     ```bash
+     # Arch
+     sudo pacman -S git gcc make
+     ```
+1. Install dependencies for running and using Lmod:
+   You will need to install these on all the nodes you intend to use with Lmod
+   * DNF / YUM
+     ```bash
+     # Rocky (or similar RPM based systems: RHEL, Alma, CentOS Stream)
+     sudo dnf install -y epel-release
+     sudo dnf install -y tcl-devel tcl tcllib  bc
+     sudo dnf install -y lua lua-posix lua-term
+     sudo dnf --enable-repo=devel install lua-devel
+     ```
+   * APT
+     ```bash
+     # Ubuntu (or similar APT based systems)
+     sudo apt update
+     sudo apt install -y tcl tcl-dev lua5.3 lua-posix bc
+     ```
+   * Pacman
+     ```bash
+     # Arch
+     sudo pacman -S lua lua-filesystem lua-posix bc
+     ```
 1. Compile, Build and Install Lmod
    The following instructions will be the same regardless of the system you are using. You will be using the Lmod repo from the Texas Advanced Computing Center at the University of Texas, to build and compile Lmod from source into your own `home` directory:
    ```bash
@@ -134,6 +158,9 @@ In this section, you are going to be building and compiling Lmod from source. Lm
    # Build and install Lmod
    make -j$(nproc)
    make install
+
+   # If you are on Rocky 9.3 and receive an error about "lua.h",
+   # You can install Lmod from the DNF / YUM package repos.
    ```
 
    * `--prefix`: This directive instructs the `./configure` command, to install Lmod into a specific directory, where the `$HOME` variable is used as a shortcut for `/home/<user>`.
@@ -208,36 +235,45 @@ We need to install the statically `($(LIBdir)/libhpl.a)` and dynamically`($(LAdi
 > If you've managed to successfully [build, compile and run HPL in tutorial 1]((../tutorial1/README.md#install-compile-and-run-high-performance-linpack-hpl-benchmark)), and you've managed to successfully configure your [NFS `home` directory export in tutorial 2](../tutorial2/README.md##network-file-system), then you may proceed. Otherwise you **must** discuss with, and seek advice from an instructor.
 
 1. Install the necessary dependencies on your **compute node**:
-   ```bash
-   # DNF / YUM (RHEL, Rocky, Alma, Centos)
-   sudo dnf update -y
-   sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
-   sudo dnf install wget nano -y
-
-   # APT (Ubuntu)
-   sudo apt update
-   sudo apt install openmpi libatlas-base-dev
-   sudo apt install wget nano
-
-   # Pacman (Arch)
-   sudo pacman -Syu
-   sudo pacman -S base-devel openmpi atlas-lapack nano wget
-   ```
+   * DNF / YUM
+     ```bash
+     # RHEL, Rocky, Alma, Centos
+     sudo dnf update -y
+     sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
+     sudo dnf install wget nano -y
+     ```
+   * APT
+     ```bash
+     # Ubuntu
+     sudo apt update
+     sudo apt install openmpi libatlas-base-dev
+     sudo apt install wget nano
+     ```
+   * Pacman
+     ```bash
+     # Arch
+     sudo pacman -Syu
+     sudo pacman -S base-devel openmpi atlas-lapack nano wget
+     ```
 
 1. Configuring and Tuning HPL
 
    The `HPL.dat` file (in the same directory as `xhpl`) defines how the HPL benchmark solves a large dense linear array of double precision floating point numbers. Therefore, selecting the appropriate parameters in this file can have a considerable effect on the GFLOPS score that you obtain. The most important parameters are:
-   * `N` which defines the length of one of the sides of the 2D array to be solved. Therefore, problem size ∝ runtime ∝ memory usage ∝ <N>². For best performance N should be a multiple of NB.
-   * `NB` defines the block (or chunk) size into which the array is divided. The optimal value is determined by the CPU architecture such that the block fits in cache.
-   * `P x Q` define the domains (in two dimensions) for how the array is partitioned on a distributed memory system. Therefore P*Q = MPI ranks, or number of nodes, or number of NUMA domains.
+   * `N` which defines the length of one of the sides of the 2D array to be solved. It follows therefore:
+     * ***"Problem Size"*** is proportional to `N x N`,
+     * ***"Runtime"*** is proportional to `N x N`,
+     * ***"Memory Usage"*** is proportional to `N x N`.
 
-   You can find [online calculators](https://www.advancedclustering.com/act_kb/tune-hpl-dat-file/) that will generate an `HPL.dat` file for you *as a starting point*, but you will still need to do some tuning if you want to squeeze out maximum performance.
+   <p align="center"><img alt="P x Q Matrix Decomposition" src="./resources/An-example-of-P-by-Q-partitioning-of-a-HPL-matrix-in-6-processes-2x3-decomposition.png" width=300 /></p>
+   The image depicts an example of P by Q partitioning of an HPL matrix in 6 processes. In this case they've been decomposed into 2 x 3. The image is from a journal article publication, [Gaining asynchrony by using hybrid UPC SMPSs](https://www.researchgate.net/publication/228524393_Gaining_asynchrony_by_using_hybrid_UPCSMPSs)
+
+    We can observe that if you we to *double* `N`, your run would take **four** times as long. If you **tippled** `N`, your run would use **nine times as much** memory. If you made `N` **ten times larger**, your run would use **hundred times** more memory, and would take **hundred times** as long to run.
+   * `NB` defines the block (or chunk) size into which the array is divided. The optimal value is determined by the CPU architecture such that the block fits in cache. For best performance `N` should be a multiple of `NB`.
+   * `P x Q` define the domains (in two dimensions) for how the array is partitioned on a distributed memory system. Therefore `P x Q` typically should equate more or less to the number of MPI ranks, or number of nodes, or number of NUMA domains. For example, if you have 4 single CPU nodes, the permutations for `P` and `Q` include [1, 4] and [2, 2]. Similarly, if you have 4 dual socket nodes, the permutations for `P` and `Q` include [1,8], [2, 4], etc...
 
 1. Prepare your environment to rerun your `xhpl` binary on your **compute node**
 
-   Make sure to open an additional ssh session to your compute node, so that you can monitor your CPU utilization using `top # preferably btop / htop`, refer to Discussion
-
-   TODO: Link discussion
+   Make sure to open an additional ssh session to your compute node, so that you can monitor your CPU utilization using `top # preferably btop / htop`.
 
    ```bash
    # Export the path to the OpenMPI Library
@@ -258,6 +294,8 @@ We need to install the statically `($(LIBdir)/libhpl.a)` and dynamically`($(LAdi
    ```bash
    ./xhpl
    ```
+> [!TIP]
+> You can find [online calculators](https://www.advancedclustering.com/act_kb/tune-hpl-dat-file/) that will generate an `HPL.dat` file for you *as a starting point*, but you will still need to do some tuning if you want to squeeze out maximum performance.
 
 # Building and Compiling OpenBLAS and OpenMPI Libraries from Source
 
@@ -354,8 +392,8 @@ Code compiled specifically for HPC hardware can use instruction sets like `AVX`,
    # variables to make OpenMPI available on the system.
 
    export MPI_HOME=$HOME/opt/openmpi
-   export PATH=$PATH:$MPI_HOME/bin
-   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MPI_HOME/lib
+   export PATH=$MPI_HOME/bin:$PATH
+   export LD_LIBRARY_PATH=$MPI_HOME/lib:$LD_LIBRARY_PATH
 
    # Remember that if you make a mistake and need to recompile, first run
    # make clean arch=compile_BLAS_MPI
@@ -385,9 +423,11 @@ Code compiled specifically for HPC hardware can use instruction sets like `AVX`,
 > [!TIP]
 > Remember to open a new ssh session to your compute node and run either `top # preferably htop / btop`. Better yet, if you are running `tmux` in your current session, open a new tmux window using `C-b c` then ssh to your compute node from there, and you can cycle between the two tmux windows using `C-b n`.
 
-# Intel OneAPI Toolkits and Compiler Suite
+Join the [Discussion](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/61) by replying to the thread with a screenshot of your compute node's CPU threads hard at work.
 
-Intel OneAPI Toolkits provide a comprehensive suite of development tools that span various programming models and architectures. These toolkits help developers optimize their applications for performance across CPUs, GPUs, FPGAs, and other accelerators, visit [Intel OneAPI Toolkits](https://www.intel.com/content/www/us/en/developer/tools/oneapi/toolkits.html) for more information.
+# Intel oneAPI Toolkits and Compiler Suite
+
+Intel oneAPI Toolkits provide a comprehensive suite of development tools that span various programming models and architectures. These toolkits help developers optimize their applications for performance across CPUs, GPUs, FPGAs, and other accelerators, visit [Intel oneAPI Toolkits](https://www.intel.com/content/www/us/en/developer/tools/oneapi/toolkits.html) for more information.
 
 ## Configure and Install Intel oneAPI Base and HPC Toolkits
 
@@ -434,7 +474,7 @@ You will be making use of the **2024-2** versions of the Intel oneAPI and HPC To
    * `--eula accept`: Agree to accept the end user license agreement.
    More details about the [Command Line Arguments](https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2024-2/install-with-command-line.html) can be found within Intel's installation guide.
 
-   These must be run separately and you will need to navigate through a number of CLI text prompts
+   These must be run separately and you will need to navigate through a number of CLI text prompts and accept the end-user license agreement.
    ```bash
    # Run Intel oneAPI Basekit installation script
    ./l_BaseKit_p_2024.2.0.634_offline.sh -a --cli --eula accept
@@ -447,7 +487,7 @@ You will be making use of the **2024-2** versions of the Intel oneAPI and HPC To
    ```
 1. Configure your Environment to use Intel oneAPI Toolkits
    You can either use the `setvars.sh` configuration script or modulefiles:
-   * To have your environment automaticaly prepared for use with Intel's oneAPI Toolkit append the following line to your `/etc/profile` `.bashrc` or run the command everytime you login to your node
+   * To have your environment automaticaly prepared for use with Intel's oneAPI Toolkit append the following line either to your `/etc/profile` or your `~/.bashrc` or your `~/.profile` or run the command every time you login to your node
       ```bash
       source ~/intel/oneapi/setvars.sh
       ```
@@ -473,22 +513,22 @@ You will be making use of the **2024-2** versions of the Intel oneAPI and HPC To
 
 You have successfully installed the Intel oneAPI Base and HPC Toolkits, including Intel Compiler Suite and Math Kernel Libraries.
 
-## Configuring and Running HPL with Intel OneAPI Toolkit and MKL
+## Configuring and Running HPL with Intel oneAPI Toolkit and MKL
 
 After you've successfully completed the previous section, you will be ready to recompile HPL with Intel's `icx` compiler and `mkl` math kernel libraries.
 
-1. Copy and Edit the `Make.Linux64`
+1. Copy and Edit the `Make.Linux_Intel64`
 
    From your `~/hpl` folder, with a properly configured environment, copy and edit the configuration
    ```bash
    # Copy a setup configuration script to use as a template
-   cp setup/Make.Linux64 ./
+   cp setup/Make.Linux_Intel64 ./
 
    # Edit the configuration file to make use of your Intel oneAPI Toolkit
-   nano Make.Linux64
+   nano Make.Linux_Intel64
    ```
 
-1. Configure your `Make.Linux64`
+1. Configure your `Make.Linux_Intel64`
 
    Ensure that you make the following changes and amendments:
    ```conf
@@ -499,7 +539,7 @@ After you've successfully completed the previous section, you will be ready to r
 
 1. Compile your HPL Binary using the Intel oneAPI Toolkit
    ```bash
-   make arch=Linux64
+   make arch=Linux_Intel64
    ```
 
 1. Reuse your `HPL.dat` from when you compiled OpenMPI and OpenBLAS from source.
@@ -511,7 +551,7 @@ After you've successfully completed the previous section, you will be ready to r
 
 It is useful to know what the theoretical FLOPS performance (RPeak) of your hardware is when trying to obtain the highest benchmark result (RMax). RPeak can be derived from the formula:
 
-**RPeak = CPU Frequency [GHz] * Num CPU Cores * OPS/cycle**
+**RPeak = CPU Frequency [GHz] x Num CPU Cores x OPS/cycle**
 
 Newer CPU architectures allow for 'wider' instruction sets which execute multiple instructions per CPU cycle. The table below shows the floating point operations per cycle of various instruction sets:
 
@@ -540,83 +580,128 @@ The [TOP500 list](https://top500.org/lists/top500/2024/06/) is a project that ra
 
    Populate the following table by recording your Rmax from HPL results, and calculating your expected Rpeak value.
 
-   | Rank | System                                          | Cores     | Rmax (GFlops/s)       | Rpeak (GFlops/s)         |
-   |------|-------------------------------------------------|-----------|-----------------------|--------------------------|
-   | 1    | Frontier - HPE - United States                  | 8 699 904 | 1206 x 10<sup>6</sup> | 1714.81 x 10<sup>6</sup> |
+| Rank | System                                          | Threads   | Rmax (GFlops/s)       | Rpeak (GFlops/s)         |
+|------|-------------------------------------------------|-----------|-----------------------|--------------------------|
+| 1    | Frontier - HPE - United States                  | 8 699 904 | 1206 x 10<sup>6</sup> | 1714.81 x 10<sup>6</sup> |
 |      |                                                 |           |                       |                          |
-   | 2    |                                                 |           |                       |                          |
-   | 3    |                                                 |           |                       |                          |
-   |      | Head node                                       | 2         |                       |                          |
-   |      | Compute node using head node `xhpl` binary      |           |                       |                          |
-   |      | Compute node using custom compiled MPI and BLAS |           |                       |                          |
-   |      | Compute node using Intel oneAPI Toolkits        |           |                       |                          |
-   |      | Across two compute nodes                        |           |                       |                          |
-   |      |                                                 |           |                       |                          |
+| 2    |                                                 |           |                       |                          |
+| 3    |                                                 |           |                       |                          |
+|      | Head node                                       | 2         |                       |                          |
+|      | Compute node using head node `xhpl` binary      |           |                       |                          |
+|      | Compute node using custom compiled MPI and BLAS |           |                       |                          |
+|      | Compute node using Intel oneAPI Toolkits        |           |                       |                          |
+|      | Across two compute nodes                        |           |                       |                          |
 
 > [!IMPORTANT]
-> You do **NOT** need to try and Rank you VM's HPL performance. Cores and threads are used interchangeably in this context. Following the recommended configuration and guides, your head node has one CPU package with two compute cores / threads. Continuing this same analogy, your compute node has one CPU with six cores / threads.
+> You do **NOT** need to try and Rank you VM's HPL performance. Cores and threads are used interchangeably in this context. Following the recommended configuration and guides, your head node has one CPU package with two compute cores (or threads). Continuing this same analogy, your compute node has one CPU with six cores (or threads).
 
-# Spinning Up a Second Compute Node
+# Spinning Up a Second Compute Node on AWS Using a Snapshot
 
-* Cluster Considerations
+To launch a compute node using a snapshot, follow these steps:
 
-* Using a Snapshot
+## Step 1: Create a Snapshot
+Start by creating a snapshot of the volume you want to use.
 
-At this point you are ready to run HPL on your cluster with two compute nodes. It's time to deploy a second compute node in Open Stack.
+1. Navigate to the **Volumes** section in the AWS Management Console.
+2. Select the volume you want to create a snapshot from.
 
-Pay careful attention to the hostname, network and other configuration settings that may be specific to and may conflict with your initial node. Once your two compute nodes have been successfully deployed, are accessible from the head node and added to SLURM, you can continue with running HPL across multiple nodes.
+<p align="center">
+  <img alt="The dashboard of the volumes" src="./resources/Screenshot 2024-11-24 164708.png" width="300" />
+</p>
 
-As a sanity check repeat Steps 10-12 of the previous task: [Message Passing Interface (MPI)](#message-passing-interface-mpi), but this time do it for **two** compute nodes and check the new results of your benchmark.
+3. Click on the **Action** tab in the top-right corner and select **Create Snapshot**.
+
+<p align="center">
+  <img alt="Creating snapshot" src="./resources/Screenshot 2024-11-24 164732.png" width="300" />
+</p>
+
+## Step 2: Wait for the Snapshot to Complete
+1. After creating the snapshot, its status will initially show as **Pending**.
+2. Wait for the status to change to **Completed**.
+
+## Step 3: Create an Image from the Snapshot
+1. Once the snapshot is complete, select it.
+2. Click the **Action** button and choose **Create Image**.
+
+<p align="center">
+  <img alt="Creating an image from snapshot" src="./resources/Screenshot 2024-11-24 164732.png" width="300" />
+</p>
+
+## Step 4: Launch a New Instance
+1. Use the AMI (Amazon Machine Image) created from the snapshot to launch a new instance.
+2. During the instance launch process, select the AMI you created from the snapshot.
+
+<p align="center">
+  <img alt="Selecting the AMI that you have created" src="./resources/Screenshot 2024-11-24 165302.png" width="300" />
+</p>
+
+---
+
+You have now successfully created a snapshot and launched a new compute node using the AMI created from it.
+
 
 ## Running HPL Across Multiple Nodes
 
+Everything is now in place for you to run HPL across your two compute nodes. You must ensure that all libraries and dependencies are satisfied across your cluster. You must also ensure that your passwordless SSH is properly configured. Your NFS mounted `/home` directory must be properly configured.
+
 * Configuring OpenMPI Hosts File
 
-* Runtime Configuration Options for `mpirun`
+  You must configure a `hosts` (or `machinefile`) file which contains the IP addresses or hostnames of your compute nodes.
+  ```conf
+  # The slots value indicates the number of processes to run on each node.
+  # Adjust this number based on the number of CPU cores available on each node.
+  compute01 slots=1
+  compute02 slots=1
+  ```
 
+* Runtime and Environment Configuration Options for `mpirun`
+
+  You compute nodes each have a single CPU with multiple OpenMP threads. It is critical that your `environment` is correctly configured to you to run HPL across your two compute nodes.
+
+  * Navigate to the directory where your HPL executable and `HPL.dat` file are located. Use `mpirun` to run HPL across the nodes specified in the hosts file
+  * Edit your `~/.profile` to set environment variables when `mpirun` creates a new shell
+  * Execute `mpirun`
+  ```bash
+  mpirun -np 2 --hostfile hosts ./xhpl
+  ```
 # HPC Challenge
 
 HPC Challenge (or HPCC) is benchmark suite which contains 7 micro-benchmarks used to test various performance aspects of your cluster. HPCC includes HPL which it uses to access FLOPs performance. Having successfully compiled and executed HPL, the process is fairly straight forward to setup HPCC (it uses the same Makefile structure).
 
 1. Download HPCC from https://icl.utk.edu/hpcc/software/index.html
 
-2. Extract the file, then enter the `hpl/` sub-directory.
+1. Extract the file, then enter the `hpcc/` sub-directory.
 
-3. Copy and modify the Makefile as your did for the HPL benchmark, but in this case also add "-std=c99" to the "CCFLAGS" line in the Makefile.
+1. Copy and modify the `Makefile.<arch>` as your did for the HPL benchmark
 
-4. Compile HPCC from the base directory using
+1. Compile HPCC from the base directory using
+   ```bash
+   make arch=<arch>
+   ```
+1. Edit the `hpccinf.txt` file
 
-    ```bash
-    make arch=<arch>
-    ```
+   HPCC replies on the input parameter file `hpccinf.txt` (same as `HPL.dat`). Run HPCC as you did HPL.
 
-5. Edit the `hpccinf.txt` file (same as `HPL.dat`)
+1. Prepare and format your output
 
-6. HPCC replies on the input parameter file 'hpccinf.txt' (same as `HPL.dat`). Run HPCC as you did HPL.
-
-7. Download this script which formats the output into a readable format [https://tinyurl.com/y65p2vv5](https://tinyurl.com/y65p2vv5).
-
-8. Install `perl` on your head node through `dnf`.
-
-8. Run the script with
-
-    ```bash
-    ./format.pl -w -f hpccoutf.txt
-    ```
-
-    To see your benchmark result, your HPL score should be similar to your standalone HPL.
-
-<span style="color: #800000">
-  !!! Have the output `hpccoutf.txt` AND `Make.<architecture>` **configuration file** ready for instructors to view on request.
-</span>
+   Run the [format.pl script](resources/format.pl) with to format your benchmark results into a readable format. Compare your HPL score with your standalone HPL.
+   ```bash
+   # You may need to install perl
+   ./format.pl -w -f hpccoutf.txt
+   ```
+Have the output `hpccoutf.txt` and your `Make.<architecture>` ready for the instructors to view on request.
 
 # Application Benchmarks and System Evaluation
+
+HPC applications are widely used in scientific research and systems evaluation or benchmarking to address complex computational problems. These applications span various fields, including computational chemistry, computational fluid dynamics, cosmology / astrophysics, quantum mechanics, weather forecasting, genomics, to name a few...
+
+These applications are integral to advancing scientific research, enabling researchers to solve complex problems that are otherwise computationally prohibitive. They are also essential for evaluating and benchmarking the performance of high-performance computing systems, ensuring that they meet the demands of cutting-edge research and industrial applications.
+
+You will now build, compile, install and run a few such examples.
 
 ## GROMACS (ADH Cubic)
 
 GROMACS is a versatile package to perform molecular dynamics, i.e. simulate the Newtonian equations of motion for systems with hundreds to millions of particles. It is primarily designed for biochemical molecules like proteins, lipids and nucleic acids that have a lot of complicated bonded interactions, but since GROMACS is extremely fast at calculating the nonbonded interactions (that usually dominate simulations) many groups are also using it for research on non-biological systems, such as polymers.
-
-The files required for this tutorial can be found on the ACE Lab SSH server (ssh.ace.chpc.ac.za) under the `/apps/gromacs` folder. The archive name should be `gromacs_benchmarks.tar.gz`.
 
 Detailed installation instructions can be found at: http://manual.gromacs.org/current/install-guide/index.html, but here's a general installation overview:
 
@@ -626,29 +711,13 @@ Detailed installation instructions can be found at: http://manual.gromacs.org/cu
 
 3. Compile GROMACS **with MPI support** from source using `cmake`.
 
-
-TODO Explain what an application benchmark is here.
-
-You have been provided two **GROMACS** benchmarks. The first benchmark **(adh_cubic)** should complete within a few minutes and has a small memory footprint, it is intended to demonstrate that your installation is working properly. The second benchmark **(1.5M_water)** uses more memory and takes considerably longer to complete. The metric which will be used to assess your performance is the **ns/day** (number of nanoseconds the model is simulated for per day of computation), quoted at the end of the simulation output. **Higher is better**.
+The benchmark **(adh_cubic)** should complete within a few minutes and has a small memory footprint, it is intended to demonstrate that your installation is working properly. The metric which will be used to assess your performance is the **ns/day** (number of nanoseconds the model is simulated for per day of computation), quoted at the end of the simulation output. **Higher is better**.
 
 Ensure that your GROMACS /**bin** directory is exported to your **PATH**. You should be able to type `gmx_mpi --version` in your terminal and have the application information displayed correctly. The first task is to pre-process the input data into a usable format, using the `grompp` tool:
 
 ```bash
-[...@node ~]$ gmx_mpi grompp -f pme_verlet.mdp -c conf.gro -p topol.top -o md_0_1.tpr
-```
+gmx_mpi grompp -f pme_verlet.mdp -c conf.gro -p topol.top -o md_0_1.tpr
 
-You will need to prepare a **Slurm batch script**, `gromacs_mpi.sh`. Modify the variables to appropriate values.
-
-```bash
-#!/bin/bash
-#SBATCH --nodes=XXXX
-#SBATCH --ntasks-per-node=XXXX
-#SBATCH --cpus-per-task=XXXX
-
-# !!!! Depending on your environment configuration, uncomment or add the following
-# --------------------------------------------------------------------------------
-#module load gromacs
-#ml load gromacs
 #export PATH and LD_LIBRARY_PATH
 mpirun gmx_mpi mdrun -nsteps 5000 -s md_0_1.tpr -g gromacs.log
 ```
@@ -661,40 +730,142 @@ You may modify the `mpirun` command to optimise performance (significantly) but 
 "5000 steps,     10.0 ps."
 ```
 
-<span style="color: #800000">
-  !!! Please be able to present the instructors with the output of `gmx_mpi --version`. Also be able to present the instructors with your Slurm batch script and `gromacs_log` files for the **adh_cubic** benchmark.
-</span>
-
+> [!NOTE]
+> Please be able to present the instructors with the output of `gmx_mpi --version`. Also be able to present the instructors with your Slurm batch script and `gromacs_log` files for the **adh_cubic** benchmark.
 
 ## LAMMPS (Lennard-Jones)
+
+[LAMMPS](https://docs.lammps.org) (Large-scale Atomic/Molecular Massively Parallel Simulator) is a classical molecular dynamics simulation code designed for simulating particles in a variety of fields including materials science, chemistry, physics, and biology. It was originally developed at Sandia National Laboratories and is now maintained by a community of developers. LAMMPS runs on single processors or in parallel using message-passing techniques and a spatial-decomposition of the simulation domain.
+
+The purpose of this benchmark is to demonstrate to you that there are often multiple way to build and compile many applications.
+
+1. Configure prerequisites and install dependencies
+   * DNF / YUM
+   ```bash
+   # RHEL, Rocky, Alma, CentOS Stream
+   sudo dnf groupinstall 'Development Tools' -y
+   sudo dnf install cmake git -y
+   sudo dnf install fftw-devel libjpeg-devel libpng-devel libtiff-devel libX11-devel libXext-devel libXrender-devel -y
+   ```
+   * APT
+   ```bash
+   # Ubuntu
+   sudo apt install build-essential cmake git -y
+   sudo apt install libfftw3-dev libjpeg-dev libpng-dev libtiff-dev libx11-dev libxext-dev libxrender-dev -y
+   ```
+   * Pacman
+   ```bash
+   # Arch
+   sudo pacman -S base-devel cmake git -y
+   sudo pacman -S fftw libjpeg-turbo libpng libtiff libx11 libxext libxrender -y
+   ```
+1. Clone, build and compile LAMMPS with `make`
+
+   Building LAMMPS with traditional Makefiles requires that you have a `Makefile.<machine>` file appropriate for your system in either the `src` folder.
+   ```bash
+   # Ensure that the correct paths are exported
+
+   git clone -b stable https://github.com/lammps/lammps.git
+   cd lammps/src
+
+   # List the different make options
+   make
+
+   # Build a serial LAMMPS executable using GNU g++
+   # Remember to monitor top / htop / btop in another tmux pane
+   make serial
+
+   # Build a parallel LAMMPS executable with MPI
+   # If you were frustrated at how long the previous make build took,
+   # try to build and compile using the -j<num_threads> switch
+   make mpi
+   ```
+1. Copy the executable binaries to the benchmarks folder
+   ```bash
+   cp lmp_serial ../bench
+   cp lmp_mpi ../bench
+   ```
+
+1. Execute the Lennard Jones benchmarks
+   ```bash
+   cd ../bench
+
+   # Verify that only one thread is utilized
+   ./lmp_serial -in in.lj
+
+   # Verify the number of OpenMP threads utilized
+   export OMP_NUM_THREADS=<num_threads>
+   mpirun -np <num_procs> lmp_mpi -in in.lj
+   ```
+1. Rerun your binaries against the Rhodopsin Structure benchmark
+
+   The Lennard Jones benchmark might be too short for proper evaluation. These small bencharks are often used for an installation validation test.
+   ```bash
+   # Save the output for submission
+   ./lmp_serial < in.rhodo > lmp_serial_rhodo.out
+   mpirun -np <num_procs> lmp_mpi -in in.rhodo > lmp_mpi_rhodo.out
+   ```
+
+> [!IMPORTANT]
+> The following section is included here for illustrative purposes. If you feel that you are falling behind in the competition, you may read through this section without completing it. Limited instructions will be provided, and you will be required to take decisions in terms of choice of compiler, MPI implementation, FFTW library. This will be good practice for what benchmarks *might* look like in the Nationals Round of the Student Cluster Competition.
+>
+> 1. Build LAMMPS with GCC, OpenMP and OpenMPI using CMake
+>   * In addition to a choice of `gcc`, `MPI` implementation and an `FFTW` library, you'll need to also install `cmake`.
+>   * If you're using the same checkout as before, you need to purge your `src` directory
+>   ```bash
+>   cd lammps/src
+>
+>   # Remove conflicting files from the previous build, uninstall all packages
+>   # make no-all purge
+>   ```
+>   * Configure the build with CMake, then compile and install
+>   ```bash
+>   cmake ../cmake -D BUILD_MPI=on -D BUILD_OMP=on -D CMAKE_C_COMPILER=gcc -D CMAKE_CXX_COMPILER=g++ -D MPI_C_COMPILER=mpicc -D MPI_CXX_COMPILER=mpicxx
+>
+>   make -j$(nproc)
+>
+>   make DESTDIR=/<path-to-install-dir> install
+>   ```
+>   * Rerun the benchmarks
+>   ```bash
+>   export OMP_NUM_THREADS=<num_threads>
+>   mpirun -np <num_procs> ./lmp -in <input_file>
+>   ```
 
 ## Qiskit (Quantum Volume)
 
 IBM's Qiskit is an open-source [Software Development Kit (SDK)](https://www.ibm.com/quantum/qiskit) for working with quantum computers at the level of circuits, pulses, and algorithms. It provides tools for creating and manipulating quantum programs and running them on prototype quantum devices on IBM Quantum Platform or on simulators on a local computer.
 
-*Qiskit-Aer* is an extension to the Qiskit SDK for using high performance computing resources to simulate quantum computers and programs. It provides interfaces to run quantum circuits with or without noise using a number of various simulation methods. *Qiskit-Aer* supports leveraging *MPI* to improve the performance of simulation.
+[Qiskit-Aer](https://github.com/Qiskit/) is an extension to the Qiskit SDK for using high performance computing resources to simulate quantum computers and programs. It provides interfaces to run quantum circuits with or without noise using a number of various simulation methods. *Qiskit-Aer* supports leveraging *MPI* to improve the performance of simulation.
 
 **Quantum Volume (QV)** is a single-number metric that can be measured using a concrete protocol on near-term quantum computers of modest size. The QV method quantifies the largest random circuit of equal width and depth that the computer successfully implements. Quantum computing systems with high-fidelity operations, high connectivity, large calibrated gate sets, and circuit rewriting tool chains are expected to have higher quantum volumes. Simply put, Quantum Volume is a single number meant to encapsulate the performance of today’s quantum computers, like a classical computer’s transistor count.
 
-For this benchmark, we will be providing you with the details of the script that you will need to write yourself, or [download from the competition GitHub repository](https://github.com/chpc-tech-eval/chpc24-scc-nmu/blob/main/tutorial3/qv_experiment.py) in order to successfully conduct the (Quantum Volume Experiment)(https://qiskit.org/ecosystem/experiments/dev/manuals/verification/quantum_volume.html).
+For this benchmark, we will be providing you with the details of the script that you will need to write yourself, or [download](resources/qv_experiment.py) from the competition GitHub repository in order to successfully conduct the (Quantum Volume Experiment)(https://qiskit.org/ecosystem/experiments/dev/manuals/verification/quantum_volume.html).
 
 1. Configure and install dependencies
    You will be using [Python Pip - PyPI](https://pypi.org/project/pip/) to configure and install Qiskit. `pip` is the official tool for installing and using Python packages from various indexes.
-   ```bash
-   # DNF / YUM (RHEL, Rocky, Alma, CentOS Stream)
-
-   # APT (Ubuntu)
-
-   # Pacman
-   sudo pacman -S python python-pip
-   ```
+   * DNF / YUM
+     ```bash
+     # RHEL, Rocky, Alma, CentOS Stream
+     sudo dnf install python python-pip
+     ```
+   * APT
+     ```bash
+     # Ubuntu
+     sudo apt install python python-pip
+     ```
+   * Pacman
+     ```bash
+     # Arch
+     sudo pacman -S python python-pip
+     ```
 1. Create and Activate a New Virtual Environment
 
    Separate your python projects and ensure that they exist in their own, clean environments:
 
    ```bash
-   $ python -m venv QiskitAer
-   $ source QiskitAer/bin/activate
+   python -m venv QiskitAer
+   source QiskitAer/bin/activate
    ```
 
 1. Install `qiskit-aer`
@@ -727,10 +898,10 @@ For this benchmark, we will be providing you with the details of the script that
 
 1. Parameterize the following variables for the QV experiment
 
-  You'll need to parameterize the following variables, in order to generate the QV circuits and run them on a backend and on an ideal simulator:
-  * `qubits`: number or list of physical qubits to be simulated for the experiment,
-  * `depth`: meaning the number of discrete time steps during which the circuit can run gates before the qubits decohere.
-  * `shots`: used for sampling statistics, number of repetitions of each circuit.
+   These are used to generate the QV circuits and run them on a backend and on an ideal simulator:
+   * `qubits`: number or list of physical qubits to be simulated for the experiment,
+   * `depth`: meaning the number of discrete time steps during which the circuit can run gates before the qubits decohere.
+   * `shots`: used for sampling statistics, number of repetitions of each circuit.
 
 1. Run the benchmark by executing the script you've just written:
    ```bash

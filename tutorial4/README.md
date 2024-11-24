@@ -1,428 +1,397 @@
-# Student Cluster Compeititon - Tutorial 4
+# Student Cluster Competition - Tutorial 4
 
 ## Table of Contents
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
 1. [Checklist](#checklist)
 1. [Cluster Monitoring](#cluster-monitoring)
-    1. [Prometheus](#prometheus)
-    1. [Node Exporter](#node-exporter)
-    1. [Grafana](#grafana)
+    1. [Install Docker Engine, Containerd and Docker Compose](#install-docker-engine-containerd-and-docker-compose)
+    1. [Installing your Monitoring Stack](#installing-your-monitoring-stack)
+    1. [Startup and Test the Monitoring Services](#startup-and-test-the-monitoring-services)
+    1. [SSH Port Local Forwarding Tunnel](#ssh-port-local-forwarding-tunnel)
+    1. [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
+    1. [Success State, Next Steps and Troubleshooting](#success-state-next-steps-and-troubleshooting)
+1. [Configuring and Connecting to your Remote JupyterLab Server](#configuring-and-connecting-to-your-remote-jupyterlab-server)
+    1. [Visualize Your HPL Benchmark Results](#visualize-your-hpl-benchmark-results)
+    1. [Visualize Your Qiskit Results](#visualize-your-qiskit-results)
+1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
+    1. [Install and Initialize Terraform](#install-and-initialize-terraform)
+    1. [Generate `clouds.yml` and `main.tf` Files](#generate-cloudsyml-and-maintf-files)
+    1. [Generate, Deploy and Apply Terraform Plan](#generate-deploy-and-apply-terraform-plan)
+1. [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
+    1. [Prepare GitHub Repository](#prepare-github-repository)
+    1. [Reuse `providers.tf` and `main.tf` Terraform Configurations](#reuse-providerstf-and-maintf-terraform-configurations)
+    1. [Create `.circleci/config.yml` File and `push` Project to GitHub](#create-circleciconfigyml-file-and-push-project-to-github)
+    1. [Create CircleCI Account and Add Project](#create-circleci-account-and-add-project)
 1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
     1. [Prerequisites](#prerequisites)
-        1. [Head Node Configuration (Server)](#head-node-configuration-server)
-        1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
-        1. [Configure Grafana Dashboard for Slurm](#configure-grafana-dashboard-for-slurm)
+    1. [Head Node Configuration (Server)](#head-node-configuration-server)
+    1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
 1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
-    1. [Protein Visualisation](#protein-visualisation)
+    1. [Protein Visualization](#protein-visualization)
     1. [Benchmark 2 (1.5M Water)](#benchmark-2-15m-water)
-1. [Running Qiskit from a Remote Jupyter Notebook Server](#running-qiskit-from-a-remote-jupyter-notebook-server)
-1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
-1. [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
-1. [Automating the Configuration of your VMs Using Ansible](#automating-the-configuration-of-your-vms-using-ansible)
 
 <!-- markdown-toc end -->
 
 # Checklist
 
-This tutorial demonstrates _cluster monitoring_ and _workload scheduling_. These two components are critical to a typical HPC environment. Monitoring is a widely used component in system administration (including enterprise datacentres and corporate networks). Monitoring allows administrators to be aware of what is happening on any system that is being monitored and is useful to proactively identify where any potential issues may be. A workload scheduler ensures that users' jobs are handled properly to fairly balance all scheduled jobs with the resources available at any time.
+This tutorial demonstrates _cluster monitoring_, _data visualization_, _automated infrastructure as code deployment_ and _workload scheduling_. These components are critical to a typical HPC environment.
+
+Monitoring is a widely used component in system administration (including enterprise datacentres and corporate networks). Monitoring allows administrators to be aware of what is happening on any system that is being monitored and is useful to proactively identify where any potential issues may be.
+
+Interpreting and understanding your results and data, is vital to making meaning implementations of said data. You will also automate the provisioning and deployment of your *"experimental"*, change management compute node. Lastly, a workload scheduler ensures that users' jobs are handled properly to fairly balance all scheduled jobs with the resources available at any time.
+
+You will also cover data interpretation and visualization for previously run benchmark applications.
 
 In this tutorial you will:
 
-- [ ] Develop a monitoring stack using Docker Compose
-- [ ] Setup monitoring stack using Prometheus, Node Exporter, and Grafana
+- [ ] Setup a monitoring stack using Docker Compose
+  - [ ] Install and setup the pre-requisites
+  - [ ] Create all the files required for configuring the 3 containers to be launched
+    - [ ] The docker-compose.yml file describing the Node-Exporter, Prometheus and Grafana services
+    - [ ] The prometheus.yml file describing the metrics to be scraped for each host involved
+    - [ ] The prometheus-datasource.yaml file describing the Prometheus datasource for Grafana
+  - [ ] Start the services
+    - [ ] Verify that they are running and accessible (locally, and externally)
+  - [ ] Create a dashboard in Grafana
+    - [ ] Login to the Grafana endpoint (via your browser)
+    - [ ] Import the appropriate Node-Exporter dashboard
+    - [ ] Check that the dashboard is working as expected
+- [ ] Prepare, install and configure remote JupyterLab server
+  - [ ] Connect to JupyterLab and visualize benchmarking results
+- [ ] Automate the provisioning and deployment of your Sebowa OpenStack infrastructure
 - [ ] Install the Slurm workload manager across your cluster.
 - [ ] Submit a test job to run on your cluster through the newly-configured workload manager.
 
 > [!TIP]
 > You're going to be manipulating both your headnode, as well as your compute node(s) in this tutorial.
 >
-> You are *strongly* advised to make use of a terminal multiplexer, such as `tmux` before making a connection to your VMs.
->
+> You are **strongly** advised to make use of a terminal multiplexer, such as `tmux` before making a connection to your VMs. Once you're logged into your head node, initiate a `tmux` session:
 >```bash
->$ tmux
+>tmux
 >```
->
-> Split the window into two separate panes with `ctrl + b |`.
-> SSH into your headnode, on the one pane, and ssh into your compute node with a hop over your headnode, recall the jumpbox directive.
+> Then split the window into two separate panes with `ctrl + b %`.
+> SSH into your compute node on the other pane.
 
 # Cluster Monitoring
 
-## Importance of Cluster Monitoring on Linux Machines
 Cluster monitoring is crucial for managing Linux machines. Effective monitoring helps detect and resolve issues promptly, provides insights into resource usage (CPU, memory, disk, network), aids in capacity planning, and ensures infrastructure scales with workload demands. By monitoring system performance and health, administrators can prevent downtime, reduce costs, and improve efficiency.
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/f951e4b7-20ff-49a4-b9a7-28aa57e51f5b)
 
-## Traditional Approach Using top or htop
-Traditionally, Linux system monitoring involves command-line tools like top or htop. These tools offer real-time system performance insights, displaying active processes, resource usage, and system load. While invaluable for monitoring individual machines, they lack the ability to aggregate and visualize data across multiple nodes in a cluster, which is essential for comprehensive monitoring in larger environments.
+* **Traditional Approach Using `top` or `htop`**
 
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/7e0c8b92-adc2-4106-94ee-ca4ee78a13f5)
+  Traditionally, Linux system monitoring involves command-line tools like `top` or `htop`. These tools offer real-time system performance insights, displaying active processes, resource usage, and system load. While invaluable for monitoring individual machines, they lack the ability to aggregate and visualize data across multiple nodes in a cluster, which is essential for comprehensive monitoring in larger environments.
 
-## Using Grafana, Prometheus, and Node Exporter
-Modern solutions use Grafana, Prometheus, and Node Exporter for robust and scalable monitoring. Prometheus collects and stores metrics, Node Exporter provides system-level metrics, and Grafana visualizes this data. This combination enables comprehensive cluster monitoring with historical data analysis, alerting capabilities, and customizable visualizations, facilitating better decision-making and faster issue resolution.
+  ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/7e0c8b92-adc2-4106-94ee-ca4ee78a13f5)
 
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/3f64a8bd-87fa-4b51-9576-b28da3af632b)
+* **Using Grafana, Prometheus, and Node Exporter**
 
-
-## What is Docker and Docker Compose and How We Will Use It
-Docker is a platform for creating, deploying, and managing containerized applications. Docker Compose defines and manages multi-container applications using a YAML file. For cluster monitoring on a Rocky Linux head node, we will use Docker and Docker Compose to bundle Grafana, Prometheus, and Node Exporter into deployable containers. This approach simplifies installation and configuration, ensuring all components are up and running quickly and consistently, streamlining the deployment of the monitoring stack.
-
-# How to use the notes
-
-When the word **Input:** is mentioned, excpect the next line to have commands that you need to copy and paste into your own terminal.
-
-When the word **Output:** is mentioned **DON'T** copy and paste anything below this word as this is just the expected output.
-
-# Pre-requisites
-
-1. Rocky 9.03 VM and ssh keys working
-2. Have nano installed, if not installed use this:
-
-Input:
-```
-sudo yum install nano -y
-```
-
-3. Install Docker Engine and Docker Compose:
-based on following: [https://docs.docker.com/engine/install/rhel/#install-using-the-repository](https://docs.docker.com/engine/install/rhel/#install-using-the-repository)
-
-Install steps:
-
-- Install the yum-utils package (which provides the yum-config-manager utility) and set up the repository.
-
-Input:
-```
-sudo yum install -y yum-utils
-```
-
-Input:
-```
-sudo yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
-```
-
-- Install Docker Engine, containerd, and Docker Compose:
-
-Input:
-```
-sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-```
-
-If prompted to accept the GPG key, verify that the fingerprint matches, accept it.
-
-This command installs Docker, but it doesn't start Docker. It also creates a docker group, however, it doesn't add any users to the group by default.
-
-- Start Docker:
-
-Input:
-```
-sudo systemctl start docker
-```
-
-- Verify that the Docker Engine installation is successful by running the hello-world image:
-
-Input:
-```
-sudo docker run hello-world
-```
-
-This command downloads a test image and runs it in a container. When the container runs, it prints a confirmation message and exits.
-
-You have now successfully installed and started Docker Engine.
-
-- Confirm you have docker compose:
-
-Input:
-```
-docker compose version
-```
-
-Output:
-```
-$ docker compose version
-Docker Compose version v2.28.1
-```
-
-# Installing Monitoring Stack
-- Pre-requisites: each host involved needs to have docker-ce and docker-compose installed as mentioned in the previous section
-- Create a suitable directory, e.g. /opt/monitoring_stack, in which you’ll keep a
-number of important configuration files.
-
-Input:
-```
-sudo mkdir /opt/monitoring_stack/
-cd /opt/monitoring_stack/
-```
-
-- In /opt/monitoring_stack/, create a docker-compose.yml file containing the
-following lines:
-
-Input:
-```
-sudo nano /opt/monitoring_stack/docker-compose.yml
-```
-
-Input into file:
-```
-version: '3'
-services:
-  node-exporter:
-    image: prom/node-exporter
-    ports:
-      - "9100:9100"
-    restart: always
-    networks:
-      - monitoring-network
-
-  prometheus:
-    image: prom/prometheus
-    ports:
-      - "9090:9090"
-    restart: always
-    volumes:
-      - /opt/monitoring_stack/prometheus.yml:/etc/prometheus/prometheus.yml
-    networks:
-      - monitoring-network
-
-  grafana:
-    image: grafana/grafana
-    ports:
-      - "3000:3000"
-    restart: always
-    environment:
-      GF_SECURITY_ADMIN_PASSWORD: admin
-    volumes:
-      - /opt/monitoring_stack/prometheus-datasource.yaml:/etc/grafana/provisioning/datasources/prometheus-datasource.yaml
-    networks:
-      - monitoring-network
-
-networks:
-  monitoring-network:
-    driver: bridge
-```
-
-- We then need to create two additional files, firstly:
-
-Input:
-```
-sudo nano /opt/monitoring_stack/prometheus.yml
-```
-
-Input into file:
-```
-global:
-  scrape_interval: 15s
-
-scrape_configs:
-  - job_name: 'node-exporter'
-    static_configs:
-      - targets: ['node-exporter:9100']
-```
-
-- secondly:
-
-Input:
-```
-sudo nano /opt/monitoring_stack/prometheus-datasource.yaml
-```
-
-Input into file:
-```
-apiVersion: 1
-datasources:
-  - name: Prometheus
-    type: prometheus
-    access: proxy
-    url: http://prometheus:9090
-```
-
-# Start the services
-
-Input:
-```
-sudo docker compose up -d
-```
-
-You should then see:
-
-Output:
-```
-$ sudo docker compose up -d
-[+] Running 4/4
-✔ Network monitoring_stack_monitoring-network Created 0.3s
-✔ Container monitoring_stack-grafana-1 Started 0.2s
-✔ Container monitoring_stack-prometheus-1 Started 0.3s
-✔ Container monitoring_stack-node-exporter-1 Started 0.2s
-```
-
-Then do 
-
-Input:
-```
-sudo docker ps
-```
-
-Output:
-```
-/opt/monitoring_stack$ sudo docker ps
-CONTAINER ID   IMAGE                COMMAND                  CREATED      STATUS        PORTS                                       NAMES
-2b707570dc41   grafana/grafana      "/run.sh"                6 days ago   Up 12 hours   0.0.0.0:3000->3000/tcp, :::3000->3000/tcp   monitoring_stack-grafana-1
-ea730ef94381   prom/prometheus      "/bin/prometheus --c…"   6 days ago   Up 10 hours   0.0.0.0:9090->9090/tcp, :::9090->9090/tcp   monitoring_stack-prometheus-1
-704dfa94ecf3   prom/node-exporter   "/bin/node_exporter"     6 days ago   Up 12 hours   0.0.0.0:9100->9100/tcp, :::9100->9100/tcp   monitoring_stack-node-exporter-1
-```
-
-Now let us verify the services!
-
-# Prometheus
-
-Input:
-```
-curl -s localhost:9090/metrics | head
-```
-
-You should see:
-
-Output:
-```
-$ curl -s localhost:9090/metrics | head
-# HELP go_gc_cycles_automatic_gc_cycles_total Count of completed GC cycles generated by the Go runtime.
-# TYPE go_gc_cycles_automatic_gc_cycles_total counter
-go_gc_cycles_automatic_gc_cycles_total 5
-# HELP go_gc_cycles_forced_gc_cycles_total Count of completed GC cycles forced by the application.
-# TYPE go_gc_cycles_forced_gc_cycles_total counter
-go_gc_cycles_forced_gc_cycles_total 0
-# HELP go_gc_cycles_total_gc_cycles_total Count of all completed GC cycles.
-# TYPE go_gc_cycles_total_gc_cycles_total counter
-go_gc_cycles_total_gc_cycles_total 5
-# HELP go_gc_duration_seconds A summary of the pause duration of garbage collection cycles.
-# TYPE go_gc_duration_seconds summary
-go_gc_duration_seconds{quantile="0"} 7.81e-05
-go_gc_duration_seconds{quantile="0.25"} 0.000135
-...
-```
-
-# Node Exporter
-
-Input:
-```
-curl -s localhost:9100/metrics | head
-```
-
-You should see:
-
-Output:
-```
-$ curl -s localhost:9100/metrics | head
-# HELP go_gc_duration_seconds A summary of the pause duration of
-garbage collection cycles.
-# TYPE go_gc_duration_seconds summary
-go_gc_duration_seconds{quantile="0"} 2.1937e-05
-go_gc_duration_seconds{quantile="0.25"} 3.2322e-05
-go_gc_duration_seconds{quantile="0.5"} 3.4946e-05
-go_gc_duration_seconds{quantile="0.75"} 5.7424e-05
-go_gc_duration_seconds{quantile="1"} 0.000171199
-go_gc_duration_seconds_sum 0.007451006
-go_gc_duration_seconds_count 157
-# HELP go_goroutines Number of goroutines that currently exist
-```
-
-# Grafana
-
-Input:
-```
-curl -s localhost:3000 | head
-```
-
-You should see:
-
-Output:
-```
-$ curl -s localhost:3000 | hea
-<a href=“/login">Found</a>.
-$ curl -s -u admin:admin localhost:3000 | head
-<!DOCTYPE html>
-<html lang="en-US">
-<head>
-<meta charset="utf-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-<meta name="viewport" content="width=device-width" />
-<meta name="theme-color" content="#000" />
-<title>Grafana</title>
-```
-
-Now you can also go to a local browser. 
-
-Open a new terminal and run the tunnel command (replace xxx.xxx.xxx.xxx with your unique IP):
-
-Input:
-```
-$ ssh -L 3000:localhost:3000 rocky@xxx.xxx.xxx.xxx
-```
-
-You should see something like this (note you will have a different IP address):
-
-Output:
-```
-$ ssh -L 3000:localhost:3000 rocky@154.114.57.102
-Last login: Wed Jul  3 12:05:29 2024 from 41.10.78.210
-[rocky@demo-bb ~]$
-```
-
-Then open up a browser
-
-```
-http://localhost:3000
-```
-
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/abee2bcd-3f6c-437b-aee7-edfa31550d42)
-
-
-# Create a Dashboard in Grafana
-
-Go to a browser and input:
-
-```
-http://localhost:3000
-```
-
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/abee2bcd-3f6c-437b-aee7-edfa31550d42)
-
-username: admin
-password: admin
-
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/52010bd5-e9fd-4ee1-9703-352507a1e72d)
-
-Go to Dashboards
-
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/083f2bc3-247a-40ad-b923-2b2007fe9b70)
-
-Click on New then Import
-
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/4efa0d71-7278-454d-a815-8b6f1f1c72a3)
-
-Input: 1860 and click Load 
-
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/d8cda594-0468-4ec0-876a-7beeaf79589f)
-
-Click on source: "Prometheus"
-
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/257351d2-f078-4140-9a37-0b8a4b1b59b8)
-
-Click on Import:
-
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/f078be7e-2663-4947-b8fd-fc6c6d548513)
-
-Then you should see:
+  Modern solutions use Grafana, Prometheus, and Node Exporter for robust and scalable monitoring. Prometheus collects and stores metrics, Node Exporter provides system-level metrics, and Grafana visualizes this data. This combination enables comprehensive cluster monitoring with historical data analysis, alerting capabilities, and customizable visualizations, facilitating better decision-making and faster issue resolution.
+
+  ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/3f64a8bd-87fa-4b51-9576-b28da3af632b)
+
+* **What is Docker and Docker Compose and How We Will Use It**
+
+  Docker is a platform for creating, deploying, and managing containerized applications. Docker Compose defines and manages multi-container applications using a YAML file. For cluster monitoring on a Rocky Linux head node, we will use Docker and Docker Compose to bundle Grafana, Prometheus, and Node Exporter into deployable containers. This approach simplifies installation and configuration, ensuring all components are up and running quickly and consistently, streamlining the deployment of the monitoring stack.
+
+> [!NOTE]
+> When the word **Input:** is mentioned, excpect the next line to have commands that you need to copy and paste into your own terminal.
+>
+> Whenever the word **Output:** is mentioned **DON'T** copy and paste anything below this word as this is just the expected output.
+>
+> The following configuration is for your **head node**. You will be advised of the steps you need to take to monitor your **compute node(s)** at the end.
+
+## Install Docker Engine, Containerd and Docker Compose
+
+You will need to have `docker`, `containerd` and `docker-compose` installed on all the nodes that you want to eventually monitor, i.e. your head node and compute node(s).
+
+1. Prerequisites and dependencies
+
+   Refer to the following [RHEL Guide](https://docs.docker.com/engine/install/rhel/#install-using-the-repository)
+
+   * DNF / YUM
+   ```bash
+   # The yum-utils package which provides the yum-config-manager utility
+   sudo yum install -y yum-utils
+
+   # Add and set up the repository for use.
+   sudo yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+   ```
+   * APT
+   ```bash
+   # Install required package dependencies
+   sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
+
+   # Add the Docker repository
+   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+   sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+   ```
+
+1. Installation
+
+   * DNF / YUM
+   ```bash
+   # If prompted to accept the GPG key, verify that the fingerprint matches, accept it.
+   sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+   ```
+   * APT
+   ```bash
+   sudo apt update
+   sudo apt install docker-ce docker-ce-cli containerd.io -y
+   ```
+   * Arch
+   ```bash
+   sudo pacman -S docker
+
+   # You need to start and enable docker, prior to installing containerd and docker-compose
+   sudo pacman -S containerd docker-compose
+   ```
+
+1. Start and Enable Docker:
+   ```bash
+   sudo systemctl start docker
+   sudo systemctl enable docker
+   ```
+1. Install Docker-Compose on Ubuntu
+   * APT
+   ```bash
+   sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -Po '"tag_name": "\K.*\d')/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+   sudo chmod +x /usr/local/bin/docker-compose
+   ```
+1. Verify that the Docker Engine installation was successful by running the `hello-world` image
+
+   Download and deploy a test image and run it inside a container. When the container runs, it prints a confirmation message and exits.
+   ```bash
+   # Check the verions of Docker
+   docker --version
+
+   # Download and deplpoy a test image
+   sudo docker run hello-world
+
+   # Check your version of Docker Compose
+   docker-compose --version
+   ```
+   You have now successfully installed and started Docker Engine.
+
+## Installing your Monitoring Stack
+
+1. Create a suitable directory, e.g. `/opt/monitoring_stack`
+
+   This which you’ll keep a number of important configuration files.
+
+   ```bash
+   sudo mkdir /opt/monitoring_stack/
+   cd /opt/monitoring_stack/
+   ```
+1. Create and edit your monitoring configurations files
+   ```bash
+   sudo nano /opt/monitoring_stack/docker-compose.yml
+   ```
+1. Add the following to the `docker-compose.yml` YAML file
+   ```conf
+   version: '3'
+   services:
+     node-exporter:
+       image: prom/node-exporter
+       ports:
+         - "9100:9100"
+       restart: always
+       networks:
+         - monitoring-network
+
+     prometheus:
+       image: prom/prometheus
+       ports:
+         - "9090:9090"
+       restart: always
+       volumes:
+         - /opt/monitoring_stack/prometheus.yml:/etc/prometheus/prometheus.yml
+       networks:
+         - monitoring-network
+
+     grafana:
+       image: grafana/grafana
+       ports:
+         - "3000:3000"
+       restart: always
+       environment:
+         GF_SECURITY_ADMIN_PASSWORD: <SET_YOUR_GRAFANA_PASSWORD>
+       volumes:
+         - /opt/monitoring_stack/prometheus-datasource.yaml:/etc/grafana/provisioning/datasources/prometheus-datasource.yaml
+       networks:
+         - monitoring-network
+
+   networks:
+     monitoring-network:
+       driver: bridge
+   ```
+1. Create and edit your Prometheus configuration files
+
+   ```bash
+     sudo nano /opt/monitoring_stack/prometheus.yml
+   ```
+1. Add the following to your `prometheus.yml` YAML file
+   ```conf
+   global:
+     scrape_interval: 15s
+
+   scrape_configs:
+     - job_name: 'node-exporter'
+       static_configs:
+         - targets: ['node-exporter:9100']
+   ```
+1. Configure you Promeheus Data Sources
+   ```bash
+   sudo nano /opt/monitoring_stack/prometheus-datasource.yaml
+   ```
+1. Add the following to your `prometheus-datasource.yaml`.
+   ```conf
+   apiVersion: 1
+   datasources:
+     - name: Prometheus
+       type: prometheus
+       access: proxy
+       url: http://prometheus:9090
+   ```
+
+## Startup and Test the Monitoring Services
+
+> [!TIP]
+> If you've successfully configured nftables, you will be required to open the following TCP ports 3000, 9090, 9100.
+
+Bring up your monitoring stack and verify that the have been correctly configured
+
+* Bring up your monitoring stack
+  ```bash
+  sudo docker compose up -d
+  ```
+
+* Confirm the status of your Docker Containers
+  ```bash
+  sudo docker ps
+  ```
+
+* Dump the metrics that are being monitored from your services
+  ```bash
+  # Prometheus
+  curl -s localhost:9090/metrics | head
+
+  # Node Exporter
+  curl -s localhost:9100/metrics | head
+
+  # Grafana
+  curl -s localhost:3000 | head
+  ```
+
+Post the output of the above commands as comments to the [Discussion](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/158) on GitHub.
+
+Congratulations on correctly configuring your monitoring services!
+
+## SSH Port Local Forwarding Tunnel
+
+SSH port forwarding, also known as SSH tunneling, is a method of creating a secure connection between a local computer and a remote machine through an SSH (Secure Shell) connection. Local port forwarding allows you to forward a port on your local machine to a port on a remote machine. It is commonly used to access services behind a firewall or NAT.
+
+> [!IMPORTANT]
+> The following is included to demonstrate the concept of TCP Port Forwarding. In the next section, your are:
+> * Opening a TCP Forwarding Port and listening on Port 3000 on your **workstation**, i.e. http://localhost:3000
+> * You are then binding this ***SOCKET*** to TCP Port 3000 on your **head node**.
+>
+> The following diagram may facilitate the discussion and illustrate the scenario:
+> ```css
+> [workstation:3000] ---- SSH Forwarding Tunnel ----> [head node:3000] ---- Grafana Service on head node
+>
+> # Connect to Grafana's (head node) service directly from your workstation
+> [http://localhost:3000] ---- SSH Forwarding Tunnel ----> [Grafana (head node)]
+> ```
+>
+> Make sure that you understand the above concepts, as it will facilitate your understanding of the following considerations:
+> * If you have successfully configured [WireGuard](../tutorial2/README.md#wirguard-vpn-cluster-access)
+> ```css
+> [workstation:3000] ---- WireGuard VPN ----> [head node:3000] ---- Grafana Service on head node
+>
+> # Connect to Grafana's (head node) service directly from your workstation
+> [http://<head node (private wiregaurd ip)>:3000] ---- WireGuard VPN ----> [Grafana (head node)]
+>
+> ```
+> * And / or if you have successfully configured [ZeroTier](../tutorial2/README.md#zerotier)
+> ```css
+> [workstation:3000] ---- ZeroTier VPN ----> [head node:3000] ---- Grafana Service on head node
+>
+> # Connect to Grafana's (head node) service directly from your workstation
+> [http://<head node (private zerotier ip)>:3000] ---- ZeroTier VPN ----> [Grafana (head node)]
+> ```
+
+> [!CAUTION]
+> You need to ensure that you have understood the above discussions. This section on port forwarding, is included for situations where you do know have `sudo` rights on the machine your are working on and cannot open ports or install applications via `sudo`, then you can forward ports over SSH.
+>
+> Take the time now however, to ensure that all of your team members understand that there are a number of methods with which you can access remote services on your head node:
+> * http://154.114.57.x:3000
+> * http://localhost:3000
+> * http://`<headnode wireguard ip>`:3000
+> * http://`<headnode zerotier ip>`:3000
+
+Once you have understood the above considerations, you may proceed to create a TCP Port Forwarding tunnel, to connect your workstation's port, directly to your head node's, over a tunnel.
+
+1. Create SSH Port Forwarding Tunnel on your local workstation
+
+   Open a new terminal and run the tunnel command (replace 157.114.57.x with your unique IP):
+
+   ```
+   ssh -L 3000:localhost:3000 rocky@157.114.57.x
+   ```
+## Create a Dashboard in Grafana
+
+1. From a browser on your **workstation** navigate to the Grafana dashboard on your head node
+
+1. Go to a browser and login to Grafana:
+
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/abee2bcd-3f6c-437b-aee7-edfa31550d42)
+
+1. Login to you Grafana dashboards
+   ```
+   username: admin
+   password: <YOUR_GRAFANA_PASSWORD>
+   ```
+
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/52010bd5-e9fd-4ee1-9703-352507a1e72d)
+
+1. Go to Dashboards
+
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/083f2bc3-247a-40ad-b923-2b2007fe9b70)
+
+1. Click on New then Import
+
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/4efa0d71-7278-454d-a815-8b6f1f1c72a3)
+
+1. Input: 1860 and click Load
+
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/d8cda594-0468-4ec0-876a-7beeaf79589f)
+
+1. Click on source: "Prometheus"
+
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/257351d2-f078-4140-9a37-0b8a4b1b59b8)
+
+1. Click on Import:
+
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/f078be7e-2663-4947-b8fd-fc6c6d548513)
+
+## Success State, Next Steps and Troubleshooting
+
+Congratulations on successfully deploying your monitoring stack and adding Grafana Dashboards to visualize this.
 
 ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/0568acc5-5248-4b90-8803-5f58d2af11e2)
 
+If you've managed to successfully configure your dash boards for your head node, repeat the steps for deploying **Node Exporter** on your compute node(s).
+
 > [!NOTE]
 > Should you have any difficulties running the above configuration, use the alternative process below to deploy your monitoring stack. Click on the heading to reveal content.
-
 <details>
 <summary>Installing your monitoring stack from pre-compiled binaries</summary>
 For this tutorial we will install from pre-complied binaries.
 
-## Prometheus
+### Prometheus
 The installation and the configuration of Prometheus should be done on your headnode.
 
 1. Create a Prometheus user without login access, this will be done manually as shown below:
@@ -433,7 +402,7 @@ sudo useradd --no-create-home --shell /sbin/nologin prometheus
  ```bash
 wget https://github.com/prometheus/prometheus/releases/download/v2.33.1/prometheus-2.33.1.linux-amd64.tar.gz
  ```
-3. Long list file to verify Prometheus was downloaded 
+3. Long list file to verify Prometheus was downloaded
  ```bash
 ll
  ```
@@ -441,27 +410,27 @@ ll
 ```bash
 tar -xvzf prometheus-2.33.1.linux-amd64.tar.gz
 cd prometheus-2.33.1.linux-amd64
-sudo mv prometheus promtool /usr/local/bin/ 
+sudo mv prometheus promtool /usr/local/bin/
 ```
 5. Move back to the home directory, create directorise for prometheus.
  ```bash
 cd ~
-sudo mkdir /etc/prometheus 
-sudo mkdir /var/lib/prometheus 
+sudo mkdir /etc/prometheus
+sudo mkdir /var/lib/prometheus
  ```
 6. Set the correct ownership for the prometheus directories
  ```bash
-sudo chown prometheus:prometheus /etc/prometheus/ 
+sudo chown prometheus:prometheus /etc/prometheus/
 sudo chown prometheus:prometheus /var/lib/prometheus
  ```
-7. Move the configuration file and set the correct permissions 
+7. Move the configuration file and set the correct permissions
  ```bash
-cd prometheus-2.33.1.linux-amd64 
-sudo mv consoles/ console_libraries/ prometheus.yml /etc/prometheus/ 
-sudo chown -R prometheus:prometheus /etc/prometheus/ 
+cd prometheus-2.33.1.linux-amd64
+sudo mv consoles/ console_libraries/ prometheus.yml /etc/prometheus/
+sudo chown -R prometheus:prometheus /etc/prometheus/
  ```
 8. Configure Prometheus \
-  Edit the `/etc/prometheus/prometheus.yml` file to configure your targets(compute node) 
+  Edit the `/etc/prometheus/prometheus.yml` file to configure your targets(compute node)
 
     *Hint : Add the job configuration for the compute_node in the scrape_configs section of your Prometheus YAML configuration file. Ensure that all necessary configurations for this job are correctly placed within the relevant sections of the YAML file.*:
 
@@ -477,7 +446,7 @@ scrape_configs:
     static_configs:
       - targets: ["<compute_node_ip>:9100"]
 ```
-9.  Create a service file to manage Prometheus with `systemctl`, the file can be created with the text editor `nano` (Can use any text editor of your choice)
+9. Create a service file to manage Prometheus with `systemctl`, the file can be created with the text editor `nano` (Can use any text editor of your choice)
  ```bash
 sudo nano /etc/systemd/system/prometheus.service
  ```
@@ -505,37 +474,32 @@ WantedBy=multi-user.target
 10. Reload the systemd daemon, start and enable the service
  ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable prometheus 
+sudo systemctl enable prometheus
 sudo systemctl start prometheus
  ```
 
 11. Check that your service is active by checking the status
   ```bash
   sudo systemctl status prometheus
-  ``` 
+  ```
 
 > [!TIP]
 > If when you check the status and find that the service is not running, ensure SELinux or AppArmor is not restricting Prometheus from running. Try disabling SELinux/AppArmor temporarily to see if it resolves the issue:
-> 
+>
 > ```bash
 > sudo setenforce 0
 > ```
-> 
+>
 > Then repeat steps 10 and 11.
 >
 > If the prometheus service still fails to start properly, run the command `journalctl –u prometheus -f --no-pager` and review the output for errors.
 
 > [!IMPORTANT]
-> If firewalld is enabled and running, add a rule for port 9090
-> 
-> ```bash
-> sudo firewall-cmd --permanent --zone=public --add-port=9090/tcp
-> sudo firewall-cmd --reload 
-> ```
+> If you have a firewall running, add a TCP rule for port 9090
 
 Verify that your prometheus configuration is working navigating to `http://<headnode_ip>:9090` in your web browser, access prometheus web interface. Ensure that the `headnode_ip` is the public facing ip.
 
-## Node Exporter
+### Node Exporter
 Node Exporter is a Prometheus exporter specifically designed for hardware and OS metrics exposed by Unix-like kernels. It collects detailed system metrics such as CPU usage, memory usage, disk I/O, and network statistics. These metrics are exposed via an HTTP endpoint, typically accessible at `<node_ip>:9100/metrics`. The primary role of Node Exporter is to provide a source of system-level metrics that Prometheus can scrape and store. This exporter is crucial for gaining insights into the health and performance of individual nodes within a network.
 
 The installation and the configuration node exporter will be done on the **compute node/s**
@@ -555,7 +519,7 @@ sudo tar xvf node_exporter-1.6.1.linux-amd64.tar.gz
 3. Next, move the node exporter binary file to the directory '/usr/local/bin' using the following command
 ```bash
 mv node_exporter-*/node_exporter /usr/local/bin
-``` 
+```
 4.  Create a service file to manage Node Exporter with `systemctl`, the file can be created with the text editor `nano` (Can use any text editor of your choice)
  ```bash
 sudo nano /etc/systemd/system/node_exporter.service
@@ -592,7 +556,7 @@ sudo systemctl start node_exporter
   ```bash
   sudo systemctl status node_exporter
   ``` 
-### SSH Tunneling
+#### SSH Tunneling
 In order to verify that node exporter is set up correctly we need to access `<node_ip>:9100/metrics`. This can only been done by simply going to your broswer and putting it in as we did with Prometheus, we need to use a SSH tunnel.
 
 **What is SSH Tunneling?** \
@@ -618,8 +582,7 @@ user@headnode_ip: The SSH connection details for the headnode.
 
   2. By navigating to http://localhost:9100/metrics in your web browser, you can access the Node Exporter metrics from the compute node as if the service were running locally on your machine.
 
-
-## Grafana
+### Grafana
 Grafana is an open-source platform for monitoring and observability, known for its capability to create interactive and customizable dashboards. It integrates seamlessly with various data sources, including Prometheus. Through its user-friendly interface, Grafana allows users to build and execute queries to visualize data effectively. Beyond visualization, Grafana also supports alerting based on the visualized data, enabling users to set up notifications for specific conditions. This makes Grafana a powerful tool for both real-time monitoring and historical analysis of system performance.
 
 Now we go back to the headnode for the installation and the configuration of Grafana
@@ -664,6 +627,370 @@ sudo systemctl status grafana-server
 
 </details>
 
+# Configuring and Connecting to your Remote JupyterLab Server
+
+[Project Jupyter](https://jupyter.org/) provides powerful tools for scientific investigations due to their interactive and flexible nature. Here are some key reasons why they are favored in scientific research.
+
+* Interactive Computing and Immediate Feedback
+
+  Run code snippets and see the results immediately, which helps in quick iterations and testing of hypotheses.  Directly plot graphs and visualize data within the notebook, which is crucial for data analysis.
+
+* Documentation and Rich Narrative Text
+
+  Combine code with Markdown text to explain the methodology, document findings, and write detailed notes. Embed images, videos, and LaTeX equations to enhance documentation and understanding.
+
+* Reproducibility
+
+  Share notebooks with others to ensure that they can reproduce the results by running the same code. Use tools like Git to version control the notebooks, ensuring a record of changes and collaborative development.
+
+* Data Analysis and Visualization
+
+  Utilize a wide range of Python libraries such as NumPy, Pandas, Matplotlib, and Seaborn for data manipulation and visualization. Perform exploratory data analysis (EDA) seamlessly with powerful plotting libraries.
+
+Jupyter Notebooks provide a versatile and powerful environment for conducting scientific investigations, facilitating both the analysis and the clear communication of results.
+
+1. Start by installing all the prerequisites
+
+   You would have already installed most these from [Qiskit Benchmark](../tutorial3/README.md##qiskit-quantum-volume) in tutorial 3.
+   * DNF / YUM
+     ```bash
+     # RHEL, Rocky, Alma, CentOS Stream
+     sudo dnf install python python-pip
+     ```
+   * APT
+     ```bash
+     # Ubuntu
+     sudo apt install python python-pip
+     ```
+   * Pacman
+     ```bash
+     # Arch
+     sudo pacman -S python python-pip
+     ```
+1. Open TCP port 8889 on your nftables firewall, and restart the service
+   ```bash
+   sudo nano /etc/nftables/hn.nft
+   sudo systemctl restart nftables
+   ```
+
+> [!TIP]
+> There are a number of plotting utilities available in Python. Each with their own advantages and disadvantages. You will be using [Plotly](https://plotly.com/python/ipython-notebook-tutorial/) in the following exercises.
+
+## Visualize Your HPL Benchmark Results
+
+You will now visualize the results from the [table you prepared of Rmax (GFlops/s)](../tutorial3/README.md#top500-list) scores for different configurations of HPL.
+
+1. Create and Activate a New Python Virtual Environment
+
+   Separate your python projects and ensure that they exist in their own, clean environments:
+
+   ```bash
+   python -m venv hplScores
+   source hplScores/bin/activate
+   ```
+1. Install Project Jupyter and Plotly plotting utilities and dependencies
+   ```bash
+   pip install jupyterlab ipywidgets plotly jupyter-dash
+   ```
+1. Start the JupyterLab server
+   ```bash
+   jupyter lab --ip 0.0.0.0 --port 8889 --no-browser
+   ```
+   * `--ip` binds to all interfaces on your head node, including the public facing address
+   * `--port` bind to the port that you granted access to in `nftables`
+   * --no-browser, do not try to launch a browser directly on your head node.
+1. Carefully copy your `<TOKEN>` from the command line after successfully launching your JupyterLab server.
+   ```bash
+   # Look for a line similar to the one below, and carefully copy your <TOKEN>
+   http://127.0.0.1:8889/lab?token=<TOKEN>
+   ```
+1. Open a browser on you workstation and navigate to your JupyterLab server on your headnode:
+   ```bash
+   http://<headnode_public_ip>:8889
+   ```
+1. Login to your JupyterLab server using your `<TOKEN>`.
+1. Create a new Python Notebook and plot your HPL results:
+   ```python
+   import plotly.express as px
+   x=["Head [<treads>]", "Compute Repo MPI and BLAS [<threads>]", "Compute Compiled MPI and BLAS [<threads>]", "Compute Intel oneAPI Toolkits", "Two Compute Nodes", "etc..."]
+   y=[<gflops_headnode>, <gflops_compute>, <gflops_compute_compiled_mpi_blas>, <gflops_compute_intel_oneapi>, <gflops_two_compute>, <etc..>]
+   fig = px.bar(x, y)
+   fig.show()
+   ```
+1. Click on the camera icon to download and save your image.
+   Post your results as a comment, replying to this [GitHub discussion thread](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/114).
+
+## Visualize Your Qiskit Results
+
+You are now going to extend your `qv_experiment` and plot your results, by drawing a graph of *"Number of Qubits vs Simulation time to Solution"*:
+
+1. Create and Activate a New Python Virtual Environment
+
+   Separate your python projects and ensure that they exist in their own, clean environments:
+
+   ```bash
+   python -m venv
+   source QiskitAer/bin/activate
+   ```
+1. You may need to install additional dependencies
+   ```bash
+   pip install matplotlib jupyterlab
+   ```
+
+1. Append the following to your `qv_experiment.py` script:
+
+   ```python
+   # number of qubits, for your system see how much higher that 30 your can go...
+   num_qubits = np.arrange(2, 10)
+
+   # QV Depth
+   qv_depth = 5
+
+   # For bonus points submit results with up to 20 or even 30 shots
+   # Note that this will be more demanding on your system
+   num_shots = 10
+
+   # Array for storing the output results
+   result_array = [[], []]
+
+   # iterate over qv depth and number of qubits
+   for i in num_qubits:
+     result_array[i] = quant_vol(qubits=i, shots=num_shots, depth=qv_depth)
+     # for debugging purposes you can optionally print the output
+     print(i, result_array[i])
+
+   import matplotlib.pyplot as plt
+   plt.xlabel('Number of qubits')
+   plt.ylabel('Time (sec)')
+   plt.plot(num_qubits, results_array)
+   plt.title('Quantum Volume Experiment with depth=' + str(qv_depth))
+   plt.savefig('qv_experiment.png')
+   ```
+
+1. Run the benchmark by executing the script you've just written:
+   ```bash
+   python qv_experiment.py
+   ```
+
+# Terraform Guide
+
+### Deploying a Second Compute Node on AWS with Terraform
+
+This guide walks you through creating a Terraform script to deploy a second compute node on AWS.
+
+---
+
+## **Prerequisites**
+
+Before using Terraform, ensure the following are installed and configured on your local machine:
+
+1. [Download Terraform](https://www.terraform.io/downloads) and install it.
+2. [Download and configure AWS CLI](https://aws.amazon.com/cli/) on your machine.
+
+Additionally, you must set up a **Terraform user** in AWS Identity and Access Management (IAM).
+
+---
+
+## **Creating an AWS IAM User**
+
+To create a user account in AWS IAM, follow these steps:
+
+1. Navigate to the AWS Management Console, search for **IAM**, and click to open the IAM dashboard.
+
+   <p align="center">
+      <img alt="IAM Dashboard" src="../documentation/resources/Screenshot 2024-11-23 153119.png" width=900 />
+   </p>
+
+   > **Note:** In this guide, a user already exists (hence "1 user" is displayed). If you're setting this up for the first time, the count will show as "0 users."
+
+2. Click the **Users** section, then select **Create User** on the right-hand side.
+
+3. Provide a name for the new user:
+   
+   <p align="center">
+      <img alt="Naming the user" src="../documentation/resources/Screenshot 2024-11-23 154358.png" width=900 />
+   </p>
+
+4. Assign the user to a group. If you don't have an existing group, create one.
+
+   <p align="center">
+      <img alt="Adding the user to a group" src="../documentation/resources/Screenshot 2024-11-23 154850.png" width=900 />
+   </p>
+
+5. Review the details and complete the user creation process. 
+
+   Once the user is successfully created, note down the **Access Key ID** and **Secret Access Key**, as these will be used for authentication.
+
+6. Configure these credentials in AWS CLI using the following command:
+   ```bash
+   aws configure
+ ## Creating a Terraform script
+
+You have to create a main.tf file to write(It can be any name of your choice as long as t has the .tf extension)
+
+Run ***terraform init*** command in the root directory to initialize our Terraform project
+
+The terraform script looks like the one below
+
+<p align="center"><img alt="Naming the instance" src="../documentation/resources/Screenshot 2024-11-23 175158.png" width=900 /></p>
+
+> **_NOTE:_** The above picture is my Terraform script therefore yours does not have to look exactly the same 
+
+You can run the command the following command if you want to peview the changes
+
+```bash
+   terrafrom plan
+```
+
+After writing the script run the following coammand to launch an instance
+
+```bash
+   terrafrom apply
+   ```
+
+
+If you want to delete your instance run the following command 
+
+```bash
+   terrafrom destroy
+```
+
+> [!TIP]
+> To avoid losing your team's progress, it would be a good idea to create a GitHub repo in order for you to commit and push your various scripts and configuration files.
+
+# Continuous Integration Using CircleCI
+
+Circle CI is a Continuous Integration and Continuous Delivery platform that can be utilized to implement DevOps practices. It helps teams build, test, and deploy applications quickly and reliably.
+
+In this section of the tutorials you're going to be expanding on the OpenStack instance automation with CircleCI `Workflows` and `Pipelines`. For this tutorial you will be using your GitHub account which will integrate directly into CircleCI.
+
+## Prepare GitHub Repository
+
+   You will be integration GitHub into CircleCI workflows, wherein every time you commit changes to your `deploy_compute` GitHub repository, CircleCI will instantiate and trigger Terraform, to create a new compute node VM on Sebowa.
+
+1. Create GitHub Repository
+   If you haven't already done so, sign up for a [GitHub Account](https://github.com/). Then create an empty private repository with a suitable name, i.e. `deploy_compute_node`:
+
+   <p align="center"><img alt="Github Create" src="./resources/github_create_new_repo.png" width=600 /></p>
+
+1. Add your team members to the repository to provide them with access:
+   <p align="center"><img alt="Github Manage Access" src="./resources/github_manage_access.png" width=900 /></p>
+
+1. If you haven't already done so, add your SSH key to your GitHub account by following the instructions from [Steps to follow when editing existing content](../README.md#steps-to-follow-when-editing-existing-content).
+
+> [!TIP]
+> You will be using your head node to orchestrate and configure your infrastructure. Pay careful attention to ensure that you copy over your **head node**'s public SSH key. Administrating and managing your compute nodes in this manner requires you to think about them as "cattle" and not "pets".
+
+## Reuse `providers.tf` and `main.tf` Terraform Configurations
+
+1. On your head node, create a folder that is going to be used to initialize the GitHub repository:
+   ```bash
+   mkdir ~/deploy_compute_node
+   cd ~/deploy_compute_node
+   ```
+
+1. Copy the `providers.tf` and `main.tf` files you had previously generated:
+
+   ```bash
+   cp ~/terraform/providers.tf ./
+   cp ~/terraform/main.tf ./
+   vim main.tf
+   ```
+
+## Create `.circleci/config.yml` File and `push` Project to GitHub
+
+   The `.circle/config.yml` configuration file is where you define your build, test and deployment process. From your head node, you are going to be `pushing` your Infrastructure as Code to your private GitHub repository. This will then automatically trigger the CircleCI deployment of a Docker container which has been tailored for Terraform operations and instructions that will deploy your Sebowa OpenStack compute node instance.
+
+1. Create and edit `.circleci/config.yml`:
+   ```bash
+   mkdir .circleci
+   vim .circleci/config.yml # Remember that if you are not comfortable using Vim, install and make use of Nano
+   ```
+
+1. Copy the following configuration into `.circle/config.yml`:
+   ```conf
+   version: 2.1
+
+   jobs:
+     deploy:
+       docker:
+         - image: hashicorp/terraform:latest
+       steps:
+         - checkout
+
+         - run:
+             name: Create clouds.yaml
+             command: |
+               mkdir -p ~/.config/openstack
+               echo "clouds:
+                 openstack:
+                   auth:
+                     auth_url: https://sebowa.nicis.ac.za:5000
+                     application_credential_id: ${application_credential_id}
+                     application_credential_secret: ${application_credential_secret}
+                   region_name: "RegionOne"
+                   interface: "public"
+                   identity_api_version: 3
+                   auth_type: "v3applicationcredential"" > ~/.config/openstack/clouds.yaml
+
+         - run:
+             name: Terraform Init
+             command: terraform init
+
+         - run:
+             name: Terraform Apply
+             command: terraform apply -auto-approve
+
+   workflows:
+     version: 2
+     deploy_workflow:
+     jobs:
+       - deploy
+
+   ```
+     - **Version**: Specifies the configuration version.
+     - **Jobs**: Defines the individual steps in the build process, where we've defined a `build` job that runs inside the latest Terraform Docker container from Hashicorp.
+     - **Steps**: The steps to execute within the job:
+       * `checkout`: Clone and checkout the code from the repository.
+       * `run`: Executes a number of shell commands to create the `clouds.yaml` file, then initialize and apply the Terraform configuration.
+     - **Workflows**: Defines the workflow(s) that CircleCI will follow, where in this instance there is a single workflow specified `deploy_workflow`, that runs the `deploy` job.
+
+1. `Init`ialize the Git Repository, `add` the files you've just created and `push` to GitHub:
+   Following the instructions from the previous section where you created a new GitHub repo, execute the following commands from your head node, inside the `deploy_compute_node` folder:
+   ```bash
+   cd ~/deploy_compute_node
+   git init
+   git add .
+   git commit -m "Initial Commit." # You may be asked to configure you Name and Email. Follow the instructions on the screen before proceeding.
+   git branch -M main
+   git remote add origin git@github.com:<TEAM_NAME>/deploy_compute_node.git
+   git push -u origin main
+   ```
+   The new files should now be available on GitHub.
+
+## Create CircleCI Account and Add Project
+
+   Navigate to [CircleCI.com](https://circleci.com) to create an account, link and add a new GitHub project.
+1. Create a new organization and give it a suitable name
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_organization.png" width=600 /></p>
+1. Once you've logged into your workspace, go to projects and create a new project
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project00.png" width=600 /></p>
+1. Create a new IaC Project
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project01.png" width=600 /></p>
+1. If your repository is on GitHub, create a corresponding project
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project02.png" width=600 /></p>
+1. Pick a project name and a repository to associate it to
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project03.png" width=600 /></p>
+1. Push the configuration to GitHub to trigger workflow
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_successful_deploy.png" width=900 /></p>
+
+> [!IMPORTANT]
+> You're going to need to delete your experimental compute node instance on your Sebowa OpenStack workspace, each time you want to test or run the CircleCI integration. It has been included here for demonstration purposes, so that you may begin to see the power and utility of CI/CD and automation.
+>
+> Navigate to your Sebowa OpenStack workspace to ensure that they deployment was successful.
+>
+> Consider how you could streamline this process even further using preconfigured instance snapshots, as well as  Ansible after your instances have been deployed.
+
 # Slurm Scheduler and Workload Manager
 
 The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource Management), is a free and open-source job scheduler for Linux, used by many of the world's supercomputers/computer clusters. It allows you to manage the resources of a cluster by deciding how users get access for some duration of time so they can perform work. To find out more, please visit the [Slurm Website](https://slurm.schedmd.com/documentation.html).
@@ -680,7 +1007,7 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
        - `useradd slurm`
        - Ensure that users and groups (UIDs and GIDs) are synchronized across the cluster. Read up on the appropriate [/etc/shadow](https://linuxize.com/post/etc-shadow-file/) and [/etc/password](https://www.cyberciti.biz/faq/understanding-etcpasswd-file-format/) files.
 
-## Head Node Configuration (Server) 
+## Head Node Configuration (Server)
 
 
 1. Install the [MUNGE](https://dun.github.io/munge/) package. MUNGE is an authentication service that makes sure user credentials are valid and is specifically designed for HPC use.
@@ -709,7 +1036,7 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
 3. Using `scp`, copy the MUNGE key to your compute node to allow it to authenticate:
 
     1. SSH into your compute node and create the directory `/etc/munge`. Then exit back to the head node.
-   
+
     2. Since, munge has not yet been installed on your compute node, first transfer the file to a temporary location
     ```bash
       sudo cp /etc/munge/munge.key /tmp/munge.key && sudo chown user:user /tmp/munge.key
@@ -723,7 +1050,7 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
 
     4. Move the file to the correct location
     ```bash
-      ssh <computenode hostname or ip> 'sudo mv /tmp/munge.key /etc/munge/munge.key' 
+      ssh <computenode hostname or ip> 'sudo mv /tmp/munge.key /etc/munge/munge.key'
     ```
 
 4. **Start** and **enable** the `munge` service
@@ -749,7 +1076,7 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
     ```
 
     This should successfully generate Slurm RPMs in the directory that you invoked the `rpmbuild` command from.
-    
+
 9.  Copy these RPMs to your compute node to install later, using `scp`.
 
 10. Install Slurm server
@@ -778,7 +1105,7 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
     Populate the nodes and partitions at the bottom with the following two lines:
 
     ```conf
-    NodeName=<computenode> Sockets=<num_sockets> CoresPerSocket=<num_cpu_cores> \ 
+    NodeName=<computenode> Sockets=<num_sockets> CoresPerSocket=<num_cpu_cores> \
     ThreadsPerCore=<num_threads_per_core> State=UNKNOWN
     ```
 
@@ -829,7 +1156,7 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
 Return to your head node. To demonstrate that your scheduler is working you can run the following command as your normal user:
 
 ```bash
-  sinfo 
+  sinfo
 ```
 
 You should see your compute node in an idle state.
@@ -837,7 +1164,7 @@ You should see your compute node in an idle state.
 Slurm allows for jobs to be submitted in _batch_ (set-and-forget) or _interactive_ (real-time response to the user) modes. Start an interactive session on your compute node via the scheduler with
 
 ```bash
-  srun -N 1 --pty bash 
+  srun -N 1 --pty bash
 ```
 
 You should automatically be logged into your compute node. This is done via Slurm. Re-run `sinfo` now and also run the command `squeue`. Here you will see that your compute node is now allocated to this job.
@@ -849,18 +1176,18 @@ To finish, type `exit` and you'll be placed back on your head node. If you run `
 To confirm that your node configuration is correct, you can run the following command on the head node:
 
 ```bash
-[...@headnode ~]$ sinfo -alN
+sinfo -alN
 ```
 
 The `S:C:T` column means "sockets, cores, threads" and your numbers for your compute node should match the settings that you made in the `slurm.conf` file.
 
-## Configure Grafana Dashboard for Slurm
-
 # GROMACS Application Benchmark
 
-## Protein Visualisation
+You will now be extending some of your earlier work from [Tutorial 3](../tutorial3/README.md#gromacs-adh-cubic).
 
-> **! >>> You will need to work on your personal computer (or laptop) to complete this section.**
+## Protein Visualization
+
+> [!NOTE] You will need to work on your or laptop to complete this section, not on your head node nor compute node.
 
 You are able to score bonus points for this tutorial by submitting a visualisation of your **adh_cubic** benchmark run. Follow the instructions below to accomplish this and upload the visualisation.
 
@@ -890,16 +1217,18 @@ Use the `WinSCP` application for Windows, or the `scp` command for Linux to copy
 
 Simulations like this are used to to develop and prototype experimental pharmaceutical drug designs. By visualising the output, researchers are able to better interpret simulation results.
 
-<span style="color: #800000">
-  > Copy the resulting `.bmp` file(s) from yout cluster to your local computer or laptop and demonstrate this to your instructors for bonus points.
-</span>
+[!TIP]
+> Copy the resulting `.bmp` file(s) from yout cluster to your local computer or laptop and demonstrate this to your instructors for bonus points.
 
 ## Benchmark 2 (1.5M Water)
+
+> [!CAUTION]
+> This is a large benchmark and can possibly take some time. Complete the next sections and come back to this if you feel as though your time is limited.
 
 Pre-process the input data using the `grompp` command
 
 ```bash
-[...@node ~]$ gmx_mpi grompp -f pme_verlet.mdp -c out.gro -p topol.top -o md_0_1.tpr
+gmx_mpi grompp -f pme_verlet.mdp -c out.gro -p topol.top -o md_0_1.tpr
 ```
 
 Using a batch script similar to the one above, run the benchmark. You may modify the mpirun command to optimise performance (significantly) but in order to produce a valid result, the simulation must run for 5,000 steps. Quoted in the output as:
@@ -908,341 +1237,5 @@ Using a batch script similar to the one above, run the benchmark. You may modify
 "5000 steps,     10.0 ps."
 ```
 
-<span style="color: #800000">
-  !!! Please be ready to present the `gromacs_log` files for the **1.5M_water** benchmark to the instructors.
-</span>
-
-
-
-
-<span style="color: #800000">
-  !!! Take a Screenshot of this, save it in `png` format and upload it into your teams private Gitlab repository under the `Zabbix` folder.
-</span>
-
-<div style="page-break-after: always;"></div>
-
-# Jupyter Notebook
-
-Jupyter Notebooks are powerful tools for scientific investigations due to their interactive and flexible nature. Here are some key reasons why they are favored in scientific research.
-
-* Interactive Computing and Immediate Feedback
-
-  Run code snippets and see the results immediately, which helps in quick iterations and testing of hypotheses.  Directly plot graphs and visualize data within the notebook, which is crucial for data analysis.
-
-* Documentation and Rich Narrative Text
-
-  Combine code with Markdown text to explain the methodology, document findings, and write detailed notes. Embed images, videos, and LaTeX equations to enhance documentation and understanding.
-
-* Reproducibility
-
-  Share notebooks with others to ensure that they can reproduce the results by running the same code. Use tools like Git to version control the notebooks, ensuring a record of changes and collaborative development.
-
-* Data Analysis and Visualization
-
-  Utilize a wide range of Python libraries such as NumPy, Pandas, Matplotlib, and Seaborn for data manipulation and visualization. Perform exploratory data analysis (EDA) seamlessly with powerful plotting libraries.
-
-Jupyter Notebooks provide a versatile and powerful environment for conducting scientific investigations, facilitating both the analysis and the clear communication of results.
-
-## Plot a Graph of Your HPL Benchmark Results
-
-
-
-## Running Qiskit from a Remote Jupyter Notebook Server
-
-TODO: WORK IN PROGRESS WILL NEATEN UP 03/07/24
-
-add jupyter notebook details
-
-1. Append the following to your `qv_experiment.py` script:
-
-```python
-# number of qubits, for your system see how much higher that 30 your can go...
-num_qubits = np.arrange(10, 30)
-
-# QV Depth
-qv_depth = 10
-
-# For bonus points submit results with up to 20 or even 30 shots
-# Note that this will be more demanding on your system
-num_shots = 10
-
-# Array for storing the output results
-result_array = [[], []]
-
-# iterate over qv depth and number of qubits
-for i in num_qubits:
-  result_array[i] = quant_vol(qubits=i, shots=num_shots, depth=qv_depth)
-  # for debugging purposes you can optionally print the output
-  print(i, result_array[i])
-
-```
-
-1. Run the benchmark by executing the script you've just written:
-```bash
-$ python qv_experiment.py
-```
-
-1. Append the following to your `qv_experiment.py` script:
-
-```python
-# number of qubits, for your system see how much higher that 30 your can go...
-num_qubits = np.arrange(10, 30)
-
-# QV Depth
-qv_depth = 10
-
-# For bonus points submit results with up to 20 or even 30 shots
-# Note that this will be more demanding on your system
-num_shots = 10
-
-# Array for storing the output results
-result_array = [[], []]
-
-# iterate over qv depth and number of qubits
-for i in num_qubits:
-  result_array[i] = quant_vol(qubits=i, shots=num_shots, depth=qv_depth)
-  # for debugging purposes you can optionally print the output
-  print(i, result_array[i])
-
-```
-# Automating the Deployment of your OpenStack Instances Using Terraform
-
-Terraform is a piece of software that allows one to write out their cloud infrastructure and deployments as code, [IaC](https://en.wikipedia.org/wiki/Infrastructure_as_code). This allows the deployments of your cloud virtual machine instances to be shared, iterated, automated as needed and for software development practices to be applied to your infrastructure.
-
-In this section of the tutorial, you will be deploying an additional compute node from your `head node` using Terraform.
-
-1. Use your operating system's package manager to install Terraform
-   This could be your workstation or one of your VMs. The machine must be connected to the internet and have access to your
-   ```bash
-   sudo pacman -S terraform
-   ```
-
-1. Create a Terraform directory, descend into it and Edit the `providers.tf` file
-   In order to efficiently manage your
-   ```bash
-   mkdir terraform
-   cd terraform
-   vim providers.tf
-   ```
-
-1. You must specify a [Terraform Provider](https://registry.terraform.io/browse/providers)
-   These can vary from MS Azure, AWS, Google, Kubernetes etc... We will be implementing an OpenStack provider as this is what is implemented on the Sebowa cloud platform. Add the following to the `providers.tf` file.
-   ```conf
-   terraform {
-     required_providers {
-       openstack = {
-         source = "terraform-provider-openstack/openstack"
-         version = "1.46.0"
-       g}
-     }
-   }
-   ```
-1. Initialize Terraform
-   From the folder with your provider definition, execute the following command:
-   ```bash
-   terraform init
-   ```
-
-   <p align="center"><img alt="Terraform install and initialize." src="./resources/terraform_install_init.png" width=900 /></p>
-   
-1. Generate OpenStack API Credentials
-   From _your_ team's Sebowa workspace, navigate to `Identity` &rarr; `Application Credentials`, and generate a set of OpenStack credentials in order to allow you to access and authenticate against your workspace.
-   
-   <p align="center"><img alt="OpenStack Application Credentials." src="./resources/openstack_application_creds.png" width=900 /></p>
-   
-1. Download and Copy the `clouds.yml` File
-   Copy the `clouds.yml` file to the folder where you initialized terraform. The contents of the of which, should be _similar_ to:
-   ```config
-   # This is a clouds.yaml file, which can be used by OpenStack tools as a source
-   # of configuration on how to connect to a cloud. If this is your only cloud,
-   # just put this file in ~/.config/openstack/clouds.yaml and tools like
-   # python-openstackclient will just work with no further config. (You will need
-   # to add your password to the auth section)
-   # If you have more than one cloud account, add the cloud entry to the clouds
-   # section of your existing file and you can refer to them by name with
-   # OS_CLOUD=openstack or --os-cloud=openstack
-   clouds:
-     openstack:
-       auth:
-         auth_url: https://sebowa.nicis.ac.za:5000
-         application_credential_id: "<YOUR TEAM's APPLICATION CREDENTIAL ID"
-         application_credential_secret: "<YOUR TEAM's APPLICATION CREDENTIAL SECRET>"
-       region_name: "RegionOne"
-       interface: "public"
-       identity_api_version: 3
-       auth_type: "v3applicationcredential"
-   ```
-1. Create `main.tf` Terraform File
-   Inside your `terraform` folder, you must define a `main.tf` file. This file is used to identify the provider to be implemented as well as the compute resource configuration details of the instance we would like to launch.
-   
-   You will need to define your own `main.tf` file, but below is an example of one such definition:
-   ```config
-   provider "openstack" {
-     cloud = "openstack"
-   }
-   resource "openstack_compute_instance_v2" "terraform-demo-instance" {
-     name = "scc24-arch-cn2"
-     image_id = "33b938c8-6c07-45e3-8f2a-cc8dcb6699de"
-     flavor_id = "4a126f4f-7df6-4f95-b3f3-77dbdd67da34"
-     key_pair = "nlisa at mancave"
-     security_groups = ["default", "ssh & web services"]
-   
-     network {
-       name = "nlisa-vxlan"
-     }
-   }
-   ```
-   
 > [!NOTE]
-> You must specify your own variables for `name`, `image_id`, `flavor_id`, `key_pair` and `network.name`.
-
-1. Generate and Deploy Terraform Plan
-   Create a Terraform plan based on the current configuration. This plan will be used to implement changes to your Sebowa OpenStack cloud workspace, and can be reviewed before applying those changes.
-   Generate a plan and write it to disk:
-   ```bash
-   terraform plan -out ~/terraform/plan
-   ```
-   
-   <p align="center"><img alt="Terraform Plan." src="./resources/terraform_plan.png" width=900 /></p>
-   
-   Once you are satisfied with the proposed changes, deploy the terraform plan:
-   ```bash
-   terraform apply ~terraform/plan
-   ```
-   
-   <p align="center"><img alt="Terraform Apply." src="./resources/terraform_install_init.png" width=900 /></p>
-   
-1. Verify New Instance Successfully Created by Terraform
-   Finally confirm that your new instance has been successfully created. On your Sebowa OpenStack workspace, navigate to `Project` &rarr; `Compute` &rarr; `Instances`.
-
-> [!TIP]
-> To avoid losing your team's progress, it would be a good idea to create a GitHub repo in order for you to commit and push your changes.
-
-# Continuous Integration Using CircleCI
-
-Circle CI is a Continuous Integration and Continuous Delivery platform that can be utilized to implement DevOps practices.
-
-In this section of the tutorials you're going to be expanding on the OpenStack instance automation with CircleCI `Workflows` and `Pipelines`. For this tutorial you will be using your GitHub account which will integrate directly into CircleCI.
-
-1. Create GitHub Repository
-   If you haven't already done so, sign up for a [GitHub Account](https://github.com/). Then create an empty private repository with a suitable name, i.e. `deploy_compute_node`:
-   
-   <p align="center"><img alt="Github Create" src="./resources/github_create_new_repo.png" width=900 /></p>
-   
-   Add your team members to the repository to provide them with access:
-   <p align="center"><img alt="Github Manage Access" src="./resources/github_manage_access.png" width=900 /></p>
-   
-   If you haven't already done so, add your SSH key to your GitHub account by following the instructions from [Steps to follow when editing existing content](../README.md#steps-to-follow-when-editing-existing-content).
-   
-> [!TIP]
-> You will be using your head node to orchestrate and configure your infrastructure. Pay careful attention to ensure that you copy over your **head node**'s public SSH key. Administrating and managing your compute nodes in this manner requires you to think about them as "cattle" and not "pets".
-
-1. Reuse `providers.tf` and `main.tf` Terraform Configurations
-   
-   On your head node, create a folder that is going to be used to initialize the GitHub repository:
-   ```bash
-   mkdir ~/deploy_compute_node
-   cd ~/deploy_compute_node
-   ```
-   
-   Copy the `providers.tf` and `main.tf` files you had previously generated:
-   
-   ```bash
-   cp ~/terraform/providers.tf ./
-   cp ~/terraform/main.tf ./
-   vim main.tf
-   ```
-   
-1. Create `.circleci/config.yml` File
-   
-   The `.circle/config.yml` configuration file is where you define your build, test and deployment process. From your head node, you are going to be `pushing` your Infrastructure as Code to your private GitHub repository. This will then automatically trigger the CircleCI deployment of a Docker container which has been tailored for Terraform operations and instructions that will deploy your Sebowa OpenStack compute node instance.
-   
-   Create and edit `.circleci/config.yml`:
-   ```bash
-   mkdir .circleci
-   vim .circleci/config.yml # Remember that if you are not comfortable using Vim, install and make use of Nano
-   ```
-   
-   Copy the following configuration into `.circle/config.yml`:
-   ```conf
-   version: 2.1
-
-   jobs:
-     deploy:
-       docker:
-         - image: hashicorp/terraform:latest
-       steps:
-         - checkout
-   
-         - run:
-             name: Create clouds.yaml
-             command: |
-               mkdir -p ~/.config/openstack
-               echo "clouds:
-                 openstack:
-                   auth:
-                     auth_url: https://sebowa.nicis.ac.za:5000
-                     application_credential_id: ${application_credential_id}
-                     application_credential_secret: ${application_credential_secret}
-                   region_name: "RegionOne"
-                   interface: "public"
-                   identity_api_version: 3
-                   auth_type: "v3applicationcredential"" > ~/.config/openstack/clouds.yaml
-   
-         - run:
-             name: Terraform Init
-             command: terraform init
-   
-         - run:
-             name: Terraform Apply
-             command: terraform apply -auto-approve
-             
-   workflows:
-     version: 2
-     deploy_workflow:
-     jobs:
-       - deploy
-
-   ```
-     - **Version**: Specifies the configuration version.
-     - **Jobs**: Defines the individual steps in the build process, where we've defined a `build` job that runs inside the latest Terraform Docker container from Hashicorp.
-     - **Steps**: The steps to execute within the job:
-       * `checkout`: Clone and checkout the code from the repository.
-       * `run`: Executes a number of shell commands to create the `clouds.yaml` file, then initialize and apply the Terraform configuration.
-     - **Workflows**: Defines the workflow(s) that CircleCI will follow, where in this instance there is a single workflow specified `deploy_workflow`, that runs the `deploy` job.
-   
-1. `Init`ialize the Git Repository, `add` the files you've just created and `push` to GitHub:
-   Following the instructions from the previous section where you created a new GitHub repo, execute the following commands from your head node, inside the `deploy_compute_node` folder:
-   ```bash
-   cd ~/deploy_compute_node
-   git init
-   git add .
-   git commit -m "Initial Commit." # You may be asked to configure you Name and Email. Follow the instructions on the screen before proceeding.
-   git branch -M main
-   git remote add origin git@github.com:<TEAM_NAME>/deploy_compute_node.git
-   git push -u origin main
-   ```
-   The new files should now be available on GitHub.
-
-1. Create a CircleCI Account and Add a Project
-   Navigate to [CircleCI.com](https://circleci.com)
-   
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_organization.png" width=900 /></p>
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project00.png" width=900 /></p>
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project01.png" width=900 /></p>
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project02.png" width=900 /></p>
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project03.png" width=900 /></p>
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_successful_deploy.png" width=900 /></p>
-
-# Automating the Configuration of your VMs Using Ansible
-Use Ansible to install and configure NTP Client
-
-1. Edit your `main.tf` File
-
-   Add the following configuration to the end of the `main.tf` file, that generates a variable to store the IP address of the newly created instance:
-   ```conf
-   output "instance_ip" {
-     value = openstack_compute_instance_v2.terraform-demo-instance.network.0.fixed_ip_v4
-   }
-
-   ```
+> Please be ready to present the `gromacs_log` files for the **1.5M_water** benchmark to the instructors.
