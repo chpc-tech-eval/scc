@@ -36,15 +36,14 @@ This tutorial will conclude with you downloading, installing and running the Hig
 1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
     1. [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
 1. [RPM and Run High Performance LinPACK (HPL) Benchmark](#install-compile-and-run-high-performance-linpack-hpl-benchmark)
-1. [Utlizing the CPUFreq Subsystem using cpupower](#utlizing-the-CPUFreq-Subsystem-using-cpupower)
-    1. [Introduction to the CPUFreq Subsystem](introduction-to-the-CPUFreq-Subsystem)
-    1. [Understanding CPU Governors and Frequency Scaling](#understanding-CPUGovernors-and-FrequencyScaling)
-    1. [Setting Up CPUFreq Utilities](#setting-Up-CPUFreq-Utilities)
-    1. [Configuring CPU Governors for Performance or Power Efficiency](#configuring-CPUGovernors-for-Performance-or-PowerEfficiency)
-    1. [Adjusting CPU Frequency Limits for Specific Use Cases](adjusting-CPUFrequency-Limits-for-Specific-Use-Cases)
-    1. [Running the HPL Benchmark with Customized CPU Settings](running-the-HPL-Benchmark-with-Customized-CPU-Settings)
-    1. [Monitoring Performance and Power Consumption](monitoring-Performance-and-Power-Consumption)
-    1. [Restoring Default CPUFreq Settings](restoring-Default-CPUFreq-Settings)
+1. [Utlizing the CPUFreq Subsystem using CPU power](#utlizing-the-CPUFreq-Subsystem-using-cpu -power)
+    1. [Introduction to the CPUFreq Subsystem](#utlizing-the-CPUFreq-Subsystem-using-cpu-power)
+    1. [CPU Power States Overview](#cpu-power-states-overview)
+    1. [Understanding CPU Governors and Frequency Scaling](#viewing-the-scaling-governors-and-scaling-drivers-available-on-your-system)
+    1. [Setting Up CPUFreq Utilities](#setting-cpu-frequency)
+    1. [CPU Governors for Performance or Power Efficiency](#governors-in-the-linux-kernel)
+    1. [Adjusting CPU Frequency Limits for Specific Use Cases](#manually-limit-the-frequency-range)
+    1. [Monitoring Performance, Power Consumption](#customizing-governors)
     1. [Tips and Troubleshooting](#tips-and-troubleshooting)
 
 
@@ -726,7 +725,7 @@ Congratulations!
 
 You have successfully completed you first HPL benchmark.
 
-# Utlizing the CPUFreq Subsystem using cpupower
+# Utlizing the CPUFreq Subsystem using CPU power
 
 CPU performance scaling enables the operating system to scale the CPU frequency up or down in order to save power or improve performance. Scaling can be done automatically in response to system load, adjust itself in response to ACPI events, or be manually changed by user space programs. Our tools of choice is `cpupower`.
 
