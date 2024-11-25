@@ -36,7 +36,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
 1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
     1. [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
 1. [RPM and Run High Performance LinPACK (HPL) Benchmark](#install-compile-and-run-high-performance-linpack-hpl-benchmark)
-1. [Utlizing the CPUFreq Subsystem using CPU power](#utlizing-the-CPUFreq-Subsystem-using-cpu -power)
+1. [Utlizing the CPUFreq Subsystem using CPU power](#utlizing-the-CPUFreq-Subsystem-using-cpu-power)
     1. [Introduction to the CPUFreq Subsystem](#utlizing-the-CPUFreq-Subsystem-using-cpu-power)
     1. [CPU Power States Overview](#cpu-power-states-overview)
     1. [Understanding CPU Governors and Frequency Scaling](#viewing-the-scaling-governors-and-scaling-drivers-available-on-your-system)
