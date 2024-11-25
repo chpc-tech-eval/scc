@@ -36,6 +36,17 @@ This tutorial will conclude with you downloading, installing and running the Hig
 1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
     1. [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
 1. [RPM and Run High Performance LinPACK (HPL) Benchmark](#install-compile-and-run-high-performance-linpack-hpl-benchmark)
+1. [Utlizing the CPUFreq Subsystem using cpupower](#utlizing-the-CPUFreq-Subsystem-using-cpupower)
+    1. [Introduction to the CPUFreq Subsystem](introduction-to-the-CPUFreq-Subsystem)
+    1. [Understanding CPU Governors and Frequency Scaling](#understanding-CPUGovernors-and-FrequencyScaling)
+    1. [Setting Up CPUFreq Utilities](#setting-Up-CPUFreq-Utilities)
+    1. [Configuring CPU Governors for Performance or Power Efficiency](#configuring-CPUGovernors-for-Performance-or-PowerEfficiency)
+    1. [Adjusting CPU Frequency Limits for Specific Use Cases](adjusting-CPUFrequency-Limits-for-Specific-Use-Cases)
+    1. [Running the HPL Benchmark with Customized CPU Settings](running-the-HPL-Benchmark-with-Customized-CPU-Settings)
+    1. [Monitoring Performance and Power Consumption](monitoring-Performance-and-Power-Consumption)
+    1. [Restoring Default CPUFreq Settings](restoring-Default-CPUFreq-Settings)
+    1. [Tips and Troubleshooting](#tips-and-troubleshooting)
+
 
 <!-- markdown-toc end -->
 
@@ -726,11 +737,29 @@ The Linux kernel offers CPU performance scaling via the CPUFreq subsystem, which
 
 * **Scaling Drivers** interact with the CPU directly, enacting the desired frequencies that the current governor is requesting.<br />
 
+Additionally, modern CPUs support:
+
 **Power Performance States (P-States)** provide a way to scale the frequency and voltage at which the processor runs so as to reduce the power consumption of the CPU. <br >
 
 **Processor idle sleep states (ACPI C states)** are states when the CPU has reduced or turned off selected functions.<br />
+## CPU Power States Overview
 
-<h4>Viewing the scaling governors and scaling drivers available on your system</h4>
+- **P-States (Performance States)**: Adjust the frequency and voltage of the CPU to optimize performance and power.
+  - Higher P-states correspond to lower frequencies and reduced power usage.
+  - Controlled by CPUFreq governors and drivers.
+
+- **C-States (Idle States)**: Represent CPU sleep states for when the processor is idle.
+  - Higher C-states save more power but increase latency when returning to active states.
+  - Common states:
+    - C0: Active state.
+    - C1: Halt state, saving minimal power.
+    - C6: Deep power-down state, reducing leakage power.
+
+To view supported C-states:
+```
+cat /sys/devices/system/cpu/cpu0/cpuidle/state*/name
+```
+## Viewing the scaling governors and scaling drivers available on your system
 
 > [!TIP]
 > Run with sudo privileges if you get errors
@@ -746,18 +775,14 @@ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_driver
 <br />
 
 One of the most effect ways to reduce power consumption and heat output on a server system is the cpufreq subsystem. Cpufreq, also referred to as CPU frequency scaling or CPU speed scaling, is the infrastructure in the Linux kernel space that enables users to scale the CPU frequency in order to save power.
-
-
-
-
-<h3>Governors in the Linux Kernel</h3>
+## Governors in the Linux Kernel
 
 * **Performance**: The CPUfreq governor "performance" sets the CPU statiscially to the highest frequency within the borders of `scaling_min_freq` and `scaling_max_freq` 
 * **Powersave**:  The CPUfreq governor "powersae" sets the CPU statically to the lowest frequency within the borders of `scaling_min_freq` and `scaling_max_freq`
 * **Userspace**: The CPUfreq governor "userspace" allows the user; or any userspace program running with UID "root", to set the CPU to a specific frequency by making as sysfs file "scalling_setspeed" available in the CPU-device directory.
 * **Ondemand**: The CPUfreq governor "ondemand" sets the CPU frequency depending on the current system load. Load estimation is triggered by the scheduler through the `update_tull_data` -> func hook; when triggered, cpufreq checks the CPU-usage statistics over the last period and the governor sets the CPU accordingly. The CPU must have the capability to switch the frequency very quickly
 
-<h3>Setting CPU Frequency</h3>
+## Setting CPU Frequency
 
 > [!TIP]
 > Run with sudo privileges if you get errors
@@ -768,8 +793,38 @@ cpupower frequency-set -u clock_freq
 
 #This sets the minimum clock frequency
 cpupower frequency-set -d clock_freq
-```
 
+#Example
+#maximum clock frequency
+cpupower frequency-set -u 2.5GHz
+
+#minimum clock frequency
+cpupower frequency-set -d 2.5GHz
+```
+## Manually limit the frequency range
+```
+sudo echo <min_freq> > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+
+sudo echo <max_freq> > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+```
+## Automate governor changes based on time of day
+```
+sudo cpupower frequency-set -g powersave
+```
+## Customizing Governors
+Governors like Ondemand can be fine-tuned for specific workloads:
+
+**Adjusting the Ondemand Governor Parameters**
+_**up_threshold**: CPU usage percentage to trigger an increase in frequency.
+
+To modify these settings
+```
+up_threshold=CPU usage percentage to trigger an increase in frequency:
+echo <value> > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
+
+sampling_rate=Time in microseconds between load evaluations:
+echo <value> > /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
+```
 To ensure that the CPU frequency has been properly set, you can run a HPL benchmark
 ```
 ./xhpl
@@ -784,3 +839,19 @@ watch grep \"cpu MHz\" /proc/cpuinfo
 * **grep**: Searchs for lines matching a pattern in the input
 * **cpu MHz**: The pattern grep looks for, indicating CPU speed
 * **/proc/cpuinfo**: A file that contains detailed information about the CPU
+  
+  
+## Tips and Troubleshooting
+**Common Issues**
+* **Permissions Errors**: Run commands with sudo if you encounter permission issues
+* **Missing cpupower**: Install it using your package manager:
+* 1, On Debian/Ubuntu: sudo apt install linux-tools-common linux-tools-$(uname -r)
+* 2, On Red Hat/CentOS: sudo yum install kernel-tools
+
+**Best Practices**
+* Test different governors during workloads to find the optimal balance between performance and power consumption.
+* Use tools like htop or perf for additional monitoring.
+
+**For more information**:
+- [Linux CPUFreq Documentation](https://www.kernel.org/doc/Documentation/cpu-freq/)
+- [HPL Benchmark User Guide](https://www.netlib.org/benchmark/hpl/)
