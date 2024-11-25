@@ -18,12 +18,12 @@
     1. [Install and Initialize Terraform](#install-and-initialize-terraform)
     1. [Generate `clouds.yml` and `main.tf` Files](#generate-cloudsyml-and-maintf-files)
     1. [Generate, Deploy and Apply Terraform Plan](#generate-deploy-and-apply-terraform-plan)
-1. [Automating HPL Runs Using Ansible Playbooks](#automating-hpl-runs-using-ansible-playbooks)
 1. [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
     1. [Prepare GitHub Repository](#prepare-github-repository)
     1. [Reuse `providers.tf` and `main.tf` Terraform Configurations](#reuse-providerstf-and-maintf-terraform-configurations)
     1. [Create `.circleci/config.yml` File and `push` Project to GitHub](#create-circleciconfigyml-file-and-push-project-to-github)
     1. [Create CircleCI Account and Add Project](#create-circleci-account-and-add-project)
+1. [Automating HPL Runs Using Ansible Playbooks and CircleCI](#automating-hpl-runs-using-ansible-playbooks-and-circleci)
 1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
     1. [Prerequisites](#prerequisites)
     1. [Head Node Configuration (Server)](#head-node-configuration-server)
@@ -925,6 +925,139 @@ Generate and configure the `cloud.yml` file that will authenticate you against y
 > [!TIP]
 > To avoid losing your team's progress, it would be a good idea to create a GitHub repo in order for you to commit and push your various scripts and configuration files.
 
+# Continuous Integration Using CircleCI
+
+Circle CI is a Continuous Integration and Continuous Delivery platform that can be utilized to implement DevOps practices. It helps teams build, test, and deploy applications quickly and reliably.
+
+In this section of the tutorials you're going to be expanding on the OpenStack instance automation with CircleCI `Workflows` and `Pipelines`. For this tutorial you will be using your GitHub account which will integrate directly into CircleCI.
+
+## Prepare GitHub Repository
+
+   You will be integration GitHub into CircleCI workflows, wherein every time you commit changes to your `deploy_compute` GitHub repository, CircleCI will instantiate and trigger Terraform, to create a new compute node VM on Sebowa.
+
+1. Create GitHub Repository
+   If you haven't already done so, sign up for a [GitHub Account](https://github.com/). Then create an empty private repository with a suitable name, i.e. `deploy_compute_node`:
+
+   <p align="center"><img alt="Github Create" src="./resources/github_create_new_repo.png" width=600 /></p>
+
+1. Add your team members to the repository to provide them with access:
+   <p align="center"><img alt="Github Manage Access" src="./resources/github_manage_access.png" width=900 /></p>
+
+1. If you haven't already done so, add your SSH key to your GitHub account by following the instructions from [Steps to follow when editing existing content](../README.md#steps-to-follow-when-editing-existing-content).
+
+> [!TIP]
+> You will be using your head node to orchestrate and configure your infrastructure. Pay careful attention to ensure that you copy over your **head node**'s public SSH key. Administrating and managing your compute nodes in this manner requires you to think about them as "cattle" and not "pets".
+
+## Reuse `providers.tf` and `main.tf` Terraform Configurations
+
+1. On your head node, create a folder that is going to be used to initialize the GitHub repository:
+   ```bash
+   mkdir ~/deploy_compute_node
+   cd ~/deploy_compute_node
+   ```
+
+1. Copy the `providers.tf` and `main.tf` files you had previously generated:
+
+   ```bash
+   cp ~/terraform/providers.tf ./
+   cp ~/terraform/main.tf ./
+   vim main.tf
+   ```
+
+## Create `.circleci/config.yml` File and `push` Project to GitHub
+
+   The `.circle/config.yml` configuration file is where you define your build, test and deployment process. From your head node, you are going to be `pushing` your Infrastructure as Code to your private GitHub repository. This will then automatically trigger the CircleCI deployment of a Docker container which has been tailored for Terraform operations and instructions that will deploy your Sebowa OpenStack compute node instance.
+
+1. Create and edit `.circleci/config.yml`:
+   ```bash
+   mkdir .circleci
+   vim .circleci/config.yml # Remember that if you are not comfortable using Vim, install and make use of Nano
+   ```
+
+1. Copy the following configuration into `.circle/config.yml`:
+   ```conf
+   version: 2.1
+
+   jobs:
+     deploy:
+       docker:
+         - image: hashicorp/terraform:latest
+       steps:
+         - checkout
+
+         - run:
+             name: Create clouds.yaml
+             command: |
+               mkdir -p ~/.config/openstack
+               echo "clouds:
+                 openstack:
+                   auth:
+                     auth_url: https://sebowa.nicis.ac.za:5000
+                     application_credential_id: ${application_credential_id}
+                     application_credential_secret: ${application_credential_secret}
+                   region_name: "RegionOne"
+                   interface: "public"
+                   identity_api_version: 3
+                   auth_type: "v3applicationcredential"" > ~/.config/openstack/clouds.yaml
+
+         - run:
+             name: Terraform Init
+             command: terraform init
+
+         - run:
+             name: Terraform Apply
+             command: terraform apply -auto-approve
+
+   workflows:
+     version: 2
+     deploy_workflow:
+     jobs:
+       - deploy
+
+   ```
+     - **Version**: Specifies the configuration version.
+     - **Jobs**: Defines the individual steps in the build process, where we've defined a `build` job that runs inside the latest Terraform Docker container from Hashicorp.
+     - **Steps**: The steps to execute within the job:
+       * `checkout`: Clone and checkout the code from the repository.
+       * `run`: Executes a number of shell commands to create the `clouds.yaml` file, then initialize and apply the Terraform configuration.
+     - **Workflows**: Defines the workflow(s) that CircleCI will follow, where in this instance there is a single workflow specified `deploy_workflow`, that runs the `deploy` job.
+
+1. `Init`ialize the Git Repository, `add` the files you've just created and `push` to GitHub:
+   Following the instructions from the previous section where you created a new GitHub repo, execute the following commands from your head node, inside the `deploy_compute_node` folder:
+   ```bash
+   cd ~/deploy_compute_node
+   git init
+   git add .
+   git commit -m "Initial Commit." # You may be asked to configure you Name and Email. Follow the instructions on the screen before proceeding.
+   git branch -M main
+   git remote add origin git@github.com:<TEAM_NAME>/deploy_compute_node.git
+   git push -u origin main
+   ```
+   The new files should now be available on GitHub.
+
+## Create CircleCI Account and Add Project
+
+   Navigate to [CircleCI.com](https://circleci.com) to create an account, link and add a new GitHub project.
+1. Create a new organization and give it a suitable name
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_organization.png" width=600 /></p>
+1. Once you've logged into your workspace, go to projects and create a new project
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project00.png" width=600 /></p>
+1. Create a new IaC Project
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project01.png" width=600 /></p>
+1. If your repository is on GitHub, create a corresponding project
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project02.png" width=600 /></p>
+1. Pick a project name and a repository to associate it to
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project03.png" width=600 /></p>
+1. Push the configuration to GitHub to trigger workflow
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_successful_deploy.png" width=900 /></p>
+
+> [!IMPORTANT]
+> You're going to need to delete your experimental compute node instance on your Sebowa OpenStack workspace, each time you want to test or run the CircleCI integration. It has been included here for demonstration purposes, so that you may begin to see the power and utility of CI/CD and automation.
+>
+> Navigate to your Sebowa OpenStack workspace to ensure that they deployment was successful.
+>
+> Consider how you could streamline this process even further using preconfigured instance snapshots, as well as  Ansible after your instances have been deployed.
+
 # Automating HPL Runs Using Ansible Playbooks and CircleCI
 Use the repository you made in section 6
 
@@ -955,6 +1088,11 @@ project/
 ```
 
 `ansible.cfg`:
+[defaults]
+inventory = inventory/inventory.yml
+roles_path = roles
+remote_user = ubuntu
+private_key_file = /home/ubuntu/.ssh/id_ed25519 <path to your key>
 
 `inventory.yml`:
 ```
@@ -1140,138 +1278,6 @@ sudo mount -t nfs 10.100.50.172:/home /home
 ```
 
 
-# Continuous Integration Using CircleCI
-
-Circle CI is a Continuous Integration and Continuous Delivery platform that can be utilized to implement DevOps practices. It helps teams build, test, and deploy applications quickly and reliably.
-
-In this section of the tutorials you're going to be expanding on the OpenStack instance automation with CircleCI `Workflows` and `Pipelines`. For this tutorial you will be using your GitHub account which will integrate directly into CircleCI.
-
-## Prepare GitHub Repository
-
-   You will be integration GitHub into CircleCI workflows, wherein every time you commit changes to your `deploy_compute` GitHub repository, CircleCI will instantiate and trigger Terraform, to create a new compute node VM on Sebowa.
-
-1. Create GitHub Repository
-   If you haven't already done so, sign up for a [GitHub Account](https://github.com/). Then create an empty private repository with a suitable name, i.e. `deploy_compute_node`:
-
-   <p align="center"><img alt="Github Create" src="./resources/github_create_new_repo.png" width=600 /></p>
-
-1. Add your team members to the repository to provide them with access:
-   <p align="center"><img alt="Github Manage Access" src="./resources/github_manage_access.png" width=900 /></p>
-
-1. If you haven't already done so, add your SSH key to your GitHub account by following the instructions from [Steps to follow when editing existing content](../README.md#steps-to-follow-when-editing-existing-content).
-
-> [!TIP]
-> You will be using your head node to orchestrate and configure your infrastructure. Pay careful attention to ensure that you copy over your **head node**'s public SSH key. Administrating and managing your compute nodes in this manner requires you to think about them as "cattle" and not "pets".
-
-## Reuse `providers.tf` and `main.tf` Terraform Configurations
-
-1. On your head node, create a folder that is going to be used to initialize the GitHub repository:
-   ```bash
-   mkdir ~/deploy_compute_node
-   cd ~/deploy_compute_node
-   ```
-
-1. Copy the `providers.tf` and `main.tf` files you had previously generated:
-
-   ```bash
-   cp ~/terraform/providers.tf ./
-   cp ~/terraform/main.tf ./
-   vim main.tf
-   ```
-
-## Create `.circleci/config.yml` File and `push` Project to GitHub
-
-   The `.circle/config.yml` configuration file is where you define your build, test and deployment process. From your head node, you are going to be `pushing` your Infrastructure as Code to your private GitHub repository. This will then automatically trigger the CircleCI deployment of a Docker container which has been tailored for Terraform operations and instructions that will deploy your Sebowa OpenStack compute node instance.
-
-1. Create and edit `.circleci/config.yml`:
-   ```bash
-   mkdir .circleci
-   vim .circleci/config.yml # Remember that if you are not comfortable using Vim, install and make use of Nano
-   ```
-
-1. Copy the following configuration into `.circle/config.yml`:
-   ```conf
-   version: 2.1
-
-   jobs:
-     deploy:
-       docker:
-         - image: hashicorp/terraform:latest
-       steps:
-         - checkout
-
-         - run:
-             name: Create clouds.yaml
-             command: |
-               mkdir -p ~/.config/openstack
-               echo "clouds:
-                 openstack:
-                   auth:
-                     auth_url: https://sebowa.nicis.ac.za:5000
-                     application_credential_id: ${application_credential_id}
-                     application_credential_secret: ${application_credential_secret}
-                   region_name: "RegionOne"
-                   interface: "public"
-                   identity_api_version: 3
-                   auth_type: "v3applicationcredential"" > ~/.config/openstack/clouds.yaml
-
-         - run:
-             name: Terraform Init
-             command: terraform init
-
-         - run:
-             name: Terraform Apply
-             command: terraform apply -auto-approve
-
-   workflows:
-     version: 2
-     deploy_workflow:
-     jobs:
-       - deploy
-
-   ```
-     - **Version**: Specifies the configuration version.
-     - **Jobs**: Defines the individual steps in the build process, where we've defined a `build` job that runs inside the latest Terraform Docker container from Hashicorp.
-     - **Steps**: The steps to execute within the job:
-       * `checkout`: Clone and checkout the code from the repository.
-       * `run`: Executes a number of shell commands to create the `clouds.yaml` file, then initialize and apply the Terraform configuration.
-     - **Workflows**: Defines the workflow(s) that CircleCI will follow, where in this instance there is a single workflow specified `deploy_workflow`, that runs the `deploy` job.
-
-1. `Init`ialize the Git Repository, `add` the files you've just created and `push` to GitHub:
-   Following the instructions from the previous section where you created a new GitHub repo, execute the following commands from your head node, inside the `deploy_compute_node` folder:
-   ```bash
-   cd ~/deploy_compute_node
-   git init
-   git add .
-   git commit -m "Initial Commit." # You may be asked to configure you Name and Email. Follow the instructions on the screen before proceeding.
-   git branch -M main
-   git remote add origin git@github.com:<TEAM_NAME>/deploy_compute_node.git
-   git push -u origin main
-   ```
-   The new files should now be available on GitHub.
-
-## Create CircleCI Account and Add Project
-
-   Navigate to [CircleCI.com](https://circleci.com) to create an account, link and add a new GitHub project.
-1. Create a new organization and give it a suitable name
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_organization.png" width=600 /></p>
-1. Once you've logged into your workspace, go to projects and create a new project
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project00.png" width=600 /></p>
-1. Create a new IaC Project
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project01.png" width=600 /></p>
-1. If your repository is on GitHub, create a corresponding project
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project02.png" width=600 /></p>
-1. Pick a project name and a repository to associate it to
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project03.png" width=600 /></p>
-1. Push the configuration to GitHub to trigger workflow
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_successful_deploy.png" width=900 /></p>
-
-> [!IMPORTANT]
-> You're going to need to delete your experimental compute node instance on your Sebowa OpenStack workspace, each time you want to test or run the CircleCI integration. It has been included here for demonstration purposes, so that you may begin to see the power and utility of CI/CD and automation.
->
-> Navigate to your Sebowa OpenStack workspace to ensure that they deployment was successful.
->
-> Consider how you could streamline this process even further using preconfigured instance snapshots, as well as  Ansible after your instances have been deployed.
 
 # Slurm Scheduler and Workload Manager
 
