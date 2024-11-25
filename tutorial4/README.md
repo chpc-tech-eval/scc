@@ -925,40 +925,219 @@ Generate and configure the `cloud.yml` file that will authenticate you against y
 > [!TIP]
 > To avoid losing your team's progress, it would be a good idea to create a GitHub repo in order for you to commit and push your various scripts and configuration files.
 
-# Automating HPL Runs Using Ansible Playbooks
+# Automating HPL Runs Using Ansible Playbooks and CircleCI
+Use the repository you made in section 6
 
-You will now be installing Ansible and using it to automate the HPL runs. Refer to tutorial 1 again on how to install Ansible.
+```
+project/
+├── ansible.cfg
+├── inventory/
+│   ├── hosts
+├── playbooks/
+│   └── install_hpl.yml
+└── roles/
+    ├── install_prerequisites/
+    │   ├── tasks/
+    │   │   └── main.yml
+    ├── install_openblas/
+    │   ├── tasks/
+    │   │   └── main.yml
+    ├── install_openmpi/
+    │   ├── tasks/
+    │   │   └── main.yml
+    ├── install_hpl/
+    │   ├── tasks/
+    │   │   └── main.yml
+    └── run_hpl/
+        ├── tasks/
+        │   └── main.yml
 
 ```
-cd ~/playbook
-```
-```
-vim inventory.yml
-```
+
+`ansible.cfg`:
+
+`inventory.yml`:
 ```
 all:
   hosts:
     headnode:
-      ansible_host: <your ip address>
+      ansible_host: <fill in your headnode IP>
     compute1:
-      ansible_host: <your ip address>
+      ansible_host: <fill this in>
     compute2:
-      ansible_host: <your ip address> # use yadada command
+      ansible_host: ansible_host: "{{ target_host }}"
   children:
     compute:
       hosts:
         compute1:
         compute2:
 ```
+
+`install_hpl.yml`:
+
+Push it to the repository that's linked to CIrclCI
+
+There are some files that need to be changed:
+```provider "openstack" {
+  cloud = "openstack"
+}
+resource "openstack_compute_instance_v2" "terraform-demo-instance" {
+  name = "de4thCompute"
+  image_id = "97991be4-1df0-4502-9370-55e9b624592e"
+  flavor_id = "35617c38-b1ce-4d49-894e-74ce7ddcdc26"
+  key_pair = "deKeyProject"
+  security_groups = ["default", "scc24_sg"]
+
+  network {
+    name = "wits1-vxlan"
+  }
+}
+
+
+output "instance_ip" {
+  value       = openstack_compute_instance_v2.terraform-demo-instance.access_ip_v4
+  description = "The public IP address of the instance"
+}
 ```
-vim install_hpl.yml
 ```
-And copy and paste the code from the attached `install_hpl.yml` file.
+version: 2.1
+
+jobs:
+  deploy-infrastructure:
+    docker:
+      - image: hashicorp/terraform:latest  # Official Terraform Docker image
+    steps:
+      - checkout  # Checks out your repository
+
+      # Initialize Terraform
+      - run:
+          name: Terraform Init
+          command: terraform init
+
+      # Apply Terraform Configuration
+      - run:
+          name: Terraform Apply
+          command: terraform apply -auto-approve
+
+      - run:
+          name: Get Instance IP Address
+          command: |
+            INSTANCE_IP=$(terraform output -raw instance_ip)
+            echo "Instance IP Address: $INSTANCE_IP"
+            echo "$INSTANCE_IP" > instance_ip.txt
+
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - instance_ip.txt
+
+  deploy-ansible-playbook:
+    docker:
+      - image: circleci/python:3.9  # Python image with necessary tools
+    environment:
+      SSH_USER: "<your user>"
+      SSH_HOST: "<public facing headnode IP>"
+      PLAYBOOK_FILE: "install_hpl.yml"   # Ansible playbook file
+      INVENTORY_FILE: "inventory.yml"     # Ansible inventory file
+      NFS_SERVER_IP: "<headnode IP>"
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: ./
+
+      - run:
+          name: Read and Verify Instance IP
+          command: |
+            export INSTANCE_IP=$(cat instance_ip.txt)
+            echo "INSTANCE_IP=$INSTANCE_IP" > $BASH_ENV
+            echo "Using Instance IP Address: ${INSTANCE_IP}"
+
+      # Add SSH keys managed by CircleCI
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:SHIa6LYWWEELTDhxKtNh5rv53Zx+8hj4y/kGipCJ0Yg" <update this later>
+
+      # Install Dependencies
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y python3-openstackclient openssh-client ansible
+
+      # Setup SSH
+      - run:
+          name: Setup SSH
+          command: |
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+            ssh-keyscan -H ${SSH_HOST} >> ~/.ssh/known_hosts
+            ssh ${SSH_USER}@${SSH_HOST} "ssh-keyscan -H ${INSTANCE_IP} >> ~/.ssh/known_hosts"
+        
+
+      # Transfer Ansible Directory to Head Node
+      - run:
+          name: Transfer Ansible Directory
+          command: |
+            scp -r ./ansible ${SSH_USER}@${SSH_HOST}:~/ || { echo "SCP failed"; exit 1; }
+
+      - run:
+          name: Transfer fix_ubuntu.sh to Head Node
+          command: |
+            scp fix_ubuntu.sh ${SSH_USER}@${SSH_HOST}:~/ || { echo "SCP to head node failed"; exit 1; }
+      
+      - run:
+          name: Transfer fix_ubuntu.sh to Compute Node
+          command: |
+            ssh ${SSH_USER}@${SSH_HOST} "scp ~/fix_ubuntu.sh ${SSH_USER}@${INSTANCE_IP}:~/" || { echo "SCP to compute node failed"; exit 1; }
+      
+      - run:
+          name: Execute fix_ubuntu.sh on Remote Instance
+          command: |
+            ssh ${SSH_USER}@${SSH_HOST} "ssh ${SSH_USER}@${INSTANCE_IP} 'sudo bash ~/fix_ubuntu.sh'" || { echo "Execution of script failed"; exit 1; }
+                
+      # Deploy and Run Ansible Playbook
+      - run:
+          name: Deploy and Run Ansible Playbook
+          command: |
+            ssh ${SSH_USER}@${SSH_HOST} "cd ~/ansible && ansible-playbook ${PLAYBOOK_FILE} -i ${INVENTORY_FILE} --extra-vars "target_host="${INSTANCE_IP}" || { echo "Ansible playbook failed"; exit 1; }
+
+workflows:
+  combined-deployment:
+    jobs:
+      - deploy-infrastructure
+      - deploy-ansible-playbook:
+          requires:
+            - deploy-infrastructure
+
+#trigger
+```
+
+fix_ubuntu.sh
+
+```#!/bin/bash
+
+echo "Changing NeedRestart behavior"
+sudo sed -i 's/#\$nrconf{restart} = "i";/\$nrconf{restart} = "a";/' /etc/needrestart/needrestart.conf
+
+sudo rm /etc/apt/source.list
+
+sudo tee /etc/apt/sources.list <<EOF
+deb http://old-releases.ubuntu.com/ubuntu mantic main restricted universe multiverse
+deb http://old-releases.ubuntu.com/ubuntu mantic-security main restricted universe multiverse
+deb http://old-releases.ubuntu.com/ubuntu mantic-updates main restricted universe multiverse
+deb http://old-releases.ubuntu.com/ubuntu mantic-backports main restricted universe multiverse
+EOF
+
+sudo apt-get update
+sudo NEEDRESTART_MODE=a apt-get dist-upgrade --yes
+
+sudo apt update
+sudo NEEDRESTART_MODE=a apt install nfs-common --yes
+
+sudo mount -t nfs 10.100.50.172:/home /home
 
 ```
-ansible-playbook -i inventory.yml install_hpl.yml
-```
-
 
 
 # Continuous Integration Using CircleCI
