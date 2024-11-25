@@ -36,14 +36,14 @@ This tutorial will conclude with you downloading, installing and running the Hig
 1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
     1. [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
 1. [RPM and Run High Performance LinPACK (HPL) Benchmark](#install-compile-and-run-high-performance-linpack-hpl-benchmark)
-1. [Utlizing the CPUFreq Subsystem using CPU power](#utlizing-the-CPUFreq-Subsystem-using-cpu-power)
+1. [Utlizing The CPUFreq Subsystem Using CPU Power](#utlizing-the-CPUFreq-Subsystem-using-cpu-power)
     1. [Introduction to the CPUFreq Subsystem](#utlizing-the-CPUFreq-Subsystem-using-cpu-power)
     1. [CPU Power States Overview](#cpu-power-states-overview)
     1. [Understanding CPU Governors and Frequency Scaling](#viewing-the-scaling-governors-and-scaling-drivers-available-on-your-system)
     1. [Setting Up CPUFreq Utilities](#setting-cpu-frequency)
     1. [CPU Governors for Performance or Power Efficiency](#governors-in-the-linux-kernel)
     1. [Adjusting CPU Frequency Limits for Specific Use Cases](#manually-limit-the-frequency-range)
-    1. [Monitoring Performance, Power Consumption](#customizing-governors)
+    1. [Monitoring Performance, Power Consumption and Customizing Governors](#customizing-governors)
     1. [Tips and Troubleshooting](#tips-and-troubleshooting)
 
 
@@ -72,7 +72,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
   - [ ] Editing Makefiles,
   - [ ] Compiling Sourcefiles to produce an Executable Binary, and
   - [ ] Understanding the basics of the Linux Shell Environment.
-
+  - [ ] Undertanding cpufreq using cpupower
 # Network Primer
 
 At the core of High Performance Computing (HPC) is networking. Something as simple as browsing the internet from either your cell phone or the workstation in front of you, involves the transfer and exchange of information between many different networks. Each resource or service connected to the internet is made available through a unique address and network port. For example, https://www.google.co.za:443 is the [Uniform Resource Locator (URL)](https://en.wikipedia.org/wiki/URL) used to uniquely identify Google's search engine page on the South African [co.za]. [domain](https://en.wikipedia.org/wiki/Domain_name). The [443] is the [port number](https://en.wikipedia.org/wiki/Port_(computer_networking)) which in this instance lets you know that you're connecting to a secure [https](https://en.wikipedia.org/wiki/HTTPS) server.
@@ -725,11 +725,11 @@ Congratulations!
 
 You have successfully completed you first HPL benchmark.
 
-# Utlizing the CPUFreq Subsystem using CPU power
+# Utlizing The CPUFreq Subsystem Using CPU Power
 
 CPU performance scaling enables the operating system to scale the CPU frequency up or down in order to save power or improve performance. Scaling can be done automatically in response to system load, adjust itself in response to ACPI events, or be manually changed by user space programs. Our tools of choice is `cpupower`.
 
-`cpupower` comes default on many linux distributions
+ *`cpupower` comes default on many linux distributions*
 
 The Linux kernel offers CPU performance scaling via the CPUFreq subsystem, which defines two layers of abstraction:<br />
 * **Scaling Governors** implement the algorithms to compute the desired CPU frequency, potentially based off of the system's needs.<br />
@@ -738,9 +738,9 @@ The Linux kernel offers CPU performance scaling via the CPUFreq subsystem, which
 
 Additionally, modern CPUs support:
 
-**Power Performance States (P-States)** provide a way to scale the frequency and voltage at which the processor runs so as to reduce the power consumption of the CPU. <br >
+* **Power Performance States (P-States)** provide a way to scale the frequency and voltage at which the processor runs so as to reduce the power consumption of the CPU. <br >
 
-**Processor idle sleep states (ACPI C states)** are states when the CPU has reduced or turned off selected functions.<br />
+* **Processor idle sleep states (ACPI C states)** are states when the CPU has reduced or turned off selected functions.<br />
 ## CPU Power States Overview
 
 - **P-States (Performance States)**: Adjust the frequency and voltage of the CPU to optimize performance and power.
@@ -812,9 +812,8 @@ sudo cpupower frequency-set -g powersave
 ```
 ## Customizing Governors
 Governors like Ondemand can be fine-tuned for specific workloads:
-
-**Adjusting the Ondemand Governor Parameters**
-_**up_threshold**: CPU usage percentage to trigger an increase in frequency.
+* **Up_Threshold**
+* **Sampling_rate**
 
 To modify these settings
 ```
