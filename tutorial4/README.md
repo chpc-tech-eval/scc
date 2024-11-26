@@ -1693,7 +1693,7 @@ We also need to set up an SSH fingerprint on CircleCI so we can `ssh` seamlessly
 Go to your workflow and go to Project Settings.  
 
 
-<img alt="Settings" src="./resources/deploy3rdCompuetNode.jpg" width=900 />  
+<img alt="ProjectSettings" src="./resources/project_settings.png" width=900 />  
 
 
 In project settings go to SSH Keys and Add Key.  
