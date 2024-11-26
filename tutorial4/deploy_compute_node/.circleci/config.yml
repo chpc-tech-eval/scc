@@ -1,0 +1,109 @@
+version: 2.1
+
+jobs:
+  deploy-infrastructure:
+    docker:
+      - image: hashicorp/terraform:latest  # Official Terraform Docker image
+    steps:
+      - checkout  # Checks out your repository
+
+      # Initialize Terraform
+      - run:
+          name: Terraform Init
+          command: terraform init
+
+      # Apply Terraform Configuration
+      - run:
+          name: Terraform Apply
+          command: terraform apply -auto-approve
+
+      - run:
+          name: Get Instance IP Address
+          command: |
+            INSTANCE_IP=$(terraform output -raw instance_ip)
+            echo "Instance IP Address: $INSTANCE_IP"
+            echo "$INSTANCE_IP" > instance_ip.txt
+
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - instance_ip.txt
+
+  deploy-ansible-playbook:
+    docker:
+      - image: circleci/python:3.9  # Python image with necessary tools
+    environment:
+      SSH_USER: "ubuntu"
+      SSH_HOST: "154.114.57.80"
+      PLAYBOOK_FILE: "install_hpl.yml"   # Ansible playbook file
+      INVENTORY_FILE: "inventory.yml"     # Ansible inventory file
+      NFS_SERVER_IP: "10.100.50.172"
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: ./
+
+      - run:
+          name: Read and Verify Instance IP
+          command: |
+            export INSTANCE_IP=$(cat instance_ip.txt)
+            echo "INSTANCE_IP=$INSTANCE_IP" > $BASH_ENV
+            echo "Using Instance IP Address: ${INSTANCE_IP}"
+
+      # Add SSH keys managed by CircleCI
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:SHIa6LYWWEELTDhxKtNh5rv53Zx+8hj4y/kGipCJ0Yg"
+
+      # Install Dependencies
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y python3-openstackclient openssh-client ansible
+
+      # Setup SSH
+      - run:
+          name: Setup SSH
+          command: |
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+            ssh-keyscan -H ${SSH_HOST} >> ~/.ssh/known_hosts
+            ssh ${SSH_USER}@${SSH_HOST} "ssh-keyscan -H ${INSTANCE_IP} >> ~/.ssh/known_hosts"
+        
+
+      # Transfer Ansible Directory to Head Node
+      - run:
+          name: Transfer Ansible Directory
+          command: |
+            scp -r ./ansible ${SSH_USER}@${SSH_HOST}:~/ || { echo "SCP failed"; exit 1; }
+
+      - run:
+          name: Transfer fix_ubuntu.sh to Head Node
+          command: |
+            scp fix_ubuntu.sh ${SSH_USER}@${SSH_HOST}:~/ || { echo "SCP to head node failed"; exit 1; }
+      
+      - run:
+          name: Transfer fix_ubuntu.sh to Compute Node
+          command: |
+            ssh ${SSH_USER}@${SSH_HOST} "scp ~/fix_ubuntu.sh ${SSH_USER}@${INSTANCE_IP}:~/" || { echo "SCP to compute node failed"; exit 1; }
+      
+      - run:
+          name: Execute fix_ubuntu.sh on Remote Instance
+          command: |
+            ssh ${SSH_USER}@${SSH_HOST} "ssh ${SSH_USER}@${INSTANCE_IP} 'sudo bash ~/fix_ubuntu.sh'" || { echo "Execution of script failed"; exit 1; }
+                
+      # Deploy and Run Ansible Playbook
+      - run:
+          name: Deploy and Run Ansible Playbook
+          command: |
+            ssh ${SSH_USER}@${SSH_HOST} "cd ~/ansible && ansible-playbook playbooks/${PLAYBOOK_FILE} --extra-vars "target_host="${INSTANCE_IP}" || { echo "Ansible playbook failed"; exit 1; }
+
+workflows:
+  combined-deployment:
+    jobs:
+      - deploy-infrastructure
+      - deploy-ansible-playbook:
+          requires:
+            - deploy-infrastructure
