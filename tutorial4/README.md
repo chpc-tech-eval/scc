@@ -1061,6 +1061,7 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
 # Automating HPL Runs Using Ansible Playbooks and CircleCI
 Use the repository you made in section 6
 
+On your cluster, create a project directory to conform to the following directory tree:
 ```
 project/
 ├── ansible.cfg
@@ -1087,6 +1088,8 @@ project/
 
 ```
 
+The `ansible.cfg` file is a configuration file for Ansible and allows the user to set global and local configurations for how ansible is required to operate. It should be set up as the following:
+
 `ansible.cfg`:
 ```
 [defaults]
@@ -1095,6 +1098,9 @@ roles_path = roles
 remote_user = ubuntu
 private_key_file = /home/ubuntu/.ssh/id_ed25519 <path to your key>
 ```
+
+The `inventory.yml` file is and inventory file defines the deatails of the nodes that Ansible will manage. This file should be adjusted to adhear to your cluster design. For a head node and two compute nodes design, it should be as follows:
+
 `inventory.yml`:
 ```
 all:
@@ -1111,6 +1117,8 @@ all:
         compute1:
         compute2:
 ```
+
+The `install_hpl.yml` file is an Ansible playbook that orchestrates the setup and execution of the HPL benchmark. It should be set up as follows: 
 
 `install_hpl.yml`:
 ```
@@ -1145,7 +1153,9 @@ all:
   roles:
     - run_hpl
 ```
-role/install_deps/tasks/main.yml:
+
+The `install_deps` role installs the prerequiste applications and compilers in order to compile and run HPL. The following file under `main.yml` in the `tasks` directory contains the neccessary applications and compilers for a Debian-based system, a RedHat-based system and a Pacman-based system:
+
 ```
 - name: Install dependencies on Debian-based systems
   apt:
@@ -1187,7 +1197,9 @@ role/install_deps/tasks/main.yml:
     update_cache: yes
   when: ansible_os_family == "Archlinux"
 ```
-roles/install_blas/tasks/main.yml:
+
+The `install_blas` role defines a set of tasks to install OpenBLAS. The `main.yml` file in the `tasks` directory should be set up as follows:
+
 ```
 - name: Check if OpenBLAS is already installed
   stat:
@@ -1216,7 +1228,9 @@ roles/install_blas/tasks/main.yml:
       PREFIX: "{{ ansible_env.HOME }}/opt/openblas"
   when: clone_result.changed
 ```
-roles/install_mpi/tasks/main.yml:
+
+The `install_mpi` role defines the tasks to downlaod, build and install OpenMPI. In the `tasks` directory, the `main.yml` file should be set up as follows:
+
 ```
 - name: Check if OpenMPI is already installed
   stat:
@@ -1264,7 +1278,9 @@ roles/install_mpi/tasks/main.yml:
     target: install
   when: not openmpi_installed.stat.exists
 ```
-roles/install_hpl/tasks/main.yml:
+
+The `install_hpl` role defines the tasks to automate the downloading, configuring and compiling HPL. The `main.yml` file in the `tasks` directory should look like the following:
+
 ```
 # roles/install_hpl/tasks/main.yml
 ---
@@ -1378,6 +1394,8 @@ roles/install_hpl/tasks/main.yml:
   args:
     chdir: "{{ ansible_env.HOME }}/hpl"  # Directory containing the Makefile
 ```
+
+The `run_hpl` role automates the execution of the HPL benchmark across the cluster and the `main.yml` file in `tasks` should be as follows:
 roles/run_hpl/tasks/main.yml:
 ```
 # roles/install_hpl/tasks/main.yml
