@@ -1661,14 +1661,14 @@ The `main.tf` needs to be updated to retrieve the IP address from the deployed i
   cloud = "openstack"
 }
 resource "openstack_compute_instance_v2" "terraform-demo-instance" {
-  name = "de4thCompute"
+  name = "<instance_name>"
   image_id = "97991be4-1df0-4502-9370-55e9b624592e"
   flavor_id = "35617c38-b1ce-4d49-894e-74ce7ddcdc26"
-  key_pair = "deKeyProject"
+  key_pair = "<your_key>"
   security_groups = ["default", "scc24_sg"]
 
   network {
-    name = "wits1-vxlan"
+    name = "<team name>-vxlan"
   }
 }
 
@@ -1688,24 +1688,27 @@ The `config.yml` needs to be updated to include:
 - NFS is set up so that the playbook runs seamlessly across nodes
 
 We also need to set up an SSH fingerprint on CircleCI so we can `ssh` seamlessly between nodes.
-
-
+#### Set Up SSH Key
+Go to your workflow and go to Project Settings.
 <img alt="Settings" src="./resources/deploy3rdCompuetNode.jpg" width=900 />
+
+In project settings go to SSH Keys and Add Key.
 <img alt="Settings" src="./resources/CircleCIinterface.jpg" width=300 />
-settings 2 image
 
-Login to the cluster. Type this command:
 
-`cat ~/.ssh/<your private ssh key>`
+Login to the cluster. Type this command to get your Private Key.
 
- <p align="center"><img alt="Cluster ssh key" src="./resources/privateKey.jpg" width=900 /></p>
-image of cluster ssh key
+```cat ~/.ssh/<your private ssh key>```
 
-Copy and paste these contents into the CircleCI SSH key.
+ <p align="center"><img alt="Cluster ssh key" src="./resources/privateKey.jpg" width=500 /></p>
+
+Copy and paste these contents into the CircleCI Private Key.
+
+<img alt="SSH key" src="./resources/AddSSHKeys2.jpg" width=500 />
+
+Your SSH fingerprint will now be set up. 
 
  <p align="center"><img alt="SSH key" src="./resources/AddSSHKeys.jpg" width=900 /></p>
-  <p align="center"><img alt="SSH key" src="./resources/AddSSHKeys2.jpg" width=600 /></p>
-add key image and copy key image
 
 New `config.yml`:
 
