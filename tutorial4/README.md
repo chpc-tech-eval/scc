@@ -1684,6 +1684,24 @@ fi
 
 You need to use  a different config.yml and setup_nfs.sh for RHEL. This can be found under the resources folder.
 
+Your final file structure should be as follows
+```
+.circleci/
+    └── config.yml
+ansible/
+    └── ansible.cfg
+    └── inventory/
+    └── playbooks/
+    └── roles/
+├── clouds.yaml
+├── fix_apt.sh
+├── main.tf
+├── providers.tf
+└── setup_nfs.sh
+```
+
+When you push it will automatically deploy the node and run hpl now.
+
 >
 >Remeber you need to delete the instance before you can redeploy using CircleCI
 
