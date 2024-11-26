@@ -1387,7 +1387,7 @@ The `install_blas` role defines a set of tasks to install OpenBLAS. The `main.ym
   when: clone_result.changed
 ```
 ### install_mpi
-The `install_mpi` role defines the tasks to downlaod, build and install OpenMPI. In the `tasks` directory, the `main.yml` file should be set up as follows:
+The `install_mpi` role defines the tasks to download, build and install OpenMPI. In the `tasks` directory, the `main.yml` file should be set up as follows:
 
 ```
 - name: Check if OpenMPI is already installed
@@ -1725,7 +1725,7 @@ Your SSH fingerprint will now be set up.
 <img alt="SSH key" src="./resources/AddSSHKeys.jpg" width=500 />
 
 
-#### config.yml
+`config.yml`
 
 In `config.yml` make sure to change the variables under environment: `SSH_USER`, `SSH_HOST`, `NFS_SERVER_IP` and <your_fingerprint_from_CircleCI>(eg. SHA256:SHIa6LYWWEELTDhxKtNh5rv53Zx+8hj4y/kGipCJ0Yg).  
 This `config.yml` is specifically for Unbuntu. You can find the one for DNF/YUM [here](tutorial4/resources/config.yml). The `fix_apt.sh` can also be skipped over and instances of it in `config.yml` can be removed. 
@@ -1902,7 +1902,8 @@ fi
 
 When you push all these files to the repository linked to CircleCI it will redeploy the node and then run the Ansible playbook which will run HPL. You can view the run of HPL by using `btop` on all the nodes.
 
-
+ 
+<img alt="HPL on btop" src="./resources/hpl_btop.png" width=500 />
 
 
 > Remember you need to delete the instance before you can redeploy the node using CircleCI
