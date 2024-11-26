@@ -1241,7 +1241,7 @@ ansible/
 
 It is structured into distinct roles for modularity and ease of maintenance, with each role handling specific tasks such as installing dependencies, BLAS, MPI, and HPL itself, as well as running the benchmark. The inventory defines the target hosts, and playbooks orchestrate the execution of these roles.
 
-
+### ansible.cfg
 The `ansible.cfg` file is a configuration file for Ansible and allows the user to set global and local configurations for how ansible is required to operate. You need to change the `private_key_file` to point to your private key.
 
 `ansible.cfg`:
@@ -1254,19 +1254,18 @@ remote_user = ubuntu
 private_key_file = </your/path/to/key>
 ```
 
+### inventory.yml
 The `inventory.yml` file is a file that defines the details of the nodes that Ansible will manage. This file should be adjusted to adhere to your cluster design. The IP address for the node that will be deployed using Terraform and CircleCI will be passed in as a variable on deployment. For a head node and two compute nodes design, it should be as follows:
-
-`inventory.yml`:
 
 ```
 all:
   hosts:
     headnode:
-      ansible_host: <fill in your headnode IP>
+      ansible_host: <your_headnode_IP>
     compute1:
-      ansible_host: <fill this in>
+      ansible_host: <compute_node_IP>
     compute2:
-      ansible_host: ansible_host: "{{ target_host }}"
+      ansible_host: "{{ target_host }}"
   children:
     compute:
       hosts:
@@ -1274,9 +1273,8 @@ all:
         compute2:
 ```
 
+### install_hpl.yml
 The `install_hpl.yml` file is an Ansible playbook that orchestrates the setup and execution of the HPL benchmark. It should be set up as follows:
-
-`install_hpl.yml`:
 
 ```
 ---
@@ -1310,7 +1308,7 @@ The `install_hpl.yml` file is an Ansible playbook that orchestrates the setup an
   roles:
     - run_hpl
 ```
-
+### install_deps
 The `install_deps` role installs the prerequisite applications and compilers in order to compile and run HPL. The following file under `main.yml` in the `tasks` directory contains the necessary applications and compilers for a Debian-based system, a RedHat-based system and a Pacman-based system. They will skip over unnecessary steps.
 
 
@@ -1356,6 +1354,7 @@ The `install_deps` role installs the prerequisite applications and compilers in 
   when: ansible_os_family == "Archlinux"
 ```
 
+### install_blas
 
 The `install_blas` role defines a set of tasks to install OpenBLAS. The `main.yml` file in the `tasks` directory should be set up as follows:
 
@@ -1387,7 +1386,7 @@ The `install_blas` role defines a set of tasks to install OpenBLAS. The `main.ym
       PREFIX: "{{ ansible_env.HOME }}/opt/openblas"
   when: clone_result.changed
 ```
-
+### install_mpi
 The `install_mpi` role defines the tasks to downlaod, build and install OpenMPI. In the `tasks` directory, the `main.yml` file should be set up as follows:
 
 ```
@@ -1438,6 +1437,7 @@ The `install_mpi` role defines the tasks to downlaod, build and install OpenMPI.
   when: not openmpi_installed.stat.exists
 ```
 
+###install_hpl
 The `install_hpl` role defines the tasks to automate the downloading, configuring and compiling HPL. This YAML file makes all the necessary changes to the makefile. The `main.yml` file in the `tasks` directory should look like the following:
 
 ```
@@ -1553,7 +1553,7 @@ The `install_hpl` role defines the tasks to automate the downloading, configurin
   args:
     chdir: "{{ ansible_env.HOME }}/hpl"  # Directory containing the Makefile
 ```
-
+### run_hpl
 The `run_hpl` role automates the execution of the HPL benchmark across the cluster and the `main.yml` file in `tasks` should be as follows:
 
 ```
@@ -1636,8 +1636,26 @@ You can push the `ansible` folder to the GitHub repository after all of these fi
 
 The general structure of the CircleCI `config.yml` and Terraform files can be kept the same. Some changes do need to be made so that it works with the Ansible playbook.
 
+After these changes the file structure will ook something like this:
+```
+.circleci/
+    └── config.yml
+ansible/
+    └── ansible.cfg
+    └── inventory/
+    └── playbooks/
+    └── roles/
+├── clouds.yaml
+├── fix_apt.sh
+├── main.tf
+├── providers.tf
+└── setup_nfs.sh
+```
 
-The `main.tf` needs to be updated to retrieve the IP address from the deployed instance so that we can pass it into our `inventory.yml`:
+The files we need to change are as follows.
+
+### main.tf
+The `main.tf` needs to be updated to retrieve the IP address from the deployed instance so that we can pass it into our `inventory.yml`.
 
 ```provider "openstack" {
   cloud = "openstack"
@@ -1661,18 +1679,19 @@ output "instance_ip" {
 }
 ```
 
+### config.yml
 
-The `.circle/config.yml` needs to be updated to include:
+The `config.yml` needs to be updated to include:
 - 2 workflows - one to deploy the new instance using Terraform and one to run the HPL Ansible Playbook
 - Retrieve the instances IP from `main.tf`
 - Set up a workspace so we can share this information across workflows
 - NFS is set up so that the playbook runs seamlessly across nodes
 
-we also added another workflow to run the Anisle playbook. This workflow makes sure to add a SSH fingerprint so that it can be fully automated to get the fingerprint.
+We also need to set up an SSH fingerprint on CircleCI so we can `ssh` seamlessly between nodes.
 
- <p align="center"><img alt="Settings" src="./resources/deploy3rdCompuetNode.jpg" width=900 /></p>
- settings image
- <p align="center"><img alt="Settings" src="./resources/CircleCIinterface.jpg" width=300 /></p>
+
+<img alt="Settings" src="./resources/deploy3rdCompuetNode.jpg" width=900 />
+<img alt="Settings" src="./resources/CircleCIinterface.jpg" width=300 />
 settings 2 image
 
 Login to the cluster. Type this command:
