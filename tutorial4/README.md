@@ -1088,12 +1088,13 @@ project/
 ```
 
 `ansible.cfg`:
+```
 [defaults]
 inventory = inventory/inventory.yml
 roles_path = roles
 remote_user = ubuntu
 private_key_file = /home/ubuntu/.ssh/id_ed25519 <path to your key>
-
+```
 `inventory.yml`:
 ```
 all:
