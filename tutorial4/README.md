@@ -1437,7 +1437,7 @@ The `install_mpi` role defines the tasks to downlaod, build and install OpenMPI.
   when: not openmpi_installed.stat.exists
 ```
 
-###install_hpl
+### install_hpl
 The `install_hpl` role defines the tasks to automate the downloading, configuring and compiling HPL. This YAML file makes all the necessary changes to the makefile. The `main.yml` file in the `tasks` directory should look like the following:
 
 ```
