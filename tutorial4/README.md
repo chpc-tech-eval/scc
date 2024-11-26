@@ -1065,7 +1065,7 @@ Use the repository you made in section 6
 project/
 ├── ansible.cfg
 ├── inventory/
-│   ├── hosts
+│   └── inventory.yml
 ├── playbooks/
 │   └── install_hpl.yml
 └── roles/
