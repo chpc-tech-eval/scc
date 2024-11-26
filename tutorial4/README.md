@@ -1682,6 +1682,8 @@ else
 fi
 ```
 
+You need to use  a different config.yml and setup_nfs.sh for RHEL. This can be found under the resources folder.
+
 >
 >Remeber you need to delete the instance before you can redeploy using CircleCI
 
