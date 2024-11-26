@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/df15dea3-38af-4e1d-9ba4-a1a8488c8bb3)# Student Cluster Competition - Tutorial 4
+# Student Cluster Competition - Tutorial 4
 
 ## Table of Contents
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
