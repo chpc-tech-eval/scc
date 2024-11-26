@@ -1501,16 +1501,16 @@ The `.circle/config.yml` needs to be updated so that the newly deployed compute 
 
 we also added another workflow to run the Anisle playbook. This workflow makes sure to add a SSH fingerprint so that it can be fully automated to get the fingerprint. 
 
-<settings image>
-<settings 2 image>
+settings image
+settings 2 image
 
 Login to the cluster. Type this command:
 
 ```cat ~/.ssh/<your private ssh key>```
-<image of cluster ssh key>
+image of cluster ssh key
 
 Copy and paste these contents into the CircleCI SSH key.
-<add key image and copy key image>
+add key image and copy key image
 
 
 New `config.yml`:
@@ -1599,17 +1599,17 @@ jobs:
       - run:
           name: Transfer fix_apt.sh and setup_nfs.sh to Head Node
           command: |
-            scp fix_ubuntu.sh setup_nfs.sh ${SSH_USER}@${SSH_HOST}:~/ || { echo "SCP to head node failed"; exit 1; }
+            scp fix_apt.sh setup_nfs.sh ${SSH_USER}@${SSH_HOST}:~/ || { echo "SCP to head node failed"; exit 1; }
       
       - run:
           name: Transfer fix_apt.sh and setup_nfs.sh to Compute Node
           command: |
-            ssh ${SSH_USER}@${SSH_HOST} "scp ~/fix_apt.sh setup_nfs.sh ${SSH_USER}@${INSTANCE_IP}:~/" || { echo "SCP to compute node failed"; exit 1; }
+            ssh ${SSH_USER}@${SSH_HOST} "scp ~/fix_apt.sh ~/setup_nfs.sh ${SSH_USER}@${INSTANCE_IP}:~/" || { echo "SCP to compute node failed"; exit 1; }
       
       - run:
           name: Execute fix_apt.sh on Remote Instance
           command: |
-            ssh ${SSH_USER}@${SSH_HOST} "ssh ${SSH_USER}@${INSTANCE_IP} 'sudo bash ~/fix_ubuntu.sh'" || { echo "Execution of script failed"; exit 1; }
+            ssh ${SSH_USER}@${SSH_HOST} "ssh ${SSH_USER}@${INSTANCE_IP} 'sudo bash ~/fix_apt.sh'" || { echo "Execution of script failed"; exit 1; }
 
       - run:
           name: Execute setup_nfs.sh on Remote Instance
@@ -1625,7 +1625,7 @@ jobs:
 ```
 Add create these 2 new files and push it to your repo.
 
-`fix_apt.sh` you can delete this file if you are not using ubuntu or are using a newer version that doesnt use mantic
+`fix_apt.sh` you can delete this file if you are not using ubuntu or are using a newer version that doesnt use mantic. Deleet the instances of it on the config.yml as well.
 
 ```#!/bin/bash
 
