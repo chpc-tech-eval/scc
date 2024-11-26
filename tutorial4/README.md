@@ -1396,7 +1396,7 @@ The `install_hpl` role defines the tasks to automate the downloading, configurin
 ```
 
 The `run_hpl` role automates the execution of the HPL benchmark across the cluster and the `main.yml` file in `tasks` should be as follows:
-roles/run_hpl/tasks/main.yml:
+
 ```
 # roles/install_hpl/tasks/main.yml
 ---
@@ -1501,15 +1501,20 @@ The `.circle/config.yml` needs to be updated so that the newly deployed compute 
 
 we also added another workflow to run the Anisle playbook. This workflow makes sure to add a SSH fingerprint so that it can be fully automated to get the fingerprint. 
 
-settings image
+ <p align="center"><img alt="Settings" src="./resources/deploy3rdCompuetNode.jpg" width=900 /></p>
+ settings image
+ <p align="center"><img alt="Settings" src="./resources/CircleCIinterface.jpg" width=300 /></p>
 settings 2 image
 
 Login to the cluster. Type this command:
 
 ```cat ~/.ssh/<your private ssh key>```
+ <p align="center"><img alt="Cluster ssh key" src="./resources/privateKey.jpg" width=900 /></p>
 image of cluster ssh key
 
 Copy and paste these contents into the CircleCI SSH key.
+ <p align="center"><img alt="SSH key" src="./resources/AddSSHKeys.jpg" width=900 /></p>
+  <p align="center"><img alt="SSH key" src="./resources/AddSSHKeys2.jpg" width=600 /></p>
 add key image and copy key image
 
 
