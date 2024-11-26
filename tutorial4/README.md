@@ -1165,7 +1165,7 @@ Navigate to [CircleCI.com](https://circleci.com) to create an account, link and 
 
 # Automating HPL Runs Using Ansible Playbooks and CircleCI
 
-## Installation
+## Installing Ansible
 
 Ansible is an agentless node manager, hence you will only need to install on your `headnode`. To set up your environment for Ansible, you need to install the following dependencies:
 
@@ -1206,14 +1206,15 @@ sudo pacman -S sshpass git
 sudo pacman -S ansible
 ```
 
-## Ansible Configurations
+## Setting Up the Ansible Playbook
 
-Use the repository you made in section 6
+You need to push the Ansible playbook to the GitHub repository you linked to CircleCI in the previous section. There are two ways to do this:
+- You can edit the files directly on GitHub
+- Create them on the headnode and `git push` them to the repository linked to CircleCI.
 
-On your cluster, create a project directory to conform to the following directory tree:
-
+You should set up your file structure as follows:
 ```
-project/
+ansible/
 ├── ansible.cfg
 ├── inventory/
 │   └── inventory.yml
@@ -1238,7 +1239,10 @@ project/
 
 ```
 
-The `ansible.cfg` file is a configuration file for Ansible and allows the user to set global and local configurations for how ansible is required to operate. It should be set up as the following:
+It is structured into distinct roles for modularity and ease of maintenance, with each role handling specific tasks such as installing dependencies, BLAS, MPI, and HPL itself, as well as running the benchmark. The inventory defines the target hosts, and playbooks orchestrate the execution of these roles.
+
+
+The `ansible.cfg` file is a configuration file for Ansible and allows the user to set global and local configurations for how ansible is required to operate. You need to change the `private_key_file` to point to your private key.
 
 `ansible.cfg`:
 
@@ -1247,10 +1251,10 @@ The `ansible.cfg` file is a configuration file for Ansible and allows the user t
 inventory = inventory/inventory.yml
 roles_path = roles
 remote_user = ubuntu
-private_key_file = /home/ubuntu/.ssh/id_ed25519 <path to your key>
+private_key_file = </your/path/to/key>
 ```
 
-The `inventory.yml` file is and inventory file defines the deatails of the nodes that Ansible will manage. This file should be adjusted to adhear to your cluster design. For a head node and two compute nodes design, it should be as follows:
+The `inventory.yml` file is a file that defines the details of the nodes that Ansible will manage. This file should be adjusted to adhere to your cluster design. The IP address for the node that will be deployed using Terraform and CircleCI will be passed in as a variable on deployment. For a head node and two compute nodes design, it should be as follows:
 
 `inventory.yml`:
 
@@ -1307,7 +1311,8 @@ The `install_hpl.yml` file is an Ansible playbook that orchestrates the setup an
     - run_hpl
 ```
 
-The `install_deps` role installs the prerequiste applications and compilers in order to compile and run HPL. The following file under `main.yml` in the `tasks` directory contains the neccessary applications and compilers for a Debian-based system, a RedHat-based system and a Pacman-based system:
+The `install_deps` role installs the prerequisite applications and compilers in order to compile and run HPL. The following file under `main.yml` in the `tasks` directory contains the necessary applications and compilers for a Debian-based system, a RedHat-based system and a Pacman-based system. They will skip over unnecessary steps.
+
 
 ```
 - name: Install dependencies on Debian-based systems
@@ -1350,6 +1355,7 @@ The `install_deps` role installs the prerequiste applications and compilers in o
     update_cache: yes
   when: ansible_os_family == "Archlinux"
 ```
+
 
 The `install_blas` role defines a set of tasks to install OpenBLAS. The `main.yml` file in the `tasks` directory should be set up as follows:
 
@@ -1432,7 +1438,7 @@ The `install_mpi` role defines the tasks to downlaod, build and install OpenMPI.
   when: not openmpi_installed.stat.exists
 ```
 
-The `install_hpl` role defines the tasks to automate the downloading, configuring and compiling HPL. The `main.yml` file in the `tasks` directory should look like the following:
+The `install_hpl` role defines the tasks to automate the downloading, configuring and compiling HPL. This YAML file makes all the necessary changes to the makefile. The `main.yml` file in the `tasks` directory should look like the following:
 
 ```
 # roles/install_hpl/tasks/main.yml
@@ -1567,8 +1573,8 @@ The `run_hpl` role automates the execution of the HPL benchmark across the clust
       164           NBs
       0            PMAP process mapping (0=Row-,1=Column-major)
       1            # of process grids (P x Q)
-      4            Ps
-      4            Qs
+      3            Ps
+      6            Qs
       16.0         threshold
       1            # of panel fact
       2            PFACTs (0=left, 1=Crout, 2=Right)
@@ -1593,20 +1599,21 @@ The `run_hpl` role automates the execution of the HPL benchmark across the clust
   copy:
     dest: "{{ ansible_env.HOME }}/hpl/bin/compile_BLAS_MPI/hostfile"
     content: |
-      # Headnode included in the hostfile with its cores
-      {{ ansible_host }} slots={{ ansible_processor_cores | default(2) }}
+      # Headnode included in the hostfile with its cores 
+      {{ ansible_host }} slots={{ ansible_facts.processor_count | default(2) }}
 
-      # Compute nodes included dynamically
+      # Compute nodes included dynamically 
       {% for host in groups['compute'] %}
-      {{ hostvars[host]['ansible_host'] }} slots={{ hostvars[host]['ansible_processor_cores'] | default(6) }}
+      {{ hostvars[host]['ansible_host'] }} slots={{ hostvars[host]['ansible_facts']['processor_count'] | default(6) }}
       {% endfor %}
+  delegate_to: localhost
 
 - name: Execute HPL benchmark across nodes
   shell: |
     export PATH=~/opt/openmpi/bin:~/opt/openblas:$PATH
     export LD_LIBRARY_PATH=~/opt/openmpi/lib:~/opt/openblas/lib:$LD_LIBRARY_PATH
     export MPI_HOME=~/opt/openmpi
-    mpirun -np 16 --hostfile ~/hpl/bin/compile_BLAS_MPI/hostfile --prefix ~/opt/openmpi ~/hpl/bin/compile_BLAS_MPI/xhpl
+    mpirun -np 18 --hostfile ~/hpl/bin/compile_BLAS_MPI/hostfile --prefix ~/opt/openmpi ~/hpl/bin/compile_BLAS_MPI/xhpl
   args:
     executable: /bin/bash
     chdir: "{{ ansible_env.HOME }}/hpl/bin/compile_BLAS_MPI"
@@ -1623,11 +1630,14 @@ The `run_hpl` role automates the execution of the HPL benchmark across the clust
   delegate_to: localhost
 ```
 
-Push it to the repository that's linked to CIrclCI
+You can push the `ansible` folder to the GitHub repository after all of these files are set up. 
 
-There are some files that need to be changed:
+## CircleCI Integration
 
-The `main.tf` needs to be updated to retrieve the IP address from the deployed instance:
+The general structure of the CircleCI `config.yml` and Terraform files can be kept the same. Some changes do need to be made so that it works with the Ansible playbook.
+
+
+The `main.tf` needs to be updated to retrieve the IP address from the deployed instance so that we can pass it into our `inventory.yml`:
 
 ```provider "openstack" {
   cloud = "openstack"
@@ -1651,7 +1661,12 @@ output "instance_ip" {
 }
 ```
 
-The `.circle/config.yml` needs to be updated so that the newly deployed compute node IP is saved to a shared workspace so it can be shared across workflows in CircleCI.
+
+The `.circle/config.yml` needs to be updated to include:
+- 2 workflows - one to deploy the new instance using Terraform and one to run the HPL Ansible Playbook
+- Retrieve the instances IP from `main.tf`
+- Set up a workspace so we can share this information across workflows
+- NFS is set up so that the playbook runs seamlessly across nodes
 
 we also added another workflow to run the Anisle playbook. This workflow makes sure to add a SSH fingerprint so that it can be fully automated to get the fingerprint.
 
