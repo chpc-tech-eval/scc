@@ -1690,32 +1690,40 @@ The `config.yml` needs to be updated to include:
 We also need to set up an SSH fingerprint on CircleCI so we can `ssh` seamlessly between nodes.
 
 #### Set Up SSH Key
-Go to your workflow and go to Project Settings.
-<img alt="Settings" src="./resources/deploy3rdCompuetNode.jpg" width=900 />
+Go to your workflow and go to Project Settings.  
 
-In project settings go to SSH Keys and Add Key.
-<img alt="Settings" src="./resources/CircleCIinterface.jpg" width=300 />
+
+<img alt="Settings" src="./resources/deploy3rdCompuetNode.jpg" width=900 />  
+
+
+In project settings go to SSH Keys and Add Key.  
+
+
+<img alt="Settings" src="./resources/CircleCIinterface.jpg" width=300 />  
 
 
 Login to the cluster. Type this command to get your Private Key.
 
+
 ```
 cat ~/.ssh/<your private ssh key>
-```
-
- 
-
-<img alt="Cluster ssh key" src="./resources/privateKey.jpg" width=500 /></p>
-
-  
-Copy and paste these contents into the CircleCI Private Key.
+```  
 
 
-<img alt="SSH key" src="./resources/AddSSHKeys2.jpg" width=500 />
-  
+<img alt="Cluster ssh key" src="./resources/privateKey.jpg" width=500 /></p>  
+
+
+Copy and paste these contents into the CircleCI Private Key. 
+
+
+<img alt="SSH key" src="./resources/AddSSHKeys2.jpg" width=500 />  
+
+
 Your SSH fingerprint will now be set up. 
-  
- <p align="center"><img alt="SSH key" src="./resources/AddSSHKeys.jpg" width=500 /></p>
+
+
+<p align="center"><img alt="SSH key" src="./resources/AddSSHKeys.jpg" width=500 /></p>
+
 
 #### config.yml
 
