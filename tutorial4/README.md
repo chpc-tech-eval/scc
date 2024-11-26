@@ -1501,11 +1501,19 @@ The `.circle/config.yml` needs to be updated so that the newly deployed compute 
 
 we also added another workflow to run the Anisle playbook. This workflow makes sure to add a SSH fingerprint so that it can be fully automated to get the fingerprint. 
 
+<settings image>
+<settings 2 image>
+
 Login to the cluster. Type this command:
 
 ```cat ~/.ssh/<your private ssh key>```
+<image of cluster ssh key>
 
 Copy and paste these contents into the CircleCI SSH key.
+<add key image and copy key image>
+
+
+New `config.yml`:
 ```
 version: 2.1
 
@@ -1615,7 +1623,7 @@ jobs:
             ssh ${SSH_USER}@${SSH_HOST} "cd ~/ansible && ansible-playbook playbooks/${PLAYBOOK_FILE} --extra-vars "target_host="${INSTANCE_IP}" || { echo "Ansible playbook failed"; exit 1; }
 
 ```
-Add these 2 new files into your repo.
+Add create these 2 new files and push it to your repo.
 
 `fix_apt.sh` you can delete this file if you are not using ubuntu or are using a newer version that doesnt use mantic
 
@@ -1645,6 +1653,7 @@ echo "System fix completed."
 
 ```
 This file setups your nfs on the newly deployed node:
+`setup_nfs.sh`
 ```
 #!/bin/bash
 
@@ -1672,6 +1681,12 @@ else
   exit 1
 fi
 ```
+
+>
+>Remeber you need to delete the instance before you can redeploy using CircleCI
+
+Login to your cluster and use btop to see if HPL is running across all nodes:
+<image of btop with hpl running>
 
 
 # Slurm Scheduler and Workload Manager
