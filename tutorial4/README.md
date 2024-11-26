@@ -1113,6 +1113,38 @@ all:
 ```
 
 `install_hpl.yml`:
+```
+---
+- name: Install prerequisites on all nodes
+  hosts: all
+  become: yes
+  roles:
+    - install_deps
+
+- name: Install OpenBLAS on compute nodes
+  hosts: compute1
+  gather_facts: yes
+  roles:
+    - install_blas
+
+- name: Install OpenMPI on compute nodes
+  hosts: compute1
+  gather_facts: yes
+  roles:
+    - install_mpi
+
+- name: Install HPL on the head node
+  hosts: headnode
+  gather_facts: yes
+  roles:
+    - install_hpl
+
+- name: Run HPL benchmark
+  hosts: headnode
+  gather_facts: yes
+  roles:
+    - run_hpl
+```
 
 Push it to the repository that's linked to CIrclCI
 
