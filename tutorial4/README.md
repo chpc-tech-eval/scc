@@ -1722,14 +1722,13 @@ Copy and paste these contents into the CircleCI Private Key.
 Your SSH fingerprint will now be set up. 
 
 
-<p align="center"><img alt="SSH key" src="./resources/AddSSHKeys.jpg" width=500 /></p>
+<img alt="SSH key" src="./resources/AddSSHKeys.jpg" width=500 />
 
 
 #### config.yml
 
-In `config.yml` make sure to change the variables under environment: `SSH_USER`, `SSH_HOST`, `NFS_SERVER_IP` and <your_fingerprint_from_CircleCI>.
-It's this from SSH 
- This `config.yml` is specifically for Unbuntu. You can find the one for DNF/YUM [here](tutorial4/resources/config.yml). The `fix_apt.sh` can also be skipped over and instances of it in `config.yml` can be removed. 
+In `config.yml` make sure to change the variables under environment: `SSH_USER`, `SSH_HOST`, `NFS_SERVER_IP` and <your_fingerprint_from_CircleCI>(eg. SHA256:SHIa6LYWWEELTDhxKtNh5rv53Zx+8hj4y/kGipCJ0Yg).  
+This `config.yml` is specifically for Unbuntu. You can find the one for DNF/YUM [here](tutorial4/resources/config.yml). The `fix_apt.sh` can also be skipped over and instances of it in `config.yml` can be removed. 
 
 ```
 version: 2.1
@@ -1841,9 +1840,9 @@ jobs:
 
 ```
 
-Add create these 2 new files and push it to your repo.
+### fix_apt.sh
 
-`fix_apt.sh` you can delete this file if you are not using ubuntu or are using a newer version that doesnt use mantic. Deleet the instances of it on the config.yml as well.
+This file fixes the APT for certain versions of Ubuntu.
 
 ```#!/bin/bash
 
@@ -1870,9 +1869,8 @@ sudo NEEDRESTART_MODE=a apt-get dist-upgrade --yes
 echo "System fix completed."
 
 ```
-
-This file setups your nfs on the newly deployed node:
-`setup_nfs.sh`
+### setup_nfs.sh
+This file sets up NFS on the newly deployed node.
 
 ```
 #!/bin/bash
@@ -1902,31 +1900,13 @@ else
 fi
 ```
 
-You need to use a different config.yml and setup_nfs.sh for RHEL. This can be found under the resources folder.
+When you push all these files to the repository linked to CircleCI it will redeploy the node and then run the Ansible playbook which will run HPL. You can view the run of HPL by using `btop` on all the nodes.
 
-Your final file structure should be as follows
 
-```
-.circleci/
-    └── config.yml
-ansible/
-    └── ansible.cfg
-    └── inventory/
-    └── playbooks/
-    └── roles/
-├── clouds.yaml
-├── fix_apt.sh
-├── main.tf
-├── providers.tf
-└── setup_nfs.sh
-```
 
-When you push it will automatically deploy the node and run hpl now.
 
-> Remeber you need to delete the instance before you can redeploy using CircleCI
+> Remember you need to delete the instance before you can redeploy the node using CircleCI
 
-Login to your cluster and use btop to see if HPL is running across all nodes:
-<image of btop with hpl running>
 
 # Slurm Scheduler and Workload Manager
 
