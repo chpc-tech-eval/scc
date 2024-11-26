@@ -1,0 +1,45 @@
+- name: Check if OpenMPI is already installed
+  stat:
+    path: "{{ ansible_env.HOME }}/opt/openmpi/bin"
+  register: openmpi_installed
+
+- name: Download OpenMPI source files if not installed
+  get_url:
+    url: "https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.4.tar.gz"
+    dest: "{{ ansible_env.HOME }}/openmpi-4.1.4.tar.gz"
+    mode: '0755'
+  when: not openmpi_installed.stat.exists
+
+- name: Create destination directory for unzipping
+  file:
+    path: "{{ ansible_env.HOME }}/openmpi-4.1.4"
+    state: directory
+    mode: '0755'
+  when: not openmpi_installed.stat.exists
+
+- name: Unzip the downloaded OpenMPI tarball
+  unarchive:
+    src: "{{ ansible_env.HOME }}/openmpi-4.1.4.tar.gz"
+    dest: "{{ ansible_env.HOME }}"
+    remote_src: yes
+  when: not openmpi_installed.stat.exists
+
+- name: Configure OpenMPI with CFLAGS
+  command: "./configure --prefix={{ ansible_env.HOME }}/opt/openmpi"
+  args:
+    chdir: "{{ ansible_env.HOME }}/openmpi-4.1.4"
+  environment:
+    CFLAGS: "-Ofast -march=native -mtune=native"
+  when: not openmpi_installed.stat.exists
+
+- name: Compile OpenMPI
+  make:
+    chdir: "{{ ansible_env.HOME }}/openmpi-4.1.4"
+    jobs: "{{ ansible_processor_cores | default(6) }}"
+  when: not openmpi_installed.stat.exists
+
+- name: Install OpenMPI
+  make:
+    chdir: "{{ ansible_env.HOME }}/openmpi-4.1.4"
+    target: install
+  when: not openmpi_installed.stat.exists
