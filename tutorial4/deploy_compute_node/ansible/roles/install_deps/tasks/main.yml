@@ -1,0 +1,39 @@
+- name: Install dependencies on Debian-based systems
+  apt:
+    name:
+      - git
+      - make
+      - gcc
+      - gfortran
+      - build-essential 
+      - hwloc 
+      - libhwloc-dev 
+      - libevent-dev 
+      - wget
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install dependencies on RedHat-based systems
+  dnf:
+    name:
+      - "@Development Tools"
+      - git
+      - make
+      - gcc
+      - gfortran
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Install dependencies on Pacman-based systems
+  pacman:
+    name:
+      - base-devel
+      - gfortran
+      - git
+      - gcc
+      - wget
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Archlinux"
