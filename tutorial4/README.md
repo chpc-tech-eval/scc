@@ -1,4 +1,4 @@
-# Student Cluster Competition - Tutorial 4
+![image](https://github.com/user-attachments/assets/df15dea3-38af-4e1d-9ba4-a1a8488c8bb3)# Student Cluster Competition - Tutorial 4
 
 ## Table of Contents
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
@@ -1473,6 +1473,8 @@ roles/run_hpl/tasks/main.yml:
 Push it to the repository that's linked to CIrclCI
 
 There are some files that need to be changed:
+
+The `main.tf` needs to be updated to retrieve the IP address from the deployed instance:
 ```provider "openstack" {
   cloud = "openstack"
 }
@@ -1494,6 +1496,16 @@ output "instance_ip" {
   description = "The public IP address of the instance"
 }
 ```
+
+The `.circle/config.yml` needs to be updated so that the newly deployed compute node IP is saved to a shared workspace so it can be shared across workflows in CircleCI.
+
+we also added another workflow to run the Anisle playbook. This workflow makes sure to add a SSH fingerprint so that it can be fully automated to get the fingerprint. 
+
+Login to the cluster. Type this command:
+
+```cat ~/.ssh/<your private ssh key>```
+
+Copy and paste these contents into the CircleCI SSH key.
 ```
 version: 2.1
 
@@ -1551,7 +1563,7 @@ jobs:
       # Add SSH keys managed by CircleCI
       - add_ssh_keys:
           fingerprints:
-            - "SHA256:SHIa6LYWWEELTDhxKtNh5rv53Zx+8hj4y/kGipCJ0Yg" <update this later>
+            - "<your fingerprint>" 
 
       # Install Dependencies
       - run:
@@ -1577,45 +1589,45 @@ jobs:
             scp -r ./ansible ${SSH_USER}@${SSH_HOST}:~/ || { echo "SCP failed"; exit 1; }
 
       - run:
-          name: Transfer fix_ubuntu.sh to Head Node
+          name: Transfer fix_apt.sh and setup_nfs.sh to Head Node
           command: |
-            scp fix_ubuntu.sh ${SSH_USER}@${SSH_HOST}:~/ || { echo "SCP to head node failed"; exit 1; }
+            scp fix_ubuntu.sh setup_nfs.sh ${SSH_USER}@${SSH_HOST}:~/ || { echo "SCP to head node failed"; exit 1; }
       
       - run:
-          name: Transfer fix_ubuntu.sh to Compute Node
+          name: Transfer fix_apt.sh and setup_nfs.sh to Compute Node
           command: |
-            ssh ${SSH_USER}@${SSH_HOST} "scp ~/fix_ubuntu.sh ${SSH_USER}@${INSTANCE_IP}:~/" || { echo "SCP to compute node failed"; exit 1; }
+            ssh ${SSH_USER}@${SSH_HOST} "scp ~/fix_apt.sh setup_nfs.sh ${SSH_USER}@${INSTANCE_IP}:~/" || { echo "SCP to compute node failed"; exit 1; }
       
       - run:
-          name: Execute fix_ubuntu.sh on Remote Instance
+          name: Execute fix_apt.sh on Remote Instance
           command: |
             ssh ${SSH_USER}@${SSH_HOST} "ssh ${SSH_USER}@${INSTANCE_IP} 'sudo bash ~/fix_ubuntu.sh'" || { echo "Execution of script failed"; exit 1; }
+
+      - run:
+          name: Execute setup_nfs.sh on Remote Instance
+          command: |
+            ssh ${SSH_USER}@${SSH_HOST} "ssh ${SSH_USER}@${INSTANCE_IP} 'sudo bash ~/setup_nfs.sh ${NFS_SERVER_IP}'" || { echo "Execution of script failed"; exit 1; }
                 
       # Deploy and Run Ansible Playbook
       - run:
           name: Deploy and Run Ansible Playbook
           command: |
-            ssh ${SSH_USER}@${SSH_HOST} "cd ~/ansible && ansible-playbook ${PLAYBOOK_FILE} -i ${INVENTORY_FILE} --extra-vars "target_host="${INSTANCE_IP}" || { echo "Ansible playbook failed"; exit 1; }
+            ssh ${SSH_USER}@${SSH_HOST} "cd ~/ansible && ansible-playbook playbooks/${PLAYBOOK_FILE} --extra-vars "target_host="${INSTANCE_IP}" || { echo "Ansible playbook failed"; exit 1; }
 
-workflows:
-  combined-deployment:
-    jobs:
-      - deploy-infrastructure
-      - deploy-ansible-playbook:
-          requires:
-            - deploy-infrastructure
-
-#trigger
 ```
+Add these 2 new files into your repo.
 
-fix_ubuntu.sh
+`fix_apt.sh` you can delete this file if you are not using ubuntu or are using a newer version that doesnt use mantic
 
 ```#!/bin/bash
 
-echo "Changing NeedRestart behavior"
+# Fix NeedRestart behavior to automatically restart services
+echo "Changing NeedRestart behavior..."
 sudo sed -i 's/#\$nrconf{restart} = "i";/\$nrconf{restart} = "a";/' /etc/needrestart/needrestart.conf
 
-sudo rm /etc/apt/source.list
+# Update the apt sources list for the Mantic repository
+echo "Updating apt sources..."
+sudo rm -f /etc/apt/sources.list
 
 sudo tee /etc/apt/sources.list <<EOF
 deb http://old-releases.ubuntu.com/ubuntu mantic main restricted universe multiverse
@@ -1624,16 +1636,42 @@ deb http://old-releases.ubuntu.com/ubuntu mantic-updates main restricted univers
 deb http://old-releases.ubuntu.com/ubuntu mantic-backports main restricted universe multiverse
 EOF
 
+# Update and upgrade the system
+echo "Updating and upgrading the system..."
 sudo apt-get update
 sudo NEEDRESTART_MODE=a apt-get dist-upgrade --yes
 
+echo "System fix completed."
+
+```
+This file setups your nfs on the newly deployed node:
+```
+#!/bin/bash
+
+# Ensure an NFS IP is provided
+if [ -z "$1" ]; then
+  echo "Usage: $0 <NFS_SERVER_IP>"
+  exit 1
+fi
+
+NFS_SERVER_IP="$1"
+
+# Install NFS common utilities
+echo "Installing NFS utilities..."
 sudo apt update
 sudo NEEDRESTART_MODE=a apt install nfs-common --yes
 
-sudo mount -t nfs 10.100.50.172:/home /home
+# Mount the NFS share
+echo "Mounting NFS share from $NFS_SERVER_IP..."
+sudo mount -t nfs ${NFS_SERVER_IP}:/home /home
 
+if [ $? -eq 0 ]; then
+  echo "NFS setup completed successfully."
+else
+  echo "NFS setup failed."
+  exit 1
+fi
 ```
-
 
 
 # Slurm Scheduler and Workload Manager
