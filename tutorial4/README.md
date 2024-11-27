@@ -1889,8 +1889,9 @@ echo "System fix completed."
 ```
 
 
-You can skip over this file and remove this section if you are using a different OS.
-```      - run:
+You can skip over this file and remove this section from `config.yml` if you are using a different OS.
+```
+      - run:
           name: Execute fix_apt.sh on Remote Instance
           command: |
             ssh ${SSH_USER}@${SSH_HOST} "ssh ${SSH_USER}@${INSTANCE_IP} 'sudo bash ~/fix_apt.sh'" || { echo "Execution of script failed"; exit 1; }
