@@ -1914,9 +1914,10 @@ else
 fi
 ```
 
-When you push all these files to the repository linked to CircleCI it will redeploy the node and then run the Ansible playbook which will run HPL. You can view the run of HPL by using `btop` on all the nodes.
 
- 
+When you push all these files to the repository linked to CircleCI it will redeploy the node and then run the Ansible playbook which will run HPL. You can view the run of HPL by using `btop` on all the nodes.  
+
+
 <p align="center"><img alt="HPL on btop" src="./resources/hpl_btop.png" width=900 /></p>
 
 
