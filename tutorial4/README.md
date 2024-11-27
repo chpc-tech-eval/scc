@@ -1680,8 +1680,8 @@ The `main.tf` needs to be updated to retrieve the IP address from the deployed i
 }
 resource "openstack_compute_instance_v2" "terraform-demo-instance" {
   name = "<instance_name>"
-  image_id = "your_image_id"
-  flavor_id = "<your_flavour_id"
+  image_id = "<your_image_id>"
+  flavor_id = "<your_flavour_id>"
   key_pair = "<your_key>"
   security_groups = ["default", "scc24_sg"]
 
@@ -1831,24 +1831,24 @@ jobs:
             scp -r ./ansible ${SSH_USER}@${SSH_HOST}:~/ || { echo "SCP failed"; exit 1; }
 
       - run:
-          name: Transfer fix_apt.sh and setup_nfs.sh to Head Node
+          name: Transfer scripts to Head Node
           command: |
-            scp fix_apt.sh setup_nfs.sh ${SSH_USER}@${SSH_HOST}:~/ || { echo "SCP to head node failed"; exit 1; }
-
+            scp -r ./scripts/ ${SSH_USER}@${SSH_HOST}:~/ || { echo "SCP to head node failed"; exit 1; }
+      
       - run:
-          name: Transfer fix_apt.sh and setup_nfs.sh to Compute Node
+          name: Transfer scripts to Compute Node
           command: |
-            ssh ${SSH_USER}@${SSH_HOST} "scp ~/fix_apt.sh ~/setup_nfs.sh ${SSH_USER}@${INSTANCE_IP}:~/" || { echo "SCP to compute node failed"; exit 1; }
-
+            ssh ${SSH_USER}@${SSH_HOST} "scp -r ~/scripts ${SSH_USER}@${INSTANCE_IP}:~/" || { echo "SCP to compute node failed"; exit 1; }
+      
       - run:
           name: Execute fix_apt.sh on Remote Instance
           command: |
-            ssh ${SSH_USER}@${SSH_HOST} "ssh ${SSH_USER}@${INSTANCE_IP} 'sudo bash ~/fix_apt.sh'" || { echo "Execution of script failed"; exit 1; }
+            ssh ${SSH_USER}@${SSH_HOST} "ssh ${SSH_USER}@${INSTANCE_IP} 'sudo bash ~/scripts/fix_apt.sh'" || { echo "Execution of script failed"; exit 1; }
 
       - run:
           name: Execute setup_nfs.sh on Remote Instance
           command: |
-            ssh ${SSH_USER}@${SSH_HOST} "ssh ${SSH_USER}@${INSTANCE_IP} 'sudo bash ~/setup_nfs.sh ${NFS_SERVER_IP}'" || { echo "Execution of script failed"; exit 1; }
+            ssh ${SSH_USER}@${SSH_HOST} "ssh ${SSH_USER}@${INSTANCE_IP} 'sudo bash ~/scripts/setup_nfs.sh ${NFS_SERVER_IP}'" || { echo "Execution of script failed"; exit 1; }
 
       # Deploy and Run Ansible Playbook
       - run:
@@ -1935,6 +1935,9 @@ When you push all these files to the repository linked to CircleCI it will redep
 
 
 > Remember you need to delete the instance before you can redeploy the node using CircleCI
+
+
+> The `deploy_compute_node` directory can be used to illustrate how these steps can be implemented in practice. 
 
 
 # Slurm Scheduler and Workload Manager
