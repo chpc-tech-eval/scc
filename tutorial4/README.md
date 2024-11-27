@@ -1652,7 +1652,7 @@ You can push the `ansible` folder to the GitHub repository after all of these fi
 
 The general structure of the CircleCI `config.yml` and Terraform files can be kept the same. Some changes do need to be made so that it works with the Ansible playbook.
 
-After these changes the file structure will ook something like this:
+After these changes the file structure will look something like this:
 ```
 .circleci/
     └── config.yml
@@ -1661,25 +1661,27 @@ ansible/
     └── inventory/
     └── playbooks/
     └── roles/
-├── clouds.yaml
-├── fix_apt.sh
-├── main.tf
-├── providers.tf
-└── setup_nfs.sh
+├── scripts
+    └── fix_apt.sh
+    └── setup_nfs.sh
+├── terrafrom
+    └── clouds.yaml
+    └── main.tf
+    └── providers.tf
 ```
 
 The files we need to change are as follows.
 
 ### main.tf
-The `main.tf` needs to be updated to retrieve the IP address from the deployed instance so that we can pass it into our `inventory.yml`.
+The `main.tf` needs to be updated to retrieve the IP address from the deployed instance so that we can pass it into our `inventory.yml`. You need to speficiy your new nodes`name`, `image_id`(eg. 97991be4-1df0-4502-9370-55e9b624592e), `flavour_id` (eg. 35617c38-b1ce-4d49-894e-74ce7ddcdc26) and `key_pair`.
 
 ```provider "openstack" {
   cloud = "openstack"
 }
 resource "openstack_compute_instance_v2" "terraform-demo-instance" {
   name = "<instance_name>"
-  image_id = "97991be4-1df0-4502-9370-55e9b624592e"
-  flavor_id = "35617c38-b1ce-4d49-894e-74ce7ddcdc26"
+  image_id = "your_image_id"
+  flavor_id = "<your_flavour_id"
   key_pair = "<your_key>"
   security_groups = ["default", "scc24_sg"]
 
