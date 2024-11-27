@@ -36,6 +36,11 @@
       1. [install_hpl](#install_hpl)
       1. [run_hpl](#run_hpl)
    1. [CircleCI Integration](#circleci-integration)
+      1. [main.tf](#maintf)
+      1. [config.yml](#configyml)
+      1. [Set Up SSH Key](#set-up-ssh-key)
+      1. [fix_apt.sh](#fix_aptsh)
+      1. [setup_nfs.sh](#setup_nfssh)
 1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
    1. [Prerequisites](#prerequisites)
    1. [Head Node Configuration (Server)](#head-node-configuration-server)
@@ -1696,7 +1701,7 @@ The `config.yml` needs to be updated to include:
 - Set up a workspace so we can share this information across workflows
 - NFS is set up so that the playbook runs seamlessly across nodes
 
-We also need to set up an SSH fingerprint on CircleCI so we can `ssh` seamlessly between nodes.
+We also need to set up an SSH fingerprint on CircleCI to `ssh` seamlessly between nodes.
 
 #### Set Up SSH Key
 Go to your workflow and go to Project Settings.  
@@ -1719,24 +1724,24 @@ cat ~/.ssh/<your private ssh key>
 ```  
 
 
-<p align="center"><img alt="Cluster ssh key" src="./resources/privateKey.jpg" width=700 /></p>  
+<p align="center"><img alt="Cluster ssh key" src="./resources/privateKey.jpg" width=900 /></p>  
 
 
 Copy and paste these contents into the CircleCI Private Key. 
 
 
-<img alt="SSH key" src="./resources/AddSSHKeys2.jpg" width=500 />  
+<p align="center"><img alt="SSH key" src="./resources/AddSSHKeys2.jpg" width=500 /></p> 
 
 
 Your SSH fingerprint will now be set up. 
 
 
-<img alt="SSH key" src="./resources/AddSSHKeys.jpg" width=500 />
+<p align="center"><img alt="SSH key" src="./resources/fingerprint.png" width=900 /></p>
 
 
-`config.yml`
+`config.yml`:
 
-In `config.yml` make sure to change the variables under environment: `SSH_USER`, `SSH_HOST`, `NFS_SERVER_IP` and <your_fingerprint_from_CircleCI>(eg. SHA256:SHIa6LYWWEELTDhxKtNh5rv53Zx+8hj4y/kGipCJ0Yg).  
+In `config.yml` make sure to change the variables under environment: `SSH_USER`, `SSH_HOST`, `NFS_SERVER_IP` and `<your_fingerprint_from_CircleCI>`(eg. SHA256:SHIa6LYWWEELTDhxKtNh5rv53Zx+8hj4y/kGipCJ0Yg).  
 This `config.yml` is specifically for Unbuntu. You can find the one for DNF/YUM [here](tutorial4/resources/config.yml). The `fix_apt.sh` can also be skipped over and instances of it in `config.yml` can be removed. 
 
 ```
@@ -1855,7 +1860,7 @@ This file fixes the APT for certain versions of Ubuntu.
 
 ```#!/bin/bash
 
-# Fix NeedRestart behavior to automatically restart services
+# Fix NeedRestart behaviour to automatically restart services
 echo "Changing NeedRestart behavior..."
 sudo sed -i 's/#\$nrconf{restart} = "i";/\$nrconf{restart} = "a";/' /etc/needrestart/needrestart.conf
 
@@ -1879,7 +1884,7 @@ echo "System fix completed."
 
 ```
 ### setup_nfs.sh
-This file sets up NFS on the newly deployed node.
+This file sets up NFS on the newly deployed node. Itis for Ubuntu specifically, you can find the RHEL one [here](tutorial4/resources/setup_nfs.sh).
 
 ```
 #!/bin/bash
@@ -1912,7 +1917,7 @@ fi
 When you push all these files to the repository linked to CircleCI it will redeploy the node and then run the Ansible playbook which will run HPL. You can view the run of HPL by using `btop` on all the nodes.
 
  
-<img alt="HPL on btop" src="./resources/hpl_btop.png" width=500 />
+<p align="center"><img alt="HPL on btop" src="./resources/hpl_btop.png" width=900 /></p>
 
 
 > Remember you need to delete the instance before you can redeploy the node using CircleCI
