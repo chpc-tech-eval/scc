@@ -1256,7 +1256,7 @@ ansible/
 It is structured into distinct roles for modularity and ease of maintenance, with each role handling specific tasks such as installing dependencies, BLAS, MPI, and HPL itself, as well as running the benchmark. The inventory defines the target hosts, and playbooks orchestrate the execution of these roles.
 
 ### ansible.cfg
-The `ansible.cfg` file is a configuration file for Ansible and allows the user to set global and local configurations for how ansible is required to operate. You need to change the `private_key_file` to point to your private key.
+The `ansible.cfg` file is a configuration file for Ansible and allows the user to set global and local configurations for how ansible is required to operate. You need to change `remote_user` to your user and `private_key_file` to point to your private key.
 
 `ansible.cfg`:
 
@@ -1286,6 +1286,8 @@ all:
         compute1:
         compute2:
 ```
+
+All the files after this point in the Ansible Playbook set-up should work across all systems without any changes. 
 
 ### install_hpl.yml
 The `install_hpl.yml` file is an Ansible playbook that orchestrates the setup and execution of the HPL benchmark. It should be set up as follows:
