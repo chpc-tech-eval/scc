@@ -1,0 +1,13 @@
+all:
+  hosts:
+    headnode:
+      ansible_host: 10.100.50.172
+    compute1:
+      ansible_host: 10.100.50.210
+    compute2:
+      ansible_host: "{{ target_host }}"
+  children:
+    compute:
+      hosts:
+        compute1:
+        compute2:

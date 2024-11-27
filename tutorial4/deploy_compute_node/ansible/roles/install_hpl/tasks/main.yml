@@ -1,0 +1,111 @@
+# roles/install_hpl/tasks/main.yml
+---
+- name: Remove hpl and hpl-2.3 directories
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/{{ item }}"
+    state: absent
+  loop:
+    - hpl
+    - hpl-2.3
+
+- name: Download HPL source files
+  get_url:
+    url: "http://www.netlib.org/benchmark/hpl/hpl-2.3.tar.gz"
+    dest: "{{ ansible_env.HOME }}/hpl-2.3.tar.gz"
+    mode: '0755'
+
+- name: Create destination directory for unzipping
+  file:
+    path: "{{ ansible_env.HOME }}/hpl-2.3"
+    state: directory
+    mode: '0755'
+
+- name: Unzip the downloaded file
+  unarchive:
+    src: "{{ ansible_env.HOME }}/hpl-2.3.tar.gz"
+    dest: "{{ ansible_env.HOME }}"
+    remote_src: yes
+
+- name: Rename folder using mv command
+  command: mv "{{ ansible_env.HOME }}/hpl-2.3" "{{ ansible_env.HOME }}/hpl"
+
+- name: Copy Makefile template
+  copy:
+    src: "{{ ansible_env.HOME }}/hpl/setup/Make.Linux_PII_CBLAS_gm"  # Path to the Makefile on the head node
+    dest: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"  # Destination path where you want to copy it
+    mode: '0644'
+
+- name: Configure Makefile ARCH variable
+  replace:
+    path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+    regexp: '^ARCH\s*=\s*.*'
+    replace: 'ARCH = compile_BLAS_MPI'
+
+- name: Set MPdir variable
+  replace:
+    path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+    regexp: '^MPdir\s*=.*'
+    replace: 'MPdir        = $(HOME)/opt/openmpi'
+
+- name: Set MPinc variable
+  replace:
+    path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+    regexp: '^MPinc\s*=.*'
+    replace: 'MPinc        = -I$(MPdir)/include'
+
+- name: Set MPlib variable
+  replace:
+    path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+    regexp: '^MPlib\s*=.*'
+    replace: 'MPlib        = $(MPdir)/lib/libmpi.so'
+
+- name: Set LAdir variable
+  replace:
+    path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+    regexp: '^LAdir\s*=.*'
+    replace: 'LAdir        = $(HOME)/opt/openblas'
+
+- name: Set LAinc variable
+  replace:
+    path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+    regexp: '^LAinc\s*=.*'
+    replace: 'LAinc        ='
+
+- name: Set LAlib variable
+  replace:
+    path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+    regexp: '^LAlib\s*=.*'
+    replace: 'LAlib        = $(LAdir)/lib/libopenblas.a -lm'
+
+- name: Set CC variable
+  replace:
+    path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+    regexp: '^CC\s*=.*'
+    replace: 'CC           = mpicc'
+
+- name: Set CCFLAGS variable
+  replace:
+    path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+    regexp: '^CCFLAGS\s*=.*'
+    replace: 'CCFLAGS      = $(HPL_DEFS) -O3 -march=native -mtune=native -fopenmp -fomit-frame-pointer -funroll-loops -W -Wall'
+
+- name: Set LDFLAGS variable
+  replace:
+    path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+    regexp: '^LDFLAGS\s*=.*'
+    replace: 'LDFLAGS      = -O3 -fopenmp'
+
+- name: Set LINKER variable
+  replace:
+    path: "{{ ansible_env.HOME }}/hpl/Make.compile_BLAS_MPI"
+    regexp: '^LINKER\s*=.*'
+    replace: 'LINKER       = $(CC)'
+
+- name: Compile HPL
+  shell: |
+    export PATH=~/opt/openmpi/bin:~/opt/openblas:$PATH
+    export LD_LIBRARY_PATH=~/opt/openmpi/lib:~/opt/openblas/lib:$LD_LIBRARY_PATH
+    export MPI_HOME=~/opt/openmpi
+    make arch=compile_BLAS_MPI
+  args:
+    chdir: "{{ ansible_env.HOME }}/hpl"  # Directory containing the Makefile
