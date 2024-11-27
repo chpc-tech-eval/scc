@@ -112,5 +112,3 @@ workflows:
       - deploy-ansible-playbook:
           requires:
             - deploy-infrastructure
-
-#run bastard
