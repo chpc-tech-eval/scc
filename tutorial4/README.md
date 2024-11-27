@@ -25,8 +25,17 @@
    1. [Create `.circleci/config.yml` File and `push` Project to GitHub](#create-circleciconfigyml-file-and-push-project-to-github)
    1. [Create CircleCI Account and Add Project](#create-circleci-account-and-add-project)
 1. [Automating HPL Runs Using Ansible Playbooks and CircleCI](#automating-hpl-runs-using-ansible-playbooks-and-circleci)
-   1. [Installation](#installation-and-configs)
-   2. [Ansible Configurations](#ansible-configurations)
+   1. [Installing Ansible](#installing-ansible)
+   1. [Setting Up the Ansible Playbook](#setting-up-the-ansible-playbook)
+      1. [ansible.cfg](#ansiblecfg)
+      1. [inventory.yml](#inventoryyml)
+      1. [install_hpl.yml](#install_hplyml)
+      1. [install_deps](#install_deps)
+      1. [install_blas](#install_blas)
+      1. [install_mpi](#install_mpi)
+      1. [install_hpl](#install_hpl)
+      1. [run_hpl](#run_hpl)
+   1. [CircleCI Integration](#circleci-integration)
 1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
    1. [Prerequisites](#prerequisites)
    1. [Head Node Configuration (Server)](#head-node-configuration-server)
@@ -1593,7 +1602,7 @@ The `run_hpl` role automates the execution of the HPL benchmark across the clust
       0            L1 in (0=transposed,1=no-transposed) form
       0            U  in (0=transposed,1=no-transposed) form
       1            Equilibration (0=no,1=yes)
-      8            memory alignment in double (> 0)
+      8            memory ment in double (> 0)
 
 - name: Create a hostfile for mpirun
   copy:
@@ -1693,13 +1702,13 @@ We also need to set up an SSH fingerprint on CircleCI so we can `ssh` seamlessly
 Go to your workflow and go to Project Settings.  
 
 
-<img alt="ProjectSettings" src="./resources/project_settings.png" width=900 />  
+<p align="center"><img alt="ProjectSettings" src="./resources/project_settings.png" width=900 /></p>
 
 
-In project settings go to SSH Keys and Add Key.  
+In project settings go to SSH Keys and click the Add Key button.  
 
 
-<img alt="Settings" src="./resources/CircleCIinterface.jpg" width=300 />  
+<p align="center"><img alt="Settings" src="./resources/settings.png" width=300 /> </p>
 
 
 Login to the cluster. Type this command to get your Private Key.
@@ -1710,7 +1719,7 @@ cat ~/.ssh/<your private ssh key>
 ```  
 
 
-<img alt="Cluster ssh key" src="./resources/privateKey.jpg" width=500 /></p>  
+<p align="center"><img alt="Cluster ssh key" src="./resources/privateKey.jpg" width=700 /></p>  
 
 
 Copy and paste these contents into the CircleCI Private Key. 
