@@ -1742,7 +1742,7 @@ Your SSH fingerprint will now be set up.
 `config.yml`:
 
 In `config.yml` make sure to change the variables under environment: `SSH_USER`, `SSH_HOST`, `NFS_SERVER_IP` and `<your_fingerprint_from_CircleCI>`(eg. SHA256:SHIa6LYWWEELTDhxKtNh5rv53Zx+8hj4y/kGipCJ0Yg).  
-This `config.yml` is specifically for Unbuntu. You can find the one for DNF/YUM [here](tutorial4/resources/config.yml). The `fix_apt.sh` can also be skipped over and instances of it in `config.yml` can be removed. 
+This `config.yml` is specifically for Unbuntu. You can find the one for DNF/YUM [here](resources/config.yml). The `fix_apt.sh` can also be skipped over and instances of it in `config.yml` can be removed. 
 
 ```
 version: 2.1
@@ -1884,7 +1884,7 @@ echo "System fix completed."
 
 ```
 ### setup_nfs.sh
-This file sets up NFS on the newly deployed node. Itis for Ubuntu specifically, you can find the RHEL one [here](tutorial4/resources/setup_nfs.sh).
+This file sets up NFS on the newly deployed node. Itis for Ubuntu specifically, you can find the RHEL one [here](resources/setup_nfs.sh).
 
 ```
 #!/bin/bash
