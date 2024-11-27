@@ -1264,7 +1264,7 @@ The `ansible.cfg` file is a configuration file for Ansible and allows the user t
 [defaults]
 inventory = inventory/inventory.yml
 roles_path = roles
-remote_user = ubuntu
+remote_user = <your_user>
 private_key_file = </your/path/to/key>
 ```
 
