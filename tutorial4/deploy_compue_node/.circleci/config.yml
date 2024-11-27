@@ -10,17 +10,17 @@ jobs:
       # Initialize Terraform
       - run:
           name: Terraform Init
-          command: terraform init
+          command: cd terraform && terraform init
 
       # Apply Terraform Configuration
       - run:
           name: Terraform Apply
-          command: terraform apply -auto-approve
+          command: cd terraform && terraform apply -auto-approve
 
       - run:
           name: Get Instance IP Address
           command: |
-            INSTANCE_IP=$(terraform output -raw instance_ip)
+            INSTANCE_IP=$(cd terraform && terraform output -raw instance_ip)
             echo "Instance IP Address: $INSTANCE_IP"
             echo "$INSTANCE_IP" > instance_ip.txt
 
@@ -80,24 +80,24 @@ jobs:
             scp -r ./ansible ${SSH_USER}@${SSH_HOST}:~/ || { echo "SCP failed"; exit 1; }
 
       - run:
-          name: Transfer fix_apt.sh and setup_nfs.sh to Head Node
+          name: Transfer scripts to Head Node
           command: |
-            scp fix_apt.sh setup_nfs.sh ${SSH_USER}@${SSH_HOST}:~/ || { echo "SCP to head node failed"; exit 1; }
+            scp -r ./scripts/ ${SSH_USER}@${SSH_HOST}:~/ || { echo "SCP to head node failed"; exit 1; }
       
       - run:
           name: Transfer fix_apt.sh and setup_nfs.sh to Compute Node
           command: |
-            ssh ${SSH_USER}@${SSH_HOST} "scp ~/fix_apt.sh ~/setup_nfs.sh ${SSH_USER}@${INSTANCE_IP}:~/" || { echo "SCP to compute node failed"; exit 1; }
+            ssh ${SSH_USER}@${SSH_HOST} "scp -r ~/scripts ${SSH_USER}@${INSTANCE_IP}:~/" || { echo "SCP to compute node failed"; exit 1; }
       
       - run:
           name: Execute fix_apt.sh on Remote Instance
           command: |
-            ssh ${SSH_USER}@${SSH_HOST} "ssh ${SSH_USER}@${INSTANCE_IP} 'sudo bash ~/fix_apt.sh'" || { echo "Execution of script failed"; exit 1; }
+            ssh ${SSH_USER}@${SSH_HOST} "ssh ${SSH_USER}@${INSTANCE_IP} 'sudo bash ~/scripts/fix_apt.sh'" || { echo "Execution of script failed"; exit 1; }
 
       - run:
           name: Execute setup_nfs.sh on Remote Instance
           command: |
-            ssh ${SSH_USER}@${SSH_HOST} "ssh ${SSH_USER}@${INSTANCE_IP} 'sudo bash ~/setup_nfs.sh ${NFS_SERVER_IP}'" || { echo "Execution of script failed"; exit 1; }
+            ssh ${SSH_USER}@${SSH_HOST} "ssh ${SSH_USER}@${INSTANCE_IP} 'sudo bash ~/scripts/setup_nfs.sh ${NFS_SERVER_IP}'" || { echo "Execution of script failed"; exit 1; }
                 
       # Deploy and Run Ansible Playbook
       - run:
