@@ -1064,7 +1064,7 @@ echo 'net.ipv4.ip_forward=1' | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 ```
 
-2. Ensure that the `policy` for your `forward` chain is set to `accept` (Explanation in the next section.)
+2. Ensure that the `policy` for your `hn_forward` chain is set to `accept` (Explanation in the next [section](#firewall-configuration)).
 
 ### 2. Compute Node Setup
 
