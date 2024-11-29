@@ -1111,7 +1111,7 @@ At certain points in this process, the kernel allows you interact with the packe
 2. `Input` - packets sent to local processes.
 3. `Forward` - packets passing through (not for local).
 4. `Onput` - packets coming from local processes.
-5. `Postrouting` - after the routing ? before packets leave.
+5. `Postrouting` - after the routing / before packets leave.
 
 ![](./resources/netfilter_hook_diagram.png)
 
