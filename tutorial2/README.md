@@ -1092,7 +1092,6 @@ You should see that the packet travels through your head node, then to gateway a
 
 ![](Pasted%20image%2020241129125506.png)
 
----
 
 ## Firewall Configuration
 
@@ -1120,7 +1119,6 @@ At certain points in this process, the kernel allows you interact with the packe
 1. Copy our rules in our `hn_input` chain into our `hn_forward` chain (make sure it has a accept policy)
 2. Change the `hook` (and name) in our `hn_input` chain from `input` to `prerouting` (Not preferred, rather have a separate chain).
 
----
 ## DNS Configuration
 
 Now that you have the compute node sharing the same firewall rules as the head node, you will also want to resolve DNS lookups (i.e. find the IP of "google.com") the same way as  the head node.  You will setup a DNS server on the head node so that you can sync the DNS resolution servers amongst the nodes.
@@ -1194,7 +1192,6 @@ nslookup google.com
 > [!TIP]
 >You will know if the DNS resolution via the head node has worked if the first line of the output reads: `Server: <head-node-ip>`
 
----
 
 ## Additional Security Hardening Strategies
 
@@ -1279,4 +1276,3 @@ Status
 ```sh
 sudo fail2ban-client status sshd
 ```
----
