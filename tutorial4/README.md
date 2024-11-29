@@ -27,6 +27,7 @@
     1. [Prerequisites](#prerequisites)
     1. [Head Node Configuration (Server)](#head-node-configuration-server)
     1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
+    1. [Integration of Slurm Cluster Monitoring with Grafana](#integration-of-slurm-cluster-monitoring-with-grafana)
 1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
     1. [Protein Visualization](#protein-visualization)
     1. [Benchmark 2 (1.5M Water)](#benchmark-2-15m-water)
