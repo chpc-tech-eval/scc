@@ -1098,7 +1098,7 @@ You should see that the packet travels through your head node, then to gateway a
 You now have routed the compute node traffic through your head node, but it is not yet hitting the firewall rules you have set up. To know why you need know about how packets are processed in Linux.
 
 >[!NOTE]
-> If you already know about netfilter hooks, you can skip to the actual configuration changes [here](#rerouting-firewall-config). <!-- the anchor link only works in Github -->
+> If you already know about netfilter hooks, you can skip to the actual configuration changes at the end [here](#rerouting-firewall-config). <!-- the anchor link only works in Github -->
 
 As packets pass through a Linux system, the Linux kernel makes decisions on how to process and the route each packet. There are 3 ways a packet can traverses:
 
@@ -1114,7 +1114,7 @@ At certain points in this process, the kernel allows you interact with the packe
 5. `Postrouting` - after the routing ? before packets leave.
 
 ![](./resources/netfilter_hook_diagram.png)
-   
+
 <a name="rerouting-firewall-config"></a>Since the traffic from the compute node would be passing our forward hook and not the input hook, you can either:
 1. Copy our rules in our `hn_input` chain into our `hn_forward` chain (make sure it has a accept policy)
 2. Change the `hook` (and name) in our `hn_input` chain from `input` to `prerouting` (Not preferred, rather have a separate chain).
