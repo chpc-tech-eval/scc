@@ -35,7 +35,17 @@ This tutorial will conclude with you downloading, installing and running the Hig
     1. [Running Basic Linux Commands and Services](#running-basic-linux-commands-and-services)
 1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
     1. [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
-1. [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](#install-compile-and-run-high-performance-linpack-hpl-benchmark)
+1. [RPM and Run High Performance LinPACK (HPL) Benchmark](#install-compile-and-run-high-performance-linpack-hpl-benchmark)
+1. [Utlizing The CPUFreq Subsystem Using CPU Power](#utlizing-the-CPUFreq-Subsystem-using-cpu-power)
+    1. [Introduction to the CPUFreq Subsystem](#utlizing-the-CPUFreq-Subsystem-using-cpu-power)
+    1. [CPU Power States Overview](#cpu-power-states-overview)
+    1. [Understanding CPU Governors and Frequency Scaling](#viewing-the-scaling-governors-and-scaling-drivers-available-on-your-system)
+    1. [Setting Up CPUFreq Utilities](#setting-cpu-frequency)
+    1. [CPU Governors for Performance or Power Efficiency](#governors-in-the-linux-kernel)
+    1. [Adjusting CPU Frequency Limits for Specific Use Cases](#manually-limit-the-frequency-range)
+    1. [Monitoring Performance, Power Consumption and Customizing Governors](#customizing-governors)
+    1. [Tips and Troubleshooting](#tips-and-troubleshooting)
+
 
 <!-- markdown-toc end -->
 
@@ -62,7 +72,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
   - [ ] Editing Makefiles,
   - [ ] Compiling Sourcefiles to produce an Executable Binary, and
   - [ ] Understanding the basics of the Linux Shell Environment.
-
+  - [ ] Undertanding cpufreq using cpupower
 # Network Primer
 
 At the core of High Performance Computing (HPC) is networking. Something as simple as browsing the internet from either your cell phone or the workstation in front of you, involves the transfer and exchange of information between many different networks. Each resource or service connected to the internet is made available through a unique address and network port. For example, https://www.google.co.za:443 is the [Uniform Resource Locator (URL)](https://en.wikipedia.org/wiki/URL) used to uniquely identify Google's search engine page on the South African [co.za]. [domain](https://en.wikipedia.org/wiki/Domain_name). The [443] is the [port number](https://en.wikipedia.org/wiki/Port_(computer_networking)) which in this instance lets you know that you're connecting to a secure [https](https://en.wikipedia.org/wiki/HTTPS) server.
@@ -588,7 +598,7 @@ ls $HOME
 which ls
 ```
 
-# Install, Compile and Run High Performance LinPACK (HPL) Benchmark
+# RPM and Run High Performance LinPACK (HPL) Benchmark
 
 HPL is a crucial tool in the HPC community for benchmarking and comparing the performance of supercomputing systems. The benchmark is a software package designed to solve a dense system of linear equations using double-precision floating-point arithmetic. It is commonly used to measure the performance of supercomputers, providing a standardized way to assess their computational power.
 
@@ -729,3 +739,132 @@ You will now install and run HPL on your **head node**.
 Congratulations!
 
 You have successfully completed you first HPL benchmark.
+
+# Utlizing The CPUFreq Subsystem Using CPU Power
+
+CPU performance scaling enables the operating system to scale the CPU frequency up or down in order to save power or improve performance. Scaling can be done automatically in response to system load, adjust itself in response to ACPI events, or be manually changed by user space programs. Our tools of choice is `cpupower`.
+
+ *`cpupower` comes default on many linux distributions*
+
+The Linux kernel offers CPU performance scaling via the CPUFreq subsystem, which defines two layers of abstraction:<br />
+* **Scaling Governors** implement the algorithms to compute the desired CPU frequency, potentially based off of the system's needs.<br />
+
+* **Scaling Drivers** interact with the CPU directly, enacting the desired frequencies that the current governor is requesting.<br />
+
+Additionally, modern CPUs support:
+
+* **Power Performance States (P-States)** provide a way to scale the frequency and voltage at which the processor runs so as to reduce the power consumption of the CPU. <br >
+
+* **Processor idle sleep states (ACPI C states)** are states when the CPU has reduced or turned off selected functions.<br />
+## CPU Power States Overview
+
+- **P-States (Performance States)**: Adjust the frequency and voltage of the CPU to optimize performance and power.
+  - Higher P-states correspond to lower frequencies and reduced power usage.
+  - Controlled by CPUFreq governors and drivers.
+
+- **C-States (Idle States)**: Represent CPU sleep states for when the processor is idle.
+  - Higher C-states save more power but increase latency when returning to active states.
+  - Common states:
+    - C0: Active state.
+    - C1: Halt state, saving minimal power.
+    - C6: Deep power-down state, reducing leakage power.
+
+To view supported C-states:
+```
+cat /sys/devices/system/cpu/cpu0/cpuidle/state*/name
+```
+## Viewing the scaling governors and scaling drivers available on your system
+
+> [!TIP]
+> Run with sudo privileges if you get errors
+
+```
+cpupower frequency-info
+```
+
+```
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_driver
+```
+
+<br />
+
+One of the most effect ways to reduce power consumption and heat output on a server system is the cpufreq subsystem. Cpufreq, also referred to as CPU frequency scaling or CPU speed scaling, is the infrastructure in the Linux kernel space that enables users to scale the CPU frequency in order to save power.
+## Governors in the Linux Kernel
+
+* **Performance**: The CPUfreq governor "performance" sets the CPU statiscially to the highest frequency within the borders of `scaling_min_freq` and `scaling_max_freq` 
+* **Powersave**:  The CPUfreq governor "powersae" sets the CPU statically to the lowest frequency within the borders of `scaling_min_freq` and `scaling_max_freq`
+* **Userspace**: The CPUfreq governor "userspace" allows the user; or any userspace program running with UID "root", to set the CPU to a specific frequency by making as sysfs file "scalling_setspeed" available in the CPU-device directory.
+* **Ondemand**: The CPUfreq governor "ondemand" sets the CPU frequency depending on the current system load. Load estimation is triggered by the scheduler through the `update_tull_data` -> func hook; when triggered, cpufreq checks the CPU-usage statistics over the last period and the governor sets the CPU accordingly. The CPU must have the capability to switch the frequency very quickly
+
+## Setting CPU Frequency
+
+> [!TIP]
+> Run with sudo privileges if you get errors
+
+```
+#This sets the maximum clock frequency
+cpupower frequency-set -u clock_freq
+
+#This sets the minimum clock frequency
+cpupower frequency-set -d clock_freq
+
+#Example
+#maximum clock frequency
+cpupower frequency-set -u 2.5GHz
+
+#minimum clock frequency
+cpupower frequency-set -d 2.5GHz
+```
+## Manually limit the frequency range
+```
+sudo echo <min_freq> > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+
+sudo echo <max_freq> > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+```
+## Automate governor changes based on time of day
+```
+sudo cpupower frequency-set -g powersave
+```
+## Customizing Governors
+Governors like Ondemand can be fine-tuned for specific workloads:
+* **Up_Threshold**
+* **Sampling_rate**
+
+To modify these settings
+```
+up_threshold=CPU usage percentage to trigger an increase in frequency:
+echo <value> > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
+
+sampling_rate=Time in microseconds between load evaluations:
+echo <value> > /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
+```
+To ensure that the CPU frequency has been properly set, you can run a HPL benchmark
+```
+./xhpl
+```
+and once it is running, you can use this command to monitor the CPU speed in MHz, and it updates every 2 seconds
+
+```
+watch grep \"cpu MHz\" /proc/cpuinfo
+```
+
+* **watch**: Executes a command repeatedly, updating the output every 2 seconds
+* **grep**: Searchs for lines matching a pattern in the input
+* **cpu MHz**: The pattern grep looks for, indicating CPU speed
+* **/proc/cpuinfo**: A file that contains detailed information about the CPU
+  
+  
+## Tips and Troubleshooting
+**Common Issues**
+* **Permissions Errors**: Run commands with sudo if you encounter permission issues
+* **Missing cpupower**: Install it using your package manager:
+* 1, On Debian/Ubuntu: sudo apt install linux-tools-common linux-tools-$(uname -r)
+* 2, On Red Hat/CentOS: sudo yum install kernel-tools
+
+**Best Practices**
+* Test different governors during workloads to find the optimal balance between performance and power consumption.
+* Use tools like htop or perf for additional monitoring.
+
+**For more information**:
+- [Linux CPUFreq Documentation](https://www.kernel.org/doc/Documentation/cpu-freq/)
+- [HPL Benchmark User Guide](https://www.netlib.org/benchmark/hpl/)
