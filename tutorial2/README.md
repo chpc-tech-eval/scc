@@ -1090,7 +1090,7 @@ tracepath 1.1 -n
 ```
 You should see that the packet travels through your head node, then to gateway and out.
 
-![](Pasted%20image%2020241129125506.png)
+![](./resources/tracepath_example.png)
 
 
 ## Firewall Configuration
@@ -1113,7 +1113,7 @@ At certain points in this process, the kernel allows you interact with the packe
 4. `Onput` - packets coming from local processes.
 5. `Postrouting` - after the routing ? before packets leave.
 
-![](fetch-908634640.png) 
+![](./resources/netfilter_hook_diagram.png)
    
 <a name="rerouting-firewall-config"></a>Since the traffic from the compute node would be passing our forward hook and not the input hook, you can either:
 1. Copy our rules in our `hn_input` chain into our `hn_forward` chain (make sure it has a accept policy)
