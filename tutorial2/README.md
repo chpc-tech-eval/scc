@@ -23,6 +23,11 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
     1. [Create User Accounts](#create-user-accounts)
 1. [WirGuard VPN Cluster Access](#wirguard-vpn-cluster-access)
 1. [ZeroTier](#zerotier)
+1. [Network Security Hardening Measures](#network-security-hardening-measures)
+   1. [Internal Network Routing](#internal-network-routing)
+   1. [Firewall Configuration](#firewall-configuration) 
+   1. [DNS Configuration](#dns-configuration) 
+   1. [Additional Security Measures](#additional-security-hardening-strategies) 
 
 <!-- markdown-toc end -->
 
@@ -1043,3 +1048,235 @@ You will be able to create Virtual Private Networks (VPN) between systems you mi
    * Make sure to open *UDP Port 9993* on your head node and restart the `nfstables` service.
 
 You have successfully created a ZeroTier VPN network.
+
+
+# Network Security Hardening Measures
+
+## Internal Network Routing
+
+You now have a firewall setup for your head node but not for your compute node. Instead of having to manually setup a separate firewall for your compute node, you can share with the head node firewall by routing traffic through it.
+
+### Head Node Setup
+
+1. Add the IP forward setting to the end of the `sysctl.conf` file and reload system configurations:
+```sh
+echo 'net.ipv4.ip_forward=1' | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+```
+
+2. Ensure that the `policy` for your `forward` chain is set to `accept` (Explanation in the next section.)
+
+### 2. Compute Node Setup
+
+1. Set your default route for your traffic to point towards the head node:
+```sh
+sudo ip route replace default via <head-node-ip>
+```
+This will ensure that all traffic is directed toward your head node instead of the network gateway.
+
+3. Delete the default gateway that comes with the node:
+
+```sh
+sudo ip route delete default via 10.100.50.1
+```
+
+> [!Tip]
+> You can view all your routes by running `sudo ip route show`
+
+With new default route set, your traffic should be routing through the head node. You can test this by running the `tracepath` command on the compute node which shows the route our packets take to their destination.
+
+```sh
+tracepath 1.1 -n
+```
+You should see that the packet travels through your head node, then to gateway and out.
+
+![](Pasted%20image%2020241129125506.png)
+
+---
+
+## Firewall Configuration
+
+You now have routed the compute node traffic through your head node, but it is not yet hitting the firewall rules you have set up. To know why you need know about how packets are processed in Linux.
+
+>[!NOTE]
+> If you already know about netfilter hooks, you can skip to the actual configuration changes [here](#rerouting-firewall-config). <!-- the anchor link only works in Github -->
+
+As packets pass through a Linux system, the Linux kernel makes decisions on how to process and the route each packet. There are 3 ways a packet can traverses:
+
+1. A packet enters the through an interface, the kernel decides it is for the local system and routes it to the necessary process. 
+2. A packet enters through an interface, the kernel decides it is meant for another host (or address) and forwards it to the actual destination out an interface.
+3. A packet originates from a local process and is sent to its destination out an interface.
+
+At certain points in this process, the kernel allows you interact with the packets. These points are called _netfilter hooks_.  You have already touched on the idea of _input_, _forward_, and _output_ hooks when you had set up your firewall but to shortly explain each hook:
+1. `Prerouting` - before the routing / after packets enter.
+2. `Input` - packets sent to local processes.
+3. `Forward` - packets passing through (not for local).
+4. `Onput` - packets coming from local processes.
+5. `Postrouting` - after the routing ? before packets leave.
+
+![](fetch-908634640.png) 
+   
+<a name="rerouting-firewall-config"></a>Since the traffic from the compute node would be passing our forward hook and not the input hook, you can either:
+1. Copy our rules in our `hn_input` chain into our `hn_forward` chain (make sure it has a accept policy)
+2. Change the `hook` (and name) in our `hn_input` chain from `input` to `prerouting` (Not preferred, rather have a separate chain).
+
+---
+## DNS Configuration
+
+Now that you have the compute node sharing the same firewall rules as the head node, you will also want to resolve DNS lookups (i.e. find the IP of "google.com") the same way as  the head node.  You will setup a DNS server on the head node so that you can sync the DNS resolution servers amongst the nodes.
+
+### Head Node Setup
+
+1. Install `dnsmasq` on your the head node:
+  - DNF/YUM
+```sh
+# RHEL, Rocky, Alma, CentOS
+sudo dnf install dnsmasq
+```
+  - APT
+```sh
+# Ubuntu
+sudo apt install dnsmasq
+```
+  - Pacman
+```sh
+# Arch
+sudo pacman install dnsmasq
+```
+
+2. Append to the `dnsmasq.conf` file, making sure to change `eth0` for the name of your interface you want to expose your DNS server to:
+```sh
+echo 'interface=eth0' | sudo tee -a /etc/dnsmasq.conf
+```
+
+3. Ensure you have a DNS server in your `/etc/resolv.conf` file, for example:
+```conf
+nameserver 8.8.8.8
+```
+
+4. Start and enable `dnsmasq`:
+```sh
+sudo systemctl start dnsmasq
+sudo systemctl enable dnsmasq
+```
+
+### Compute Node Setup
+
+5. Open and remove all lines in your compute node `/etc/resolv.conf` file and add:
+```conf
+nameserver <head-node-ip>
+```
+
+### Testing DNS Resolution
+
+1. Install `bind-utils` on your compute node:
+	- DNF/YUM
+	```sh
+	# RHEL, Rocky, Alma, CentOS
+	sudo dnf install bind-utils
+	```
+	- APT
+	```sh
+	# Ubuntu
+	sudo apt install bind-utils
+	```
+	- Pacman
+	```sh
+	# Arch
+	sudo pacman install bind-utils
+	```
+
+2. Run the following `nslookup` command:
+```sh
+nslookup google.com
+```
+
+> [!TIP]
+>You will know if the DNS resolution via the head node has worked if the first line of the output reads: `Server: <head-node-ip>`
+
+---
+
+## Additional Security Hardening Strategies
+
+Even though you have your firewall up, bad actors may still attempt to exploit the ports and services that you have still exposed. Following sections are to reduce the attack surface of your cluster.
+### Disabling Password SSH Logins
+
+1. Create the file `/etc/ssh/sshd_config.d/disable_password_login.conf` with your preferred text editor.
+```sh
+sudo vi /etc/ssh/sshd_config.d/disable_password_login.conf
+```
+
+2. Add the following lines:
+```conf
+PasswordAuthentication no
+PermitRootLogin no
+```
+
+3. Save the file and restart the ssh daemon:
+```sh
+sudo systemctl reload sshd
+```
+
+4. Try ssh into your head node without supplying an identity file. You should see `Permission Denied` returned to you.
+
+### Limiting Login Attempts
+
+To limit the amount of login attempts you will be implementing [fail2ban](https://github.com/fail2ban/fail2ban).
+
+  - DNF/YUM
+```sh
+# RHEL, Rocky, Alma, CentOS
+sudo dnf install fail2ban
+```
+  - APT
+```sh
+# Ubuntu
+sudo apt install fail2ban
+```
+  - Pacman
+```sh
+# Arch
+sudo pacman install fail2ban
+```
+
+2. Start and enable `fail2ban`
+```sh
+sudo systemctl start fail2ban
+sudo systemctl enable fail2ban
+```
+
+3. With your text editor create a `/etc/fail2ban/jail.local` file:
+```sh
+sudo vi /etc/fail2ban/jail.local
+```
+
+4. Add the following configuration:
+```toml
+[DEFAULT]
+bantime = 3600
+
+[sshd]
+enabled = true
+```
+
+5. Save and restart `fail2ban`:
+```sh
+sudo systemctl restart fail2ban
+```
+
+6. Verify that your jail for ssh is running:
+```sh
+sudo fail2ban-client status
+```
+The output should be:
+```
+Status
+|- Number of jail:      1
+|- Jail list:   sshd
+```
+
+7. You can see the status of the ssh jail:
+```sh
+sudo fail2ban-client status sshd
+```
+---
