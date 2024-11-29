@@ -1247,6 +1247,116 @@ sinfo -alN
 
 The `S:C:T` column means "sockets, cores, threads" and your numbers for your compute node should match the settings that you made in the `slurm.conf` file.
 
+## Integration of Slurm Cluster Monitoring with Grafana 
+To set up a Slurm Exporter for Prometheus, follow the steps below. The Slurm Exporter provides metrics specific to the Slurm workload manager, such as job queue statistics, node utilization, and user metrics. The goal is to expose these metrics so Prometheus can scrape them.
+1. Create a Dedicated User for Slurm Exporter
+This ensures that the Slurm Exporter runs under a dedicated non-privileged user.
+```bash
+sudo adduser -M -r -s /sbin/nologin slurm_exporter
+```
+
+2. Download and Install Slurm Exporter
+Navigate to the `/usr/src` directory:
+```bash
+cd /usr/src/
+```
+Download the Slurm Exporter binary :
+```bash
+sudo wget https://github.com/vpenso/prometheus-slurm-exporter/releases/latest/download/prometheus-slurm-exporter-linux-amd64.tar.gz
+```
+Extract the downloaded file:
+```bash
+sudo tar xvf prometheus-slurm-exporter_linux_amd64.tar.gz
+```
+Move the binary file to `/usr/local/bin`:
+```bash
+sudo mv prometheus-slurm-exporter /usr/local/bin/slurm_exporter
+```
+
+3. Create a Systemd Service File
+Use a text editor to create the service file:
+```bash
+sudo nano /etc/systemd/system/slurm_exporter.service
+```
+Add the following configuration:
+```plaintext
+[Unit]
+Description=Slurm Exporter for Prometheus
+After=network.target
+
+[Service]
+User=slurm_exporter
+Group=slurm_exporter
+Type=simple
+ExecStart=/usr/local/bin/slurm_exporter --web.listen-address=:8080
+
+[Install]
+WantedBy=multi-user.target
+```
+
+4. Configure Firewall Rules
+If the firewalld service is active, open the port you wish to use (default is 8080):
+```bash
+sudo firewall-cmd --permanent --zone=public --add-port=8080/tcp
+sudo firewall-cmd --reload
+```
+
+5. Start and Enable the Service
+Reload the systemd daemon to recognize the new service file:
+```bash
+sudo systemctl daemon-reload
+```
+**Enable** and **start** the Slurm Exporter:
+```bash
+sudo systemctl enable slurm_exporter
+sudo systemctl start slurm_exporter
+```
+Verify the status of the service:
+```bash
+sudo systemctl status slurm_exporter
+```
+
+6. Verify the Setup
+Check that the Slurm Exporter is running by visiting the metrics endpoint in your browser. Use the compute node's private IP and the specified port:
+```bash
+http://<compute_node_ip>:8080/metrics
+```
+If the compute node has no public IP, you can use SSH tunneling (described below).
+
+7. Set Up SSH Tunneling
+If the compute node is accessible only via the head node:
+Run the following command on your local machine:
+```bash
+ssh -L 8080:<compute_node_ip>:8080 user@headnode_ip -N
+```
+Access the metrics via:
+```bash
+http://localhost:8080/metrics
+```
+
+8. Add Slurm Exporter to Prometheus Configuration
+On the Prometheus server, edit your `prometheus.yml` file to include the Slurm Exporter target:
+```conf
+scrape_configs:
+  - job_name: 'slurm'
+    static_configs:
+      - targets: ['<compute_node_ip>:8080']
+ ```  
+If you're using SSH tunneling, replace <compute_node_ip>:8080 with localhost:8080.
+
+9. Add the Dashboard on Grafana
+Navigate to `HOME>DASHBOARDS` then click on **Import** then input `4323` then click on import. There you should be able to see the metrics
+
+<p align="center"><img alt="CircleCI" src="./resources/slurm exporter.jpg" width=900 /></p>
+
+> [!NOTE]
+>if there is issues with data retrieval try:
+>1. Check the firewall
+>2. Check Prometheus data sources (ensure they are up)
+>3. Ensure your slurm is correctly configured
+
+
+
 # GROMACS Application Benchmark
 
 You will now be extending some of your earlier work from [Tutorial 3](../tutorial3/README.md#gromacs-adh-cubic).
