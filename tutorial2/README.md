@@ -1115,9 +1115,11 @@ At certain points in this process, the kernel allows you interact with the packe
 
 ![](./resources/netfilter_hook_diagram.png)
 
-<a name="rerouting-firewall-config"></a>Since the traffic from the compute node would be passing our forward hook and not the input hook, you can either:
-1. Copy our rules in our `hn_input` chain into our `hn_forward` chain (make sure it has a accept policy)
-2. Change the `hook` (and name) in our `hn_input` chain from `input` to `prerouting` (Not preferred, rather have a separate chain).
+<a name="rerouting-firewall-config"></a>
+Since the traffic from the compute node would be passing our forward hook and not the input hook, you can copy the rules from the `hn_input` chain into our `hn_forward` chain (make sure it has a accept policy).
+
+> [!NOTE]
+> Alternatively what also works is changing the `hook` (the text after the `hook` keyword) in our `hn_input` chain from `input` to `prerouting` (and the name). This is not preferred but more of a demonstration that its a possible solution as well.
 
 ## DNS Configuration
 
