@@ -215,7 +215,7 @@ From your Team's OpenStack Project Workspace, navigate to `Compute` &#8594; `Ins
 
 Within the popup window, enter an appropriate name for your instance that will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be **head node**.
 
-## Linux Flavors and Distributions
+## Linux Flavours and Distributions
 
 After configuring your new VM name under instance details, you will need to select the template that will be used to create the instance from the *Source* menu. Before selection a [Linux Operating System Distribution](https://en.wikipedia.org/wiki/Linux_distribution) for your new instance, ensure that the default *Source* options are correctly configured:
 1. *Select Boot Source* is set to `Image`,
