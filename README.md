@@ -86,7 +86,7 @@ Below is a table with a number of Linux system commands and utilities that you *
 | dmesg              | Prints the message buffer of the kernel. The output of this command typically contains the messages produced by the device drivers                                                                                 |
 | watch              | Execute a program periodically, showing output fullscreen.                                                                                                                                                         |
 | df -h              | Report file system disk space usage.                                                                                                                                                                               |
-| ping               | PING command is used to verify that a device can communicate with another on a network.                                                                                                                            |
+| ping               | PING command is used to verify that a device can communicate within another on a network.                                                                                                                            |
 | lynx               | Command-line based web browser (more useful than you think)                                                                                                                                                        |
 | ctrl+alt+[F1...F6] | Open another shell session (multiple ‘desktops’)                                                                                                                                                                   |
 | ctrl+z             | Move command to background (useful with ‘bg’)                                                                                                                                                                      |
@@ -236,6 +236,7 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
     1. [Hardware Topology](tutorial3/README.md#hardware-topology)
     1. [VTune](tutorial3/README.md#vtune)
 1. [HPC Challenge](tutorial3/README.md#hpc-challenge)
+1. [High Performance Conjugate Gradients](tutorial3/README.md#high_performance_conjugate_gradients)
 1. [Application Benchmarks and System Evaluation](tutorial3/README.md#application-benchmarks-and-system-evaluation)
     1. [GROMACS (ADH Cubic)](tutorial3/README.md#gromacs-adh-cubic)
     1. [LAMMPS (Lennard-Jones)](tutorial3/README.md#lammps-lennard-jones)
@@ -267,6 +268,38 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
     1. [Prerequisites](tutorial4/README.md#prerequisites)
     1. [Head Node Configuration (Server)](tutorial4/README.md#head-node-configuration-server)
     1. [Compute Node Configuration (Clients)](tutorial4/README.md#compute-node-configuration-clients)
+
+# Lecture Slides and Video Recordings
+
+The lecture slides are available for download - follow the link and download the raw files.
+
+## Day 1
+
+1. PDF Format
+   1. [Welcome and Introduction (Mabatho Hashatsi)](resources/Welcome_Introducation_MHashatsi_2025.pdf)
+   1. [Introduction to Tools for the Modern IT Engineer (Sean February)](resources/Intro_to_Tools_for_the_Modern_IT_Engineer_SFebruary2025.pdf)
+   1. [Introduction to Linux Services (Mabatho Hashatsi)](resources/Intro_to_Linux_Services_MHashatsi_2025.pdf)
+   1. [Getting Started (Matsobane Mpyana)](resources/Getting_Started_MMpyana2025.pdf)
+
+1. PPTX Format
+   1. [Welcome and Introduction (Mabatho Hashatsi)](resources/Welcome_Introducation_MHashatsi_2025.pptx)
+   1. [Introduction to Tools for the Modern IT Engineer (Sean February)]()
+   1. [Introduction to Linux Services (Mabatho Hashatsi)](resources/Intro_to_Linux_Services_MHashatsi_2025.pptx)
+   1. [Getting Started (Matsobane Mpyana)](resources/Getting_Started_MMpyana2025.pptx)
+
+## Day 2
+
+1. PDF Format
+   1. [HPC Hardware (Mabatho Hashatsi)](resources/HPCHardware_MHashatsi_08July.pdf)
+   1. [HPC Networking (Nyameko Lisa)](resources/HPCNetworks_NLisa_08July_NL.pdf)
+   1. [System Administration and Configuration]()
+   1. [Putting Together a HPC Cluster & Presentation Tips]()
+
+1. PPTX Format
+   1. [HPC Hardware (Mabatho Hashatsi)](resources/HPCHardware_MHashatsi_08July.pptx)
+   1. [HPC Networking (Nyameko Lisa)](resources/HPCNetworks_NLisa_08July_NL.pptx)
+   1. [System Administration and Configuration]()
+   1. [Putting Together a HPC Cluster & Presentation Tips]()
 
 # Contributing to the Project
 
