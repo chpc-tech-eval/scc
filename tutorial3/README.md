@@ -701,9 +701,9 @@ Recompile with `-parallel-source-info=2` flag.
 HPC Challenge (or HPCC) is benchmark suite which contains 7 micro-benchmarks used to test various performance aspects of your cluster. HPCC includes HPL which it uses to access FLOPs performance. Having successfully compiled and executed HPL, the process is fairly straight forward to setup HPCC (it uses the same Makefile structure).
 
 > [!NOTE]
-> If you are having difficulties downloading the HPCC source and navigating to the site, you may skip the HPC Challenge and instead do HPCG below
+> If you are having difficulties downloading the HPCC source and navigating to the site, you may skip the HPC Challenge and instead do HPCG below. Bonus points will be given for completing both.
 
-1. Download HPCC from https://icl.utk.edu/hpcc/software/index.html
+1. Download HPCC from https://icl.utk.edu/hpcc/software/index.html or clone the repository from https://github.com/icl-utk-edu/hpcc.
 
 1. Extract the file, then enter the `hpcc/` sub-directory.
 
@@ -728,7 +728,7 @@ Have the output `hpccoutf.txt` and your `Make.<architecture>` ready for the inst
 
 # High Performance Conjugate Gradients
 
-**HPCG** is intended as a complement to the **High Performance LINPACK (HPL)*** benchmark. It is designed to exercise computational and data access patterns that more closely match a different and broad set of important applications. See [HPCG Benchmark](https://hpcg-benchmark.org/) for more information.
+**HPCG** is intended as a complement to the **High Performance LINPACK (HPL)*** benchmark. It is designed to exercise computational and data access patterns that more closely match a different and broad set of important applications. See [HPCG Benchmark](https://hpcg-benchmark.org/) for more information. Or clone the repository from their Github repository [HPCG Repo](https://github.com/hpcg-benchmark/hpcg).
 
 ## Getting the source code
 
