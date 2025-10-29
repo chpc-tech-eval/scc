@@ -14,7 +14,7 @@
 1. [Configuring and Connecting to your Remote JupyterLab Server](#configuring-and-connecting-to-your-remote-jupyterlab-server)
     1. [Visualize Your HPL Benchmark Results](#visualize-your-hpl-benchmark-results)
     1. [Visualize Your Qiskit Results](#visualize-your-qiskit-results)
-1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
+1. [Automating the Deployment of your DigitalOcean Instances Using Terraform](#automating-the-deployment-of-your-DigitalOcean-instances-using-terraform)
     1. [Install and Initialize Terraform](#install-and-initialize-terraform)
     1. [Generate `clouds.yml` and `main.tf` Files](#generate-cloudsyml-and-maintf-files)
     1. [Generate, Deploy and Apply Terraform Plan](#generate-deploy-and-apply-terraform-plan)
@@ -59,7 +59,7 @@ In this tutorial you will:
     - [ ] Check that the dashboard is working as expected
 - [ ] Prepare, install and configure remote JupyterLab server
   - [ ] Connect to JupyterLab and visualize benchmarking results
-- [ ] Automate the provisioning and deployment of your Sebowa OpenStack infrastructure
+- [ ] Automate the provisioning and deployment of your Sebowa DigitalOcean infrastructure
 - [ ] Install the Slurm workload manager across your cluster.
 - [ ] Submit a test job to run on your cluster through the newly-configured workload manager.
 
@@ -772,290 +772,481 @@ You are now going to extend your `qv_experiment` and plot your results, by drawi
    python qv_experiment.py
    ```
 
-# Automating the Deployment of your OpenStack Instances Using Terraform
+# Automating the Deployment of your DigitalOcean Instances Using Terraform and GitHub Actions
 
-Terraform is a piece of software that allows one to write out their cloud infrastructure and deployments as code, [IaC](https://en.wikipedia.org/wiki/Infrastructure_as_code). This allows the deployments of your cloud virtual machine instances to be shared, iterated, automated as needed and for software development practices to be applied to your infrastructure.
+This section guides you through setting up a complete Infrastructure as Code (IaC) pipeline using Terraform and GitHub Actions to automate the deployment of compute nodes on DigitalOcean.
 
-In this section of the tutorial, you will be deploying an additional compute node from your `head node` using Terraform.
+## Architecture Overview
+```
+GitHub Repository → GitHub Actions → Terraform → DigitalOcean API → New Droplet
+```
 
-> [!CAUTION]
-> In the following section, **you must request additional resources from the instructors**. This additional node will be experimental for testing your changes to your cluster before committing them to your active compute nodes. You will be deleting and reinitializing this instance often. Make sure you understand how to [Delete Instance](../tutorial1/README.md#troubleshooting).
+## Prerequisites
+- DigitalOcean account with API token
+- Existing `head` and `com1` droplets running
+- GitHub account
+- Basic familiarity with Terraform and YAML
 
-## Install and Initialize Terraform
+## Step 1: Repository Structure Setup
 
-You will now prepare, install and initialize Terraform on your head node. You will define and configure a `providers.tf` file, to configure OpenStack instances (as Sebowa is an OpenStack based cloud).
+### Create Project Directory
+```bash
+mkdir digital-ocean-deploy-compute-node-clean
+cd digital-ocean-deploy-compute-node-clean
+```
 
-1. Use your operating system's package manager to install Terraform
+### Project Structure
+```
+digital-ocean-deploy-compute-node-clean/
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── terraform.tfvars
+│   ├── terraform.tfvars.example
+│   ├── inventory.tpl
+│   └── ssh_key.pub
+├── ansible/
+│   ├── playbook-com2.yml
+│   ├── setup-com2-first.yml
+│   ├── fix-nfs-mount.yml
+│   ├── fix-final.yml
+│   ├── inventory.ini
+│   ├── inventory_static.ini
+│   ├── group_vars/all.yml
+│   └── ci-verification.sh
+└── .github/workflows/
+    └── deploy-compute-node.yml
+```
 
-   This could be your workstation or one of your VMs. The machine must be connected to the internet and have access to your OpenStack workspace, i.e. https://sebowa.nicis.ac.za
-   * DNF / YUM
-   ```bash
-   sudo yum update -y
+## Step 2: Terraform Configuration
 
-   # Install package to manage repository configurations
-   sudo yum install -y dnf-plugins-core
+### Create Terraform Variables (variables.tf)
+```hcl
+variable "do_token" {
+  description = "DigitalOcean API token"
+  type        = string
+  sensitive   = true
+}
 
-   # Add the HashiCorp Repo
-   sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+variable "region" {
+  description = "DigitalOcean region"
+  type        = string
+  default     = "lon1"
+}
 
-   sudo dnf install -y terraform
-   ```
-   * APT
-   ```bash
-   # Update package repository
-   sudo apt-get update
-   sudo apt-get install -y gnupg software-properties-common
+variable "cluster_name" {
+  description = "Name of the cluster"
+  type        = string
+  default     = "student-cluster"
+}
 
-   # Add HashiCorp GPG Keys
-   wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+variable "com2_size" {
+  description = "Size for com2 node"
+  type        = string
+  default     = "s-2vcpu-4gb"
+}
 
-   # Add the official HashiCorp Linux Repo
-   echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+variable "image" {
+  description = "Droplet image"
+  type        = string
+  default     = "rockylinux-9-x64"
+}
 
-   ```
-   * Pacman
-   ```bash
-   # Arch
-   sudo pacman -S terraform
-   ```
+variable "private_key_path" {
+  description = "Path to the private key file"
+  type        = string
+}
 
-1. Create a Terraform directory, descend into it and Edit the `providers.tf` file
+variable "tags" {
+  description = "Tags for droplets"
+  type        = list(string)
+  default     = ["github-actions", "hpc-cluster", "automated"]
+}
 
-   ```bash
-   mkdir terraform
-   cd terraform
-   vim providers.tf
-   ```
+variable "existing_droplet_names" {
+  description = "Names of existing droplets (head and com1)"
+  type        = list(string)
+  default     = ["head", "com1"]
+}
+```
 
-1. You must specify a [Terraform Provider](https://registry.terraform.io/browse/providers)
+### Create Main Terraform Configuration (main.tf)
+```hcl
+terraform {
+  required_providers {
+    digitalocean = {
+      source = "digitalocean/digitalocean"
+      version = "~> 2.0"
+    }
+    local = {
+      source = "hashicorp/local"
+      version = "~> 2.0"
+    }
+  }
+}
 
-   These can vary from MS Azure, AWS, Google, Kubernetes etc... We will be implementing an OpenStack provider as this is what is implemented on the Sebowa cloud platform. Add the following to the `providers.tf` file.
-   ```conf
-   terraform {
-     required_providers {
-       openstack = {
-         source = "terraform-provider-openstack/openstack"
-         version = "1.46.0"
-       }
-     }
-   }
-   ```
-1. Initialize Terraform
+provider "digitalocean" {
+  token = var.do_token
+}
 
-   From the folder with your provider definition, execute the following command:
-   ```bash
-   terraform init
-   ```
+# Data sources to get existing droplets
+data "digitalocean_droplet" "existing_nodes" {
+  count = length(var.existing_droplet_names)
+  name  = var.existing_droplet_names[count.index]
+}
 
-## Generate `clouds.yml` and `main.tf` Files
+# SSH key resource
+resource "digitalocean_ssh_key" "cluster_key" {
+  name       = "${var.cluster_name}-key"
+  public_key = file("${var.private_key_path}.pub")
+}
 
-Generate and configure the `cloud.yml` file that will authenticate you against your Sebowa OpenStack workspace, and the `main.tf`files that will define how your infrastructure should be provisioned.
+# Create com2 droplet only
+resource "digitalocean_droplet" "com2" {
+  image    = var.image
+  name     = "com2"
+  region   = var.region
+  size     = var.com2_size
+  ssh_keys = [digitalocean_ssh_key.cluster_key.fingerprint]
+  tags     = var.tags
+}
 
-1. Generate OpenStack API Credentials
+# Generate Ansible inventory
+resource "local_file" "ansible_inventory" {
+  filename = "../ansible/inventory.ini"
+  content = templatefile("${path.module}/inventory.tpl", {
+    head_ip = data.digitalocean_droplet.existing_nodes[0].ipv4_address
+    com1_ip = data.digitalocean_droplet.existing_nodes[1].ipv4_address
+    com2_ip = digitalocean_droplet.com2.ipv4_address
+  })
+  depends_on = [digitalocean_droplet.com2]
+}
 
-   From _your_ team's Sebowa workspace, navigate to `Identity` &rarr; `Application Credentials`, and generate a set of OpenStack credentials in order to allow you to access and authenticate against your workspace.
+output "head_ip" {
+  value = data.digitalocean_droplet.existing_nodes[0].ipv4_address
+}
 
-   <p align="center"><img alt="OpenStack Application Credentials." src="./resources/openstack_application_creds.png" width=900 /></p>
+output "com1_ip" {
+  value = data.digitalocean_droplet.existing_nodes[1].ipv4_address
+}
 
-1. Download and Copy the `clouds.yml` File
+output "com2_ip" {
+  value = digitalocean_droplet.com2.ipv4_address
+}
+```
 
-   Copy the `clouds.yml` file to the folder where you initialized terraform. The contents of the of which, should be _similar_ to:
-   ```config
-   # This is a clouds.yaml file, which can be used by OpenStack tools as a source
-   # of configuration on how to connect to a cloud. If this is your only cloud,
-   # just put this file in ~/.config/openstack/clouds.yaml and tools like
-   # python-openstackclient will just work with no further config. (You will need
-   # to add your password to the auth section)
-   # If you have more than one cloud account, add the cloud entry to the clouds
-   # section of your existing file and you can refer to them by name with
-   # OS_CLOUD=openstack or --os-cloud=openstack
-   clouds:
-     openstack:
-       auth:
-         auth_url: https://sebowa.nicis.ac.za:5000
-         application_credential_id: "<YOUR TEAM's APPLICATION CREDENTIAL ID"
-         application_credential_secret: "<YOUR TEAM's APPLICATION CREDENTIAL SECRET>"
-       region_name: "RegionOne"
-       interface: "public"
-       identity_api_version: 3
-       auth_type: "v3applicationcredential"
-   ```
-1. Create `main.tf` Terraform File
-   Inside your `terraform` folder, you must define a `main.tf` file. This file is used to identify the provider to be implemented as well as the compute resource configuration details of the instance we would like to launch.
+### Create Inventory Template (inventory.tpl)
+```ini
+[head]
+${head_ip}
 
-   You will need to define your own `main.tf` file, but below is an example of one such definition:
-   ```config
-   provider "openstack" {
-     cloud = "openstack"
-   }
-   resource "openstack_compute_instance_v2" "terraform-demo-instance" {
-     name = "scc24-arch-cn03"
-     image_id = "33b938c8-6c07-45e3-8f2a-cc8dcb6699de"
-     flavor_id = "4a126f4f-7df6-4f95-b3f3-77dbdd67da34"
-     key_pair = "nlisa at mancave"
-     security_groups = ["default", "ssc24_sq"]
+[com1]
+${com1_ip}
 
-     network {
-       name = "nlisa-vxlan"
-     }
-   }
-   ```
+[com2]
+${com2_ip}
 
-> [!NOTE]
-> You must specify your own variables for `name`, `image_id`, `flavor_id`, `key_pair` and `network.name`.
+[compute_nodes]
+${com1_ip}
+${com2_ip}
 
-## Generate, Deploy and Apply Terraform Plan
+[all:vars]
+ansible_user=root
+ansible_ssh_private_key_file=/tmp/ssh_key
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+```
 
-1. Generate and Deploy Terraform Plan
-   Create a Terraform plan based on the current configuration. This plan will be used to implement changes to your Sebowa OpenStack cloud workspace, and can be reviewed before applying those changes.
-   Generate a plan and write it to disk:
-   ```bash
-   terraform plan -out ~/terraform/plan
-   ```
+## Step 3: Ansible Configuration
 
-1. Once you are satisfied with the proposed changes, deploy the terraform plan:
-   ```bash
-   terraform apply ~terraform/plan
-   ```
+### Create Initial Setup Playbook (ansible/setup-com2-first.yml)
+```yaml
+---
+- name: Initial setup for com2
+  hosts: compute_new
+  gather_facts: yes
+  become: yes
 
-1. Verify New Instance Successfully Created by Terraform
-   Finally confirm that your new instance has been successfully created. On your Sebowa OpenStack workspace, navigate to `Project` &rarr; `Compute` &rarr; `Instances`.
+  tasks:
+    - name: Wait for system to be fully ready
+      wait_for_connection:
+        timeout: 300
+
+    - name: Create clusteradmin user
+      user:
+        name: clusteradmin
+        state: present
+        groups: wheel
+        append: yes
+        create_home: yes
+        shell: /bin/bash
+
+    - name: Set password for clusteradmin
+      user:
+        name: clusteradmin
+        password: "{{ 'clusteradmin123' | password_hash('sha512') }}"
+
+    - name: Configure sudo for clusteradmin
+      copy:
+        content: "clusteradmin ALL=(ALL) NOPASSWD:ALL"
+        dest: /etc/sudoers.d/clusteradmin
+        mode: 0440
+
+    - name: Create .ssh directory for clusteradmin
+      file:
+        path: /home/clusteradmin/.ssh
+        state: directory
+        owner: clusteradmin
+        group: clusteradmin
+        mode: 0700
+
+    - name: Setup SSH key for clusteradmin
+      copy:
+        content: "{{ lookup('file', '/tmp/ssh_key.pub') }}"
+        dest: /home/clusteradmin/.ssh/authorized_keys
+        owner: clusteradmin
+        group: clusteradmin
+        mode: 0600
+
+    - name: Configure /etc/hosts for cluster
+      blockinfile:
+        path: /etc/hosts
+        block: |
+          10.106.0.5 head
+          10.106.0.4 com1
+          {{ ansible_default_ipv4.address }} com2
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - CLUSTER NODES"
+
+    - name: Set hostname to com2
+      hostname:
+        name: com2
+
+    - name: Ensure SSH service is running
+      systemd:
+        name: sshd
+        state: started
+        enabled: yes
+```
+
+### Create Main Configuration Playbook (ansible/playbook-com2.yml)
+```yaml
+---
+- name: Configure com2 node and integrate with cluster
+  hosts: compute
+  gather_facts: yes
+  become: yes
+  vars:
+    cluster_user: "clusteradmin"
+
+  tasks:
+    - name: Wait for connection
+      wait_for_connection:
+        timeout: 60
+
+    - name: Configure /etc/hosts for cluster
+      blockinfile:
+        path: /etc/hosts
+        block: |
+          10.106.0.5 head
+          10.106.0.4 com1
+          10.106.0.3 com2
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - CLUSTER NODES"
+
+    - name: Install base packages
+      package:
+        name:
+          - nftables
+          - nfs-utils
+          - chrony
+          - openssh-clients
+        state: present
+
+    - name: Stop and mask firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+        masked: yes
+      ignore_errors: yes
+
+    - name: Set SELinux boolean for NFS home dirs
+      seboolean:
+        name: use_nfs_home_dirs
+        state: yes
+        persistent: yes
+
+    - name: Configure NFS client
+      block:
+        - name: Mount NFS home directory
+          mount:
+            path: /home
+            src: "head:/home"
+            fstype: nfs
+            state: mounted
+            opts: defaults,_netdev
+```
+
+## Step 4: GitHub Actions Workflow
+
+### Create Deployment Workflow (.github/workflows/deploy-compute-node.yml)
+```yaml
+name: Deploy Compute Node
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  TERRAFORM_VERSION: 1.5.7
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y sshpass
+
+    - name: Generate SSH key pair
+      run: |
+        mkdir -p /tmp/.ssh
+        ssh-keygen -t rsa -b 4096 -f /tmp/ssh_key -N "" -C "github-actions-cluster"
+
+    - name: Create terraform.tfvars from secrets
+      run: |
+        echo 'do_token = "${{ secrets.DIGITALOCEAN_TOKEN }}"' > terraform/terraform.tfvars
+        echo 'region = "lon1"' >> terraform/terraform.tfvars
+        echo 'cluster_name = "student-cluster"' >> terraform/terraform.tfvars
+        echo 'com2_size = "s-2vcpu-4gb"' >> terraform/terraform.tfvars
+        echo 'image = "rockylinux-9-x64"' >> terraform/terraform.tfvars
+        echo 'private_key_path = "/tmp/ssh_key"' >> terraform/terraform.tfvars
+        echo 'tags = ["github-actions", "hpc-cluster", "automated"]' >> terraform/terraform.tfvars
+        echo 'existing_droplet_names = ["head", "com1"]' >> terraform/terraform.tfvars
+
+    - name: Setup SSH key for Terraform
+      run: |
+        cp /tmp/ssh_key.pub terraform/ssh_key.pub
+        chmod 600 /tmp/ssh_key
+
+    - name: Terraform Init and Apply
+      run: |
+        cd terraform
+        terraform init
+        terraform plan
+        timeout 180s terraform apply -auto-approve
+
+    - name: Wait for com2 to be ready
+      run: |
+        echo "Waiting for com2 droplet to be fully provisioned..."
+        sleep 90
+
+    - name: Get com2 IP using simple method
+      run: |
+        cd terraform
+        terraform output com2_ip > ip.txt
+        COM2_IP=$(grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' ip.txt | head -1)
+        echo "COM2_IP=$COM2_IP" >> $GITHUB_ENV
+        echo "Com2 IP: $COM2_IP"
+
+    - name: Configure com2 with basic setup
+      run: |
+        echo "Configuring com2 at $COM2_IP"
+        ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 -i /tmp/ssh_key root@$COM2_IP "adduser clusteradmin"
+        ssh -o StrictHostKeyChecking=no -i /tmp/ssh_key root@$COM2_IP "echo '!Super@4' | passwd --stdin clusteradmin"
+        ssh -o StrictHostKeyChecking=no -i /tmp/ssh_key root@$COM2_IP "dnf install sudo -y"
+        ssh -o StrictHostKeyChecking=no -i /tmp/ssh_key root@$COM2_IP "usermod -aG wheel clusteradmin"
+        ssh -o StrictHostKeyChecking=no -i /tmp/ssh_key root@$COM2_IP "echo 'clusteradmin ALL=(ALL) NOPASSWD:ALL' | tee /etc/sudoers.d/clusteradmin"
+
+    - name: Setup NFS on com2
+      run: |
+        echo "Setting up NFS on com2 at $COM2_IP"
+        ssh -o StrictHostKeyChecking=no -i /tmp/ssh_key root@$COM2_IP "dnf install nfs-utils -y"
+        ssh -o StrictHostKeyChecking=no -i /tmp/ssh_key root@$COM2_IP "mount -t nfs 10.106.0.5:/home /home"
+        ssh -o StrictHostKeyChecking=no -i /tmp/ssh_key root@$COM2_IP "echo '10.106.0.5:/home /home nfs defaults 0 0' >> /etc/fstab"
+        ssh -o StrictHostKeyChecking=no -i /tmp/ssh_key root@$COM2_IP "setsebool -P use_nfs_home_dirs 1"
+
+    - name: Display completion message
+      run: |
+        echo "=========================================="
+        echo "✅ DEPLOYMENT COMPLETE"
+        echo "=========================================="
+        echo "com2 node: $COM2_IP"
+        echo "User: clusteradmin"
+        echo "Password: !Super@4"
+        echo "NFS: Mounted /home from head node"
+        echo ""
+        echo "To connect: ssh clusteradmin@$COM2_IP"
+        echo "=========================================="
+```
+
+## Step 5: GitHub Repository Setup
+
+### Create Private Repository
+1. Go to GitHub.com and create a new private repository
+2. Name it `digital-ocean-deploy-compute-node`
+3. Add team members as collaborators
+
+<p align="center"><img alt="GitHub Repository Structure" src="./resources/github-repo-digital-ocean.png" width=900 /></p>
+
+### Initialize and Push Code
+```bash
+git init
+git add .
+git commit -m "Initial commit: Terraform + Ansible + GitHub Actions deployment"
+git branch -M main
+git remote add origin git@github.com:your-username/digital-ocean-deploy-compute-node.git
+git push -u origin main
+```
+
+## Step 6: Configure GitHub Secrets
+
+### Add Required Secrets
+1. **DIGITALOCEAN_TOKEN**: Your DigitalOcean API token
+2. **SSH_PRIVATE_KEY**: The private key for cluster access
+
+**Steps to add secrets:**
+1. Go to your GitHub repository
+2. Navigate to **Settings** → **Secrets and variables** → **Actions**
+3. Click **New repository secret**
+
+<p align="center"><img alt="GitHub Secrets Configuration" src="./resources/github-secrets-digital-ocean.png" width=900 /></p>
+
+## Step 7: Trigger Deployment
+
+### Manual Trigger
+1. Make a small change to any file (e.g., update README.md)
+2. Commit and push changes:
+```bash
+git add .
+git commit -m "Trigger deployment"
+git push origin main
+```
+
+### Monitor Deployment
+1. Go to your GitHub repository
+2. Click on **Actions** tab
+3. Monitor the workflow execution
+
+<p align="center"><img alt="Successful GitHub Actions Deployment" src="./resources/github-successful-deploy.png" width=900 /></p>
+
+### Verify Deployment
+Once the GitHub Actions workflow completes successfully, verify that your new com2 node has been deployed:
+
+<p align="center"><img alt="com2 Created from Deployment" src="./resources/com2-made-from-deployment.png" width=900 /></p>
 
 > [!TIP]
-> To avoid losing your team's progress, it would be a good idea to create a GitHub repo in order for you to commit and push your various scripts and configuration files.
+> If you need to test the deployment process again, you can destroy the existing com2 node first:
 
-# Continuous Integration Using CircleCI
-
-Circle CI is a Continuous Integration and Continuous Delivery platform that can be utilized to implement DevOps practices. It helps teams build, test, and deploy applications quickly and reliably.
-
-In this section of the tutorials you're going to be expanding on the OpenStack instance automation with CircleCI `Workflows` and `Pipelines`. For this tutorial you will be using your GitHub account which will integrate directly into CircleCI.
-
-## Prepare GitHub Repository
-
-   You will be integration GitHub into CircleCI workflows, wherein every time you commit changes to your `deploy_compute` GitHub repository, CircleCI will instantiate and trigger Terraform, to create a new compute node VM on Sebowa.
-
-1. Create GitHub Repository
-   If you haven't already done so, sign up for a [GitHub Account](https://github.com/). Then create an empty private repository with a suitable name, i.e. `deploy_compute_node`:
-
-   <p align="center"><img alt="Github Create" src="./resources/github_create_new_repo.png" width=600 /></p>
-
-1. Add your team members to the repository to provide them with access:
-   <p align="center"><img alt="Github Manage Access" src="./resources/github_manage_access.png" width=900 /></p>
-
-1. If you haven't already done so, add your SSH key to your GitHub account by following the instructions from [Steps to follow when editing existing content](../README.md#steps-to-follow-when-editing-existing-content).
-
-> [!TIP]
-> You will be using your head node to orchestrate and configure your infrastructure. Pay careful attention to ensure that you copy over your **head node**'s public SSH key. Administrating and managing your compute nodes in this manner requires you to think about them as "cattle" and not "pets".
-
-## Reuse `providers.tf` and `main.tf` Terraform Configurations
-
-1. On your head node, create a folder that is going to be used to initialize the GitHub repository:
-   ```bash
-   mkdir ~/deploy_compute_node
-   cd ~/deploy_compute_node
-   ```
-
-1. Copy the `providers.tf` and `main.tf` files you had previously generated:
-
-   ```bash
-   cp ~/terraform/providers.tf ./
-   cp ~/terraform/main.tf ./
-   vim main.tf
-   ```
-
-## Create `.circleci/config.yml` File and `push` Project to GitHub
-
-   The `.circle/config.yml` configuration file is where you define your build, test and deployment process. From your head node, you are going to be `pushing` your Infrastructure as Code to your private GitHub repository. This will then automatically trigger the CircleCI deployment of a Docker container which has been tailored for Terraform operations and instructions that will deploy your Sebowa OpenStack compute node instance.
-
-1. Create and edit `.circleci/config.yml`:
-   ```bash
-   mkdir .circleci
-   vim .circleci/config.yml # Remember that if you are not comfortable using Vim, install and make use of Nano
-   ```
-
-1. Copy the following configuration into `.circle/config.yml`:
-   ```conf
-   version: 2.1
-
-   jobs:
-     deploy:
-       docker:
-         - image: hashicorp/terraform:latest
-       steps:
-         - checkout
-
-         - run:
-             name: Create clouds.yaml
-             command: |
-               mkdir -p ~/.config/openstack
-               echo "clouds:
-                 openstack:
-                   auth:
-                     auth_url: https://sebowa.nicis.ac.za:5000
-                     application_credential_id: ${application_credential_id}
-                     application_credential_secret: ${application_credential_secret}
-                   region_name: "RegionOne"
-                   interface: "public"
-                   identity_api_version: 3
-                   auth_type: "v3applicationcredential"" > ~/.config/openstack/clouds.yaml
-
-         - run:
-             name: Terraform Init
-             command: terraform init
-
-         - run:
-             name: Terraform Apply
-             command: terraform apply -auto-approve
-
-   workflows:
-     version: 2
-     deploy_workflow:
-     jobs:
-       - deploy
-
-   ```
-     - **Version**: Specifies the configuration version.
-     - **Jobs**: Defines the individual steps in the build process, where we've defined a `build` job that runs inside the latest Terraform Docker container from Hashicorp.
-     - **Steps**: The steps to execute within the job:
-       * `checkout`: Clone and checkout the code from the repository.
-       * `run`: Executes a number of shell commands to create the `clouds.yaml` file, then initialize and apply the Terraform configuration.
-     - **Workflows**: Defines the workflow(s) that CircleCI will follow, where in this instance there is a single workflow specified `deploy_workflow`, that runs the `deploy` job.
-
-1. `Init`ialize the Git Repository, `add` the files you've just created and `push` to GitHub:
-   Following the instructions from the previous section where you created a new GitHub repo, execute the following commands from your head node, inside the `deploy_compute_node` folder:
-   ```bash
-   cd ~/deploy_compute_node
-   git init
-   git add .
-   git commit -m "Initial Commit." # You may be asked to configure you Name and Email. Follow the instructions on the screen before proceeding.
-   git branch -M main
-   git remote add origin git@github.com:<TEAM_NAME>/deploy_compute_node.git
-   git push -u origin main
-   ```
-   The new files should now be available on GitHub.
-
-## Create CircleCI Account and Add Project
-
-   Navigate to [CircleCI.com](https://circleci.com) to create an account, link and add a new GitHub project.
-1. Create a new organization and give it a suitable name
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_organization.png" width=600 /></p>
-1. Once you've logged into your workspace, go to projects and create a new project
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project00.png" width=600 /></p>
-1. Create a new IaC Project
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project01.png" width=600 /></p>
-1. If your repository is on GitHub, create a corresponding project
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project02.png" width=600 /></p>
-1. Pick a project name and a repository to associate it to
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project03.png" width=600 /></p>
-1. Push the configuration to GitHub to trigger workflow
-   <p align="center"><img alt="CircleCI" src="./resources/circleci_successful_deploy.png" width=900 /></p>
-
-> [!IMPORTANT]
-> You're going to need to delete your experimental compute node instance on your Sebowa OpenStack workspace, each time you want to test or run the CircleCI integration. It has been included here for demonstration purposes, so that you may begin to see the power and utility of CI/CD and automation.
->
-> Navigate to your Sebowa OpenStack workspace to ensure that they deployment was successful.
->
-> Consider how you could streamline this process even further using preconfigured instance snapshots, as well as  Ansible after your instances have been deployed.
+<p align="center"><img alt="Destroy com2 for Testing" src="./resources/destory-com2-for-github-deploying.png" width=900 /></p>  
 
 # Slurm Scheduler and Workload Manager
 
