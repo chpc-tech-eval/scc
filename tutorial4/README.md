@@ -23,6 +23,15 @@
     1. [Reuse `providers.tf` and `main.tf` Terraform Configurations](#reuse-providerstf-and-maintf-terraform-configurations)
     1. [Create `.circleci/config.yml` File and `push` Project to GitHub](#create-circleciconfigyml-file-and-push-project-to-github)
     1. [Create CircleCI Account and Add Project](#create-circleci-account-and-add-project)
+1. [Automating the Deployment of your IBM Cloud Instances Using Terraform](#automating-the-deployment-of-your-ibm-cloud-instances-using-terraform)
+    1. [Install and Initialize Terraform](#install-and-initialize-terraform)
+    1. [Generate Terraform Configuration Files](#generate-terraform-configuration-files)
+    1. [Generate, Deploy and Apply Terraform Plan](#generate-deploy-and-apply-terraform-plan)
+1. [Continuous Integration Using GitHub Actions](#continuous-integration-using-github-actions)
+    1. [Prepare GitHub Repository](#prepare-github-repository)
+    1. [Create GitHub Actions Workflow](#create-github-actions-workflow)
+    1. [Configure GitHub Secrets](#configure-github-secrets)
+    1. [Trigger and Monitor Deployment](#trigger-and-monitor-deployment)
 1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
     1. [Prerequisites](#prerequisites)
     1. [Head Node Configuration (Server)](#head-node-configuration-server)
@@ -1177,7 +1186,7 @@ jobs:
     - name: Display completion message
       run: |
         echo "=========================================="
-        echo "✅ DEPLOYMENT COMPLETE"
+        echo " DEPLOYMENT COMPLETE"
         echo "=========================================="
         echo "com2 node: $COM2_IP"
         echo "User: clusteradmin"
@@ -1247,6 +1256,577 @@ Once the GitHub Actions workflow completes successfully, verify that your new co
 > If you need to test the deployment process again, you can destroy the existing com2 node first:
 
 <p align="center"><img alt="Destroy com2 for Testing" src="./resources/destory-com2-for-github-deploying.png" width=900 /></p>  
+
+# Automating the Deployment of your IBM Cloud Instances Using Terraform
+
+This section guides you through setting up a complete Infrastructure as Code (IaC) pipeline using Terraform to automate the deployment of compute nodes on IBM Cloud.
+
+## Architecture Overview
+```
+GitHub Repository → GitHub Actions → Terraform → IBM Cloud API 
+```
+
+## Prerequisites
+- IBM Cloud account with API key
+- Existing `head` and `com1` virtual server instances running
+- GitHub account
+- Basic familiarity with Terraform and YAML
+
+## Step 1: Repository Structure Setup
+
+### Create Project Directory
+```bash
+mkdir ibm-cloud-deploy-compute-node
+cd ibm-cloud-deploy-compute-node
+```
+
+### Project Structure
+```
+ibm-cloud-deploy-compute-node/
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── terraform.tfvars
+│   ├── terraform.tfvars.example
+│   └── inventory.tpl
+├── ansible/
+│   ├── playbook-com3.yml
+│   ├── setup-com3-first.yml
+│   ├── inventory.ini
+│   └── group_vars/all.yml
+└── .github/workflows/
+    └── deploy-compute-node.yml
+```
+
+## Step 2: Terraform Configuration
+
+### Create Terraform Variables (variables.tf)
+```hcl
+variable "ibmcloud_api_key" {
+  description = "IBM Cloud API key"
+  type        = string
+  sensitive   = true
+}
+
+variable "region" {
+  description = "IBM Cloud region"
+  type        = string
+  default     = "eu-gb"
+}
+
+variable "cluster_name" {
+  description = "Name of the cluster"
+  type        = string
+  default     = "student-cluster"
+}
+
+variable "com3_profile" {
+  description = "Instance profile for com3 node"
+  type        = string
+  default     = "bx2-2x8"
+}
+
+variable "image_id" {
+  description = "VSI image ID"
+  type        = string
+  default     = "r018-8aac48f7-8a92-4fe4-a7dc-a7adce4b1656"
+}
+
+variable "ssh_key_id" {
+  description = "SSH key ID"
+  type        = string
+  default     = "r018-0882fad6-6daa-434a-9165-b3b29ae6814e"
+}
+
+variable "vpc_id" {
+  description = "VPC ID"
+  type        = string
+  default     = "r018-7b973db6-8b1c-4b75-8126-1c68d4a396b3"
+}
+
+variable "subnet_id" {
+  description = "Subnet ID"
+  type        = string
+  default     = "r018-7e3d817d-6aa8-46f8-8c6c-0d75e426e9a1"
+}
+
+variable "security_group_id" {
+  description = "Security group ID"
+  type        = string
+  default     = "r018-5f4c0b6a-1e2a-4a97-9c3d-8e9f4a2b7c1e"
+}
+
+variable "zone" {
+  description = "Zone"
+  type        = string
+  default     = "eu-gb-2"
+}
+
+variable "tags" {
+  description = "Tags for instances"
+  type        = list(string)
+  default     = ["github-actions", "hpc-cluster", "automated"]
+}
+```
+
+### Create Main Terraform Configuration (main.tf)
+```hcl
+terraform {
+  required_providers {
+    ibm = {
+      source = "IBM-Cloud/ibm"
+      version = "~> 1.84.3"
+    }
+    local = {
+      source = "hashicorp/local"
+      version = "~> 2.0"
+    }
+  }
+}
+
+provider "ibm" {
+  ibmcloud_api_key = var.ibmcloud_api_key
+  region           = var.region
+}
+
+# Data sources to get existing VPC resources
+data "ibm_is_vpc" "existing_vpc" {
+  identifier = var.vpc_id
+}
+
+data "ibm_is_subnet" "existing_subnet" {
+  identifier = var.subnet_id
+}
+
+data "ibm_is_security_group" "existing_sg" {
+  identifier = var.security_group_id
+}
+
+# Create com3 virtual server instance
+resource "ibm_is_instance" "com3" {
+  name    = "com3"
+  image   = var.image_id
+  profile = var.com3_profile
+  keys    = [var.ssh_key_id]
+  vpc     = data.ibm_is_vpc.existing_vpc.id
+  zone    = var.zone
+  tags    = var.tags
+
+  primary_network_interface {
+    subnet          = data.ibm_is_subnet.existing_subnet.id
+    security_groups = [data.ibm_is_security_group.existing_sg.id]
+  }
+
+  timeouts {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
+}
+
+# Generate Ansible inventory
+resource "local_file" "ansible_inventory" {
+  filename = "../ansible/inventory.ini"
+  content = templatefile("${path.module}/inventory.tpl", {
+    com3_private_ip = ibm_is_instance.com3.primary_network_interface[0].primary_ip[0].address
+  })
+  depends_on = [ibm_is_instance.com3]
+}
+
+output "com3_instance_id" {
+  value = ibm_is_instance.com3.id
+}
+
+output "com3_private_ip" {
+  value = ibm_is_instance.com3.primary_network_interface[0].primary_ip[0].address
+}
+
+output "com3_name" {
+  value = ibm_is_instance.com3.name
+}
+```
+
+### Create Inventory Template (inventory.tpl)
+```ini
+[head]
+141.125.159.109
+
+[com1]
+10.242.64.5
+
+[com2]
+10.242.64.6
+
+[com3]
+${com3_private_ip}
+
+[compute_nodes]
+10.242.64.5
+10.242.64.6
+${com3_private_ip}
+
+[all:vars]
+ansible_user=clusteradmin
+ansible_ssh_private_key_file=/tmp/ssh_key
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyJump=clusteradmin@141.125.159.109'
+```
+
+## Step 3: Ansible Configuration
+
+### Create Initial Setup Playbook (ansible/setup-com3-first.yml)
+```yaml
+---
+- name: Initial setup for com3
+  hosts: com3
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - name: Wait for system to be fully ready
+      wait_for_connection:
+        timeout: 300
+
+    - name: Create clusteradmin user
+      user:
+        name: clusteradmin
+        state: present
+        groups: wheel
+        append: yes
+        create_home: yes
+        shell: /bin/bash
+
+    - name: Set password for clusteradmin
+      user:
+        name: clusteradmin
+        password: "{{ '!Super@4' | password_hash('sha512') }}"
+
+    - name: Configure sudo for clusteradmin
+      copy:
+        content: "clusteradmin ALL=(ALL) NOPASSWD:ALL"
+        dest: /etc/sudoers.d/clusteradmin
+        mode: 0440
+
+    - name: Create .ssh directory for clusteradmin
+      file:
+        path: /home/clusteradmin/.ssh
+        state: directory
+        owner: clusteradmin
+        group: clusteradmin
+        mode: 0700
+
+    - name: Setup SSH key for clusteradmin
+      copy:
+        content: "{{ lookup('file', '/tmp/ssh_key.pub') }}"
+        dest: /home/clusteradmin/.ssh/authorized_keys
+        owner: clusteradmin
+        group: clusteradmin
+        mode: 0600
+
+    - name: Configure /etc/hosts for cluster
+      blockinfile:
+        path: /etc/hosts
+        block: |
+          10.242.64.4 head
+          10.242.64.5 com1
+          10.242.64.6 com2
+          {{ ansible_default_ipv4.address }} com3
+        marker: "# {mark} ANSIBLE MANAGED BLOCK - CLUSTER NODES"
+
+    - name: Set hostname to com3
+      hostname:
+        name: com3
+
+    - name: Ensure SSH service is running
+      systemd:
+        name: sshd
+        state: started
+        enabled: yes
+```
+
+### Create Main Configuration Playbook (ansible/playbook-com3.yml)
+```yaml
+---
+- name: Configure com3 node and integrate with cluster
+  hosts: com3
+  gather_facts: yes
+  become: yes
+  vars:
+    cluster_user: "clusteradmin"
+
+  tasks:
+    - name: Wait for connection
+      wait_for_connection:
+        timeout: 60
+
+    - name: Install base packages
+      package:
+        name:
+          - nfs-utils
+          - chrony
+          - openssh-clients
+        state: present
+
+    - name: Configure NFS client
+      block:
+        - name: Mount NFS home directory
+          mount:
+            path: /home
+            src: "head:/home"
+            fstype: nfs
+            state: mounted
+            opts: defaults,_netdev
+
+        - name: Set SELinux boolean for NFS home dirs
+          seboolean:
+            name: use_nfs_home_dirs
+            state: yes
+            persistent: yes
+```
+
+## Step 4: GitHub Actions Workflow
+
+### Create Deployment Workflow (.github/workflows/deploy-compute-node.yml)
+```yaml
+name: Deploy Compute Node
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  TERRAFORM_VERSION: 1.5.7
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y sshpass
+
+    - name: Generate SSH key pair
+      run: |
+        mkdir -p /tmp/.ssh
+        ssh-keygen -t rsa -b 4096 -f /tmp/ssh_key -N "" -C "github-actions-cluster"
+
+    - name: Create terraform.tfvars from secrets
+      run: |
+        cat > terraform/terraform.tfvars << EOF
+        ibmcloud_api_key = "${{ secrets.IBM_CLOUD_API_KEY }}"
+        region = "eu-gb"
+        cluster_name = "student-cluster"
+        com3_profile = "bx2-2x8"
+        image_id = "r018-8aac48f7-8a92-4fe4-a7dc-a7adce4b1656"
+        ssh_key_id = "r018-0882fad6-6daa-434a-9165-b3b29ae6814e"
+        vpc_id = "r018-7b973db6-8b1c-4b75-8126-1c68d4a396b3"
+        subnet_id = "r018-7e3d817d-6aa8-46f8-8c6c-0d75e426e9a1"
+        security_group_id = "r018-5f4c0b6a-1e2a-4a97-9c3d-8e9f4a2b7c1e"
+        zone = "eu-gb-2"
+        tags = ["github-actions", "hpc-cluster", "automated"]
+        EOF
+
+    - name: Setup SSH key for Terraform
+      run: |
+        cp /tmp/ssh_key.pub terraform/ssh_key.pub
+        chmod 600 /tmp/ssh_key
+
+    - name: Terraform Init and Apply
+      run: |
+        cd terraform
+        terraform init
+        terraform plan
+        timeout 300s terraform apply -auto-approve
+
+    - name: Wait for com3 to be ready
+      run: |
+        echo "Waiting for com3 instance to be fully provisioned..."
+        sleep 120
+
+    - name: Get com3 IP
+      run: |
+        cd terraform
+        terraform output com3_private_ip > ip.txt
+        COM3_IP=$(grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' ip.txt | head -1)
+        echo "COM3_IP=$COM3_IP" >> $GITHUB_ENV
+        echo "Com3 Private IP: $COM3_IP"
+
+    - name: Configure com3 with basic setup using ProxyJump
+      run: |
+        echo "Configuring com3 at $COM3_IP using ProxyJump through head node"
+        ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 -J clusteradmin@141.125.159.109 root@$COM3_IP "adduser clusteradmin"
+        ssh -o StrictHostKeyChecking=no -J clusteradmin@141.125.159.109 root@$COM3_IP "echo '!Super@4' | passwd --stdin clusteradmin"
+        ssh -o StrictHostKeyChecking=no -J clusteradmin@141.125.159.109 root@$COM3_IP "dnf install sudo -y"
+        ssh -o StrictHostKeyChecking=no -J clusteradmin@141.125.159.109 root@$COM3_IP "usermod -aG wheel clusteradmin"
+        ssh -o StrictHostKeyChecking=no -J clusteradmin@141.125.159.109 root@$COM3_IP "echo 'clusteradmin ALL=(ALL) NOPASSWD:ALL' | tee /etc/sudoers.d/clusteradmin"
+        ssh -o StrictHostKeyChecking=no -J clusteradmin@141.125.159.109 root@$COM3_IP "chmod 440 /etc/sudoers.d/clusteradmin"
+
+    - name: Setup NFS on com3 using ProxyJump
+      run: |
+        echo "Setting up NFS on com3 at $COM3_IP using ProxyJump"
+        ssh -o StrictHostKeyChecking=no -J clusteradmin@141.125.159.109 root@$COM3_IP "dnf install nfs-utils -y"
+        ssh -o StrictHostKeyChecking=no -J clusteradmin@141.125.159.109 root@$COM3_IP "mount -t nfs 10.242.64.4:/home /home"
+        ssh -o StrictHostKeyChecking=no -J clusteradmin@141.125.159.109 root@$COM3_IP "echo '10.242.64.4:/home /home nfs defaults 0 0' >> /etc/fstab"
+        ssh -o StrictHostKeyChecking=no -J clusteradmin@141.125.159.109 root@$COM3_IP "setsebool -P use_nfs_home_dirs 1"
+
+    - name: Display completion message
+      run: |
+        echo "=========================================="
+        echo " DEPLOYMENT COMPLETE"
+        echo "=========================================="
+        echo "com3 node (Private): $COM3_IP"
+        echo "User: clusteradmin"
+        echo "Password: !Super@4"
+        echo "NFS: Mounted /home from head node (10.242.64.4)"
+        echo ""
+        echo "To connect from your workstation:"
+        echo "ssh -J clusteradmin@141.125.159.109 clusteradmin@$COM3_IP"
+        echo ""
+        echo "Or connect via head node:"
+        echo "ssh clusteradmin@141.125.159.109"
+        echo "ssh clusteradmin@$COM3_IP"
+        echo "=========================================="
+```
+
+## Step 5: GitHub Repository Setup
+
+### Create Private Repository
+1. Go to GitHub.com and create a new private repository
+2. Name it `ibm-cloud-deploy-compute-node`
+3. Add team members as collaborators
+
+<p align="center"><img alt="GitHub Repository Structure" src="./resources/ibm-github-repo-homepage.png" width=900 /></p>
+
+### Initialize and Push Code
+```bash
+git init
+git add .
+git commit -m "Initial commit: Terraform + Ansible + GitHub Actions deployment for IBM Cloud"
+git branch -M main
+git remote add origin git@github.com:your-username/ibm-cloud-deploy-compute-node.git
+git push -u origin main
+```
+
+## Step 6: Configure GitHub Secrets
+
+### Add Required Secrets
+1. **IBM_CLOUD_API_KEY**: Your IBM Cloud API token
+2. **SSH_PRIVATE_KEY**: The private key for cluster access
+
+**Steps to add secrets:**
+1. Go to your GitHub repository
+2. Navigate to **Settings** → **Secrets and variables** → **Actions**
+3. Click **New repository secret**
+
+<p align="center"><img alt="GitHub Secrets Configuration" src="./resources/ibm-secrets-github.png" width=900 /></p>
+
+## Step 7: Trigger Deployment
+
+### Manual Trigger
+1. Make a small change to any file (e.g., update README.md)
+2. Commit and push changes:
+```bash
+git add .
+git commit -m "Trigger deployment"
+git push origin main
+```
+
+### Monitor Deployment
+1. Go to your GitHub repository
+2. Click on **Actions** tab
+3. Monitor the workflow execution
+
+<p align="center"><img alt="Successful GitHub Actions Deployment" src="./resources/ibm-github-actions-deploy-com3-success.png" width=900 /></p>
+
+### Verify Deployment
+Once the GitHub Actions workflow completes successfully, verify that your new com3 node has been deployed:
+
+<p align="center"><img alt="com3 Created from Deployment" src="./resources/com3-ibm-deployed.png" width=900 /></p>
+
+> [!TIP]
+> If you need to test the deployment process again, you can destroy the existing com3 node first by running:
+```bash
+cd terraform
+terraform destroy -auto-approve
+```
+
+# Continuous Integration Using GitHub Actions
+
+## Prepare GitHub Repository
+
+1. **Create a new repository** on GitHub named `ibm-cloud-deploy-compute-node`
+2. **Make it private** to protect your IBM Cloud credentials
+3. **Add team members** as collaborators
+
+## Reuse Terraform Configurations
+
+The Terraform configurations from the previous section can be reused directly. Ensure your `main.tf` and `variables.tf` are properly configured for IBM Cloud.
+
+## Create GitHub Actions Workflow
+
+Create the `.github/workflows/deploy-compute-node.yml` file as shown in the previous section. This workflow will:
+
+- Automatically deploy when code is pushed to the main branch
+- Use your IBM Cloud API key from GitHub secrets
+- Provision a new compute node (com3)
+- Configure the node with necessary software and NFS mounts
+- Integrate the node into your existing cluster
+
+## Create CircleCI Account and Add Project (Alternative)
+
+If you prefer to use CircleCI instead of GitHub Actions:
+
+1. **Sign up for CircleCI** at https://circleci.com
+2. **Connect your GitHub account** to CircleCI
+3. **Add your project** to CircleCI
+4. **Set environment variables** in CircleCI:
+   - `IBM_CLOUD_API_KEY`: Your IBM Cloud API key
+   - `SSH_PRIVATE_KEY`: Your SSH private key
+
+### CircleCI Configuration (.circleci/config.yml)
+```yaml
+version: 2.1
+
+jobs:
+  deploy:
+    docker:
+      - image: cimg/base:2024.01
+    steps:
+      - checkout
+      - run:
+          name: Install Terraform
+          command: |
+            wget https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
+            unzip terraform_1.5.7_linux_amd64.zip
+            sudo mv terraform /usr/local/bin/
+      - run:
+          name: Terraform Init and Apply
+          command: |
+            cd terraform
+            terraform init
+            terraform apply -auto-approve -var="ibmcloud_api_key=$IBM_CLOUD_API_KEY"
+      - run:
+          name: Configure New Node
+          command: |
+            # Add configuration steps similar to GitHub Actions workflow
+            echo "Configuration completed"
+
+workflows:
+  version: 2
+  deploy-workflow:
+    jobs:
+      - deploy:
+          context: ibm-cloud-context
+```
 
 # Slurm Scheduler and Workload Manager
 

@@ -18,7 +18,8 @@ Student Cluster Competition - Tutorial 3
     1. [Configuring and Running HPL with Intel oneAPI Toolkit and MKL](#configuring-and-running-hpl-with-intel-oneapi-toolkit-and-mkl)
 1. [LinPACK Theoretical Peak Performance](#linpack-theoretical-peak-performance)
     1. [Top500 List](#top500-list)
-1. [Spinning Up a Second Compute Node Using a Snapshot](#spinning-up-a-second-compute-node-using-a-snapshot)
+1. [Spinning Up a Second Compute Node Using a Snapshot: Digital Ocean](#spinning-up-a-second-compute-node-using-a-snapshot:-digital-ocean)  
+1. [Spinning Up a Second Compute Node Using a Snapshot: IBM Cloud](#spinning-up-a-second-compute-node-using-a-snapshot:-ibm-cloud)
     1. [Running HPL Across Multiple Nodes](#running-hpl-across-multiple-nodes)
 1. [Application Benchmark Profiling](#application-benchmark-profiling)
     1. [Hardware Topology](#hardware-topology)
@@ -613,7 +614,7 @@ The [TOP500 list](https://top500.org/lists/top500/2024/06/) is a project that ra
 > [!IMPORTANT]
 > You do **NOT** need to try and Rank you VM's HPL performance. Cores and threads are used interchangeably in this context. Following the recommended configuration and guides, your head node has one CPU package with two compute cores (or threads). Continuing this same analogy, your compute node has one CPU with six cores (or threads).
 
-# Spinning Up a Second Compute Node Using a Snapshot
+# Spinning Up a Second Compute Node Using a Snapshot: Digital Ocean
 
 This section guides you through creating a second compute node (com2) from a snapshot of your first compute node (com1). This ensures both nodes have identical configurations and pre-installed software.
 
@@ -673,6 +674,78 @@ Wait for com2 to provision (typically 30-60 seconds)
 <p align="center"><img alt="com2 showing on DigitalOcean droplets list" src="./resources/snapshot-created-com2.png" width=900 /></p>
 
 Pay careful attention to the hostname, network and other configuration settings that may be specific to and may conflict with your initial node. Once your two compute nodes have been successfully deployed, are accessible from the head node and added to your MPI `hosts` file, you can continue with running HPL across multiple nodes.
+
+# Spinning Up a Second Compute Node Using a Snapshot: IBM Cloud
+
+This section guides you through creating a second compute node (`com2`) from a snapshot of your first compute node (`com1`). This ensures identical configurations and pre-installed software across nodes without the need for manual reconfiguration.
+
+## Prerequisites
+- Running `com1` Virtual Server Instance with configured software
+- Access to IBM Cloud console
+- Basic understanding of snapshot functionality
+
+## Step-by-Step Instructions
+
+### Step 1: Create Snapshot from com1
+
+1. **Navigate to Block Storage Snapshots**
+   - From the left menu bar, click "Infrastructure"
+   - Go to "Storage" → "Block Storage Snapshots"
+
+<p align="center"><img alt="IBM Cloud Block Storage Snapshots Navigation" src="./resources/ibm-block-storage-snapshots.png" width=900 /></p>
+
+2. **Create New Snapshot**
+   - Click "Create" button
+   - Configure the snapshot:
+     - **Snapshot name**: `com1-snapshot-<date>` or `compute-node-base`
+     - **Source volume**: Select the boot volume from your com1 instance
+     - **Resource group**: Default
+     - **Tags**: Optional tags for organization
+
+<p align="center"><img alt="Selecting Boot Volume Snapshot Type" src="./resources/selecting-boot-ibm-com1-snapshot-type.png" width=900 /></p>
+
+3. **Initiate Snapshot Creation**
+   - Review snapshot details
+   - Click "Create snapshot"
+   - Wait for snapshot creation to complete (status: "Available")
+
+<p align="center"><img alt="Confirm Snapshot in Snapshot List" src="./resources/confirm-snapshot-in-snapshot-list-of-newly-created-shots.png" width=900 /></p>
+
+### Step 2: Create com2 from Snapshot
+
+1. **Create Instance from Snapshot**
+   - From the snapshots list, find your `com1-snapshot`
+   - Click the action menu (⋮) and select "Create virtual server instance"
+
+2. **Configure com2 Instance**
+   - **Instance name**: `com2`
+   - **Resource group**: Default
+   - **Location**: Same region as com1 (eu-gb London)
+   - **Image**: Your snapshot should be pre-selected
+   - **Profile**: Same as com1 (bx2-2x8 - 2 vCPUs, 8GB RAM)
+
+<p align="center"><img alt="Configure com2 Using Snapshot" src="./resources/configure-com2-using-snapshot.png" width=900 /></p>
+
+3. **Network and Security**
+   - **VPC**: Default VPC (same as com1)
+   - **Subnet**: Same subnet as com1 for internal communication
+   - **SSH keys**: Select the same SSH key used for com1
+   - **No floating IP**: Keep compute nodes on private network only
+
+4. **Review and Create**
+   - Review the configuration summary
+   - Click "Create virtual server" to deploy com2
+
+### Step 3: Verify com2 Configuration
+
+1. **Monitor Deployment**
+   - Wait for com2 instance to become active (status: "Running")
+   - Verify no floating IP is assigned (security best practice)
+
+<p align="center"><img alt="com2 Created via Snapshot" src="./resources/com2-created-via-snapshot.png" width=900 /></p>
+
+Congratulations! You have successfully created a second compute node from snapshot on IBM Cloud.
+
 ## Running HPL Across Multiple Nodes
 
 Everything is now in place for you to run HPL across your two compute nodes. You must ensure that all libraries and dependencies are satisfied across your cluster. You must also ensure that your passwordless SSH is properly configured. Your NFS mounted `/home` directory must be properly configured.

@@ -20,8 +20,12 @@ This tutorial will conclude with you downloading, installing and running the Hig
 1. [Launching your First Digital Ocean Virtual Machine Instance](#launching-your-first-digital-ocean-virtual-machine-instance)  
     1. [Creating Your DigitalOcean Account and Project](#creating-your-digitalocean-account-and-project)
     1. [Launching Your First Droplet (Head Node)](#launcing-your-first-droplet-(head-node))
+1. [Launching your First IBM Cloud Virtual Machine Instance](#launching-your-first-ibm-cloud-virtual-machine-instance)
+    1. [Creating Your IBM Cloud Account and Project](#creating-your-ibm-cloud-account-and-project)
+    1. [Launching Your First Virtual Server Instance (Head Node)](#launching-your-first-virtual-server-instance-head-node)
 1. [Introduction to Basic Linux Administration](#introduction-to-basic-linux-administration)
     1. [Accessing Your Droplet via SSH MobaXTerm](#accessing-your-droplet-via-ssh-mobaxterm)
+    1. [Accessing Your Virtual Server Instance via SSH MobaXTerm](#accessing-your-virtual-server-instance-via-ssh-mobaxterm)
     1. [Running Basic Linux Commands and Services](#running-basic-linux-commands-and-services)
 1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
     1. [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
@@ -140,7 +144,7 @@ You should familiarize yourself with a few basic networking commands that can be
 
 In this section, you will be configuring and launching your first **Virtual Machine (VM)** instance. This allows you to use a portion of another computer's resources to host an **Operating System** as though it were running on its own dedicated hardware.
 
-## 🚀 **What is a Virtual Machine?**
+##  **What is a Virtual Machine?**
 - A **Virtual Machine** allows you to run another operating system within your current environment
 - For example: Running a **Linux-based OS** while in a **Windows environment** using a **Hypervisor**
 - The physical servers hosting your VMs are located in **London**
@@ -237,6 +241,123 @@ Your Droplet will now provision (takes 30-60 seconds)
 You will see its public IP address once ready (e.g., 143.110.189.123)  
 Your first DigitalOcean Virtual Machine is now ready! 
 
+  
+# Launching your First IBM Cloud Virtual Machine Instance
+
+In this section, you will be configuring and launching your first **Virtual Machine (VM)** instance on IBM Cloud. This allows you to use a portion of IBM's cloud resources to host an **Operating System** as though it were running on its own dedicated hardware.
+
+---
+
+## **Creating Your IBM Cloud Account and Project**
+
+### **STEP 1: Create a Free Account**
+- Navigate to: **https://cloud.ibm.com/registration**
+- Click **"Create an IBM Cloud Account"** and create your account using your email address
+
+<p align="center"><img alt="IBM Cloud Registration Page" src="./resources/ibm-cloud-registration-page.png" width=900 /></p>
+
+### **STEP 2: Verify Your Email and Add Billing Information**
+- After signing up, you will receive a verification email - enter the code to verify your account
+- You will be prompted to add a **payment method** for identity verification
+- Insert a valid **credit card** - a small verification charge may be made (refundable)
+- Upon successful verification, you will receive **$200 in free credit** to use over 30 days
+
+<p align="center"><img alt="IBM Cloud Dashboard with Credits" src="./resources/IBM-Credit.png" width=900 /></p>
+
+### **STEP 3: Access IBM Cloud Console**
+- Log in to your account at **https://cloud.ibm.com**
+- You will have access to the IBM Cloud catalog with various services and Lite plans
+
+<p align="center"><img alt="IBM Cloud Dashboard" src="./resources/ibm-dashboard.png" width=900 /></p>
+
+---
+
+## **Launching Your First Virtual Server Instance (Head Node)**
+
+In this section, you will create your first cloud server, which we will call the **"Head Node"**.
+
+### **STEP 4: Create a Virtual Server Instance**
+- From your IBM Cloud dashboard, navigate to the left menu bar and click **"Infrastructure"**
+- Go to **"Compute"** → **"Virtual Server Instances"**
+
+<p align="center"><img alt="IBM Cloud Navigation Menu" src="./resources/ibm-navigation-menubar-with-compute.png" width=900 /></p>
+
+#### **Configuration Options:**
+
+**Configure Instance Basics:**
+- **Instance name**: `head`
+- **Resource group**: Default
+- **Location**: Choose a region geographically close to you (e.g., London eu-gb)
+
+<p align="center"><img alt="Server Configuration" src="./resources/Server-Configuration.png" width=900 /></p>
+
+**Choose an Image:**
+- Select **CentOS Stream 9 - Minimal Install**
+- This provides a stable, enterprise-grade Linux distribution ideal for HPC workloads
+
+**Choose a Profile:**
+- Select the **Balanced** profile type
+- Choose the **bx2-2x8** option (2 vCPUs, 8GB RAM) - ideal for learning and HPC workloads
+
+<p align="center"><img alt="Server Price" src="./resources/Server-price.png" width=900 /></p>
+
+**Authentication:**
+- For security, configure **SSH Keys**
+- Use existing SSH keys or generate new ones (next step)
+
+---
+
+### **STEP 5: Generating an SSH Key (if you don't have one)**
+
+You need an **SSH key** to securely connect to your Virtual Server Instance.
+
+#### **Generate SSH Key:**
+**On Linux/macOS or Windows (PowerShell/WSL):**
+```bash
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+```
+When prompted to "Enter file in which to save the key" - press Enter for default location.  
+When prompted for a passphrase - press Enter twice (for no passphrase)  
+View and Copy Public Key:  
+```bash
+cat ~/.ssh/id_rsa.pub
+```  
+Copy the entire output (starts with ssh-rsa...)  
+
+**Add Key to IBM Cloud**:
+- Back in the Virtual Server creation window, under SSH keys, click "Add SSH key"
+- Paste your public key into the text box
+- Give it a descriptive name (e.g., "My Laptop Key")
+- Click "Add SSH Key"
+
+**Configure Storage**:
+- **Boot volume**: 100GB
+- **Auto-delete**: Enabled
+
+**Finalize the Instance**:  
+- Review the configuration and estimated cost (approximately $84.13/month after sustained usage discount)
+- Click "Create Virtual Server Instance"
+
+<p align="center"><img alt="Head Node Successfully Configured" src="./resources/Head-node-successfully-configured.png" width=900 /></p>  
+
+**Provisioning Complete**  
+Your Virtual Server Instance will now provision (takes a few minutes)  
+You will see its status change to "Running" once ready  
+Your first IBM Cloud Virtual Machine is now ready! 
+
+### **STEP 6: Reserve and Assign Floating IP**
+
+1. **Reserve Floating IP**
+   - Navigate to "Network" → "IP addresses" → "Reserve IP"
+   - Reserve a new floating IP address
+   - Cost: Approximately $2 per month
+
+2. **Assign Floating IP to Head Node**
+   - Go to your Virtual Server Instance details
+   - Click "Attach floating IP"
+   - Select the reserved floating IP
+   - Confirm assignment
+
 # Introduction to Basic Linux Administration
 
 If you've managed to successfully build and deploy your VM instance, and you managed to successfully associate and attach a floating IP bridged over your internal interface, you are finally ready to connect to your newly created instance.
@@ -257,6 +378,24 @@ The first time you connect, you will see a warning about the host's authenticity
 <p align="center"><img alt="MobaXTerm SSH Login" src="./resources/mobaxterm-ssh.png" width=900 /></p>
 
 Congratulations! You are now logged into your cloud-based Head Node.
+  
+## Accessing Your Virtual Server Instance via SSH MobaXTerm  
+### **STEP 7: Connect to Your Head Node**  
+Open a terminal on your local machine (Linux/macOS) or use PowerShell/WSL/MobaXTerm on Windows.  
+Connect using the following commands.  
+
+1. Open MobaXTerm
+2. Click Session
+3. Click SSH and under SSH:
+    - Enter your floating IP address
+    - Enter username "root"
+    - Under Advanced Settings add your private key  
+
+The first time you connect, you will see a warning about the host's authenticity. Click yes and Enter.  
+
+<p align="center"><img alt="MobaXTerm SSH Login" src="./resources/mobaxterm-ssh.png" width=900 /></p>
+
+Congratulations! You are now logged into your cloud-based Head Node.  
 
 ## Running Basic Linux Commands and Services
 
