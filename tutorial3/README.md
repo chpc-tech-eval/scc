@@ -615,14 +615,64 @@ The [TOP500 list](https://top500.org/lists/top500/2024/06/) is a project that ra
 
 # Spinning Up a Second Compute Node Using a Snapshot
 
-At this point you are ready to run HPL on your cluster with two compute nodes. From your OpenStack workspace, navigate to `Compute` &rarr; `Instances` and create a snapshot from your compute node.
+This section guides you through creating a second compute node (com2) from a snapshot of your first compute node (com1). This ensures both nodes have identical configurations and pre-installed software.
 
-Launch a new instance, as you did in [Tutorial 1](../tutorial1/README.md#launch-a-new-instance) and [Tutorial 2](../tutorial2/README.md#spinning-up-a-compute-node-on-sebowaopenstack) only this time you'll be using the snapshot that you have just created as boot source.
+## Prerequisites
+- A running com1 Droplet
+- Completed software installations on com1
+- Access to your DigitalOcean control panel
 
-<p align="center"><img alt="OpenStack create instance from Snapshot." src="./resources/openstack_instance_snapshot.png" width=900 /></p>
+## Step 1: Power Off com1 and Create Snapshot
+
+1. In DigitalOcean control panel, navigate to your com1 Droplet
+2. Click the "Power" dropdown menu and select "Power Off"
+
+<p align="center"><img alt="DigitalOcean Droplet power controls with Power Off highlighted" src="./resources/Droplet-sidebar-with-snapshot-tab.png" width=900 /></p>
+
+3. Wait for the Droplet to fully shut down (status will show "Off")
+4. Navigate to the "Snapshots" tab in your com1 Droplet management page
+5. Click "Take Snapshot"
+6. Enter a descriptive name: `com1-snapshot-<date>` or `compute-node-base`
+7. Click "Take Snapshot"
+
+<p align="center"><img alt="Snapshot creation dialog with name field filled" src="./resources/Snapshot-creation-of-com1-name.png" width=900 /></p>
+
+## Step 2: Create com2 from Snapshot
+
+1. Navigate to "Images" in the main DigitalOcean sidebar menu
+2. Click on the "Snapshots" tab
+3. Find your com1-snapshot and click the "⋮" (three dots) menu
+4. Select "Create Droplet"
+
+<p align="center"><img alt="Snapshot list showing Create Droplet option" src="./resources/Snapshot-created.png" width=900 /></p>
+
+## Step 3: Configure com2 Droplet
+
+**Basic Configuration:**
+- Choose an image: Your snapshot should be pre-selected
+- Choose a plan: Select the same plan as com1 (e.g., Basic $16/month)
+- Choose a datacenter region: Select the same region as your head node and com1
+
+**Droplet Settings:**
+- Hostname: `com2` (to distinguish from com1)
+- Tags: Add `compute-node` if using tags for organization
+
+**Authentication:**
+- SSH keys: Select the same SSH key used for head node and com1
+
+**Finalize:**
+- Droplet name: `com2`
+- Click "Create Droplet"
+
+<p align="center"><img alt="Final Droplet creation screen showing snapshot as image source" src="./resources/creating-droplet-via-snapshot.png" width=900 /></p>
+
+## Step 4: Verify com2 Configuration
+
+Wait for com2 to provision (typically 30-60 seconds)
+
+<p align="center"><img alt="com2 showing on DigitalOcean droplets list" src="./resources/snapshot-created-com2.png" width=900 /></p>
 
 Pay careful attention to the hostname, network and other configuration settings that may be specific to and may conflict with your initial node. Once your two compute nodes have been successfully deployed, are accessible from the head node and added to your MPI `hosts` file, you can continue with running HPL across multiple nodes.
-
 ## Running HPL Across Multiple Nodes
 
 Everything is now in place for you to run HPL across your two compute nodes. You must ensure that all libraries and dependencies are satisfied across your cluster. You must also ensure that your passwordless SSH is properly configured. Your NFS mounted `/home` directory must be properly configured.
