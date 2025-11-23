@@ -1372,6 +1372,7 @@ Enables simultaneous command execution across multiple nodes, essential for effi
 #### Configure PDSH
 ```bash
 # Set SSH as default transport (secure alternative to rsh)
+pdsh -w com[1-2] -R ssh getent passwd munge
 echo 'export PDSH_RCMD_TYPE=ssh' >> ~/.bashrc
 source ~/.bashrc
 ```
@@ -1592,10 +1593,11 @@ sudo systemctl stop munged  # Rocky
 sudo systemctl stop munge   # Ubuntu & Arch
 
 # Standardize UID/GID to match head node
-sudo usermod -u 993 munge
-sudo groupmod -g 990 munge
+sudo usermod -uid 993 munge
+sudo groupmod -gid 990 munge
 
 # Fix conflicting groups if needed (common issue)
+grep ':990:' /etc/group              #Get name of file
 sudo groupmod -g 1500 fwupd-refresh  # Move conflicting group
 sudo groupmod -g 990 munge           # Now assign to munge
 
@@ -1617,6 +1619,10 @@ ssh rocky@com1 "sudo chown munge:munge /etc/munge/munge.key && sudo chmod 400 /e
 #### Verification
 Test the complete MUNGE authentication chain:
 ```bash
+# Start Munge(All Nodes)
+sudo systemctl enable munge
+sudo systemctl start munge
+
 # Test Munge authentication between nodes
 munge -n | ssh com2 unmunge
 
@@ -1638,6 +1644,12 @@ sudo apt install -y slurm-wlm slurmctld slurmd
 sudo pacman -Syyu
 sudo pacman -S slurm
 
+# Create Slurm User(All nodes)
+sudo useradd slurm
+
+# Create Directories(All nodes)
+sudo mkdir -p /var/spool/slurm/ctdl /var/spool/slurm/d /var/log/slurm
+sudo cown -R slurm:slurm /var/spool/slurm/ctdl /var/spool/slurm/d /var/log/slurm
 ```
 
 ### Slurm Configuration
@@ -1704,6 +1716,7 @@ scontrol ping           # Test controller connectivity
 # Test job submission
 srun hostname           # Interactive job
 sbatch test_job.sh      # Batch job
+squeue                  # Check queue
 ```
 
 ---
@@ -1766,7 +1779,7 @@ scrape_configs:
 
   - job_name: 'node_exporter'
     static_configs:
-      - targets: ['node1:9100', 'node2:9100']  # All nodes
+      - targets: ['node1:9100', 'node2:9100', 'node3:9100']  # All nodes
 ```
 #### Start Prometheus
 Enable and start the service:
@@ -1890,7 +1903,7 @@ scrape_configs:
 
   - job_name: 'node_exporter'
     static_configs:
-      - targets: ['node1:9100', 'node2:9100']
+      - targets: ['node1:9100', 'node2:9100', 'node3:9100']
 
   - job_name: 'slurm_exporter'
     static_configs:
