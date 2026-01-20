@@ -602,6 +602,10 @@ The head node will act as the [NFS server](https://docs.rockylinux.org/guides/fi
    ```conf
    <headnode_ip>:/home /home  nfs   defaults,timeo=1800,retrans=5,_netdev	0 0
    ```
+
+> [!TIP]
+> If you do not have a firewall configured, you will need to add `TCP Port 2049` to the Security Group of your OpenStack workspace.
+
 # Generating an SSH Key for your NFS `/home`
 
 Just as you did so in the previous tutorial when you generated SSH keys [on your workstation](../tutorial1/README.md#generating-ssh-keys), you're now going to do the same on *either* your head node or your compute node. However, you will be exploiting the fact that we have a NFS mounted `/home` directory. You'll test the new SSH connection, by logging into your compute node.
