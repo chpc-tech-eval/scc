@@ -17,7 +17,7 @@ This tutorial will conclude with you downloading, installing and running the Hig
 1. [Network Primer](#network-primer)
     1. [Basic Networking Example (WhatIsMyIp.com)](#basic-networking-example-whatismyipcom)
     1. [Terminal, Windows MobaXTerm and PowerShell Commands](#terminal-windows-mobaxterm-and-powershell-commands)
-1. [Launching your First Open Stack Virtual Machine Instance](#launching-your-first-open-stack-virtual-machine-instance)
+1. [Launching your First Azure Virtual Machine Instance](#launching-your-first-azure-virtual-machine-instance)
     1. [Accessing the NICIS Cloud](#accessing-the-nicis-cloud)
     1. [Verify your Teams' Project Workspace and Available Resources](#verify-your-teams-project-workspace-and-available-resources)
     1. [Generating SSH Keys](#generating-ssh-keys)
@@ -146,17 +146,17 @@ You should familiarize yourself with a few basic networking commands that can be
 > [!TIP]
 > Refer to the [Q&A Discussion on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/48) for an example. Post a similar screenshot of your team executing these commands as a comment to that discussion.
 
-# Launching your First Open Stack Virtual Machine Instance
+# Launching your First Azure Virtual Machine Instance
 
 In this section you will be configuring and launching your first [Virtual Machine](https://en.wikipedia.org/wiki/Virtual_machine) instance. This allows you to use a portion of another computer's resources, to host another [Operating System](https://en.wikipedia.org/wiki/Operating_system) as though it were running on its own dedicated hardware resources. For example, your laptops or workstations are running a Windows-based operating system, you _"could"_ use a type of computer software [Hypervisor](https://en.wikipedia.org/wiki/Hypervisor), that runs and creates _virtual machines_, to run a Linux-based operating while your are in your Windows environment.
 
 The physical servers that you will use to spawn your VM's are housed in Rosebank, Cape Town. We will verify this later using [WhatIsMyIp](https://www.whatismyip.com).
 
-## Accessing the NICIS Cloud
+## Accessing Microsoft Azure
 
-Open your web browser and navigate to the NICIS OpenStack Cloud platform  https://sebowa.nicis.ac.za/, and use the credentials that your team has been provided with to login into your team's project workspace.
+Open your web browser and navigate to the Azure platform to create a free account using this link: <a href="https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account?icid=azurefreeaccount">Sign Up for Azure</a>
 
-<p align="center"><img alt="Sebowa.nicis.ac.za NICIS OpenStack Cloud." src="./resources/openstack_login.png" width=600 /></p>
+Once created you should be taken to the Azure dashboard which will look something like this:<p align="center"><img alt="Screenshot of home page on azure." src="./resources/azurehomepage.png" height=400 /></p>
 
 ## Verify your Teams' Project Workspace and Available Resources
 
@@ -203,17 +203,30 @@ These commands are the same if you are commenting from a Linux, Unix or MacOS Te
 
 You **MUST** take note of the location and paths to **BOTH** your public and private keys. Your public key will be shared and distributed to the SSH servers you want to authenticate against. Your private key must be kept secure within your team, and must not be shared or distributed to anyone.
 
-Once you have successfully generated an SSH key pair, navigate to `Compute` &rarr; `Key Pairs` and import the **public** key `id_ed25519.pub` into your Team's Project Workspace within OpenStack.
+Once you have successfully generated an SSH key pair, navigate to Azure's SSH keys page using the search bar. This page will appear and Click `Create SSH key`.
 
-<p align="center"><img alt="Import id_25519.pub into OpenStack." src="./resources/openstack_import_public_key_highlight.png" width=900 /></p>
+<p align="center"><img alt="Screenshot of SSH keys page on azure." src="./resources/SSHkeys_page.png" height="400"/></p>
+
+Fill in all the required fields with your group's information as in the image below and upload the newly created public key `id_ed25519.pub`.
+
+> [!NOTE]
+> You may need to create a new resource group. Under *Resource group*, simply create a new group with an appropriate name which can be associated with all future tasks for this project. 
+
+<p align="center"><img alt="Creating an SSH key page 1." src="./resources/create_SSHKey.png" height="450"/></p>
+
+Click `Review + create` and ensure it passes validation before clicking `Create` again.
+The key should now appear on your SSH Keys dashboard.
+>[!TIP]
+>It may take a while to appear, just keep refreshing.
 
 ## Launch a New Instance
 
-From your Team's OpenStack Project Workspace, navigate to `Compute` &#8594; `Instance` and click `Launch Instance**.
+From the Azure dashboard, navigate to `Virtual machines` &rarr; `Create` &rarr; `Azure virtual machine`.
+Within the new window (as shown below), assign an appropriate name which will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be <b>headnode</b>.
 
-<p align="center"><img alt="OpenStack Launch New Instance." src="./resources/openstack_launch_instance_highlight.png" width=900 /></p>
+<p align="center"><img alt="Creating a VM (headnode)." src="./resources/instance.png" height="400"/></p>
 
-Within the popup window, enter an appropriate name for your instance that will describe what the VM's intended purpose is meant to be and help you to remember it's primary function. In this case, a suitable name for your instance would be **head node**.
+Under *Resource Group* pick the one created earlier with the SSH Key and under *Region* pick `South Africa North`.
 
 ## Linux Flavors and Distributions
 
@@ -264,79 +277,51 @@ The following list provides a few examples of Linux distros that *may* be availa
 
 * **Source-Based**: [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/) is a project that teaches you how to create your own Linux system from source code, using another Linux system. Learn how to install, configure and customize LFS and BLFS, and use tools for automation and management. Once you are **very** familiar with Linux, LFS is an excellent medium term side project that you peruse in you own time. Only Linux experts need apply.
 
-Type *"Rocky"* in the search bar, and select the **Rocky-9.3** cloud image as a boot source.
-
-<p align="center"><img alt="OpenStack Select Source." src="./resources/openstack_source_image.png" width=900 /></p>
+Once reaching a decision, under *Image* select the desired distribution as below.
+<p align="center"><img alt="Screenshot of home page on azure." src="./resources/distro.png" height=200 /></p>
 
 ## OpenStack Instance Flavors
 
 An important aspect of system administration is resource monitoring, management and utilization. Each Team will be required to manage their available resources and ensure that the resources of their clusters are utilized in such a way as to maximize system performance. You have been allocated a pool of resources which you will need to decide how you are going to allocate the sizing of the compute, memory and storage across your head node and compute node(s).
 
-1. Compute (vCPUs)
-   You have been allocated a pool totaling **18 vCPUs**, which would permit the following configurations:
-   1. Head Node (2 vCPUs) and 2 x Compute Nodes (8 vCPUs each),
-   1. Head node (6 vCPUs) and 2 x Compute Nodes (6 vCPUs each),
-   1. Head node (10 vCPUs) and 1 x Compute Node (8 vCPUs).
+Once deciding on a desired size, select it under *Size* as shown below. In this case, `Standard_B1s` were utilised, but once again it is up to you and your cluster's needs.
 
-1. Memory (RAM)
-   You have been allocated a pool totaling **36 GB** of RAM, which would permit the following configurations:
-   1. Head Node (4 GB RAM) and 2 x Compute Nodes (16 GB RAM each),
-   1. Head node (12 GB RAM) and 2 x Compute Nodes (12 GB RAM each),
-   1. Head node (20 GB RAM) and 1 x Compute Node (16 GB RAM).
-
-1. Storage (DISK)
-   You have been allocated a pool of 50 GB of storage, which can be distributed in the following configurations:
-   1. Head Node (60 GB of storage) and 2 x Compute Nodes (10 GB of storage each),
-   1. Head Node (60 GB of storage) and 2 x Compute Nodes (10 GB of storage each), and
-   1. Head Node (60 GB of storage) and 1 x Compute Node (10 GB of storage).
-
-The following table summarizes the various permutations and allocations that can be used for designing your clusters within your Team's Project Workspace on Sebowa's OpenStack cloud platform.
-
-| Cluster Configurations     | Instance Flavor | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
-|----------------------------|:---------------:|:---------------:|:------------:|:--------------:|
-|                            |                 |                 |              |                |
-| Dedicated Head Node        | scc24.C2.M4.S60    | 2               | 4 GB         | 60 GB          |
-| Compute Node 01            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
-| Compute Node 02            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
-|                            |                 |                 |              |                |
-|                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C6.M12.S60    | 6               | 12 GB        | 60 GB          |
-| Compute Node 01            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
-| Compute Node 02            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
-|                            |                 |                 |              |                |
-|                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C10.M20.S60   | 10              | 20 GB        | 60 GB          |
-| Compute Node 01            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
-|                            |                 |                 |              |                |
-
-Type *"scc"* in the search bar and select the **scc24.C2.M4.S60** instance flavor.
-
-<p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_instance_flavor.png" width=900 /></p>
+<p align="center"><img alt="Screenshot of home page on azure." src="./resources/size.png"/></p>
 
 > [!TIP]
-> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of starting with this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the **scc24.C2.M4.S60** flavor with *2 vCPUs* and *4 GB RAM*.
+> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System).
 
-## Networks, Ports, Services and Security Groups
-
-Under the *Networks* settings, make sure to select the `vxlan` that corresponds to your Team Name.
-
-<p align="center"><img alt="OpenStack Networks Selection." src="./resources/openstack_networks.png" width=900 /></p>
-
-No configurations are required for *Network Ports*, however you must ensure that you have selected `scc24_sg` under *Security Groups*.
-
-<p align="center"><img alt="OpenStack Security Groups Selection." src="./resources/openstack_security_groups.png" width=900 /></p>
-
-## Key Pair
-
+### Key Pair 
+Still under the Basics tab, ensure that your *Authentication type* is set to `SSH public key` and then upload the SSH Key that you created earlier as shown below. 
 > [!CAUTION]
 > You must ensure that you associate the SSH Key that you created earlier to your VM, otherwise you will not be able to log into your newly created instance
-><p align="center"><img alt="OpenStack Key Pair Selection." src="./resources/openstack_key_pair_select.png" width=900 /></p>
+
+<p align="center"><img alt="Key Pair screen." src="./resources/key_pair.png" height="400"/></p>
+
+## Disks, Networking and Security 
+### Disks 
+Under *Disks*, ensure that the following options are configured:  
+1. *OS Disk Type* is set to `Standard SSD`
+2. *Delete with VM* is <b>NOT</b> checked
+
+<p align="center"><img alt="Disks." src="./resources/setting_up_disks.png" height="400"/></p>
+
+### Networking and Security
+Under *Networking*, ensure the following options are configured:
+1. *Virtual network* is set to `your team’s network` 
+2. *Subnet* can be the default 
+3. *NIC network security group* is set to `Advanced` and the corresponding group is applied
+    
+<p align="center"><img alt="Networking and Security." src="./resources/setting_up_network.png" height="400"/></p>
+
+>[!NOTE]
+>If your team does not have a *Virtual Network* or *Security Group* already configured, simply create one at this stage which can be related to all future creations under the same project. 
 
 ## Verify that your Instance was Successfully Deployed and Launched
 
-Congratulations! Once your VM instance has completed it's building, block device mapping  and deployment phase, and if your *Power State* indicates `Running`, then you have successfully launched your very first OpenStack instance.
+Congratulations! Once your VM instance has completed its deployment phase, and if your *Status* indicates Running, then you have successfully launched your very first Azure instance.
 
-<p align="center"><img alt="OpenStack Running State." src="./resources/openstack_running.png" width=900 /></p>
+<img alt="Headnode Status." src="./resources/headnode_status.png"/>
 
 ## Associating an Externally Accessible IP Address
 
@@ -355,19 +340,16 @@ In order for you to be able to SSH into your newly created OpenStack instance, y
 > The following section is strictly for debugging and troubleshooting purposes. You **MUST** discuss your circumstances with an instructor before proceeding with this section. If you have successfully launched your head node, proceed to the [Intro on Basic Sys Admin](#introduction-to-basic-linux-administration).
 
 * Deleting Instances
-  - When all else fails and you would like to reattempt the creation of your nodes from a clean start, Select the VM you want to remove and click `Delete Instance` from the drop down menu.
-  - Occasionally you may find yourself accidentally deleting a VM instance. Do not despair, by default `no` is selected on `Delete Volume on Instance Delete` this will leave your storage `volume` intact and you can recover it by launching a new instance from the `volume`. Details will be provided later in [Tutorial 3](#spinning-up-a-second-compute-node).
-  <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_troubleshooting_delete_instance.png" width=900 /></p>
+  When all else fails and you would like to reattempt the creation of your nodes from a clean start, select the VM you want to remove and click `Delete` at the top
 
-* Deleting Volumes
+<img alt= " delete instances" src="./resources/compnode2.png"/>
 
-  When a VM's storage `volume` lingers behind after intentionally deleting a VM, you will need to go to manually remove the volume from your work space.
-  <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_troubleshooting_delete_volume.png" width=900 /></p>
+* Deleting Disks and Dissociating Public IP
+  
+By default, your VM's storage and Public IP address have been configured to linger even after deleting. However, if you would like to remove these as well, simply check the required boxes which appear on the window when confirming the deletion of your Instance.
 
-* Dissociating Floating IP
+<p align="center"><img alt="Delete disks" src="./resources/compnode1.png" height="400"/></p>
 
-  If your VM is deleted then the floating IP associated with that deleted VM will stay in your project under `Networks -> Floating IPs` for future use. Should you accidentally associate your floating IP to one of your compute nodes, dissociate it as per the diagram below, so that it may be allocated to your head node. Selecting the floating IP and clicking `Release Floating IPs` will send the floating IP back to the pool and you can call a tutor to help you get back your IP.
-  <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_troubleshooting_dissociate_float_ip.png" width=900 /></p>
 
 # Introduction to Basic Linux Administration
 
