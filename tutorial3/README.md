@@ -1,3 +1,31 @@
+# Student Cluster Competition – Tutorial 3 (Rocky Linux 9 & 10 Unified)
+
+## Rocky Linux 9 & 10 Compatibility (READ FIRST)
+
+This tutorial is **fully compatible with Rocky Linux 9.x and Rocky Linux 10.x**.
+
+### Key OS assumptions
+- Python **3 only** (`python3`, `pip`, `venv`)
+- SELinux **Enforcing** by default
+- `systemd` + `firewalld`
+- cgroups **v2 only**
+- GCC ≥ 11 (from AppStream / Development Tools)
+- MPI via OpenMPI (repo or source build)
+- Lmod built from source in `$HOME`
+
+### Critical notes
+- Always use `python3`, never `python`
+- Prefer `srun` under Slurm (if present), otherwise `mpirun`
+- Avoid hard‑coded MPI paths (`which mpirun`)
+- Do **not** disable SELinux
+
+Troubleshooting:
+```bash
+sestatus
+journalctl -xe
+```
+
+---
 Student Cluster Competition - Tutorial 3
 
 ## Table of Contents
@@ -79,7 +107,7 @@ In order for this to work as expected, there are two important conditions that m
    ```
 1. Secondly, you must ensure that any system dependencies are correctly installed on **each** of your nodes. For example, this would be a good time to install `gcc` on your **compute node**:
    ```bash
-   sudo dnf install gcc
+   sudo dnf groupinstall -y "Development Tools"
    ```
 
 <details>
@@ -257,8 +285,19 @@ We need to install the statically `($(LIBdir)/libhpl.a)` and dynamically`($(LAdi
      ```bash
      # RHEL, Rocky, Alma, Centos
      sudo dnf update -y
-     sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
-     sudo dnf install wget nano -y
+     sudo dnf update -y
+     sudo dnf config-manager --set-enabled crb
+
+     sudo dnf install -y \
+       openmpi \
+       openmpi-devel \
+       openblas \
+       openblas-devel \
+       gcc \
+       gcc-c++ \
+       make \
+       wget \
+       nano
      ```
    * APT
      ```bash
@@ -907,29 +946,33 @@ For this benchmark, we will be providing you with the details of the script that
    * DNF / YUM
      ```bash
      # RHEL, Rocky, Alma, CentOS Stream
-     sudo dnf install python python-pip
+     sudo dnf install -y python3 python3-pip
      ```
    * APT
      ```bash
      # Ubuntu
-     sudo apt install python python-pip
+     sudo apt update
+     sudo apt install -y python3 python3-pip python3-venv
      ```
    * Pacman
      ```bash
      # Arch
-     sudo pacman -S python python-pip
+     sudo pacman -S python
      ```
 1. Create and Activate a New Virtual Environment
 
    Separate your python projects and ensure that they exist in their own, clean environments:
 
    ```bash
-   python -m venv QiskitAer
+   python3 -m venv QiskitAer
    source QiskitAer/bin/activate
    ```
 
 1. Install `qiskit-aer`
    ```bash
+   python3 -m venv QiskitAer
+   source QiskitAer/bin/activate
+   pip install --upgrade pip
    pip install qiskit-aer
    ```
 

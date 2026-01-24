@@ -1,3 +1,31 @@
+# Student Cluster Competition – Tutorial 1 (Rocky Linux 9 & 10 Unified)
+
+## Rocky Linux 9 & 10 Compatibility (READ FIRST)
+
+This tutorial is **fully compatible with Rocky Linux 9.x and Rocky Linux 10.x**.
+
+### Key OS assumptions
+- Python **3 only**
+- SELinux **Enforcing** by default
+- `systemd` + `firewalld`
+- cgroups **v2**
+- NetworkManager for networking
+- OpenStack-compatible cloud images (Rocky 9/10)
+- SSH key–based access only
+
+### Critical notes
+- Always use `python3`, never `python`
+- Do **not** disable SELinux or firewalld
+- Prefer `systemctl` over legacy `service`
+- Use modern SSH (`ed25519` keys recommended)
+
+Troubleshooting:
+```bash
+sestatus
+journalctl -xe
+```
+
+---
 Tutorial 1: Standing Up Your Head Node and Running HPL
 ======================================================
 
@@ -405,6 +433,10 @@ Congratulations! Once your VM instance has completed it's building, block device
 
 In order for you to be able to SSH into your newly created OpenStack instance, you'll need to associate a publicly accessible [Floating IP](https://kb.leaseweb.com/network/floating-ips/using-floating-ips) address. This allocates a *virtual IP* address to your *virtual machine*, so that you can access it directly from your laboratory workstation.
 
+Before you allocate an IP to your instance be sure that you have allocated a interface to the router you created in previous steps.
+
+   <p align="center"><img alt="OpenStack Router Interface." src="./resources/allocate_router_interface.png" width=900 /></p>
+
 1. Select ***Associate Floating IP*** from the *Create Snapshot* dropdown menu, just below the *Actions* tab:
    <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_associate_floating_ip.png" width=900 /></p>
 1. From the *Manage Floating IP Associations* dialog box, click the "➕" and select *Public Internet*:
@@ -667,9 +699,25 @@ You will now install and run HPL on your **head node**.
    You are going to be installing tools that will allow you to compile applications using the `make` command. You will also be installing a maths library to compute matrix multiplications, and an `mpi` library for communication between processes, in this case mapped to CPU cores.
    * DNF / YUM
    ```bash
-   # RHEL, Rocky, Alma, Centos Steam
-   sudo dnf update -y
-   sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
+    # RHEL, Rocky, Alma, Centos Steam
+    sudo dnf update -y
+    # Rocky Linux 9 / Alma Linux 9 / RHEL 9
+    sudo dnf update -y
+
+    # Enable CRB repository (REQUIRED on Rocky 9) 
+    sudo dnf config-manager --set-enabled crb
+
+   # Install build tools and MPI
+   sudo dnf install -y \
+   gcc \
+   gcc-c++ \
+   make \
+   openmpi \ 
+   openmpi-devel \
+   openblas \
+   openblas-devel \
+   wget \
+   nano
    sudo dnf install wget nano -y
    ```
    * APT
@@ -716,8 +764,8 @@ You will now install and run HPL on your **head node**.
 
      MPdir              = /usr/lib64/openmpi
 
-     LAdir              = /usr/lib64/atlas
-     LAlib              = $(LAdir)/libtatlas.so $(LAdir)/libsatlas.so
+     LAdir              = /usr/lib64
+     LAlib              = -lopenblas
 
      CC                 = mpicc
 
@@ -747,7 +795,8 @@ You will now install and run HPL on your **head node**.
 
    # Temporarily append openmpi binary path to your PATH variable
    # These settings will reset after you logout and re-login again.
-   export PATH=/usr/lib64/openmpi/bin:$PATH
+   source /etc/profile.d/modules.sh
+   module load mpi/openmpi-x86_64
 
    # Rerun the which command to confirm that the `mpicc` binary is found
    which mpicc
