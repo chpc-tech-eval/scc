@@ -1,4 +1,4 @@
-CHPC 2024 Student Cluster Competition
+CHPC 2025 Student Cluster Competition
 ======================================
 
 Welcome the **Center for High Performance Computing (CHPC)'s Student Cluster Competition (SCC)** - Team Selection Round. This round requires each team to build a **prototype multi-node compute cluster** within the National Integrated Cyber Infrastructure Systems (NICIS) **virtual compute cloud** (described below).
@@ -28,22 +28,22 @@ The goal of this document is to introduce you to the competition platform and fa
 
 # Structure of the Competition
 
-The CHPC invites applications from suitably qualified candidates to enter the CHPC Student Cluster Competition. The CHPC Student Cluster Competition gives undergraduate students at South African universities exposure to the High Performance Computing (HPC) Industry. The winning team will be entered into the ISC Student Cluster Competition hosted at the [2025 International Supercomputing Conference](https://www.isc-hpc.com/) held in Hamburg, Germany.
+The CHPC invites applications from suitably qualified candidates to enter the CHPC Student Cluster Competition. The CHPC Student Cluster Competition gives undergraduate students at South African universities exposure to the High Performance Computing (HPC) Industry. The winning team will be entered into the ISC Student Cluster Competition hosted at the [2026 International Supercomputing Conference](https://www.isc-hpc.com/) held in Hamburg, Germany.
 
 You will be accessing all of the course work and material through this GitHub repository, which you and your team must check regularly to receive updates.
 
 ## Getting Help
 
-You are strongly encouraged to get help and even assist others by [Opening and Participating in Discussions](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions).
+You are strongly encouraged to get help and even assist others by [Opening and Participating in Discussions](https://github.com/chpc-tech-eval/scc/discussions).
 
 > [!TIP]
 > Active participation in the student discussions is an easy way to separate yourselves from the rest of the competition and make it easy for the instructors to notice you!
 
 ## Timetable
 
-Everyday will comprise of four lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](./resources/CHPC_2024_SCC_Local_Selection_Round_Timetable.pdf) is available for you to download.
+Everyday will comprise of four lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](resources/CHPC_2025_SCC_Selection_Round_Timetable.pdf) is available for you to download.
 
-<p align="center"><img alt="Timetable." src="resources/CHPC_2024_SCC_Local_Selection_Round_Timetable.png" width=900 /></p>
+<p align="center"><img alt="Timetable." src="resources/CHPC_2025_SCC_Local_Selection_Round_Timetable.png" width=900 /></p>
 
 ## Scoring
 
@@ -52,15 +52,14 @@ Teams will be evaluate according to the following breakdown, with your progress 
 | Component                          | Weight |
 |:-----------------------------------|:------:|
 |                                    |        |
-| Technical Knowledge Assessment     | 0.1    |
+| Technical Knowledge Assessment     | 0.2    |
 | Tutorials                          | 0.4    |
-| Cluster Design Assignment (Part 1) | 0.1    |
 | Cluster Design Presentation        | 0.4    |
 |                                    |        |
 
 ## Instructions for Mentors
 
-The role of mentors, instructors and volunteers is to provide leadership and guidance for the student competitors participating in this year's Center for High Performance Computing 2024 Student Cluster Competition.
+The role of mentors, instructors and volunteers is to provide leadership and guidance for the student competitors participating in this year's Center for High Performance Computing 2025 Student Cluster Competition.
 
 In preparing your teams for the competition, your main goal is to ensure that you teach and impart knowledge to the student participants in such a way that they are empowered and enable to tackle the problems and benchmarking tasks themselves.
 
@@ -69,6 +68,8 @@ In preparing your teams for the competition, your main goal is to ensure that yo
 Under no circumstances whatsoever may mentors touch any competition hardware belonging to either their team, or the competition hardware of another team. Mentors are encouraged to provide guidance and leadership to their *(as well as other)* teams.
 
 Any mentors found to be directly in contravention of this rule, may result in their team incurring a penalty. Repeated infringements may result in possible disqualification of their team.
+
+We monitor all network traffic!
 
 ## Cheat Sheet
 
@@ -85,7 +86,7 @@ Below is a table with a number of Linux system commands and utilities that you *
 | dmesg              | Prints the message buffer of the kernel. The output of this command typically contains the messages produced by the device drivers                                                                                 |
 | watch              | Execute a program periodically, showing output fullscreen.                                                                                                                                                         |
 | df -h              | Report file system disk space usage.                                                                                                                                                                               |
-| ping               | PING command is used to verify that a device can communicate with another on a network.                                                                                                                            |
+| ping               | PING command is used to verify that a device can communicate within another on a network.                                                                                                                            |
 | lynx               | Command-line based web browser (more useful than you think)                                                                                                                                                        |
 | ctrl+alt+[F1...F6] | Open another shell session (multiple ‘desktops’)                                                                                                                                                                   |
 | ctrl+z             | Move command to background (useful with ‘bg’)                                                                                                                                                                      |
@@ -103,28 +104,25 @@ Below is a table with a number of Linux system commands and utilities that you *
 # Deliverables
 
 You will need to submit the following for scoring and evaluation by the judges:
-* Cluster Design Assignment (Part 1) *[10 %]*
-* Cluster Design Assignment (Part 2) *[40 %]*
+* Cluster Design Assignment *[40 %]*
   * One PDF Presentation Slide with Team Profiles
     This slide must clearly indicate your Team Name and Institution. Below each team member's photograph, indicate their
     * Name and surname,
     * Degree and Year of study,
   * Presentation Slides
   * Short Technical Brief with Cluster Design Specifications
-* Technical Knowledge Assessment *[10 %]*
+* Technical Knowledge Assessment *[20 %]*
 * Tutorials *[40 %]*
 
 ## Cluster Design Assignment
 
-You are tasked with designing a small cluster, with at least three nodes, to the value of R 400  000.00 (ZAR) and present your design to the judging panel. In your design you must specify hardware and software for an operational cluster and describe how it functions. The design must be based on servers and interconnects from either [HPE](https://buy.hpe.com/us/en/servers-systems) or [Dell](www.dell.com/en-us), and accessories from either [NVIDIA](https://www.nvidia.com/en-us/high-performance-computing/), or [AMD](https://www.amd.com/en/solutions/high-performance-computing.html) or [Intel](https://www.intel.com/content/www/us/en/high-performance-computing/hpc-products.html). You must use the prices you find in the [Parts List Spreadsheet](resources/CHPC_Student_Cluster_Competition_Parts_List_2024.xlsx).
+You are tasked with designing a small cluster, with at least three nodes, to the value of R 500  000.00 (ZAR) and present your design to the judging panel. In your design you must specify hardware and software for an operational cluster and describe how it functions. The design must be based on servers and interconnects from either [HPE](https://buy.hpe.com/us/en/servers-systems), and accessories from either [NVIDIA](https://www.nvidia.com/en-us/high-performance-computing/), or [AMD](https://www.amd.com/en/solutions/high-performance-computing.html) or [Intel](https://www.intel.com/content/www/us/en/high-performance-computing/hpc-products.html). You *MUST* use the prices you find in the [Parts List Spreadsheet](resources/CHPC_Student_Cluster_Competition_Parts_List_2025.xlsx).
 
-The primary purpose of your HPC cluster is to run one of the following codes as efficiently as possible:
-* [Amber](https://ambermd.org/)
-* [ICON](https://icon-model.org/)
-* [SwiftSIM](https://github.com/SWIFTSIM/SWIFT)
-* [MLPerf](https://www.nvidia.com/en-us/data-center/resources/mlperf-benchmarks/)
-
-You are not given a choice regarding the application selection. Your team will be told which application to optimize for on Wednesday. For now, you should investigate the codes above to understand their unique hardware and software requirements. **You are required to submit a brief (half page) report on your findings to the competition organizers by 23:00 on Tuesday**.
+The primary purpose of your HPC cluster is to run the following applications and benchmarks as efficiently as possible:
+* [code_saturne](https://www.code-saturne.org/cms/web/)
+* [SeisSol](https://seissol.org/)
+* [OpenMX](https://www.openmx-square.org/index.html)
+* [Fine-Tuning LlaMA 3 using LoRA and QLoRA](https://www.llama.com/docs/how-to-guides/fine-tuning/)
 
 In addition, your choice of design must take into consideration:
 * Base Platform (Server),
@@ -136,19 +134,34 @@ In addition, your choice of design must take into consideration:
 * Team Management, Coordination and Planning.
 
 > [!IMPORTANT]
-> You may submit an additional design, that extends upon your small R 400 000.00 cluster, up to the value of R 1 000 000.00. You may use any of the above links for this exercise, using a Dollar to Rand conversion rate or 1:20. You may use GPU's from either AMD or NVIDIA. You may utilize CPUs from either AMD or Intel. You may use either Dell or HPE as a vendor.
+> You may submit an additional design, that extends upon your small R 500 000.00 cluster, up to the value of R 5 000 000.00. You may use any of the above links for this exercise, using a Dollar to Rand conversion rate or 1:20. You may use GPU's from either AMD or NVIDIA. You may utilize CPUs from either AMD or Intel. You must use HPE as a base platform for your severs.
+>
+> In this revised design, consider additional nodes, additional / performance CPU's, additional RAM, GPU's, InfiniBand interconnects and any other aspects that you think would improve the performance of your initial cluster design.
+>
+> This additional design should be no more than one slide. Price breakdown and additional component(s) motivation.
+
+You will be presenting your findings in a short technical brief and specification. Detailing the specific components you've incorporated into your cluster, **a spreadsheet with a clear breakdown of price, quantity and name / code of components would be useful**. You must also present a 10 minute slideshow of your findings and cluster design.
 
 The 10 minute slide presentation by the whole team must include your design decisions and the features of your cluster, including: cost, hardware, software, configuration and operation. Each member of the team is required to present even though you will be assessed as a team.
 
 After the presentation the judging panel will have an opportunity to ask questions to each member of your team. All members of your team can be questioned about any part of the cluster, so make sure you are fully familiar with the design.
 
+> [!CAUTION]
+> The deadline for submission of the Cluster Design Assignment is **23:00 on Friday the 11th July**. Late submissions will be penalized.
+
 ## Technical Knowledge Assessment
 
-Each Team must work together to answer and complete the [Technical Knowledge Assessment](resources/CHPC_SCC_2024_Technical_Knowledge_Assessment.docx) to the best of their ability. Team Captains must email your findings to the organizers **no later than 23:00 13th July**. You are required to demonstrate your understanding of the concepts in **YOUR OWN WORDS**. Keep your answers succinct and to the point. Your answers to each of the questions, should not exceed more than 2-3 lines.
+Each Team must work together to answer and complete the [Technical Knowledge Assessment](resources/CHPC_SCC_2025_Technical_Knowledge_Assessment.docx) to the best of their ability. Team Captains must email your findings to the organizers **no later than 23:00 12th July**. You are required to demonstrate your understanding of the concepts in **YOUR OWN WORDS**. Keep your answers succinct and to the point. Your answers to each of the questions, should not exceed more than 2-3 lines.
+
+> [!CAUTION]
+> The deadline for submission of the Technical Knowledge Assessment is **23:00 on Saturday the 12th July**. Late submissions will be penalized.
 
 ## Tutorials
 
 You will be evaluated on your overall progress in the tutorials. Below you will find an overview, glossary and high level breakdown of the tutorials. You must progress through four tutorials, which will be released daily. Your overall progress through the tutorials forms a large component of you score. By the end of the week you would have covered a considerable amount of content, use the links provided should you need to refer to a specific section and are having trouble remembering where is it.
+
+> [!WARNING]
+> Please note that the tutorial content matter is subject to change at any time, and you must regularly check the `main` branch of this Github repository for updates.
 
 **Tutorial 1** deals with introducing concepts to users and getting them started with using the virtual lab, standing up the first virtual machine instance and connecting to it remotely. The content is as follows:
 
@@ -160,6 +173,9 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
     1. [Accessing the NICIS Cloud](tutorial1/README.md#accessing-the-nicis-cloud)
     1. [Verify your Teams' Project Workspace and Available Resources](tutorial1/README.md#verify-your-teams-project-workspace-and-available-resources)
     1. [Generating SSH Keys](tutorial1/README.md#generating-ssh-keys)
+    1. [Create a New Private Virtual Network](tutorial1/README.md#create-a-new-private-virtual-network)
+    1. [Create a New Router](tutorial1/README.md#create-a-new-router)
+    1. [Create a New Security Group](tutorial1/README.md#create-a-new-security-group)
     1. [Launch a New Instance](tutorial1/README.md#launch-a-new-instance)
     1. [Linux Flavors and Distributions](tutorial1/README.md#linux-flavors-and-distributions)
         1. [Summary of Linux Distributions](tutorial1/README.md#summary-of-linux-distributions)
@@ -216,11 +232,15 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
     1. [Top500 List](tutorial3/README.md#top500-list)
 1. [Spinning Up a Second Compute Node Using a Snapshot](tutorial3/README.md#spinning-up-a-second-compute-node-using-a-snapshot)
     1. [Running HPL Across Multiple Nodes](tutorial3/README.md#running-hpl-across-multiple-nodes)
+1. [Application Benchmark Profiling](tutorial3/README.md#application-benchmark-profiling)
+    1. [Hardware Topology](tutorial3/README.md#hardware-topology)
+    1. [VTune](tutorial3/README.md#vtune)
 1. [HPC Challenge](tutorial3/README.md#hpc-challenge)
+1. [High Performance Conjugate Gradients](tutorial3/README.md#high_performance_conjugate_gradients)
 1. [Application Benchmarks and System Evaluation](tutorial3/README.md#application-benchmarks-and-system-evaluation)
     1. [GROMACS (ADH Cubic)](tutorial3/README.md#gromacs-adh-cubic)
     1. [LAMMPS (Lennard-Jones)](tutorial3/README.md#lammps-lennard-jones)
-    1. [Qiskit (Quantum Volume)](tutorial3/README.md#qiskit-quantum-volume**
+    1. [Qiskit (Quantum Volume)](tutorial3/README.md#qiskit-quantum-volume)
 
 **Tutorial 4** demonstrates how to configure docker containers to deploy a monitoring stack, comprising of a metrics database service, an exporting / scraping service and a metric visualization services. You will then learn the very basics of how to visualize and interpret data. You will then learn how to automate the deployment of your Sebowa OpenStack infrastructure. Lastly, you'll deploy a scheduler and submit a job to it.
 
@@ -248,46 +268,45 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
     1. [Prerequisites](tutorial4/README.md#prerequisites)
     1. [Head Node Configuration (Server)](tutorial4/README.md#head-node-configuration-server)
     1. [Compute Node Configuration (Clients)](tutorial4/README.md#compute-node-configuration-clients)
-1. [GROMACS Application Benchmark](tutorial4/README.md#gromacs-application-benchmark)
-    1. [Protein Visualization](tutorial4/README.md#protein-visualization)
-    1. [Benchmark 2 (1.5M Water)](tutorial4/README.md#benchmark-2-15m-water)
-# Lecture Recordings
 
-In this section you will finds links to all of the livestreams of the lectures (Teams Meetings) and subsequent recordings for you to refer back to.
+# Lecture Slides and Video Recordings
 
-1. Welcome, Introduction and Getting Started
-   * [Welcome and Introduction](https://youtu.be/T68pHDdZW3s)
-   * [Getting Started](https://youtu.be/cIB9Gtpifpk)
-   * [Intro to Linux & Services](https://youtu.be/pbpjAw9eVcM)
-   * [Intro to Tools for the Modern IT Engineer](https://youtu.be/t4hD6NMw9Xg)
+The lecture slides are available for download - follow the link and download the raw files.
 
-2. HPC Hardware, HPC Networking and Systems Administration
-   * [HPC Hardware](https://youtu.be/gkZCrdTuvrc)
-   * [HPC Networking](https://youtu.be/pGzQutsk2-A)
-   * [System Administration & Configuration Management](https://youtu.be/YY6D-0e5iHw)
-   * [Standing up a Compute Node](https://youtu.be/V6bx86qJwHE)
+## Day 1
 
-3. Benchmarking, Compilation and Parallel Computing
-   * [HPC Benchmarking]()
-   * [Code Compilation]()
-   * [Parallel Computing and Intro to QC]()
-   * [Applications: LAMMPS & Qiskit]()
+1. PDF Format
+   1. [Welcome and Introduction (Mabatho Hashatsi)](resources/Welcome_Introducation_MHashatsi_2025.pdf)
+   1. [Introduction to Tools for the Modern IT Engineer (Sean February)](resources/Intro_to_Tools_for_the_Modern_IT_Engineer_SFebruary2025.pdf)
+   1. [Introduction to Linux Services (Mabatho Hashatsi)](resources/Intro_to_Linux_Services_MHashatsi_2025.pdf)
+   1. [Getting Started (Matsobane Mpyana)](resources/Getting_Started_MMpyana2025.pdf)
 
-4. Administration and Application Visualization
-   * [Cluster Admin, Ansible & Containers]
-   * [Monitoring]()
-   * [Schedulers]
-   * [Data Visualization & Jupyter Lab]
+1. PPTX Format
+   1. [Welcome and Introduction (Mabatho Hashatsi)](resources/Welcome_Introducation_MHashatsi_2025.pptx)
+   1. [Introduction to Tools for the Modern IT Engineer (Sean February)]()
+   1. [Introduction to Linux Services (Mabatho Hashatsi)](resources/Intro_to_Linux_Services_MHashatsi_2025.pptx)
+   1. [Getting Started (Matsobane Mpyana)](resources/Getting_Started_MMpyana2025.pptx)
 
-5. Career Guidance
-   * [HPC Career Panel]()
+## Day 2
+
+1. PDF Format
+   1. [HPC Hardware (Mabatho Hashatsi)](resources/HPCHardware_MHashatsi_08July.pdf)
+   1. [HPC Networking (Nyameko Lisa)](resources/HPCNetworks_NLisa_08July_NL.pdf)
+   1. [System Administration and Configuration]()
+   1. [Putting Together a HPC Cluster & Presentation Tips]()
+
+1. PPTX Format
+   1. [HPC Hardware (Mabatho Hashatsi)](resources/HPCHardware_MHashatsi_08July.pptx)
+   1. [HPC Networking (Nyameko Lisa)](resources/HPCNetworks_NLisa_08July_NL.pptx)
+   1. [System Administration and Configuration]()
+   1. [Putting Together a HPC Cluster & Presentation Tips]()
 
 # Contributing to the Project
 
 > [!IMPORTANT]
 > While we value your feedback, the following sections are primarily targeted as _Contributors to the Project_. As a student participating in the competition, do **NOT** spend your time working through any of the material below. However, we would love to have your contributions to the project, *after* the competition.
 
-You are strongly encouraged to contribute and improve the project by [Opening and Participating in Discussions](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions), [Raising, Addressing and Resolving Issues](https://github.com/chpc-tech-eval/chpc24-scc-nmu/issues). The following guide describes [How to clone, push, and pull with git (beginners GitHub tutorial)](https://youtu.be/yxvqLBHZfXk?si=jFFdP1XafscVX9BF).
+You are strongly encouraged to contribute and improve the project by [Opening and Participating in Discussions](https://github.com/chpc-tech-eval/scc/discussions), [Raising, Addressing and Resolving Issues](https://github.com/chpc-tech-eval/scc/issues). The following guide describes [How to clone, push, and pull with git (beginners GitHub tutorial)](https://youtu.be/yxvqLBHZfXk?si=jFFdP1XafscVX9BF).
 
 ## Steps to follow when editing existing content
 
@@ -310,7 +329,7 @@ Editing the content directly, will require the use of Git. Using a terminal appl
    You can copy the command from GitHub itself.
 
    ```bash
-   git clone git@github.com:chpc-tech-eval/chpc24-scc-nmu.git
+   git clone git@github.com:chpc-tech-eval/scc.git
    ```
 1. When starting work on a new feature or bug fix, create a feature branch off of the development branch and regularly get updates from `dev` to ensure that you remain consistent with any changes to `dev`:
    ```bash
@@ -336,7 +355,7 @@ Editing the content directly, will require the use of Git. Using a terminal appl
    - Alternatively, if your branch is old, or depends on / requires changes from remote use `git fetch`, to `fetch` remote changes and be able to preview them before merging.
    - Eliminate your local conflicts and merge all remote changes `git merge`.
    - Once all the conflicts have been resolved, and you've successfully merged all remote changes, push your branch upstream.
-1. [Create a pull request](https://github.com/chpc-tech-eval/chpc24-scc-nmu/compare/dev...dev) to the remote `dev` branch on GitHub, to incorporate your feature.
+1. [Create a pull request](https://github.com/chpc-tech-eval/scc/compare/dev...dev) to the remote `dev` branch on GitHub, to incorporate your feature.
    - Or another branch, if your feature branch was adding functionality to an existing feature branch.
 
 ## Syntax and Style

@@ -20,7 +20,11 @@ Student Cluster Competition - Tutorial 3
     1. [Top500 List](#top500-list)
 1. [Spinning Up a Second Compute Node Using a Snapshot](#spinning-up-a-second-compute-node-using-a-snapshot)
     1. [Running HPL Across Multiple Nodes](#running-hpl-across-multiple-nodes)
+1. [Application Benchmark Profiling](#application-benchmark-profiling)
+    1. [Hardware Topology](#hardware-topology)
+    1. [VTune](#vtune)
 1. [HPC Challenge](#hpc-challenge)
+1. [High Performance Conjugate Gradients](#high_performance_conjugate_gradients)
 1. [Application Benchmarks and System Evaluation](#application-benchmarks-and-system-evaluation)
     1. [GROMACS (ADH Cubic)](#gromacs-adh-cubic)
     1. [LAMMPS (Lennard-Jones)](#lammps-lennard-jones)
@@ -131,7 +135,7 @@ In this section, you are going to be building and compiling Lmod from source. Lm
      sudo dnf install -y epel-release
      sudo dnf install -y tcl-devel tcl tcllib  bc
      sudo dnf install -y lua lua-posix lua-term
-     sudo dnf --enable-repo=devel install lua-devel
+     sudo dnf --enablerepo=devel install lua-devel
      ```
    * APT
      ```bash
@@ -172,6 +176,19 @@ In this section, you are going to be building and compiling Lmod from source. Lm
 
 ## Lmod Usage
 
+Complete your Lmod installation by sourcing the appropriate profile configuration:
+```bash
+# For a generic configuration
+source ~/lmod/lmod/lmod/init/profile
+
+# Alternatively you can source a specific profile configuration
+# for you shell environment.
+#
+# Remember to append your local profile or rc file with the
+# appropriate configuration.
+
+```
+
 With Lmod installed, you'll now have some new commands on the terminal. Namely, these are: `module <subcommand>`. The important ones for you to know and use are: `module avail`, `module list`, `module load` and `module unload`. These commands do the following:
 
 | Command                       | Operation                                            |
@@ -207,7 +224,7 @@ A library is a collection of pre-compiled code that provides functionality to ot
 
   Static libraries are embedded into the binary that you create when you compile your software. In essence, it copies the library that exists on your computer into the executable that gets created at **compilation time**. This means that the resulting program binary is self-contained and can operate on multiple systems without them needing the libraries installed first. Static libraries are normally files that end with the `.a` extension, for "archive".
 
-  Advantages here are that the program can potentially be faster, as it has direct access to the required libraries without having to query the operating system first, but disadavanges include the file size being larger and updating the library requires recompiling (and linking the updated library) the software.
+  Advantages here are that the program can potentially be faster, as it has direct access to the required libraries without having to query the operating system first, but disadvantages include the file size being larger and updating the library requires recompiling (and linking the updated library) the software.
 
 * Dynamic Libraries
 
@@ -319,7 +336,7 @@ Code compiled specifically for HPC hardware can use instruction sets like `AVX`,
    sudo apt install build-essential hwloc libhwloc-dev libevent-dev gfortran wget
 
    # Pacman
-   sudo dnf install base-devel gfortran git gcc wget
+   sudo pacman install base-devel gfortran git gcc wget
    ```
 
 1. Fetch and Compile OpenBLAS Source Files
@@ -630,11 +647,63 @@ Everything is now in place for you to run HPL across your two compute nodes. You
   ```bash
   mpirun -np 2 --hostfile hosts ./xhpl
   ```
+
+# Application Benchmark Profiling
+
+In order to visualize and understand the a portable abstraction of the layout of the hierarchical topology of modern hardware architectures, you can make use of the Portable Hardware Locality `hwlock` software package. This will give you insight into NUMA memory nodes, processor packages, shared caches, cores and simultaneous multi-threading.
+
+## Hardware Topology
+
+You will be using `hwloc` to help you understand how you are going to be mapping `<OpenMP / pThreads>` to `<MPI Ranks>`.
+
+1. Install `lstopo` and `numactl`:
+   ```bash
+   sudo dnf -y install numactl hwloc hwloc-libs hwloc-gui
+   ```
+1. Print the layout and topology of the memory, CPU cores and peripherals
+   ```bash
+   lstopo <FILENAME>.png
+   ```
+
+## VTune
+
+You're now going to recompile HPL across *"multiple"* nodes, using Intel oneAPI's `vtune` application for profiling.
+
+1. Recompile HPL
+   You must ensure the following Intel oneAPI modules are configure and loaded
+   ```bash
+   ml tbb compiler-rt mkl mpi vtune advisor intel_ipp_intel64
+   ```
+1. Should you have a firewall or security groups configured, ensure that you open the appropriate network ports:
+   ```bash
+   # Take note of the relavant nodes where this is required
+   export I_MPI_HYDRA_SERVICE_PORT=<SERVICE_PORT> # ex: 50000
+   export I_MPI_PORT_RANGE=<PORT_RANGE> # ex: 50000:50500
+   ```
+1. Configure the number of OpenMPI Threads that should spawn with the application:
+   ```bash
+   export OMP_NUM_THREADS=<Threads_per_MPI_Rank>
+   ```
+1. Run profiling tool
+   ```bash
+   mpirun -np <NUM_PROCESSORS> -ppn <PROCS_PER_NODE> -f <HOSTSFILE> -gtool "vtune -collect hpc-performance -data-limit=0 -r result_init:<MPI_RANK_TO_MONITOR>" ./xhpl
+   ```
+1. Monitor the performance behavior for different configurations:
+   - Vary the `<NUM_PROCS>` vs `<PROCS_PER_NODE>` vs `<NUM+_THREADS>` and repeat the experiments.
+
+> [!Tip]
+> You may need to create a symbolic link to in the binaries directory of the compiler sub-directory between `icc` and `icx`.
+
+Recompile with `-parallel-source-info=2` flag.
+
 # HPC Challenge
 
 HPC Challenge (or HPCC) is benchmark suite which contains 7 micro-benchmarks used to test various performance aspects of your cluster. HPCC includes HPL which it uses to access FLOPs performance. Having successfully compiled and executed HPL, the process is fairly straight forward to setup HPCC (it uses the same Makefile structure).
 
-1. Download HPCC from https://icl.utk.edu/hpcc/software/index.html
+> [!NOTE]
+> If you are having difficulties downloading the HPCC source and navigating to the site, you may skip the HPC Challenge and instead do HPCG below. Bonus points will be given for completing both.
+
+1. Download HPCC from https://icl.utk.edu/hpcc/software/index.html or clone the repository from https://github.com/icl-utk-edu/hpcc.
 
 1. Extract the file, then enter the `hpcc/` sub-directory.
 
@@ -656,6 +725,31 @@ HPC Challenge (or HPCC) is benchmark suite which contains 7 micro-benchmarks use
    ./format.pl -w -f hpccoutf.txt
    ```
 Have the output `hpccoutf.txt` and your `Make.<architecture>` ready for the instructors to view on request.
+
+# High Performance Conjugate Gradients
+
+**HPCG** is intended as a complement to the **High Performance LINPACK (HPL)*** benchmark. It is designed to exercise computational and data access patterns that more closely match a different and broad set of important applications. See [HPCG Benchmark](https://hpcg-benchmark.org/) for more information. Or clone the repository from their Github repository [HPCG Repo](https://github.com/hpcg-benchmark/hpcg).
+
+## Getting the source code
+
+There is little setup and configuration required for this benchmark, so limited guidance is provided. A reference version of **HPCG** is available for download, which you can compile and run:
+```bash
+wget https://hpcg-benchmark.org/downloads/hpcg-3.1.tar.gz
+```
+
+Alternatively the source can be obtained from GitHub:
+```bash
+git clone https://github.com/hpcg-benchmark/hpcg/
+```
+Lastly, it is possible to find prebuilt versions of HPCG which should provide optimal performance. You are required to use **HPCG** version **3.1** or newer.
+
+## Submission
+
+You must once again build **HPCG** using both (1.) **GCC**, an open-source **MPI** implementation, and open-source maths libraries; and (2.) the equivalent Intel implementation.
+
+Similarly, as was the case for **HPCC**, you must submit a `README.md` file describing the libraries and versions used to build **HPCG**, all relevant input and output files, and the executable binaries used in your best run.
+
+
 
 # Application Benchmarks and System Evaluation
 

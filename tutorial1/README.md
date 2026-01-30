@@ -21,6 +21,9 @@ This tutorial will conclude with you downloading, installing and running the Hig
     1. [Accessing the NICIS Cloud](#accessing-the-nicis-cloud)
     1. [Verify your Teams' Project Workspace and Available Resources](#verify-your-teams-project-workspace-and-available-resources)
     1. [Generating SSH Keys](#generating-ssh-keys)
+    1. [Create a New Private Virtual Network](#create-a-new-private-virtual-network)
+    1. [Create a New Router](#create-a-new-router)
+    1. [Create a New Security Group](#create-a-new-security-group)
     1. [Launch a New Instance](#launch-a-new-instance)
     1. [Linux Flavors and Distributions](#linux-flavors-and-distributions)
         1. [Summary of Linux Distributions](#summary-of-linux-distributions)
@@ -144,7 +147,7 @@ You should familiarize yourself with a few basic networking commands that can be
    The tracepath command is used to trace the network path to a destination, showing the route that packets take to reach it. Unlike traceroute, tracepath does not require root privileges and is often easier to use. It provides details about each hop along the route, including the IP address and round-trip time.
 
 > [!TIP]
-> Refer to the [Q&A Discussion on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/48) for an example. Post a similar screenshot of your team executing these commands as a comment to that discussion.
+> Refer to the [Q&A Discussion on GitHub](https://github.com/chpc-tech-eval/scc/discussions/48) for an example. Post a similar screenshot of your team executing these commands as a comment to that discussion.
 
 # Launching your First Open Stack Virtual Machine Instance
 
@@ -154,7 +157,7 @@ The physical servers that you will use to spawn your VM's are housed in Rosebank
 
 ## Accessing the NICIS Cloud
 
-Open your web browser and navigate to the NICIS OpenStack Cloud platform  https://sebowa.nicis.ac.za/, and use the credentials that your team has been provided with to login into your team's project workspace.
+Open your web browser and navigate to the NICIS OpenStack Cloud platform  https://pta.sebowa.nicis.ac.za/, and use the credentials that your team has been provided with to login into your team's project workspace.
 
 <p align="center"><img alt="Sebowa.nicis.ac.za NICIS OpenStack Cloud." src="./resources/openstack_login.png" width=600 /></p>
 
@@ -207,9 +210,61 @@ Once you have successfully generated an SSH key pair, navigate to `Compute` &rar
 
 <p align="center"><img alt="Import id_25519.pub into OpenStack." src="./resources/openstack_import_public_key_highlight.png" width=900 /></p>
 
+## Create a New Private Virtual Network
+
+You will now be creating a new private Virtual Local Area Network (VLAN). Only your team has access to this private virtual network, and it must be created in order for your compute nodes to be able to communicate to each other, and have their traffic *'routed'* through to the internet.
+
+1. From your Team's OpenStack Project Workspace, navigate to `Network` &#8594; `Networks` and click `Create Network`.
+
+   <p align="center"><img alt="OpenStack Create New Private Network." src="./resources/openstack_create_private_network_01.png" width=900 /></p>
+
+1. Enter a network name for your new private VLAN. A sensible choice would be your `<TEAMNAME>-vlan`.
+
+   <p align="center"><img alt="OpenStack Create New Private Network." src="./resources/openstack_create_private_network_02.png" width=600 /></p>
+
+1. Enter a subnet name for your private VLAN. You can re-use your VLAN name, or alternatively specify `<TEAMNAME>-subnet`.
+1. You must also specify a valid [private network](https://en.wikipedia.org/wiki/Reserved_IP_addresses) in [CIDR notation](https://whatismyipaddress.com/cidr).
+
+   <p align="center"><img alt="OpenStack Create New Private Network." src="./resources/openstack_create_private_network_03.png" width=600 /></p>
+
+1. Complete the configuration by click on `Next` and then `Create`.
+
+   <p align="center"><img alt="OpenStack Create New Private Network." src="./resources/openstack_create_private_network_04.png" width=600 /></p>
+
+1. Click on your newly created VLAN, navigate to `Ports` and create a port on your VLAN that will allow you to transmit traffic between your VLAN and the public internet.
+
+## Create a New Router
+
+You will now create a new `router`, to route traffic between your `vlan` that you created in the previous step and your public facing interface, which wil give you cluster access to the internet.
+
+1. From your Team's OpenStack Project Workspace, navigate to `Network` &#8594; `Routers` and click `Create Router`.
+
+   <p align="center"><img alt="OpenStack Create New Private Network." src="./resources/openstack_create_private_router_01.png" width=900 /></p>
+
+1. Enter a router name, a sensible choice would be `<TEAMNAME>-router`, make sure to select *'Public Internet'* as the external network to route to, and then click `Create Router`.
+
+   <p align="center"><img alt="OpenStack Create New Private Network." src="./resources/openstack_create_private_router_02.png" width=600 /></p>
+
+## Create a New Security Group
+
+You will now create a new `security group`, to control and restrict traffic between your external, public facing interface and the rest of the internet.
+
+1. From your Team's OpenStack Project Workspace, navigate to `Network` &#8594; `Security Groups` and click `Create Security Group`. Enter a security group name, a sensible choice would be `<TEAMNAME>-sg` and then click `Create Security Group`. This will create an empty security group profile, that permits all outbound traffic.
+
+   <p align="center"><img alt="OpenStack Create New Private Network." src="./resources/openstack_create_private_sg_01.png" width=900 /></p>
+
+1. You will now be allowing **"inbound"** SSH connections from the internet by opening TCP Port 22. Start by clicking on `Add Rule`. Enter a sensible description and the SSH port number.
+
+   <p align="center"><img alt="OpenStack Create New Private Network." src="./resources/openstack_create_private_sg_02.png" width=600 /></p>
+
+1. Your security groups can be modified at any time, event after creation of an instance. Any time you are required to open a firewall port, remember to also open the corresponding port within your OpenStack workspace security group.
+
+> [!TIP]
+> A complete list of TCP and UDP ports required to be opened on your security groups is provided later on when you are spinning up your first VM and selecting a security group.
+
 ## Launch a New Instance
 
-From your Team's OpenStack Project Workspace, navigate to `Compute` &#8594; `Instance` and click `Launch Instance**.
+From your Team's OpenStack Project Workspace, navigate to `Compute` &#8594; `Instance` and click `Launch Instance`.
 
 <p align="center"><img alt="OpenStack Launch New Instance." src="./resources/openstack_launch_instance_highlight.png" width=900 /></p>
 
@@ -227,7 +282,7 @@ There are a number of considerations that must be taken into account when select
 
 An argument could be made, that the best way to acquire Linux systems administration skills, is to make daily use of a Linux Distribution by running it on your personal laptop, desktop or workstation at home / school.
 
-This is something for you and your team to investigate after the competition and will not be covered in these tutorials. If you feel that you are not comfortable completely migrating to a Linux-based environment, there are a number of methods that can be implemented to assist you in transitioning from Windows to a Linux (or macOS) based *'Daily Driver*:
+This is something for you and your team to investigate after the competition and will not be covered in these tutorials. If you feel that you are not comfortable completely migrating to a Linux-based environment, there are a number of methods that can be implemented to assist you in transitioning from Windows to a Linux (or macOS) based *'Daily Driver'*:
 * Dual-boot Linux alongside your Windows environment,
 * Windows Subsystem for Linux [(WSL)](https://learn.microsoft.com/en-us/linux/install),
 * Running Linux VM's locally within your Windows environment,
@@ -248,7 +303,7 @@ You and your Team, together with input and advise from your mentors, must do som
 The following list provides a few examples of Linux distros that *may* be available on the Sebowa OpenStack cloud for you to use, and that you *might* consider using as a *'daily driver'*.
 
 > [!TIP]
-> You do not need to decide right now which Linux Flavor you and your team will be installing on you personal / school laptop and desktop computers. The list and corresponding links are provided for later reference, however for the time being you are strongly encouraged to proceed with **Rocky 9.3 image**. If you are already using or familiar with Linux, discuss this with the instructors who will advise you on how to proceed.
+> You do not need to decide right now which Linux Flavor you and your team will be installing on you personal / school laptop and desktop computers. The list and corresponding links are provided for later reference, Rocky or Ubuntu make excellent choices for a distro. If you are already using or familiar with Linux, discuss this with the instructors who will advise you on how to proceed, i.e. if you are familiar with Arch linux, for example, you are more than welcome to complete using the tutorials using Arch, and it is *"fully-ish"*, tested and *supported* within the tutorials.
 
 * **RPM** or Red Hat Package Manager is a free and open-source package management system. The name RPM refers to the `.rpm` file format and the package manager program itself. Examples include [Red Hat Enterprise Linux](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux), [Rocky Linux](https://rockylinux.org/), [Alma Linux](https://almalinux.org/), [CentOS Stream](https://www.centos.org/centos-stream/) and [Fedora](https://fedoraproject.org/). You can't go wrong with choose of either Red Hat, Alma, ***Rocky*** or CentoS Stream for the competition. You manage packages through tools such at `yum` (Yellowdog Updater, Modified) and / or `dnf` (Dandified YUM).
 
@@ -264,9 +319,17 @@ The following list provides a few examples of Linux distros that *may* be availa
 
 * **Source-Based**: [Linux From Scratch (LFS)](https://www.linuxfromscratch.org/) is a project that teaches you how to create your own Linux system from source code, using another Linux system. Learn how to install, configure and customize LFS and BLFS, and use tools for automation and management. Once you are **very** familiar with Linux, LFS is an excellent medium term side project that you peruse in you own time. Only Linux experts need apply.
 
-Type *"Rocky"* in the search bar, and select the **Rocky-9.3** cloud image as a boot source.
+Select the **Linux Distribution** cloud image of your choice as a boot source.
 
 <p align="center"><img alt="OpenStack Select Source." src="./resources/openstack_source_image.png" width=900 /></p>
+
+Alternatively, you may want to make use of a different cloud image or operating system. For example you can download the [latest Arch Linux QCOW2 Cloud image](https://geo.mirror.pkgbuild.com/images/latest/), and upload it to your OpenStack workspace on Sebowa.
+
+<p align="center"><img alt="OpenStack Select Source." src="./resources/openstack_add_arch1.png" width=900 /></p>
+
+After browsing to the image that you'd like to use, enter a sensible `Image Name`, and ensure that you use the correct format.
+
+<p align="center"><img alt="OpenStack Select Source." src="./resources/openstack_add_arch2.png" width=900 /></p>
 
 ## OpenStack Instance Flavors
 
@@ -285,7 +348,7 @@ An important aspect of system administration is resource monitoring, management 
    1. Head node (20 GB RAM) and 1 x Compute Node (16 GB RAM).
 
 1. Storage (DISK)
-   You have been allocated a pool of 50 GB of storage, which can be distributed in the following configurations:
+   You have been allocated a pool of 100 GB of storage, which can be distributed in the following configurations:
    1. Head Node (60 GB of storage) and 2 x Compute Nodes (10 GB of storage each),
    1. Head Node (60 GB of storage) and 2 x Compute Nodes (10 GB of storage each), and
    1. Head Node (60 GB of storage) and 1 x Compute Node (10 GB of storage).
@@ -295,34 +358,34 @@ The following table summarizes the various permutations and allocations that can
 | Cluster Configurations     | Instance Flavor | Compute (vCPUS) | Memory (RAM) | Storage (Disk) |
 |----------------------------|:---------------:|:---------------:|:------------:|:--------------:|
 |                            |                 |                 |              |                |
-| Dedicated Head Node        | scc24.C2.M4.S60    | 2               | 4 GB         | 60 GB          |
-| Compute Node 01            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
-| Compute Node 02            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
+| Dedicated Head Node        | scc.C2.M4.S60   | 2               | 4 GB         | 60 GB          |
+| Compute Node 01            | scc.C8.M16.S10  | 8               | 16 GB        | 10 GB          |
+| Compute Node 02            | scc.C8.M16.S10  | 8               | 16 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 |                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C6.M12.S60    | 6               | 12 GB        | 60 GB          |
-| Compute Node 01            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
-| Compute Node 02            | scc24.C6.M12.S10    | 6               | 12 GB        | 10 GB          |
+| Hybrid Head / Compute Node | scc.C6.M12.S60  | 6               | 12 GB        | 60 GB          |
+| Compute Node 01            | scc.C6.M12.S10  | 6               | 12 GB        | 10 GB          |
+| Compute Node 02            | scc.C6.M12.S10  | 6               | 12 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 |                            |                 |                 |              |                |
-| Hybrid Head / Compute Node | scc24.C10.M20.S60   | 10              | 20 GB        | 60 GB          |
-| Compute Node 01            | scc24.C8.M16.S10    | 8               | 16 GB        | 10 GB          |
+| Hybrid Head / Compute Node | scc.C10.M20.S60 | 10              | 20 GB        | 60 GB          |
+| Compute Node 01            | scc.C8.M16.S10  | 8               | 16 GB        | 10 GB          |
 |                            |                 |                 |              |                |
 
-Type *"scc"* in the search bar and select the **scc24.C2.M4.S60** instance flavor.
+Type *"scc"* in the search bar and select the **instance flavor** of your choice.
 
 <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_instance_flavor.png" width=900 /></p>
 
 > [!TIP]
-> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of starting with this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the **scc24.C2.M4.S60** flavor with *2 vCPUs* and *4 GB RAM*.
+> When designing clusters, very generally speaking the *'Golden Rule'* in terms of Memory is **2 GB of RAM per CPU Core**. The storage on your head node is typically '*shared*' to your compute nodes through some form of [Network File System (NFS)](https://en.wikipedia.org/wiki/Network_File_System). A selection of pregenerated instance flavors have been pre-configured for you. For the purposes of starting with this tutorial, unless you have very good reasons for doing otherwise, you are **STRONGLY** advised to make use of the **scc.C2.M4.S60** flavor with *2 vCPUs* and *4 GB RAM*.
 
 ## Networks, Ports, Services and Security Groups
 
-Under the *Networks* settings, make sure to select the `vxlan` that corresponds to your Team Name.
+Under the *Networks* settings, make sure to select the `vxlan` that corresponds to the one that *your* team previously created.
 
 <p align="center"><img alt="OpenStack Networks Selection." src="./resources/openstack_networks.png" width=900 /></p>
 
-No configurations are required for *Network Ports*, however you must ensure that you have selected `scc24_sg` under *Security Groups*.
+No configurations are required for *Network Ports*, however you must ensure that you have selected the previously created Security Group, i.e. `<TEAMNAME>-sg` under *Security Groups*.
 
 <p align="center"><img alt="OpenStack Security Groups Selection." src="./resources/openstack_security_groups.png" width=900 /></p>
 
@@ -344,9 +407,9 @@ In order for you to be able to SSH into your newly created OpenStack instance, y
 
 1. Select ***Associate Floating IP*** from the *Create Snapshot* dropdown menu, just below the *Actions* tab:
    <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_associate_floating_ip.png" width=900 /></p>
-1. From the *Manage Floating IP Associations* dialog box, click the "➕" and select *publicnet*:
+1. From the *Manage Floating IP Associations* dialog box, click the "➕" and select *Public Internet*:
    <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_public_net.png" width=900 /></p>
-1. Select the `154.114.57.*` IP address allocated and click on the *Associate* button.
+   1. Select the `154.114.52.*` IP address allocated and click on the *Associate* button.
    <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_added_floating_ip.png" width=900 /></p>
 
 ## Troubleshooting
@@ -366,7 +429,7 @@ In order for you to be able to SSH into your newly created OpenStack instance, y
 
 * Dissociating Floating IP
 
-  If your VM is deleted then the floating IP associated with that deleted VM will stay in your project under `Networks -> Floating IPs` for future use. Should you accidentally associate your floating IP to one of your compute nodes, dissociate it as per the diagram below, so that it may be allocated to your head node. Selecting the floating IP and clicking `Release Floating IPs` will send the floating IP back to the pool and you can call a tutor to help you get back your IP.
+If your VM is deleted then the floating IP associated with that deleted VM will stay in your project under `Networks -> Floating IPs` for future use. Should you accidentally associate your floating IP to one of your compute nodes, dissociate it as per the diagram below, so that it may be allocated to your head node. Selecting the floating IP and clicking `Release Floating IPs` will send the floating IP back to the pool and you can call a tutor to help you get back your IP.
   <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_troubleshooting_dissociate_float_ip.png" width=900 /></p>
 
 # Introduction to Basic Linux Administration
@@ -388,35 +451,35 @@ If your workstation or laptop is running a Linux-based or macOS operating system
 > In an Alma Linux cloud image, the default login account is **alma**.
 
 ```bash
-   ssh -i ~/.ssh/id_ed25519 alma@154.114.57.<YOUR Head Node IP>
+   ssh -i ~/.ssh/id_ed25519 alma@154.114.52.<YOUR Head Node IP>
 ```
 
 > [!NOTE]
 > In an Arch Linux cloud image, the default login account is **arch**.
 
 ```bash
-   ssh -i ~/.ssh/id_ed25519 arch@154.114.57.<YOUR Head Node IP>
+   ssh -i ~/.ssh/id_ed25519 arch@154.114.52.<YOUR Head Node IP>
 ```
 
 > [!NOTE]
 > In a CentOS Linux cloud image, the default login account is **centos**.
 
 ```bash
-   ssh -i ~/.ssh/id_ed25519 centos@154.114.57.<YOUR Head Node IP>
+   ssh -i ~/.ssh/id_ed25519 centos@154.114.52.<YOUR Head Node IP>
 ```
 
 > [!NOTE]
 > In a Rocky Linux cloud image, the default login account is **rocky**.
 
 ```bash
-   ssh -i ~/.ssh/id_ed25519 rocky@154.114.57.<YOUR Head Node IP>
+   ssh -i ~/.ssh/id_ed25519 rocky@154.114.52.<YOUR Head Node IP>
 ```
 
 > [!NOTE]
 > In an Ubuntu Linux cloud image, the default login account is **ubuntu**.
 
 ```bash
-   ssh -i ~/.ssh/id_ed25519 ubuntu@154.114.57.<YOUR Head Node IP>
+   ssh -i ~/.ssh/id_ed25519 ubuntu@154.114.52.<YOUR Head Node IP>
 ```
 
 > [!TIP]
@@ -453,7 +516,7 @@ If your workstation or laptop is running Windows, then you may proceed using eit
 
 ## Running Basic Linux Commands and Services
 
-Once logged into your head node, you can now make use of the [previously discussed basic networking commands](#terminal-mobaxterm-and-windows-powershell-commands): `ip a`, `ping`, `ip route` and `tracepath`, refer to [Discussion on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/48) for example out, and to also post your screenshots as comments.
+Once logged into your head node, you can now make use of the [previously discussed basic networking commands](#terminal-mobaxterm-and-windows-powershell-commands): `ip a`, `ping`, `ip route` and `tracepath`, refer to [Discussion on GitHub](https://github.com/chpc-tech-eval/scc/discussions/48) for example out, and to also post your screenshots as comments.
 
 Here is a list of further basic Linux / Unix commands that you must familiarize yourselves and become comfortable with in order to be successful in the competition.
 
@@ -486,7 +549,7 @@ Here is a list of further basic Linux / Unix commands that you must familiarize 
 
 * The GNU `history` command shows all commands you have executed so far, the feedback is numbered, use `!14` to rerun the 14th command.
 
-Make sure that you try some of these commands to familiarize yourself and become comfortable with the Linux terminal shell and command line. You can find sample outputs and are strongly encouraged to post your teams screenshots of at least one of the above commands on the [Discussion Page on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/49).
+Make sure that you try some of these commands to familiarize yourself and become comfortable with the Linux terminal shell and command line. You can find sample outputs and are strongly encouraged to post your teams screenshots of at least one of the above commands on the [Discussion Page on GitHub](https://github.com/chpc-tech-eval/scc/discussions/49).
 
 * Understanding `journalctl` and `systemctl`
 
@@ -499,7 +562,7 @@ Make sure that you try some of these commands to familiarize yourself and become
   sudo systemctl status systemd-networkd
   ```
 
-Verify some of your system's configuration settings and post a screenshot as a comment to this [Discussion Page on GitHub](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/56).
+Verify some of your system's configuration settings and post a screenshot as a comment to this [Discussion Page on GitHub](https://github.com/chpc-tech-eval/scc/discussions/56).
 
 > [!CAUTION]
 > It is **CRITICAL** that you are always aware and sure which node or server your are working on. As you can see in the examples above, you can run *similar* commands in a Linux terminal on your workstation, on the console prompt of your head node, and as you will see later, on the console prompt of your compute node.
