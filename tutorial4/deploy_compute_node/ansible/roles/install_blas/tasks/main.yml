@@ -1,0 +1,26 @@
+- name: Check if OpenBLAS is already installed
+  stat:
+    path: "{{ ansible_env.HOME }}/opt/openblas"
+  register: openblas_installed
+
+- name: Clone OpenBLAS repository
+  git:
+    repo: "https://github.com/xianyi/OpenBLAS.git"
+    dest: "{{ ansible_env.HOME }}/OpenBLAS"
+    version: "v0.3.26"
+  register: clone_result
+  when: not openblas_installed.stat.exists
+
+- name: Build OpenBLAS
+  make:
+    chdir: "{{ ansible_env.HOME }}/OpenBLAS"
+    target: all
+  when: clone_result.changed
+
+- name: Install OpenBLAS to custom directory
+  make:
+    chdir: "{{ ansible_env.HOME }}/OpenBLAS"
+    target: install
+    params:
+      PREFIX: "{{ ansible_env.HOME }}/opt/openblas"
+  when: clone_result.changed
