@@ -30,6 +30,12 @@
 1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
     1. [Protein Visualization](#protein-visualization)
     1. [Benchmark 2 (1.5M Water)](#benchmark-2-15m-water)
+1.  [Deploying a Local Cluster with VirtualBox](#deploying-a-local-cluster-with-virtualbox)
+	1.  [Hardware Consideration Prerequisite](#hardware-consideration-pjerequisite)
+	2. [Manual Cluster Deployment](#manual-cluster-deployment)
+	3. [Network Configuration](#network-configuration)
+	4. [Finishing Touches](#finishing-touches)
+	5. [Automate Deployment with Vagrant](#automate-deployment-with-vagrant)
 
 <!-- markdown-toc end -->
 
@@ -1305,3 +1311,370 @@ Using a batch script similar to the one above, run the benchmark. You may modify
 
 > [!NOTE]
 > Please be ready to present the `gromacs_log` files for the **1.5M_water** benchmark to the instructors.
+
+# Deploying a Local Cluster with VirtualBox
+
+By now you've learned to setup and deploy a cluster on a cloud platform like OpenStack. This section will show you how to recreate that cluster locally using the virtualization software [VirtualBox](https://www.virtualbox.org/) and how to automate that local deployment with [Vagrant](https://developer.hashicorp.com/vagrant). 
+
+We will be using Rocky Linux as the example distribution so where applicable, adapt the commands to the distribution that you opted to use.
+
+## Hardware Consideration Prerequisite
+
+Before beginning, we will need to plan how much of our computers resources we will use for the cluster. Use too much and our computer will hang (and potential crash). 
+
+Verify your system specifications with either:
+- **Windows**: Open Task Manager → Performance tab 
+- **PowerShell**: Run `systeminfo`
+
+**Recommended Minimum Host System Requirements:**
+- 8 GB RAM (16 GB recommended)
+- 4 CPU cores (8 cores recommended)
+- 50 GB free disk space
+
+> [!IMPORTANT]
+> Allocate no more than 60% of your total resources to VMs. For example, with 16 GB RAM and 8 cores, allocate: 2 VMs × 4 GB RAM × 2 cores = 8 GB RAM + 4 cores total.
+
+### VM Resource Allocation
+
+**Head Node:**
+- RAM: 2-4 GB
+- CPU Cores: 2-4
+- Disk Space: 20-30 GB
+
+**Compute Node:**
+- RAM: 2-4 GB
+- CPU Cores: 2 minimum
+- Disk Space: 10-20 GB
+
+## Manual Cluster Deployment
+
+### Phase 1: Installing VirtualBox
+
+1. Install VirtualBox by navigating to the [VirtualBox download page](https://www.virtualbox.org/wiki/Downloads) and click the link for your platform of choice under "VirtualBox Platform Packages".  
+![vb-download-page.png](resources/vb-download-page.png)
+2. Once the download has finished, run the installer and follow the prompts.
+
+_Yippee! First phase complete_!
+
+### Phase 2: Download your Distribution ISO
+
+In order to use the distribution of your choice, you will need to download their ISO image. Each distribution will have varies types of images, like ones that come with a graphics user interface (also sometimes referred to as "desktop images") but in this case we would want to use the "minimal" or "server" images.
+
+If you are using Rocky Linux you can download the minimal ISO for your architecture from [https://rockylinux.org/download](https://rockylinux.org/download).
+![vb-rocky-download.png](resources/vb-rocky-download.png)
+
+> [!CAUTION]
+> **AMD Processor Users**: Verify your processor is compatible with Rocky Linux before installation. Incompatible processors may cause boot hangs, black screens, or kernel panic errors.
+
+
+### Phase 3: Create Virtual Machines
+
+#### Creating the head node
+
+1. Inside VirtualBox, create a new VM by clicking the icon labelled "new" to create a new virtual machine.
+![[vb-click-new.png]]
+2. A floating window will appear where you can configure your new virtual machine. Configure the following sections:
+	1. Virtual machine name and operating system:
+		- **VM Name**: `head-node`
+		- **ISO Image**: browse and select your download ISO
+		- **OS, OS Distribution and OS Type**: Auto selects based on ISO but pick whats applicable to your distribution
+		- **Skip Unattended Installation**: check this option
+	2. Specify virtual hardware (can be based off what you designed):
+		- **Base Memory**: 4096Mb
+		- **Number of CPUs**: 2
+	3. Specify virtual hard disk (can be based off what you designed):
+		 - **Disk**: 20Gb
+![vb-new-vm-settings.png](resources/vb-new-vm-settings.png)
+
+_Congrats, you have just made your first node!_
+
+#### Creating the Compute
+
+We have 2 options for our compute node:
+1. Follow the same process outlined for creating head node, with obvious changes such as naming this node to ‘compute node’ and hardware allocation as outlined in the resource planning section.
+2. Clone the head-node VM using: Right click on head node icon inside virtual box, select ‘clone’ from the icon drop down. Rename the node here to ‘compute-node’ or something to that effect. Click next, and select “full clone”. Then select finish.
+
+## Network Configuration
+
+For any communication between the devices, we will need to add and configure the network adapters in VirtualBox which can be seen in the picture below where to be found.
+
+![vb-nat.png](resources/vb-nat.png)
+
+### Phase 1: Configure Network Adapters
+
+For the head node:
+0. Right click on the **head node** and click on **Settings**.
+1. Under **Network**, click on "Adapter 1". This represents our external network. (If you can see it, make sure you are on the expert tab in the top left)
+2. Click on "Port Forwarding" and add a rule by clicking the green plus in the top right.
+3. In that rule, set host port to 2222 and guest port to 22 and click "Okay" to finish. This will open ports to SSH from your personal computer into your virtual machine.
+
+![vb-port-forwarding-rules.png](resources/vb-port-forwarding-rules.png)
+
+4. Click on "Adapter 2", enable the network adapter and change "Attached to" to "Internal Network". This will represent our internal network between our head node and compute node.
+
+Similarly for the compute node:
+1. Click on **Adapter 1** and change "Attached to" to "Internal Network". This will simulate the compute node only being on the internal network.
+
+Now we are good to go on to the next step where you start both your VM’s up and run through the installation process where you set your username and password and install.
+
+### Phase 2: Configure Passwordless SSH
+
+We will start with password-less SSH from your host PC, in this case Windows, into the head node.
+
+Enter your VM with the code:
+
+```sh
+ssh –p 2222 username@localhost
+```
+
+Accept all the authentication and enter your password to your VM and you are in!!!
+
+#### Configuring Passwordless SSH
+
+Now for passwordless SSH into your head node you need a special key which will be generated and copied in the following steps:
+
+1. Generate an ed25519 key:
+```sh
+ssh-keygen -t ed25519 -C "Windows to Rocky Linux" -f $env:USERPROFILE\.ssh\id_ed25519
+```
+2. Press enter to save it to the default areas and enter for the passphrase to leave it empty.
+3. Add your key to your head node, by first viewing it and manually copying it over:
+```sh
+cat $env:USERPROFILE\.ssh\id_ed25519.pub
+
+ssh -p 2222 username@localhost "mkdir -p ~/.ssh && echo 'PASTE_YOUR_PUBLIC_KEY_HERE' >> ~/.ssh/authorized_keys
+```
+4. Set the proper permissions on the file copied over:
+```sh
+ssh -p 2222 mariam@localhost "chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
+```
+5. Now test passwordless SSH where you don't enter a password as below.
+
+### Phase 3: Configuring the Internal Network
+
+There is no DHCP server for the internal network so we will have to manual add an IP to each node. For this example, we will assign the head node the IP `192.158.56.10/24` and the compute node the `192.158.56.11/24`:
+
+```sh
+# Run on head node
+sudo ip a add 192.158.56.10/24 dev enp0s8
+
+# Run on compute node
+sudo ip a add 192.158.56.11/24 dev enp0s3
+```
+
+Now see if the head node can ping (communicate) the compute node and if the compute node can ping the head node.
+![vb-pinging.png](resources/vb-pinging.png)
+
+### Phase 4: Configure Hostname Resolution
+
+Set hostnames permanently, can be done manually as below or on `nmtui`.
+
+On head node:  
+```sh
+sudo hostnamectl set-hostname headnode
+```
+  
+On compute node:  
+```sh
+sudo hostnamectl set-hostname computenode1
+```
+
+Open `/etc/hosts` on both the head node and compute node:
+```sh
+sudo nano /etc/hosts
+```
+
+Adding the below in the file will set it permanently:
+```sh
+<head node Ip address> headnode
+
+<computenode ip address> computenode
+```
+
+An example of the `/etc/hosts` file is below:
+
+![vb-etc-host.png](resources/vb-etc-host.png)
+
+This is the network diagram illustrating the network setup:
+
+![vb-topology.png](resources/vb-topology.png)
+
+### Phase 5: Configuring internet connection for the Compute Node
+
+#### Phase 1
+
+On the head node:
+
+1. Update
+
+```sh
+sudo dnf update –y  
+```
+2. Install networking tools  
+```sh
+sudo dnf install -y net-tools traceroute nmap
+sudo dnf install -y iptables-services
+```
+3. Identify interfaces
+```sh
+ip addr show
+```
+
+4. Enable IP forwarding, in the following enp0s3/external adapter is the NAT and enp0s8 is the Internal Adapter. This will enable forwarding from the compute through the head node.
+
+```sh
+echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.conf  
+sudo sysctl –p
+```
+
+#### Phase 2
+
+Configure NetworkManager interfaces according to your cluster
+
+```sh
+sudo nmcli connection modify <external adapter name> ipv4.never-default no  
+sudo nmcli connection modify <internal adapter name> ipv4.never-default yes  
+```
+  
+Restart network interfaces  
+
+```sh
+sudo nmcli connection down <external adapter name>  
+sudo nmcli connection down <internal adapter name>  
+sudo nmcli connection up <external adapter name>  
+sudo nmcli connection up <internal adapter name>  
+```
+  
+Set up NAT masquerading  
+
+```sh
+sudo iptables -F  
+sudo iptables -t nat -F  
+sudo iptables -t nat -A POSTROUTING -s <internal ip address full subnet> -o <external adapter name> -j MASQUERADE  
+sudo iptables -A FORWARD -i <internal adapter name> -o <external adapter name> -j ACCEPT  
+sudo iptables -A FORWARD -i <external adapter name> -o <internal adapter name> -m state --state RELATED,ESTABLISHED -j ACCEPT  
+```
+  
+Save iptables rules  
+  
+```sh
+sudo systemctl enable iptables  
+sudo systemctl start iptables  
+sudo iptables-save | sudo tee /etc/sysconfig/iptables
+```
+
+#### Phase 3
+
+Now on the compute node:
+
+- Set head node as a default gateway
+
+```sh
+sudo nmcli connection modify <external adapter name> ipv4.gateway <ip address of your head nodes ip address>sudo nmcli connection modify <external adapter name> ipv4.dns "8.8.8.8
+
+sudo nmcli connection modify <external adapter name> ipv4.never-default no  
+```
+  
+- Restart network  
+
+```sh
+sudo nmcli connection down <external adapter name>  
+sudo nmcli connection up <external adapter name>
+```
+
+- Verify that everything runs properly on compute node
+
+```sh
+ping 1.1.1.1
+ping google.com
+```
+
+Pinging google.com shows that the DNS is setup correctly and pinging 1.1.1.1 shows that the masquerading and forwarding works.
+
+If this pings everything is good, but if it is not, check where packets stop  
+```sh
+traceroute 8.8.8.8
+```
+
+- Check NAT rules  
+```sh
+sudo iptables -t nat -L -v 
+``` 
+  
+- Check forwarding  
+```sh
+sudo iptables -L FORWARD -v  
+```
+  
+- Check network interfaces  
+```sh
+ip addr show  
+nmcli connection show
+```
+
+
+## Finishing Touches
+
+Now that we have our base setup, you can follow the other tutorials to set up things like [tmux and system monitoring](../tutorial2#terminal-multiplexers-and-basic-system-monitoring), [NFS](../tutorial2/README.md#network-file-system), [Lmod](../tutorial3/README.md#install-lmod) or [running HPL across a cluster](../tutorial3/README.md#running-hpl-across-multiple-nodes).
+
+>[!NOTE]
+> If you get error with MPI where it MPI processes are unable to communicate or connect with each other. Run you `mpirun` command with the flags `-np 6 --mca btl_tcp_if_include` and `--mca btl ^openib`.
+
+## Automate Deployment with Vagrant
+
+Vagrant is a super helpful tool that lets you automate the creation and management of virtual machine environments through a configuration file and CLI similar to Terraform, allowing us to easily reproduce and share cluster setups. 
+
+This section show you how to set up the Rocky Linux cluster environment like the one we just created using Vagrant and VirtualBox.
+
+### Setting Up Vagrant Configuration
+
+0. Before we start, we need to delete previous virtual machines we created on VirtualBox.
+1. Install [Vagrant](https://developer.hashicorp.com/vagrant/install)
+2. Prepare a folder for our Vagrant configuration with your file manager or terminal and name it `demo-cluster`. 
+3. Download [Vagrantfile](resources/Vagrantfile), [headnode-setup.sh](resources/headnode-setup.sh), [computenode-setup.sh](resources/computenode-setup.sh) into that folder. The folder should look like this:
+```txt
+cluster/
+├── Vagrantfile
+├── headnode-setup.sh
+└── computenode-setup.sh
+```
+
+### Exploring the Vagrantfile
+
+Documentation for the Vagrantfile is available [here](https://developer.hashicorp.com/vagrant/docs/vagrantfile) at but for this tutorial you will only need to focus on a few lines:
+- `config.vm.box = "bento/rockylinux-9"` - This where you set the distribution for all your virtual machine. In Vagrant they are called a "box" and you search for the flavour you want at https://vagrantcloud.com/search.
+- `config.vm.define "headnode"` - everything indented between this and its un-indented `end` is the configuration for our head node virtual machine. Similarly with `config.vm.define "computenode"` but for compute node.
+- `headnode.vm.provider "virtualbox" do |vb|` - under this is the VirtualBox specific configurations for the virtual machine. Here you can edit the display name of the vm in VirtualBox, the number of CPUs, amount of memory (note that it is in powers of 2) and whether you want it to launch with the GUI.
+- `headnode.vm.provision "shell", path: "./headnode-setup.sh"` - A way to run a script after the virtual machine is setup. In our case this script will handle what can't be done directly with vagrant (e.g. DNS). 
+
+### Running your Cluster
+
+Once you have finished setting up your Vagrant configuration, open a terminal in that directory and start your virtual machines by running:
+
+```sh
+vagrant up headnode
+vagrant up computenode
+```
+`
+Once the provisioning is done, you can ssh into head node by running:
+```sh
+vagrant ssh <name>
+```
+
+And from the head node into the compute node (password is `vagrant`):
+```bash
+ssh vagrant@computenode
+```
+
+Or log in via the GUI on VirtualBox using the username `vagrant` and password `vagrant`.
+
+If you want to stop your virtual machines, you can run `vagrant halt <name>` or you can delete the virtual machine by running `vagrant destroy <name>`.
+
+### Common Issues and Fixes
+
+| Issue                               | Cause                           | Fix                                                               |
+| ----------------------------------- | ------------------------------- | ----------------------------------------------------------------- |
+| `Destination Host Prohibited`       | Missing `FORWARD ACCEPT` policy | Add `sudo iptables -P FORWARD ACCEPT`                             |
+| Compute node cannot access internet | IP forwarding disabled          | `sudo sysctl -w net.ipv4.ip_forward=1`                            |
+| Shared folder not mounted           | Missing Guest Additions         | `vagrant plugin install vagrant-vbguest` + `vagrant reload`       |
+| DNS not resolving                   | Campus Wi-Fi double NAT         | Use IPs directly (e.g. `ping 1.1.1.1`) or edit `/etc/resolv.conf` |

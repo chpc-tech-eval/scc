@@ -1,0 +1,56 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# https://developer.hashicorp.com/vagrant/docs/vagrantfile
+Vagrant.configure("2") do |config|
+
+  # Define the box that all nodes will use
+  # List of boxes available at [[https://vagrantcloud.com/search]]
+  # Choosing bento over generic as its more lightweight
+  config.vm.box = "bento/rockylinux-9"
+  # config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.synced_folder ".", "/vagrant"
+
+  # Here we define node specific settings - [[https://developer.hashicorp.com/vagrant/docs/multi-machine]]
+  config.vm.define "headnode", primary: true do |headnode|
+    headnode.vm.hostname = "headnode"
+
+    # Define a VirtualBox internal network - [[https://developer.hashicorp.com/vagrant/docs/providers/virtualbox/networking#virtualbox-internal-network]]
+    headnode.vm.network "private_network", ip: "10.0.0.1", virtualbox__intnet: "intnet"
+
+    # VirtualBox specific settings - [[https://developer.hashicorp.com/vagrant/docs/providers/virtualbox]]
+    headnode.vm.provider "virtualbox" do |vb|
+      vb.name = "headnode"
+      vb.cpus = 2
+      vb.memory = "2048"
+      vb.gui = false
+    end
+
+    # Run the head node shell script automatically
+    headnode.vm.provision "shell", path: "./headnode-setup.sh"
+    # If you want to do any scripting: [[https://developer.hashicorp.com/vagrant/docs/provisioning/shell]]
+    # If you want to use Ansible: [[https://developer.hashicorp.com/vagrant/docs/provisioning/ansible_intro]]
+  end
+
+  config.vm.define "computenode", autostart: false do |computenode|
+    computenode.vm.hostname = "computenode"
+
+    # Disable vagrant attempting to communicate with the VM on startup
+    # computenode.vm.communicator = :none
+
+    # ":adapter =>1" adds the internal network adapater to spot 1,
+    # replacing the default nat network adapter vagrant adds,
+    # ensuring that there is only the internal network adapter.
+    computenode.vm.network "private_network", ip: "10.0.0.2", virtualbox__intnet: "intnet"
+
+    computenode.vm.provider "virtualbox" do |vb|
+      vb.name = "computenode1"
+      vb.cpus = 4
+      vb.memory = "4096"
+      vb.gui = false
+    end
+
+    # Run the compute node shell script automatically
+    computenode.vm.provision "shell", path: "./computenode-setup.sh"
+  end
+end
