@@ -79,7 +79,7 @@ In order for this to work as expected, there are two important conditions that m
    ```
 1. Secondly, you must ensure that any system dependencies are correctly installed on **each** of your nodes. For example, this would be a good time to install `gcc` on your **compute node**:
    ```bash
-   sudo dnf install gcc
+   sudo dnf groupinstall -y "Development Tools"
    ```
 
 <details>
@@ -257,8 +257,18 @@ We need to install the statically `($(LIBdir)/libhpl.a)` and dynamically`($(LAdi
      ```bash
      # RHEL, Rocky, Alma, Centos
      sudo dnf update -y
-     sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
-     sudo dnf install wget nano -y
+     sudo dnf config-manager --set-enabled crb
+
+     sudo dnf install -y \
+       openmpi \
+       openmpi-devel \
+       openblas \
+       openblas-devel \
+       gcc \
+       gcc-c++ \
+       make \
+       wget \
+       nano
      ```
    * APT
      ```bash
