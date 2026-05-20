@@ -1,1022 +1,1307 @@
-# Student Cluster Competition – Tutorial 4 (Rocky Linux 9 & 10 Unified)
-
-## Rocky Linux 9 & 10 Compatibility (READ FIRST)
-
-This tutorial is **fully compatible with Rocky Linux 9.x and Rocky Linux 10.x**.
-
-### Key OS assumptions
-- Python **3 only** (`python3`, `pip3`, `venv`)
-- SELinux **Enforcing** by default
-- `systemd` + `firewalld` (do **not** disable firewall)
-- cgroups **v2 only** (Rocky 9.3+ / Rocky 10)
-- Docker supported via **official Docker CE repo**
-- Podman is the preferred container engine on Rocky 10
-
-### Container runtime note
-This tutorial uses **Docker** because of ecosystem tooling (Grafana, Prometheus, Compose).
-On Rocky Linux 10, Docker works but Podman is preferred.
-
-Where `docker-compose` is referenced, always use:
-
-```bash
-docker compose
-```
-
-This works on **both Rocky 9 and 10**.
-
-### Troubleshooting
-If something fails silently:
-```bash
-sestatus
-journalctl -xe
-```
-
----
-
-
-Student Cluster Competition - Tutorial 3
+# Student Cluster Competition - Tutorial 4
 
 ## Table of Contents
-
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
 1. [Checklist](#checklist)
-1. [Managing Your Environment](#managing-your-environment)
-    1. [NFS Mounted Shared `home` folder and the `PATH` Variable](#nfs-mounted-shared-home-folder-and-the-path-variable)
-1. [Install Lmod](#install-lmod)
-    1. [Lmod Usage](#lmod-usage)
-1. [Running the High Performance LINPACK (HPL) Benchmark on Your Compute Node](#running-the-high-performance-linpack-hpl-benchmark-on-your-compute-node)
-    1. [System Libraries](#system-libraries)
-    1. [Configure and Run HPL on Compute Node](#configure-and-run-hpl-on-compute-node)
-1. [Building and Compiling OpenBLAS and OpenMPI Libraries from Source](#building-and-compiling-openblas-and-openmpi-libraries-from-source)
-1. [Intel oneAPI Toolkits and Compiler Suite](#intel-oneapi-toolkits-and-compiler-suite)
-    1. [Configure and Install Intel oneAPI Base and HPC Toolkits](#configure-and-install-intel-oneapi-base-and-hpc-toolkits)
-    1. [Configuring and Running HPL with Intel oneAPI Toolkit and MKL](#configuring-and-running-hpl-with-intel-oneapi-toolkit-and-mkl)
-1. [LinPACK Theoretical Peak Performance](#linpack-theoretical-peak-performance)
-    1. [Top500 List](#top500-list)
-1. [Spinning Up a Second Compute Node Using a Snapshot](#spinning-up-a-second-compute-node-using-a-snapshot)
-    1. [Running HPL Across Multiple Nodes](#running-hpl-across-multiple-nodes)
-1. [Application Benchmark Profiling](#application-benchmark-profiling)
-    1. [Hardware Topology](#hardware-topology)
-    1. [VTune](#vtune)
-1. [HPC Challenge](#hpc-challenge)
-1. [High Performance Conjugate Gradients](#high_performance_conjugate_gradients)
-1. [Application Benchmarks and System Evaluation](#application-benchmarks-and-system-evaluation)
-    1. [GROMACS (ADH Cubic)](#gromacs-adh-cubic)
-    1. [LAMMPS (Lennard-Jones)](#lammps-lennard-jones)
-    1. [Qiskit (Quantum Volume)](#qiskit-quantum-volume)
+1. [Cluster Monitoring](#cluster-monitoring)
+    1. [Install Docker Engine, Containerd and Docker Compose](#install-docker-engine-containerd-and-docker-compose)
+    1. [Installing your Monitoring Stack](#installing-your-monitoring-stack)
+    1. [Startup and Test the Monitoring Services](#startup-and-test-the-monitoring-services)
+    1. [SSH Port Local Forwarding Tunnel](#ssh-port-local-forwarding-tunnel)
+    1. [Create a Dashboard in Grafana](#create-a-dashboard-in-grafana)
+    1. [Success State, Next Steps and Troubleshooting](#success-state-next-steps-and-troubleshooting)
+1. [Configuring and Connecting to your Remote JupyterLab Server](#configuring-and-connecting-to-your-remote-jupyterlab-server)
+    1. [Visualize Your HPL Benchmark Results](#visualize-your-hpl-benchmark-results)
+    1. [Visualize Your Qiskit Results](#visualize-your-qiskit-results)
+1. [Automating the Deployment of your OpenStack Instances Using Terraform](#automating-the-deployment-of-your-openstack-instances-using-terraform)
+    1. [Install and Initialize Terraform](#install-and-initialize-terraform)
+    1. [Generate `clouds.yml` and `main.tf` Files](#generate-cloudsyml-and-maintf-files)
+    1. [Generate, Deploy and Apply Terraform Plan](#generate-deploy-and-apply-terraform-plan)
+1. [Continuous Integration Using CircleCI](#continuous-integration-using-circleci)
+    1. [Prepare GitHub Repository](#prepare-github-repository)
+    1. [Reuse `providers.tf` and `main.tf` Terraform Configurations](#reuse-providerstf-and-maintf-terraform-configurations)
+    1. [Create `.circleci/config.yml` File and `push` Project to GitHub](#create-circleciconfigyml-file-and-push-project-to-github)
+    1. [Create CircleCI Account and Add Project](#create-circleci-account-and-add-project)
+1. [Slurm Scheduler and Workload Manager](#slurm-scheduler-and-workload-manager)
+    1. [Prerequisites](#prerequisites)
+    1. [Head Node Configuration (Server)](#head-node-configuration-server)
+    1. [Compute Node Configuration (Clients)](#compute-node-configuration-clients)
+1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
+    1. [Protein Visualization](#protein-visualization)
+    1. [Benchmark 2 (1.5M Water)](#benchmark-2-15m-water)
 
 <!-- markdown-toc end -->
 
 # Checklist
 
-Tutorial 3 demonstrates environment variable manipulation through the use of modules and the compilation and optimization of HPC benchmark software. This introduces the reader to the concepts of environment management and workspace sanity, as well as compilation of various software applications on Linux.
+This tutorial demonstrates _cluster monitoring_, _data visualization_, _automated infrastructure as code deployment_ and _workload scheduling_. These components are critical to a typical HPC environment.
 
-In this tutorial, you will also be _spinning up and connecting a second compute node_ in order to further extend the capabilities of your small VM cluster. More importantly, you will given detailed specifics on exactly how to go about running application benchmarks across multiple nodes.
+Monitoring is a widely used component in system administration (including enterprise datacentres and corporate networks). Monitoring allows administrators to be aware of what is happening on any system that is being monitored and is useful to proactively identify where any potential issues may be.
+
+Interpreting and understanding your results and data, is vital to making meaning implementations of said data. You will also automate the provisioning and deployment of your *"experimental"*, change management compute node. Lastly, a workload scheduler ensures that users' jobs are handled properly to fairly balance all scheduled jobs with the resources available at any time.
+
+You will also cover data interpretation and visualization for previously run benchmark applications.
 
 In this tutorial you will:
 
-- [ ] Understand the importance of having a consistent environment across your cluster.
-- [ ] Understand the difference between system software and user _(local to the user's `home` directory)_ installed software.
-- [ ] Install, configure and use Lmod.
-- [ ] Understand some of the fundamental considerations around optimizing HPL.
-- [ ] Understand the pros and cons of compiling libraries from source.
-- [ ] Install and make use of Intel's oneAPI framework to run HPL.
-- [ ] Understand theoretical system peak performance.
-- [ ] Appreciate the significance of the Top500 list and benchmarking.
-- [ ] Standup and Configure a Second Compute Node, and running applications across a cluster.
-- [ ] Download and compile the High Performance Computing Challenge (HPCC) benchmark.
-- [ ] Understand that scientific computer applications are primarily used to conduct scientific research, and can also evaluate system performance.
-
-# Managing Your Environment
-
-One of the most central and fundamental problems that you and your team will need to tackle, will be that of managing you environment. When you run an application, there are a number of locations that are searched to determine the binary to execute.
-
-For example, if you wanted to know _"which"_ GNU C Compiler your VM's are using by default:
-```bash
-# If you completed the HPL excercise in tutorial1, you would have installed
-# a system-wide GCC on your head node, and can expect and out of /usr/bin/gcc
-
-which gcc
-```
-We see that for this particular system, the `gcc` that will be invoked by default is located in the directory `/usr/bin/`.
+- [ ] Setup a monitoring stack using Docker Compose
+  - [ ] Install and setup the pre-requisites
+  - [ ] Create all the files required for configuring the 3 containers to be launched
+    - [ ] The docker-compose.yml file describing the Node-Exporter, Prometheus and Grafana services
+    - [ ] The prometheus.yml file describing the metrics to be scraped for each host involved
+    - [ ] The prometheus-datasource.yaml file describing the Prometheus datasource for Grafana
+  - [ ] Start the services
+    - [ ] Verify that they are running and accessible (locally, and externally)
+  - [ ] Create a dashboard in Grafana
+    - [ ] Login to the Grafana endpoint (via your browser)
+    - [ ] Import the appropriate Node-Exporter dashboard
+    - [ ] Check that the dashboard is working as expected
+- [ ] Prepare, install and configure remote JupyterLab server
+  - [ ] Connect to JupyterLab and visualize benchmarking results
+- [ ] Automate the provisioning and deployment of your Sebowa OpenStack infrastructure
+- [ ] Install the Slurm workload manager across your cluster.
+- [ ] Submit a test job to run on your cluster through the newly-configured workload manager.
 
 > [!TIP]
-> Try the above command on your compute node, and you should notice that `no gcc in $PATH` is found...
+> You're going to be manipulating both your headnode, as well as your compute node(s) in this tutorial.
+>
+> You are **strongly** advised to make use of a terminal multiplexer, such as `tmux` before making a connection to your VMs. Once you're logged into your head node, initiate a `tmux` session:
+>```bash
+>tmux
+>```
+> Then split the window into two separate panes with `ctrl + b %`.
+> SSH into your compute node on the other pane.
 
-## NFS Mounted Shared `home` folder and the `PATH` Variable
+# Cluster Monitoring
 
-You will recall that you were required to configure an [NFS Mounted home dir](../tutorial2/README.md#network-file-system). This means that any software that you install into your `/home/<USER_DIRECTORY>` on your head node, will also automatically be available on your compute nodes.
+Cluster monitoring is crucial for managing Linux machines. Effective monitoring helps detect and resolve issues promptly, provides insights into resource usage (CPU, memory, disk, network), aids in capacity planning, and ensures infrastructure scales with workload demands. By monitoring system performance and health, administrators can prevent downtime, reduce costs, and improve efficiency.
 
-In order for this to work as expected, there are two important conditions that must be satisfied:
-1. Firstly, you must ensure that you're `PATH` variable is correctly configured on your head node and must similarly have a corresponding configuration on your compute node(s). For example, to see a colon (`:`) separated list of directories that are searched whenever you execute a binary:
+![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/f951e4b7-20ff-49a4-b9a7-28aa57e51f5b)
+
+* **Traditional Approach Using `top` or `htop`**
+
+  Traditionally, Linux system monitoring involves command-line tools like `top` or `htop`. These tools offer real-time system performance insights, displaying active processes, resource usage, and system load. While invaluable for monitoring individual machines, they lack the ability to aggregate and visualize data across multiple nodes in a cluster, which is essential for comprehensive monitoring in larger environments.
+
+  ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/7e0c8b92-adc2-4106-94ee-ca4ee78a13f5)
+
+* **Using Grafana, Prometheus, and Node Exporter**
+
+  Modern solutions use Grafana, Prometheus, and Node Exporter for robust and scalable monitoring. Prometheus collects and stores metrics, Node Exporter provides system-level metrics, and Grafana visualizes this data. This combination enables comprehensive cluster monitoring with historical data analysis, alerting capabilities, and customizable visualizations, facilitating better decision-making and faster issue resolution.
+
+  ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/3f64a8bd-87fa-4b51-9576-b28da3af632b)
+
+* **What is Docker and Docker Compose and How We Will Use It**
+
+  Docker is a platform for creating, deploying, and managing containerized applications. Docker Compose defines and manages multi-container applications using a YAML file. For cluster monitoring on a Rocky Linux head node, we will use Docker and Docker Compose to bundle Grafana, Prometheus, and Node Exporter into deployable containers. This approach simplifies installation and configuration, ensuring all components are up and running quickly and consistently, streamlining the deployment of the monitoring stack.
+
+> [!NOTE]
+> When the word **Input:** is mentioned, excpect the next line to have commands that you need to copy and paste into your own terminal.
+>
+> Whenever the word **Output:** is mentioned **DON'T** copy and paste anything below this word as this is just the expected output.
+>
+> The following configuration is for your **head node**. You will be advised of the steps you need to take to monitor your **compute node(s)** at the end.
+
+## Install Docker Engine, Containerd and Docker Compose
+
+You will need to have `docker`, `containerd` and `docker-compose` installed on all the nodes that you want to eventually monitor, i.e. your head node and compute node(s).
+
+1. Prerequisites and dependencies
+
+   Refer to the following [RHEL Guide](https://docs.docker.com/engine/install/rhel/#install-using-the-repository)
+
+   * DNF / YUM
    ```bash
-   echo $PATH
+   # The yum-utils package which provides the yum-config-manager utility
+   sudo yum install -y yum-utils
+
+   # Add and set up the repository for use.
+   sudo yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
    ```
-1. Secondly, you must ensure that any system dependencies are correctly installed on **each** of your nodes. For example, this would be a good time to install `gcc` on your **compute node**:
+   * APT
    ```bash
-   sudo dnf install gcc
+   # Install required package dependencies
+   sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
+
+   # Add the Docker repository
+   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+   sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
    ```
 
+1. Installation
+
+   * DNF / YUM
+   ```bash
+   # If prompted to accept the GPG key, verify that the fingerprint matches, accept it.
+   sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+   ```
+   * APT
+   ```bash
+   sudo apt update
+   sudo apt install docker-ce docker-ce-cli containerd.io -y
+   ```
+   * Arch
+   ```bash
+   sudo pacman -S docker
+
+   # You need to start and enable docker, prior to installing containerd and docker-compose
+   sudo pacman -S containerd docker-compose
+   ```
+
+1. Start and Enable Docker:
+   ```bash
+   sudo systemctl start docker
+   sudo systemctl enable docker
+   ```
+1. Install Docker-Compose on Ubuntu
+   * APT
+   ```bash
+   sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -Po '"tag_name": "\K.*\d')/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+   sudo chmod +x /usr/local/bin/docker-compose
+   ```
+1. Verify that the Docker Engine installation was successful by running the `hello-world` image
+
+   Download and deploy a test image and run it inside a container. When the container runs, it prints a confirmation message and exits.
+   ```bash
+   # Check the verions of Docker
+   docker --version
+
+   # Download and deplpoy a test image
+   sudo docker run hello-world
+
+   # Check your version of Docker Compose
+   docker-compose --version
+   ```
+   You have now successfully installed and started Docker Engine.
+
+## Installing your Monitoring Stack
+
+1. Create a suitable directory, e.g. `/opt/monitoring_stack`
+
+   This which you’ll keep a number of important configuration files.
+
+   ```bash
+   sudo mkdir /opt/monitoring_stack/
+   cd /opt/monitoring_stack/
+   ```
+1. Create and edit your monitoring configurations files
+   ```bash
+   sudo nano /opt/monitoring_stack/docker-compose.yml
+   ```
+1. Add the following to the `docker-compose.yml` YAML file
+   ```conf
+   version: '3'
+   services:
+     node-exporter:
+       image: prom/node-exporter
+       ports:
+         - "9100:9100"
+       restart: always
+       networks:
+         - monitoring-network
+
+     prometheus:
+       image: prom/prometheus
+       ports:
+         - "9090:9090"
+       restart: always
+       volumes:
+         - /opt/monitoring_stack/prometheus.yml:/etc/prometheus/prometheus.yml
+       networks:
+         - monitoring-network
+
+     grafana:
+       image: grafana/grafana
+       ports:
+         - "3000:3000"
+       restart: always
+       environment:
+         GF_SECURITY_ADMIN_PASSWORD: <SET_YOUR_GRAFANA_PASSWORD>
+       volumes:
+         - /opt/monitoring_stack/prometheus-datasource.yaml:/etc/grafana/provisioning/datasources/prometheus-datasource.yaml
+       networks:
+         - monitoring-network
+
+   networks:
+     monitoring-network:
+       driver: bridge
+   ```
+1. Create and edit your Prometheus configuration files
+
+   ```bash
+     sudo nano /opt/monitoring_stack/prometheus.yml
+   ```
+1. Add the following to your `prometheus.yml` YAML file
+   ```conf
+   global:
+     scrape_interval: 15s
+
+   scrape_configs:
+     - job_name: 'node-exporter'
+       static_configs:
+         - targets: ['node-exporter:9100']
+   ```
+1. Configure you Promeheus Data Sources
+   ```bash
+   sudo nano /opt/monitoring_stack/prometheus-datasource.yaml
+   ```
+1. Add the following to your `prometheus-datasource.yaml`.
+   ```conf
+   apiVersion: 1
+   datasources:
+     - name: Prometheus
+       type: prometheus
+       access: proxy
+       url: http://prometheus:9090
+   ```
+
+## Startup and Test the Monitoring Services
+
+> [!TIP]
+> If you've successfully configured nftables, you will be required to open the following TCP ports 3000, 9090, 9100.
+
+Bring up your monitoring stack and verify that the have been correctly configured
+
+* Bring up your monitoring stack
+  ```bash
+  sudo docker compose up -d
+  ```
+
+* Confirm the status of your Docker Containers
+  ```bash
+  sudo docker ps
+  ```
+
+* Dump the metrics that are being monitored from your services
+  ```bash
+  # Prometheus
+  curl -s localhost:9090/metrics | head
+
+  # Node Exporter
+  curl -s localhost:9100/metrics | head
+
+  # Grafana
+  curl -s localhost:3000 | head
+  ```
+
+Post the output of the above commands as comments to the [Discussion](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/158) on GitHub.
+
+Congratulations on correctly configuring your monitoring services!
+
+## SSH Port Local Forwarding Tunnel
+
+SSH port forwarding, also known as SSH tunneling, is a method of creating a secure connection between a local computer and a remote machine through an SSH (Secure Shell) connection. Local port forwarding allows you to forward a port on your local machine to a port on a remote machine. It is commonly used to access services behind a firewall or NAT.
+
+> [!IMPORTANT]
+> The following is included to demonstrate the concept of TCP Port Forwarding. In the next section, your are:
+> * Opening a TCP Forwarding Port and listening on Port 3000 on your **workstation**, i.e. http://localhost:3000
+> * You are then binding this ***SOCKET*** to TCP Port 3000 on your **head node**.
+>
+> The following diagram may facilitate the discussion and illustrate the scenario:
+> ```css
+> [workstation:3000] ---- SSH Forwarding Tunnel ----> [head node:3000] ---- Grafana Service on head node
+>
+> # Connect to Grafana's (head node) service directly from your workstation
+> [http://localhost:3000] ---- SSH Forwarding Tunnel ----> [Grafana (head node)]
+> ```
+>
+> Make sure that you understand the above concepts, as it will facilitate your understanding of the following considerations:
+> * If you have successfully configured [WireGuard](../tutorial2/README.md#wirguard-vpn-cluster-access)
+> ```css
+> [workstation:3000] ---- WireGuard VPN ----> [head node:3000] ---- Grafana Service on head node
+>
+> # Connect to Grafana's (head node) service directly from your workstation
+> [http://<head node (private wiregaurd ip)>:3000] ---- WireGuard VPN ----> [Grafana (head node)]
+>
+> ```
+> * And / or if you have successfully configured [ZeroTier](../tutorial2/README.md#zerotier)
+> ```css
+> [workstation:3000] ---- ZeroTier VPN ----> [head node:3000] ---- Grafana Service on head node
+>
+> # Connect to Grafana's (head node) service directly from your workstation
+> [http://<head node (private zerotier ip)>:3000] ---- ZeroTier VPN ----> [Grafana (head node)]
+> ```
+
+> [!CAUTION]
+> You need to ensure that you have understood the above discussions. This section on port forwarding, is included for situations where you do know have `sudo` rights on the machine your are working on and cannot open ports or install applications via `sudo`, then you can forward ports over SSH.
+>
+> Take the time now however, to ensure that all of your team members understand that there are a number of methods with which you can access remote services on your head node:
+> * http://154.114.57.x:3000
+> * http://localhost:3000
+> * http://`<headnode wireguard ip>`:3000
+> * http://`<headnode zerotier ip>`:3000
+
+Once you have understood the above considerations, you may proceed to create a TCP Port Forwarding tunnel, to connect your workstation's port, directly to your head node's, over a tunnel.
+
+1. Create SSH Port Forwarding Tunnel on your local workstation
+
+   Open a new terminal and run the tunnel command (replace 157.114.57.x with your unique IP):
+
+   ```
+   ssh -L 3000:localhost:3000 rocky@157.114.57.x
+   ```
+## Create a Dashboard in Grafana
+
+1. From a browser on your **workstation** navigate to the Grafana dashboard on your head node
+
+1. Go to a browser and login to Grafana:
+
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/abee2bcd-3f6c-437b-aee7-edfa31550d42)
+
+1. Login to you Grafana dashboards
+   ```
+   username: admin
+   password: <YOUR_GRAFANA_PASSWORD>
+   ```
+
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/52010bd5-e9fd-4ee1-9703-352507a1e72d)
+
+1. Go to Dashboards
+
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/083f2bc3-247a-40ad-b923-2b2007fe9b70)
+
+1. Click on New then Import
+
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/4efa0d71-7278-454d-a815-8b6f1f1c72a3)
+
+1. Input: 1860 and click Load
+
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/d8cda594-0468-4ec0-876a-7beeaf79589f)
+
+1. Click on source: "Prometheus"
+
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/257351d2-f078-4140-9a37-0b8a4b1b59b8)
+
+1. Click on Import:
+
+   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/f078be7e-2663-4947-b8fd-fc6c6d548513)
+
+## Success State, Next Steps and Troubleshooting
+
+Congratulations on successfully deploying your monitoring stack and adding Grafana Dashboards to visualize this.
+
+![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/0568acc5-5248-4b90-8803-5f58d2af11e2)
+
+If you've managed to successfully configure your dash boards for your head node, repeat the steps for deploying **Node Exporter** on your compute node(s).
+
+> [!NOTE]
+> Should you have any difficulties running the above configuration, use the alternative process below to deploy your monitoring stack. Click on the heading to reveal content.
 <details>
-<summary>Instructions for APT (Ubuntu) and Pacman (Arch)</summary>
+<summary>Installing your monitoring stack from pre-compiled binaries</summary>
+For this tutorial we will install from pre-complied binaries.
 
+### Prometheus
+The installation and the configuration of Prometheus should be done on your headnode.
+
+1. Create a Prometheus user without login access, this will be done manually as shown below:
+ ```bash
+sudo useradd --no-create-home --shell /sbin/nologin prometheus
+ ```
+2. Download the latest stable version of Prometheus from the official site using `wget`
+ ```bash
+wget https://github.com/prometheus/prometheus/releases/download/v2.33.1/prometheus-2.33.1.linux-amd64.tar.gz
+ ```
+3. Long list file to verify Prometheus was downloaded
+ ```bash
+ll
+ ```
+4. Extract the downloaded archive and move prometheus binaries to the /usr/local/bin directory.
 ```bash
-# APT
-sudo apt install gcc
-
-# Pacman
-sudo pacman -S gcc
+tar -xvzf prometheus-2.33.1.linux-amd64.tar.gz
+cd prometheus-2.33.1.linux-amd64
+sudo mv prometheus promtool /usr/local/bin/
 ```
+5. Move back to the home directory, create directorise for prometheus.
+ ```bash
+cd ~
+sudo mkdir /etc/prometheus
+sudo mkdir /var/lib/prometheus
+ ```
+6. Set the correct ownership for the prometheus directories
+ ```bash
+sudo chown prometheus:prometheus /etc/prometheus/
+sudo chown prometheus:prometheus /var/lib/prometheus
+ ```
+7. Move the configuration file and set the correct permissions
+ ```bash
+cd prometheus-2.33.1.linux-amd64
+sudo mv consoles/ console_libraries/ prometheus.yml /etc/prometheus/
+sudo chown -R prometheus:prometheus /etc/prometheus/
+ ```
+8. Configure Prometheus \
+  Edit the `/etc/prometheus/prometheus.yml` file to configure your targets(compute node)
+
+    *Hint : Add the job configuration for the compute_node in the scrape_configs section of your Prometheus YAML configuration file. Ensure that all necessary configurations for this job are correctly placed within the relevant sections of the YAML file.*:
+
+```yaml
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+  - job_name: "compute_node"
+    static_configs:
+      - targets: ["<compute_node_ip>:9100"]
+```
+9. Create a service file to manage Prometheus with `systemctl`, the file can be created with the text editor `nano` (Can use any text editor of your choice)
+ ```bash
+sudo nano /etc/systemd/system/prometheus.service
+ ```
+ ```plaintext
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/local/bin/prometheus \
+  --config.file=/etc/prometheus/prometheus.yml \
+  --storage.tsdb.path=/var/lib/prometheus/ \
+  --web.console.templates=/etc/prometheus/consoles \
+  --web.console.libraries=/etc/prometheus/console_libraries
+
+[Install]
+WantedBy=multi-user.target
+```
+10. Reload the systemd daemon, start and enable the service
+ ```bash
+sudo systemctl daemon-reload
+sudo systemctl enable prometheus
+sudo systemctl start prometheus
+ ```
+
+11. Check that your service is active by checking the status
+  ```bash
+  sudo systemctl status prometheus
+  ```
+
+> [!TIP]
+> If when you check the status and find that the service is not running, ensure SELinux or AppArmor is not restricting Prometheus from running. Try disabling SELinux/AppArmor temporarily to see if it resolves the issue:
+>
+> ```bash
+> sudo setenforce 0
+> ```
+>
+> Then repeat steps 10 and 11.
+>
+> If the prometheus service still fails to start properly, run the command `journalctl –u prometheus -f --no-pager` and review the output for errors.
+
+> [!IMPORTANT]
+> If you have a firewall running, add a TCP rule for port 9090
+
+Verify that your prometheus configuration is working navigating to `http://<headnode_ip>:9090` in your web browser, access prometheus web interface. Ensure that the `headnode_ip` is the public facing ip.
+
+### Node Exporter
+Node Exporter is a Prometheus exporter specifically designed for hardware and OS metrics exposed by Unix-like kernels. It collects detailed system metrics such as CPU usage, memory usage, disk I/O, and network statistics. These metrics are exposed via an HTTP endpoint, typically accessible at `<node_ip>:9100/metrics`. The primary role of Node Exporter is to provide a source of system-level metrics that Prometheus can scrape and store. This exporter is crucial for gaining insights into the health and performance of individual nodes within a network.
+
+The installation and the configuration node exporter will be done on the **compute node/s**
+
+1. Create a Node Exporter User
+ ```bash
+sudo adduser -M -r -s /sbin/nologin node_exporter
+```
+2. Download and Install Node Exporter, this is done using `wget` as done before
+ ```bash
+cd /usr/src/
+
+sudo wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+
+sudo tar xvf node_exporter-1.6.1.linux-amd64.tar.gz
+```
+3. Next, move the node exporter binary file to the directory '/usr/local/bin' using the following command
+```bash
+mv node_exporter-*/node_exporter /usr/local/bin
+```
+4.  Create a service file to manage Node Exporter with `systemctl`, the file can be created with the text editor `nano` (Can use any text editor of your choice)
+ ```bash
+sudo nano /etc/systemd/system/node_exporter.service
+ ```
+ ```plaintext
+[Unit]
+Description=Node Exporter
+After=network.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter
+
+[Install]
+WantedBy=multi-user.target
+```
+> [!IMPORTANT]
+> If firewalld is enabled and running, add a rule for port 9100 
+> 
+> ```bash
+> sudo firewall-cmd --permanent --zone=public --add-port=9100/tcp
+> sudo firewall-cmd --reload 
+> ```
+
+5.  Reload the systemd daemon, start and enable the service
+ ```bash
+sudo systemctl daemon-reload
+sudo systemctl enable node_exporter 
+sudo systemctl start node_exporter
+ ```
+6. Check that your service is active by checking the status
+  ```bash
+  sudo systemctl status node_exporter
+  ``` 
+#### SSH Tunneling
+In order to verify that node exporter is set up correctly we need to access `<node_ip>:9100/metrics`. This can only been done by simply going to your broswer and putting it in as we did with Prometheus, we need to use a SSH tunnel.
+
+**What is SSH Tunneling?** \
+SSH tunneling, also known as SSH port forwarding, is a method of securely forwarding network traffic from one network node to another via an encrypted SSH connection. It allows you to securely transmit data over untrusted networks by encrypting the traffic.
+
+**Why Use SSH Tunneling in This Scenario?** \
+In this setup, the compute node has only a private IP and is not directly accessible from the internet. The headnode, however, has both a public IP (accessible from the internet) and a private IP (in the same network as the compute node).
+
+Using SSH tunneling allows us to:
+
+- Access Restricted Nodes: Since the compute node is only reachable from the headnode, we can create an SSH tunnel through the headnode to access the compute node.
+- Secure Transmission: The tunnel encrypts the traffic between your local machine and the compute node, ensuring that any data sent through this tunnel is secure.
+- Simplify Access: By tunneling the Node Exporter port (9100) from the compute node to your local machine, you can access the metrics as if they were running locally, making it easier to monitor and manage the compute node.
+
+  1. Set Up SSH Tunnel on Your Local Machine
+```bash
+ssh -L 9100:compute_node_ip:9100 user@headnode_ip -N
+```
+- ssh -L: This option specifies local port forwarding. It maps a port on your local machine (first 9100) to a port on a remote machine (second 9100 on compute_node_ip) via the SSH server (headnode).
+- compute_node_ip:9100: The target address and port on the compute node where Node Exporter is running.
+user@headnode_ip: The SSH connection details for the headnode.
+- -N: Tells SSH to not execute any commands, just set up the tunnel.
+
+  2. By navigating to http://localhost:9100/metrics in your web browser, you can access the Node Exporter metrics from the compute node as if the service were running locally on your machine.
+
+### Grafana
+Grafana is an open-source platform for monitoring and observability, known for its capability to create interactive and customizable dashboards. It integrates seamlessly with various data sources, including Prometheus. Through its user-friendly interface, Grafana allows users to build and execute queries to visualize data effectively. Beyond visualization, Grafana also supports alerting based on the visualized data, enabling users to set up notifications for specific conditions. This makes Grafana a powerful tool for both real-time monitoring and historical analysis of system performance.
+
+Now we go back to the headnode for the installation and the configuration of Grafana
+ 1. Add the Grafana Repository, by adding the following directives in this file:
+```bash
+sudo nano /etc/yum.repos.d/grafana.repo
+```
+ ```plaintext
+  [grafana] 
+  name=grafana 
+  baseurl=https://rpm.grafana.com 
+  repo_gpgcheck=1 
+  enabled=1 
+  gpgcheck=1 
+  gpgkey=https://rpm.grafana.com/gpg.key 
+  sslverify=1 
+  sslcacert=/etc/pki/tls/certs/ca-bundle.crt 
+  exclude=*beta*
+```
+
+2. Install Grafana
+ ```bash
+sudo dnf install grafana -y 
+```
+
+3. Start and Enable Grafana 
+ ```bash
+sudo systemctl start grafana-server
+sudo systemctl enable grafana-server
+```
+
+4. Check the status of grafana-server
+```bash
+sudo systemctl status grafana-server
+```
+> [!IMPORTANT]
+> If firewalld is enabled and running, add a rule for port 9100 
+> 
+> ```bash
+> sudo firewall-cmd --permanent --zone=public --add-port=3000/tcp
+> sudo firewall-cmd --reload 
+
 </details>
 
-> [!IMPORTANT]
-> Software on one node will not automatically be installed across all nodes. For example, if you want to monitor the system performance of your head node, you must install and/or run `top # or htop or btop` on your head node. Similarly if you want to do this for your compute node(s), you must install and run the application on all of your compute node(s).
+# Configuring and Connecting to your Remote JupyterLab Server
 
-In the next few sections you will be installing and deploying Lmod across your cluster. You will be configuring, building and compiling Lmod from a directory in your `/home/<USER>` directory. This will mean that the Lmod binary will be available across your cluster, however in order to run Lmod on your compute nodes for example, you must ensure that all Lua system dependencies are installed across all you nodes.
+[Project Jupyter](https://jupyter.org/) provides powerful tools for scientific investigations due to their interactive and flexible nature. Here are some key reasons why they are favored in scientific research.
 
-# Install Lmod
+* Interactive Computing and Immediate Feedback
 
-Environment Modules provide a convenient way to dynamically change a user's environment through _modulefiles_ to simplify software and library use when there are multiple versions of a particular software package (e.g. Python2.7 and Python 3.x) installed on the system. Environment Module parameters typically involve, among other things, modifying the `PATH` environment variable for locating a particular package (such as dynamically changing the path to Python from `/usr/local/bin/python2.7` to `/usr/local/bin/python3`).
+  Run code snippets and see the results immediately, which helps in quick iterations and testing of hypotheses.  Directly plot graphs and visualize data within the notebook, which is crucial for data analysis.
 
-In this section, you are going to be building and compiling Lmod from source. Lmod is a Lua-based environment module tool for users to easily manipulate their HPC software environment and is used on thousands of HPC systems around the world. Carefully follow these instructions, as there are prerequisites and dependencies that are required to build Lmod, which are slightly different to those required to execute the Lmod binary.
+* Documentation and Rich Narrative Text
 
-> [!IMPORTANT]
-> You can build Lmod on either your head node or one of your compute nodes. Since your compute node(s), _will generally speaking_ have **more CPUs for compute**, they will typically be able to build and compile applications much much faster than your administrative (or login) _head node_.
+  Combine code with Markdown text to explain the methodology, document findings, and write detailed notes. Embed images, videos, and LaTeX equations to enhance documentation and understanding.
 
-1. Install prerequisites required to build Lmod:
-   From one of your **compute nodes**, install the following dependencies
+* Reproducibility
+
+  Share notebooks with others to ensure that they can reproduce the results by running the same code. Use tools like Git to version control the notebooks, ensuring a record of changes and collaborative development.
+
+* Data Analysis and Visualization
+
+  Utilize a wide range of Python libraries such as NumPy, Pandas, Matplotlib, and Seaborn for data manipulation and visualization. Perform exploratory data analysis (EDA) seamlessly with powerful plotting libraries.
+
+Jupyter Notebooks provide a versatile and powerful environment for conducting scientific investigations, facilitating both the analysis and the clear communication of results.
+
+1. Start by installing all the prerequisites
+
+   You would have already installed most these from [Qiskit Benchmark](../tutorial3/README.md##qiskit-quantum-volume) in tutorial 3.
    * DNF / YUM
      ```bash
-     # Rocky (or similar RPM based systems: RHEL, Alma, CentOS Stream)
-     sudo dnf install -y epel-release
-     sudo dnf install -y git gcc make
-     ```
-   * APT
-     ```bash
-     # Ubuntu (or similar APT based systems)
-     sudo apt update
-     sudo apt install -y git gcc make
-     ```
-   * Pacman
-     ```bash
-     # Arch
-     sudo pacman -S git gcc make
-     ```
-1. Install dependencies for running and using Lmod:
-   You will need to install these on all the nodes you intend to use with Lmod
-   * DNF / YUM
-     ```bash
-     # Rocky (or similar RPM based systems: RHEL, Alma, CentOS Stream)
-     sudo dnf install -y epel-release
-     sudo dnf install -y tcl-devel tcl tcllib  bc
-     sudo dnf install -y lua lua-posix lua-term
-     sudo dnf --enablerepo=devel install lua-devel
-     ```
-   * APT
-     ```bash
-     # Ubuntu (or similar APT based systems)
-     sudo apt update
-     sudo apt install -y tcl tcl-dev lua5.3 lua-posix bc
-     ```
-   * Pacman
-     ```bash
-     # Arch
-     sudo pacman -S lua lua-filesystem lua-posix bc
-     ```
-1. Compile, Build and Install Lmod
-   The following instructions will be the same regardless of the system you are using. You will be using the Lmod repo from the Texas Advanced Computing Center at the University of Texas, to build and compile Lmod from source into your own `home` directory:
-   ```bash
-   # Clone the repository
-   git clone https://github.com/TACC/Lmod.git
-
-   # Navigate into the Lmod directory
-   cd Lmod
-
-   # Run the configuration script and install into you home directory
-   ./configure --prefix=$HOME/lmod
-
-   # Build and install Lmod
-   make -j$(nproc)
-   make install
-
-   # If you are on Rocky 9.3 and receive an error about "lua.h",
-   # You can install Lmod from the DNF / YUM package repos.
-   ```
-
-   * `--prefix`: This directive instructs the `./configure` command, to install Lmod into a specific directory, where the `$HOME` variable is used as a shortcut for `/home/<user>`.
-   * `-j$(nproc)`: This directive instructs the `make` command to build and compile use the maximum number of processors on the system.
-
-> [!TIP]
-> You and your team are **STRONGLY** encouraged to review and make sure you understand the Compile, Build and Installation instructions for Lmod as these steps will apply to virtually all application benchmarks you will encounter in this competition.
-
-## Lmod Usage
-
-Complete your Lmod installation by sourcing the appropriate profile configuration:
-```bash
-# For a generic configuration
-source ~/lmod/lmod/lmod/init/profile
-
-# Alternatively you can source a specific profile configuration
-# for you shell environment.
-#
-# Remember to append your local profile or rc file with the
-# appropriate configuration.
-
-```
-
-With Lmod installed, you'll now have some new commands on the terminal. Namely, these are: `module <subcommand>`. The important ones for you to know and use are: `module avail`, `module list`, `module load` and `module unload`. These commands do the following:
-
-| Command                       | Operation                                            |
-|-------------------------------|------------------------------------------------------|
-| `module avail`                | Lists all modules that are available to the user.    |
-| `module list`                 | Lists all modules that are loaded by the user.       |
-| `module load <module_name>`   | Loads a module to the user's environment.            |
-| `module unload <module_name>` | Removes a loaded module from the user's environment. |
-
-Lmod also features a shortcut command `ml` which can perform all of the above commands:
-
-| Command             | Operation                                         |
-|---------------------|---------------------------------------------------|
-| `ml`                | Same as `module list`                             |
-| `ml avail`          | Same as `module avail`                            |
-| `ml <module_name>`  | Same as `module load <module_name>`               |
-| `ml -<module_name>` | Same as `module unload <module_name>`             |
-| `ml foo`            | Same as `module load foo`                         |
-| `ml foo -bar`       | Same as `module load foo` and `module unload bar` |
-
-> [!NOTE]
-> Some installed packages will automatically add environment modules to the Lmod system, while others will not and will require you to manually add definitions for them. For example, the `Intel oneAPI Toolkits` package that we will install from source later in this tutorial will have automatic configuration scripts to add module files to the system for loading via Lmod.
-
-# Running the High Performance LINPACK (HPL) Benchmark on Your Compute Node
-
-The High Performance LINPACK (HPL) benchmark is used to measure a system's floating point number processing power. The resulting score (in Floating Point Operations Per Second, or FLOPS for short) is often used to roughly quantify the computational power of an HPC system. HPL requires math libraries to perform its floating point operations as it does not include these by itself and it also requires an MPI installation for communication in order to execute in parallel across multiple CPU cores (and hosts).
-
-## System Libraries
-
-A library is a collection of pre-compiled code that provides functionality to other software. This allows the re-use of common code (such as math operations) and simplifies software development. You get two types of libraries on Linux: `static` and `dynamic` libraries.
-
-* Static Libraries
-
-  Static libraries are embedded into the binary that you create when you compile your software. In essence, it copies the library that exists on your computer into the executable that gets created at **compilation time**. This means that the resulting program binary is self-contained and can operate on multiple systems without them needing the libraries installed first. Static libraries are normally files that end with the `.a` extension, for "archive".
-
-  Advantages here are that the program can potentially be faster, as it has direct access to the required libraries without having to query the operating system first, but disadvantages include the file size being larger and updating the library requires recompiling (and linking the updated library) the software.
-
-* Dynamic Libraries
-
-  Dynamic libraries are loaded into a compiled program at **runtime**, meaning that the library that the program needs is **not** embedded into the executable program binary at compilation time. Dynamic libraries are files that normally end with the `.so` extension, for "shared object".
-
-  Advantages here are that the file size can be much smaller and the application doesn't need to be recompiled (linked) when using a different version of the library (as long as there weren't fundamental changes in the library). However, it requires the library to be installed and made available to the program on the operating system.
-
-> [!NOTE]
-> Applications (such as HPL) can be configured to use static or dynamic libraries for its math and MPI communication, as mentioned above.
-
-* Message Passing Interface (MPI)
-
-  MPI is a message-passing standard used for parallel software communication. It allows for software to send messages between multiple processes. These processes could be on the local computer (think multiple cores of a CPU or multiple CPUs) as well as on networked computers. MPI is a cornerstone of HPC. There are many implementations of MPI in software such as OpenMPI, MPICH, MVAPICH2 and so forth. To find out more about MPI, please read the following: [https://www.linuxtoday.com/blog/mpi-in-thirty-minutes.html](https://www.linuxtoday.com/blog/mpi-in-thirty-minutes.html)
-
-* Basic Linear Algebra Subprograms Libraries
-
-  Basic Linear Algebra Subprograms (BLAS) libraries provide low-level routines for performing common linear algebra operations such as vector and matrix multiplication. These libraries are highly optimized for performance on various hardware architectures and are a fundamental building block in many numerical computing applications.
-
-## Configure and Run HPL on Compute Node
-
-We need to install the statically `($(LIBdir)/libhpl.a)` and dynamically`($(LAdir)/libtatlas.so $(LAdir)/libsatlas.so)` linked libraries that HPL expects to have, as well as the software for MPI. The MPI implementation we're going to use here is OpenMPI and we will use the Automatically Tuned Linear Algebra Software (ATLAS) math library.
-
-> [!IMPORTANT]
-> Remember that since the MPI and BLAS libraries are dynamically linked, you need to ensure that ALL of our nodes that you expect to run HPL on have the expected MPI and BLAS libraries.
->
-> If you've managed to successfully [build, compile and run HPL in tutorial 1]((../tutorial1/README.md#install-compile-and-run-high-performance-linpack-hpl-benchmark)), and you've managed to successfully configure your [NFS `home` directory export in tutorial 2](../tutorial2/README.md##network-file-system), then you may proceed. Otherwise you **must** discuss with, and seek advice from an instructor.
-
-1. Install the necessary dependencies on your **compute node**:
-   * DNF / YUM
-     ```bash
-     # RHEL, Rocky, Alma, Centos
-     sudo dnf update -y
-     sudo dnf update -y
-     sudo dnf config-manager --set-enabled crb
-
-     sudo dnf install -y \
-       openmpi \
-       openmpi-devel \
-       openblas \
-       openblas-devel \
-       gcc \
-       gcc-c++ \
-       make \
-       wget \
-       nano
+     # RHEL, Rocky, Alma, CentOS Stream
+     sudo dnf install python python-pip
      ```
    * APT
      ```bash
      # Ubuntu
-     sudo apt update
-     sudo apt install openmpi libatlas-base-dev
-     sudo apt install wget nano
+     sudo apt install python python-pip
      ```
    * Pacman
      ```bash
      # Arch
-     sudo pacman -Syu
-     sudo pacman -S base-devel openmpi atlas-lapack nano wget
+     sudo pacman -S python python-pip
      ```
-
-1. Configuring and Tuning HPL
-
-   The `HPL.dat` file (in the same directory as `xhpl`) defines how the HPL benchmark solves a large dense linear array of double precision floating point numbers. Therefore, selecting the appropriate parameters in this file can have a considerable effect on the GFLOPS score that you obtain. The most important parameters are:
-   * `N` which defines the length of one of the sides of the 2D array to be solved. It follows therefore:
-     * ***"Problem Size"*** is proportional to `N x N`,
-     * ***"Runtime"*** is proportional to `N x N`,
-     * ***"Memory Usage"*** is proportional to `N x N`.
-
-   <p align="center"><img alt="P x Q Matrix Decomposition" src="./resources/An-example-of-P-by-Q-partitioning-of-a-HPL-matrix-in-6-processes-2x3-decomposition.png" width=300 /></p>
-   The image depicts an example of P by Q partitioning of an HPL matrix in 6 processes. In this case they've been decomposed into 2 x 3. The image is from a journal article publication, [Gaining asynchrony by using hybrid UPC SMPSs](https://www.researchgate.net/publication/228524393_Gaining_asynchrony_by_using_hybrid_UPCSMPSs)
-
-    We can observe that if you we to *double* `N`, your run would take **four** times as long. If you **tippled** `N`, your run would use **nine times as much** memory. If you made `N` **ten times larger**, your run would use **hundred times** more memory, and would take **hundred times** as long to run.
-   * `NB` defines the block (or chunk) size into which the array is divided. The optimal value is determined by the CPU architecture such that the block fits in cache. For best performance `N` should be a multiple of `NB`.
-   * `P x Q` define the domains (in two dimensions) for how the array is partitioned on a distributed memory system. Therefore `P x Q` typically should equate more or less to the number of MPI ranks, or number of nodes, or number of NUMA domains. For example, if you have 4 single CPU nodes, the permutations for `P` and `Q` include [1, 4] and [2, 2]. Similarly, if you have 4 dual socket nodes, the permutations for `P` and `Q` include [1,8], [2, 4], etc...
-
-1. Prepare your environment to rerun your `xhpl` binary on your **compute node**
-
-   Make sure to open an additional ssh session to your compute node, so that you can monitor your CPU utilization using `top # preferably btop / htop`.
-
+1. Open TCP port 8889 on your nftables firewall, and restart the service
    ```bash
-   # Export the path to the OpenMPI Library
-   export PATH=/usr/lib64/openmpi/bin:$PATH
-
-   # Edit your HPL.dat file with the following changes
-   cd ~/hpl/bin/<TEAM_NAME>
-   nano HPL.dat
+   sudo nano /etc/nftables/hn.nft
+   sudo systemctl restart nftables
    ```
 
-1. Make the following changes to your `HPL.dat` file:
-   ```conf
-   22000                    Ns
-   164                      NBs
-   ```
-
-1. Finally, rerun `xhpl` and record your GFLOPS score:
-   ```bash
-   ./xhpl
-   ```
 > [!TIP]
-> You can find [online calculators](https://www.advancedclustering.com/act_kb/tune-hpl-dat-file/) that will generate an `HPL.dat` file for you *as a starting point*, but you will still need to do some tuning if you want to squeeze out maximum performance.
+> There are a number of plotting utilities available in Python. Each with their own advantages and disadvantages. You will be using [Plotly](https://plotly.com/python/ipython-notebook-tutorial/) in the following exercises.
 
-# Building and Compiling OpenBLAS and OpenMPI Libraries from Source
+## Visualize Your HPL Benchmark Results
+
+You will now visualize the results from the [table you prepared of Rmax (GFlops/s)](../tutorial3/README.md#top500-list) scores for different configurations of HPL.
+
+1. Create and Activate a New Python Virtual Environment
+
+   Separate your python projects and ensure that they exist in their own, clean environments:
+
+   ```bash
+   python -m venv hplScores
+   source hplScores/bin/activate
+   ```
+1. Install Project Jupyter and Plotly plotting utilities and dependencies
+   ```bash
+   pip install jupyterlab ipywidgets plotly jupyter-dash
+   ```
+1. Start the JupyterLab server
+   ```bash
+   jupyter lab --ip 0.0.0.0 --port 8889 --no-browser
+   ```
+   * `--ip` binds to all interfaces on your head node, including the public facing address
+   * `--port` bind to the port that you granted access to in `nftables`
+   * --no-browser, do not try to launch a browser directly on your head node.
+1. Carefully copy your `<TOKEN>` from the command line after successfully launching your JupyterLab server.
+   ```bash
+   # Look for a line similar to the one below, and carefully copy your <TOKEN>
+   http://127.0.0.1:8889/lab?token=<TOKEN>
+   ```
+1. Open a browser on you workstation and navigate to your JupyterLab server on your headnode:
+   ```bash
+   http://<headnode_public_ip>:8889
+   ```
+1. Login to your JupyterLab server using your `<TOKEN>`.
+1. Create a new Python Notebook and plot your HPL results:
+   ```python
+   import plotly.express as px
+   x=["Head [<treads>]", "Compute Repo MPI and BLAS [<threads>]", "Compute Compiled MPI and BLAS [<threads>]", "Compute Intel oneAPI Toolkits", "Two Compute Nodes", "etc..."]
+   y=[<gflops_headnode>, <gflops_compute>, <gflops_compute_compiled_mpi_blas>, <gflops_compute_intel_oneapi>, <gflops_two_compute>, <etc..>]
+   fig = px.bar(x, y)
+   fig.show()
+   ```
+1. Click on the camera icon to download and save your image.
+   Post your results as a comment, replying to this [GitHub discussion thread](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/114).
+
+## Visualize Your Qiskit Results
+
+You are now going to extend your `qv_experiment` and plot your results, by drawing a graph of *"Number of Qubits vs Simulation time to Solution"*:
+
+1. Create and Activate a New Python Virtual Environment
+
+   Separate your python projects and ensure that they exist in their own, clean environments:
+
+   ```bash
+   python -m venv
+   source QiskitAer/bin/activate
+   ```
+1. You may need to install additional dependencies
+   ```bash
+   pip install matplotlib jupyterlab
+   ```
+
+1. Append the following to your `qv_experiment.py` script:
+
+   ```python
+   # number of qubits, for your system see how much higher that 30 your can go...
+   num_qubits = np.arrange(2, 10)
+
+   # QV Depth
+   qv_depth = 5
+
+   # For bonus points submit results with up to 20 or even 30 shots
+   # Note that this will be more demanding on your system
+   num_shots = 10
+
+   # Array for storing the output results
+   result_array = [[], []]
+
+   # iterate over qv depth and number of qubits
+   for i in num_qubits:
+     result_array[i] = quant_vol(qubits=i, shots=num_shots, depth=qv_depth)
+     # for debugging purposes you can optionally print the output
+     print(i, result_array[i])
+
+   import matplotlib.pyplot as plt
+   plt.xlabel('Number of qubits')
+   plt.ylabel('Time (sec)')
+   plt.plot(num_qubits, results_array)
+   plt.title('Quantum Volume Experiment with depth=' + str(qv_depth))
+   plt.savefig('qv_experiment.png')
+   ```
+
+1. Run the benchmark by executing the script you've just written:
+   ```bash
+   python qv_experiment.py
+   ```
+
+# Automating the Deployment of your OpenStack Instances Using Terraform
+
+Terraform is a piece of software that allows one to write out their cloud infrastructure and deployments as code, [IaC](https://en.wikipedia.org/wiki/Infrastructure_as_code). This allows the deployments of your cloud virtual machine instances to be shared, iterated, automated as needed and for software development practices to be applied to your infrastructure.
+
+In this section of the tutorial, you will be deploying an additional compute node from your `head node` using Terraform.
 
 > [!CAUTION]
-> Compiling your entire application stack and tool-chains from source, can provide you with a tremendous performance improvement. Compiling applications from source _'can'_ take a very long time and can also be a very tricky process. For this reason the compilation of `gcc` is omitted for the competition.
->
-> You are advised to skip this section if you have fallen behind the pace recommended by the course coordinators. Skipping this section will *NOT* stop you from completing the remainder of the tutorials.
+> In the following section, **you must request additional resources from the instructors**. This additional node will be experimental for testing your changes to your cluster before committing them to your active compute nodes. You will be deleting and reinitializing this instance often. Make sure you understand how to [Delete Instance](../tutorial1/README.md#troubleshooting).
 
-You now have a functioning HPL benchmark. However, using math libraries (BLAS, LAPACK, ATLAS) from a repository (`dnf`) will not yield optimal performance, because these repositories contain generic code compiled to work on all x86 hardware. If you were monitoring your compute during the execution of `xhpl`, you would have noticed that the OpenMPI and Atlas configurations restricted HPL to running with no more than two OpenMP threads.
+## Install and Initialize Terraform
 
-Code compiled specifically for HPC hardware can use instruction sets like `AVX`, `AVX2` and `AVX512` (if available) to make better use of the CPU. A (much) higher HPL result is possible if you compile your math library (such as ATLAS, GOTOBLAS, OpenBLAS or Intel MKL) from source code on the hardware you intend to run the code on.
+You will now prepare, install and initialize Terraform on your head node. You will define and configure a `providers.tf` file, to configure OpenStack instances (as Sebowa is an OpenStack based cloud).
 
-1. Install dependencies
+1. Use your operating system's package manager to install Terraform
+
+   This could be your workstation or one of your VMs. The machine must be connected to the internet and have access to your OpenStack workspace, i.e. https://sebowa.nicis.ac.za
+   * DNF / YUM
    ```bash
-   # DNF / YUM (RHEL, Rocky, Alma, Centos Stream)
-   sudo dnf group install "Development Tools"
-   sudo dnf install gfortran git gcc wget
+   sudo yum update -y
 
-   # APT (Ubuntu)
-   sudo apt install build-essential hwloc libhwloc-dev libevent-dev gfortran wget
+   # Install package to manage repository configurations
+   sudo yum install -y dnf-plugins-core
 
-   # Pacman
-   sudo pacman install base-devel gfortran git gcc wget
+   # Add the HashiCorp Repo
+   sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+
+   sudo dnf install -y terraform
+   ```
+   * APT
+   ```bash
+   # Update package repository
+   sudo apt-get update
+   sudo apt-get install -y gnupg software-properties-common
+
+   # Add HashiCorp GPG Keys
+   wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+   # Add the official HashiCorp Linux Repo
+   echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+   ```
+   * Pacman
+   ```bash
+   # Arch
+   sudo pacman -S terraform
    ```
 
-1. Fetch and Compile OpenBLAS Source Files
+1. Create a Terraform directory, descend into it and Edit the `providers.tf` file
+
    ```bash
-   # Fetch the source files from the GitHub repository
-   git clone https://github.com/xianyi/OpenBLAS.git
-   cd OpenBLAS
-
-   # Tested against version 0.3.26, you can try an build `develop` branch
-   git checkout v0.3.26
-
-   # You can adjust the PREFIX to install to your preferred directory
-   make
-   make PREFIX=$HOME/opt/openblas install
+   mkdir terraform
+   cd terraform
+   vim providers.tf
    ```
 
-1. Fetch, Unpack and Compile OpenMPI Source Files
-   ```bash
-   # Fetch and unpack the source files
-   wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.4.tar.gz
-   tar xf openmpi-4.1.4.tar.gz
-   cd openmpi-4.1.4
+1. You must specify a [Terraform Provider](https://registry.terraform.io/browse/providers)
 
-   # Pay careful attention to tuning options here, and ensure they correspond
-   # to your compute node's processor.
-   #
-   # If you are unsure, you can replace the `cascadelake` architecture option
-   # with `native`, however you are expected to determine your compute node's
-   # architecture using `lscpu` or similar tools.
-   #
-   # Once again you can adjust the --prefix to install to your preferred path.
-   CFLAGS="-Ofast -march=cascadelake -mtune=cascadelake" ./configure --prefix=$HOME/opt/openmpi
-
-   # Use the maximum number of threads to compile the application
-   make -j$(nproc)
-   make install
-   ```
-
-1. Compile and Configure HPL
-   ```bash
-   # Copy the Makefile `Make.<TEAM_NAME>` that you'd previously prepared
-   # and customize it to utilize the OpenBLAS and OpenMPI libraries that
-   # you have just compiled.
-   cd ~/hpl
-   cp Make.<TEAM_NAME> Make.compile_BLAS_MPI
-   nano Make.compile_BLAS_MPI
-   ```
-
-1. Edit the platform identifier *(architecture)*, MPI and BLAS paths, and add compiler optimization flags:
+   These can vary from MS Azure, AWS, Google, Kubernetes etc... We will be implementing an OpenStack provider as this is what is implemented on the Sebowa cloud platform. Add the following to the `providers.tf` file.
    ```conf
-   ARCH         = compile_BLAS_MPI
-
-   MPdir        = $(HOME)/opt/openmpi
-   MPinc        = -I$(MPdir)/include
-   MPlib        = $(MPdir)/lib/libmpi.so
-
-   LAdir        = $(HOME)/opt/openblas
-   LAinc        =
-   LAlib        = $(LAdir)/lib/libopenblas.a
-
-   CC           = mpicc
-   CCFLAGS      = $(HPL_DEFS) -O3 -march=cascadelake -mtune=cascadelake -fopenmp -fomit-frame-pointer -funroll-loops -W -Wall
-   LDFLAGS      = -O3 -fopenmp
-
-   LINKER       = $(CC)
+   terraform {
+     required_providers {
+       openstack = {
+         source = "terraform-provider-openstack/openstack"
+         version = "1.46.0"
+       }
+     }
+   }
    ```
+1. Initialize Terraform
 
-1. You can now compile your new HPL:
+   From the folder with your provider definition, execute the following command:
    ```bash
-   # You will also need to temporarily export the following environment
-   # variables to make OpenMPI available on the system.
-
-   export MPI_HOME=$HOME/opt/openmpi
-   export PATH=$MPI_HOME/bin:$PATH
-   export LD_LIBRARY_PATH=$MPI_HOME/lib:$LD_LIBRARY_PATH
-
-   # Remember that if you make a mistake and need to recompile, first run
-   # make clean arch=compile_BLAS_MPI
-
-   make arch=compile_BLAS_MPI
+   terraform init
    ```
 
-1. Edit HPL to take advantage of your custom compiled MPI and Math Libraries
-   Verify that a `xhpl` executable binary was in fact produced and configure your `HPL.dat` file with reference to the [Official HPL Tuning Guide](https://netlib.org/benchmark/hpl/tuning.html):
-   ```bash
-   cd bin/compile_BLAS_MPI
+## Generate `clouds.yml` and `main.tf` Files
 
-   # As a starting point when running HPL on a single node, with a single CPU
-   # Try setting Ps = 1 and Qs = 1, and Ns = 21976 and NBs = 164
-   nano HPL.dat
+Generate and configure the `cloud.yml` file that will authenticate you against your Sebowa OpenStack workspace, and the `main.tf`files that will define how your infrastructure should be provisioned.
+
+1. Generate OpenStack API Credentials
+
+   From _your_ team's Sebowa workspace, navigate to `Identity` &rarr; `Application Credentials`, and generate a set of OpenStack credentials in order to allow you to access and authenticate against your workspace.
+
+   <p align="center"><img alt="OpenStack Application Credentials." src="./resources/openstack_application_creds.png" width=900 /></p>
+
+1. Download and Copy the `clouds.yml` File
+
+   Copy the `clouds.yml` file to the folder where you initialized terraform. The contents of the of which, should be _similar_ to:
+   ```config
+   # This is a clouds.yaml file, which can be used by OpenStack tools as a source
+   # of configuration on how to connect to a cloud. If this is your only cloud,
+   # just put this file in ~/.config/openstack/clouds.yaml and tools like
+   # python-openstackclient will just work with no further config. (You will need
+   # to add your password to the auth section)
+   # If you have more than one cloud account, add the cloud entry to the clouds
+   # section of your existing file and you can refer to them by name with
+   # OS_CLOUD=openstack or --os-cloud=openstack
+   clouds:
+     openstack:
+       auth:
+         auth_url: https://sebowa.nicis.ac.za:5000
+         application_credential_id: "<YOUR TEAM's APPLICATION CREDENTIAL ID"
+         application_credential_secret: "<YOUR TEAM's APPLICATION CREDENTIAL SECRET>"
+       region_name: "RegionOne"
+       interface: "public"
+       identity_api_version: 3
+       auth_type: "v3applicationcredential"
    ```
+1. Create `main.tf` Terraform File
+   Inside your `terraform` folder, you must define a `main.tf` file. This file is used to identify the provider to be implemented as well as the compute resource configuration details of the instance we would like to launch.
 
-1. Finally, you can run your `xhpl` binary with custom compiled libraries.
-   ```bash
-   # There is no need to explicitly use `mpirun`, nor do you have to specify
-   # the number of cores by exporting the `OMP_NUM_THREADS`.
-   # This is because OpenBLAS is multi-threaded by default.
+   You will need to define your own `main.tf` file, but below is an example of one such definition:
+   ```config
+   provider "openstack" {
+     cloud = "openstack"
+   }
+   resource "openstack_compute_instance_v2" "terraform-demo-instance" {
+     name = "scc24-arch-cn03"
+     image_id = "33b938c8-6c07-45e3-8f2a-cc8dcb6699de"
+     flavor_id = "4a126f4f-7df6-4f95-b3f3-77dbdd67da34"
+     key_pair = "nlisa at mancave"
+     security_groups = ["default", "ssc24_sq"]
 
-   ./xhpl
+     network {
+       name = "nlisa-vxlan"
+     }
+   }
    ```
-
-> [!TIP]
-> Remember to open a new ssh session to your compute node and run either `top # preferably htop / btop`. Better yet, if you are running `tmux` in your current session, open a new tmux window using `C-b c` then ssh to your compute node from there, and you can cycle between the two tmux windows using `C-b n`.
-
-Join the [Discussion](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussions/61) by replying to the thread with a screenshot of your compute node's CPU threads hard at work.
-
-# Intel oneAPI Toolkits and Compiler Suite
-
-Intel oneAPI Toolkits provide a comprehensive suite of development tools that span various programming models and architectures. These toolkits help developers optimize their applications for performance across CPUs, GPUs, FPGAs, and other accelerators, visit [Intel oneAPI Toolkits](https://www.intel.com/content/www/us/en/developer/tools/oneapi/toolkits.html) for more information.
-
-## Configure and Install Intel oneAPI Base and HPC Toolkits
-
-> [!CAUTION]
-> The Intel oneAPI Base and HPC Toolkits can provide considerable improvements of your benchmarking results. However, they can be tricky to install and configure. You are advised to skip this section if you have fallen behind the pace recommended by the course coordinators. Skipping this section will *NOT* stop you from completing the remainder of the tutorials.
-
-You will need to install and configure Intel's oneAPI Base Toolkit which includes Intel's optimized Math Kernel Libraries and Intel's C/C++ Compilers. Additionally, you will also need to install Intel's HPC Toolkit which extends the functionality of the oneAPI Base Toolkit and includes Intel's optimized FORTRAN and MPI Compilers.
-
-You will be making use of the **2024-2** versions of the Intel oneAPI and HPC Toolkits.
-
-1. *Optionally* the following prerequisites and install dependencies, to make use of Intel's VTune Profiler for a graphical user interface.
-   ```bash
-   # DNF / YUM (RHEL, Rocky, Alma, CentOS Stream)
-   sudo dnf install libdrm gtk3 libnotify xdg-utils libxcb mesa-libgbm at-spi2-core
-
-   # APT (Ubuntu)
-   sudo apt install libdrm2 libgtk-3-0 libnotify4 xdg-utils libxcb-dri3-0 libgbm1 libatspi2.0-0
-
-   # Pacman (Arch)
-   sudo pacman -S libdrm gtk3 libnotify xdg-utils libxcb mesa-libgbm at-spi2-core
-   ```
-1. Download the offline installers into your `HOME` directory
-   * Intel oneAPI Base Toolkit
-     ```bash
-     wget https://registrationcenter-download.intel.com/akdlm/IRC_NAS/9a98af19-1c68-46ce-9fdd-e249240c7c42/l_BaseKit_p_2024.2.0.634_offline.sh
-     ```
-
-   * Intel oneAPI HPC Toolkit
-     ```bash
-     wget https://registrationcenter-download.intel.com/akdlm/IRC_NAS/d4e49548-1492-45c9-b678-8268cb0f1b05/l_HPCKit_p_2024.2.0.635_offline.sh
-     ```
-
-1. Use `chmod` to make the scripts executable
-   ```bash
-   # First make the Basekit executable
-   chmod +x l_BaseKit_p_2024.2.0.634_offline.sh
-
-   # Then make the HPCkit executable
-   chmod +x l_HPCKit_p_2024.2.0.635_offline.sh
-   ```
-1. Run the installation script using the following command line parameters:
-   * `-a`: List of arguments to follow...
-   * `--cli`: Executing the installer on a Command Line Interface.
-   * `--eula accept`: Agree to accept the end user license agreement.
-   More details about the [Command Line Arguments](https://www.intel.com/content/www/us/en/docs/oneapi/installation-guide-linux/2024-2/install-with-command-line.html) can be found within Intel's installation guide.
-
-   These must be run separately and you will need to navigate through a number of CLI text prompts and accept the end-user license agreement.
-   ```bash
-   # Run Intel oneAPI Basekit installation script
-   ./l_BaseKit_p_2024.2.0.634_offline.sh -a --cli --eula accept
-   ```
-
-   Should there be any missing dependencies, use your systems' Package manager to install them
-   ```bash
-   # Run Intel oneAPI HPCkit installation script
-   ./l_HPCKit_p_2024.2.0.635_offline.sh -a --cli --eula accept
-   ```
-1. Configure your Environment to use Intel oneAPI Toolkits
-   You can either use the `setvars.sh` configuration script or modulefiles:
-   * To have your environment automaticaly prepared for use with Intel's oneAPI Toolkit append the following line either to your `/etc/profile` or your `~/.bashrc` or your `~/.profile` or run the command every time you login to your node
-      ```bash
-      source ~/intel/oneapi/setvars.sh
-      ```
-   * If you managed to successfully configure Lmod, then you can make use of Intel oneAPI modulefile configuration script:
-      ```bash
-      # Navigate to the location of your Intel oneAPI installation
-      cd ~/intel/oneapi/
-
-      # Execute the modulefiles setup script
-      ./modulefiles-setup.sh
-
-      # Return to the top level of your $HOME directory and
-      # configure Lmod to make use of the newly created modules
-      # Alternatively, this line can be appended to /etc/profile or your .bashrc
-      ml use $HOME/modulefiles
-
-      # Make sure the newly created modules are available to use and have been correclty configured
-      ml avail
-      ```
-
-> [!IMPORTANT]
-> You will need to configure your environment each time you login to a new shell, as is the case when you use `mpirun` over multiple nodes. You will be shown how to do this automatically when you run HPL over multiple nodes.
-
-You have successfully installed the Intel oneAPI Base and HPC Toolkits, including Intel Compiler Suite and Math Kernel Libraries.
-
-## Configuring and Running HPL with Intel oneAPI Toolkit and MKL
-
-After you've successfully completed the previous section, you will be ready to recompile HPL with Intel's `icx` compiler and `mkl` math kernel libraries.
-
-1. Copy and Edit the `Make.Linux_Intel64`
-
-   From your `~/hpl` folder, with a properly configured environment, copy and edit the configuration
-   ```bash
-   # Copy a setup configuration script to use as a template
-   cp setup/Make.Linux_Intel64 ./
-
-   # Edit the configuration file to make use of your Intel oneAPI Toolkit
-   nano Make.Linux_Intel64
-   ```
-
-1. Configure your `Make.Linux_Intel64`
-
-   Ensure that you make the following changes and amendments:
-   ```conf
-   CC       = mpiicx
-   OMP_DEFS = -qopenmp
-   CCFLAGS  = $(HPL_DEFS) -O3 -w -ansi-alias -z noexecstack -z relro -z now -Wall
-   ```
-
-1. Compile your HPL Binary using the Intel oneAPI Toolkit
-   ```bash
-   make arch=Linux_Intel64
-   ```
-
-1. Reuse your `HPL.dat` from when you compiled OpenMPI and OpenBLAS from source.
-
-> [!TIP]
-> Remember to use tmux to open a new tmux window, `C-b c`. You can cycle between the tmux windows using `C-b n`.
-
-# LinPACK Theoretical Peak Performance
-
-It is useful to know what the theoretical FLOPS performance (RPeak) of your hardware is when trying to obtain the highest benchmark result (RMax). RPeak can be derived from the formula:
-
-**RPeak = CPU Frequency [GHz] x Num CPU Cores x OPS/cycle**
-
-Newer CPU architectures allow for 'wider' instruction sets which execute multiple instructions per CPU cycle. The table below shows the floating point operations per cycle of various instruction sets:
-
-| CPU Extension | Floating Point Operations per CPU Cycle |
-|---------------|-----------------------------------------|
-| SSE4.2        | 4                                       |
-| AVX           | 8                                       |
-| AVX2          | 16                                      |
-| AVX512        | 32                                      |
-
-You can determine your CPU model as well as the instruction extensions supported on your **compute node(s)** with the command:
-
-```bash
-lscpu
-```
-
-For model name, you should see something along the lines "Intel Xeon Processor (Cascadelake)",
-
-You can determine the maximum and base frequency of your CPU model on the Intel Ark website. Because HPL is a demanding workload, assume the CPU is operating at its base frequency and **NOT** the boost/turbo frequency. You should have everything you need to calculate the RPeak of your cluster. Typically an efficiency of at least 75% is considered adequate for Intel CPUs (RMax / RPeak > 0.75).
-
-## Top500 List
-
-The [TOP500 list](https://top500.org/lists/top500/2024/06/) is a project that ranks and details the 500 most powerful supercomputers in the world. The ranking is based on the High-Performance Linpack (HPL) benchmark, which measures a system's floating point computing power.
-
-1. Go the the Top500 List and compare your results
-
-   Populate the following table by recording your Rmax from HPL results, and calculating your expected Rpeak value.
-
-| Rank | System                                          | Threads   | Rmax (GFlops/s)       | Rpeak (GFlops/s)         |
-|------|-------------------------------------------------|-----------|-----------------------|--------------------------|
-| 1    | Frontier - HPE - United States                  | 8 699 904 | 1206 x 10<sup>6</sup> | 1714.81 x 10<sup>6</sup> |
-|      |                                                 |           |                       |                          |
-| 2    |                                                 |           |                       |                          |
-| 3    |                                                 |           |                       |                          |
-|      | Head node                                       | 2         |                       |                          |
-|      | Compute node using head node `xhpl` binary      |           |                       |                          |
-|      | Compute node using custom compiled MPI and BLAS |           |                       |                          |
-|      | Compute node using Intel oneAPI Toolkits        |           |                       |                          |
-|      | Across two compute nodes                        |           |                       |                          |
-
-> [!IMPORTANT]
-> You do **NOT** need to try and Rank you VM's HPL performance. Cores and threads are used interchangeably in this context. Following the recommended configuration and guides, your head node has one CPU package with two compute cores (or threads). Continuing this same analogy, your compute node has one CPU with six cores (or threads).
-
-# Spinning Up a Second Compute Node Using a Snapshot
-
-At this point you are ready to run HPL on your cluster with two compute nodes. From your OpenStack workspace, navigate to `Compute` &rarr; `Instances` and create a snapshot from your compute node.
-
-Launch a new instance, as you did in [Tutorial 1](../tutorial1/README.md#launch-a-new-instance) and [Tutorial 2](../tutorial2/README.md#spinning-up-a-compute-node-on-sebowaopenstack) only this time you'll be using the snapshot that you have just created as boot source.
-
-<p align="center"><img alt="OpenStack create instance from Snapshot." src="./resources/openstack_instance_snapshot.png" width=900 /></p>
-
-Pay careful attention to the hostname, network and other configuration settings that may be specific to and may conflict with your initial node. Once your two compute nodes have been successfully deployed, are accessible from the head node and added to your MPI `hosts` file, you can continue with running HPL across multiple nodes.
-
-## Running HPL Across Multiple Nodes
-
-Everything is now in place for you to run HPL across your two compute nodes. You must ensure that all libraries and dependencies are satisfied across your cluster. You must also ensure that your passwordless SSH is properly configured. Your NFS mounted `/home` directory must be properly configured.
-
-* Configuring OpenMPI Hosts File
-
-  You must configure a `hosts` (or `machinefile`) file which contains the IP addresses or hostnames of your compute nodes.
-  ```conf
-  # The slots value indicates the number of processes to run on each node.
-  # Adjust this number based on the number of CPU cores available on each node.
-  compute01 slots=1
-  compute02 slots=1
-  ```
-
-* Runtime and Environment Configuration Options for `mpirun`
-
-  You compute nodes each have a single CPU with multiple OpenMP threads. It is critical that your `environment` is correctly configured to you to run HPL across your two compute nodes.
-
-  * Navigate to the directory where your HPL executable and `HPL.dat` file are located. Use `mpirun` to run HPL across the nodes specified in the hosts file
-  * Edit your `~/.profile` to set environment variables when `mpirun` creates a new shell
-  * Execute `mpirun`
-  ```bash
-  mpirun -np 2 --hostfile hosts ./xhpl
-  ```
-
-# Application Benchmark Profiling
-
-In order to visualize and understand the a portable abstraction of the layout of the hierarchical topology of modern hardware architectures, you can make use of the Portable Hardware Locality `hwlock` software package. This will give you insight into NUMA memory nodes, processor packages, shared caches, cores and simultaneous multi-threading.
-
-## Hardware Topology
-
-You will be using `hwloc` to help you understand how you are going to be mapping `<OpenMP / pThreads>` to `<MPI Ranks>`.
-
-1. Install `lstopo` and `numactl`:
-   ```bash
-   sudo dnf -y install numactl hwloc hwloc-libs hwloc-gui
-   ```
-1. Print the layout and topology of the memory, CPU cores and peripherals
-   ```bash
-   lstopo <FILENAME>.png
-   ```
-
-## VTune
-
-You're now going to recompile HPL across *"multiple"* nodes, using Intel oneAPI's `vtune` application for profiling.
-
-1. Recompile HPL
-   You must ensure the following Intel oneAPI modules are configure and loaded
-   ```bash
-   ml tbb compiler-rt mkl mpi vtune advisor intel_ipp_intel64
-   ```
-1. Should you have a firewall or security groups configured, ensure that you open the appropriate network ports:
-   ```bash
-   # Take note of the relavant nodes where this is required
-   export I_MPI_HYDRA_SERVICE_PORT=<SERVICE_PORT> # ex: 50000
-   export I_MPI_PORT_RANGE=<PORT_RANGE> # ex: 50000:50500
-   ```
-1. Configure the number of OpenMPI Threads that should spawn with the application:
-   ```bash
-   export OMP_NUM_THREADS=<Threads_per_MPI_Rank>
-   ```
-1. Run profiling tool
-   ```bash
-   mpirun -np <NUM_PROCESSORS> -ppn <PROCS_PER_NODE> -f <HOSTSFILE> -gtool "vtune -collect hpc-performance -data-limit=0 -r result_init:<MPI_RANK_TO_MONITOR>" ./xhpl
-   ```
-1. Monitor the performance behavior for different configurations:
-   - Vary the `<NUM_PROCS>` vs `<PROCS_PER_NODE>` vs `<NUM+_THREADS>` and repeat the experiments.
-
-> [!Tip]
-> You may need to create a symbolic link to in the binaries directory of the compiler sub-directory between `icc` and `icx`.
-
-Recompile with `-parallel-source-info=2` flag.
-
-# HPC Challenge
-
-HPC Challenge (or HPCC) is benchmark suite which contains 7 micro-benchmarks used to test various performance aspects of your cluster. HPCC includes HPL which it uses to access FLOPs performance. Having successfully compiled and executed HPL, the process is fairly straight forward to setup HPCC (it uses the same Makefile structure).
 
 > [!NOTE]
-> If you are having difficulties downloading the HPCC source and navigating to the site, you may skip the HPC Challenge and instead do HPCG below. Bonus points will be given for completing both.
+> You must specify your own variables for `name`, `image_id`, `flavor_id`, `key_pair` and `network.name`.
 
-1. Download HPCC from https://icl.utk.edu/hpcc/software/index.html or clone the repository from https://github.com/icl-utk-edu/hpcc.
+## Generate, Deploy and Apply Terraform Plan
 
-1. Extract the file, then enter the `hpcc/` sub-directory.
-
-1. Copy and modify the `Makefile.<arch>` as your did for the HPL benchmark
-
-1. Compile HPCC from the base directory using
+1. Generate and Deploy Terraform Plan
+   Create a Terraform plan based on the current configuration. This plan will be used to implement changes to your Sebowa OpenStack cloud workspace, and can be reviewed before applying those changes.
+   Generate a plan and write it to disk:
    ```bash
-   make arch=<arch>
+   terraform plan -out ~/terraform/plan
    ```
-1. Edit the `hpccinf.txt` file
 
-   HPCC replies on the input parameter file `hpccinf.txt` (same as `HPL.dat`). Run HPCC as you did HPL.
-
-1. Prepare and format your output
-
-   Run the [format.pl script](resources/format.pl) with to format your benchmark results into a readable format. Compare your HPL score with your standalone HPL.
+1. Once you are satisfied with the proposed changes, deploy the terraform plan:
    ```bash
-   # You may need to install perl
-   ./format.pl -w -f hpccoutf.txt
+   terraform apply ~terraform/plan
    ```
-Have the output `hpccoutf.txt` and your `Make.<architecture>` ready for the instructors to view on request.
 
-# High Performance Conjugate Gradients
+1. Verify New Instance Successfully Created by Terraform
+   Finally confirm that your new instance has been successfully created. On your Sebowa OpenStack workspace, navigate to `Project` &rarr; `Compute` &rarr; `Instances`.
 
-**HPCG** is intended as a complement to the **High Performance LINPACK (HPL)*** benchmark. It is designed to exercise computational and data access patterns that more closely match a different and broad set of important applications. See [HPCG Benchmark](https://hpcg-benchmark.org/) for more information. Or clone the repository from their Github repository [HPCG Repo](https://github.com/hpcg-benchmark/hpcg).
+> [!TIP]
+> To avoid losing your team's progress, it would be a good idea to create a GitHub repo in order for you to commit and push your various scripts and configuration files.
 
-## Getting the source code
+# Continuous Integration Using CircleCI
 
-There is little setup and configuration required for this benchmark, so limited guidance is provided. A reference version of **HPCG** is available for download, which you can compile and run:
+Circle CI is a Continuous Integration and Continuous Delivery platform that can be utilized to implement DevOps practices. It helps teams build, test, and deploy applications quickly and reliably.
+
+In this section of the tutorials you're going to be expanding on the OpenStack instance automation with CircleCI `Workflows` and `Pipelines`. For this tutorial you will be using your GitHub account which will integrate directly into CircleCI.
+
+## Prepare GitHub Repository
+
+   You will be integration GitHub into CircleCI workflows, wherein every time you commit changes to your `deploy_compute` GitHub repository, CircleCI will instantiate and trigger Terraform, to create a new compute node VM on Sebowa.
+
+1. Create GitHub Repository
+   If you haven't already done so, sign up for a [GitHub Account](https://github.com/). Then create an empty private repository with a suitable name, i.e. `deploy_compute_node`:
+
+   <p align="center"><img alt="Github Create" src="./resources/github_create_new_repo.png" width=600 /></p>
+
+1. Add your team members to the repository to provide them with access:
+   <p align="center"><img alt="Github Manage Access" src="./resources/github_manage_access.png" width=900 /></p>
+
+1. If you haven't already done so, add your SSH key to your GitHub account by following the instructions from [Steps to follow when editing existing content](../README.md#steps-to-follow-when-editing-existing-content).
+
+> [!TIP]
+> You will be using your head node to orchestrate and configure your infrastructure. Pay careful attention to ensure that you copy over your **head node**'s public SSH key. Administrating and managing your compute nodes in this manner requires you to think about them as "cattle" and not "pets".
+
+## Reuse `providers.tf` and `main.tf` Terraform Configurations
+
+1. On your head node, create a folder that is going to be used to initialize the GitHub repository:
+   ```bash
+   mkdir ~/deploy_compute_node
+   cd ~/deploy_compute_node
+   ```
+
+1. Copy the `providers.tf` and `main.tf` files you had previously generated:
+
+   ```bash
+   cp ~/terraform/providers.tf ./
+   cp ~/terraform/main.tf ./
+   vim main.tf
+   ```
+
+## Create `.circleci/config.yml` File and `push` Project to GitHub
+
+   The `.circle/config.yml` configuration file is where you define your build, test and deployment process. From your head node, you are going to be `pushing` your Infrastructure as Code to your private GitHub repository. This will then automatically trigger the CircleCI deployment of a Docker container which has been tailored for Terraform operations and instructions that will deploy your Sebowa OpenStack compute node instance.
+
+1. Create and edit `.circleci/config.yml`:
+   ```bash
+   mkdir .circleci
+   vim .circleci/config.yml # Remember that if you are not comfortable using Vim, install and make use of Nano
+   ```
+
+1. Copy the following configuration into `.circle/config.yml`:
+   ```conf
+   version: 2.1
+
+   jobs:
+     deploy:
+       docker:
+         - image: hashicorp/terraform:latest
+       steps:
+         - checkout
+
+         - run:
+             name: Create clouds.yaml
+             command: |
+               mkdir -p ~/.config/openstack
+               echo "clouds:
+                 openstack:
+                   auth:
+                     auth_url: https://sebowa.nicis.ac.za:5000
+                     application_credential_id: ${application_credential_id}
+                     application_credential_secret: ${application_credential_secret}
+                   region_name: "RegionOne"
+                   interface: "public"
+                   identity_api_version: 3
+                   auth_type: "v3applicationcredential"" > ~/.config/openstack/clouds.yaml
+
+         - run:
+             name: Terraform Init
+             command: terraform init
+
+         - run:
+             name: Terraform Apply
+             command: terraform apply -auto-approve
+
+   workflows:
+     version: 2
+     deploy_workflow:
+     jobs:
+       - deploy
+
+   ```
+     - **Version**: Specifies the configuration version.
+     - **Jobs**: Defines the individual steps in the build process, where we've defined a `build` job that runs inside the latest Terraform Docker container from Hashicorp.
+     - **Steps**: The steps to execute within the job:
+       * `checkout`: Clone and checkout the code from the repository.
+       * `run`: Executes a number of shell commands to create the `clouds.yaml` file, then initialize and apply the Terraform configuration.
+     - **Workflows**: Defines the workflow(s) that CircleCI will follow, where in this instance there is a single workflow specified `deploy_workflow`, that runs the `deploy` job.
+
+1. `Init`ialize the Git Repository, `add` the files you've just created and `push` to GitHub:
+   Following the instructions from the previous section where you created a new GitHub repo, execute the following commands from your head node, inside the `deploy_compute_node` folder:
+   ```bash
+   cd ~/deploy_compute_node
+   git init
+   git add .
+   git commit -m "Initial Commit." # You may be asked to configure you Name and Email. Follow the instructions on the screen before proceeding.
+   git branch -M main
+   git remote add origin git@github.com:<TEAM_NAME>/deploy_compute_node.git
+   git push -u origin main
+   ```
+   The new files should now be available on GitHub.
+
+## Create CircleCI Account and Add Project
+
+   Navigate to [CircleCI.com](https://circleci.com) to create an account, link and add a new GitHub project.
+1. Create a new organization and give it a suitable name
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_organization.png" width=600 /></p>
+1. Once you've logged into your workspace, go to projects and create a new project
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project00.png" width=600 /></p>
+1. Create a new IaC Project
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project01.png" width=600 /></p>
+1. If your repository is on GitHub, create a corresponding project
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project02.png" width=600 /></p>
+1. Pick a project name and a repository to associate it to
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_create_project03.png" width=600 /></p>
+1. Push the configuration to GitHub to trigger workflow
+   <p align="center"><img alt="CircleCI" src="./resources/circleci_successful_deploy.png" width=900 /></p>
+
+> [!IMPORTANT]
+> You're going to need to delete your experimental compute node instance on your Sebowa OpenStack workspace, each time you want to test or run the CircleCI integration. It has been included here for demonstration purposes, so that you may begin to see the power and utility of CI/CD and automation.
+>
+> Navigate to your Sebowa OpenStack workspace to ensure that they deployment was successful.
+>
+> Consider how you could streamline this process even further using preconfigured instance snapshots, as well as  Ansible after your instances have been deployed.
+
+# Slurm Scheduler and Workload Manager
+
+The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource Management), is a free and open-source job scheduler for Linux, used by many of the world's supercomputers/computer clusters. It allows you to manage the resources of a cluster by deciding how users get access for some duration of time so they can perform work. To find out more, please visit the [Slurm Website](https://slurm.schedmd.com/documentation.html).
+
+## Prerequisites
+
+1. Make sure the clocks, i.e. chrony daemons, are synchronized across the cluster.
+
+2. Generate a **SLURM** and **MUNGE** user on all of your nodes:
+
+    - **If you have Ansible User Module working**
+        - Create the users as shown in tutorial 2 **Do NOT add them to the sysadmin group**.
+    - **If you do NOT have your Ansible User Module working**
+       - `useradd slurm`
+       - Ensure that users and groups (UIDs and GIDs) are synchronized across the cluster. Read up on the appropriate [/etc/shadow](https://linuxize.com/post/etc-shadow-file/) and [/etc/password](https://www.cyberciti.biz/faq/understanding-etcpasswd-file-format/) files.
+
+## Head Node Configuration (Server)
+
+
+1. Install the [MUNGE](https://dun.github.io/munge/) package. MUNGE is an authentication service that makes sure user credentials are valid and is specifically designed for HPC use.
+
+    First, we will enable the **EPEL** _(Extra Packages for Enterprise Linux)_ repository for `dnf`, which contains extra software that we require for MUNGE and Slurm:
+
+    ```bash
+      sudo dnf install epel-release
+    ```
+
+    Then we can install MUNGE, pulling the development source code from the `crb` "CodeReady Builder" repository:
+
+    ```bash
+      sudo dnf config-manager --set-enabled crb
+      sudo dnf install munge munge-libs munge-devel
+    ```
+
+2. Generate a MUNGE key for client authentication:
+
+    ```bash
+      sudo /usr/sbin/create-munge-key -r
+      sudo chown munge:munge /etc/munge/munge.key
+      sudo chmod 600 /etc/munge/munge.key
+    ```
+
+3. Using `scp`, copy the MUNGE key to your compute node to allow it to authenticate:
+
+    1. SSH into your compute node and create the directory `/etc/munge`. Then exit back to the head node.
+
+    2. Since, munge has not yet been installed on your compute node, first transfer the file to a temporary location
+    ```bash
+      sudo cp /etc/munge/munge.key /tmp/munge.key && sudo chown user:user /tmp/munge.key
+    ```
+    **Replace user with the name of the user that you are running these commands as**
+
+    3. Move the file to your compute node
+    ```bash
+      scp /etc/munge/munge.key <compute_node_name_or_ip>:/etc/tmp/munge.key
+    ```
+
+    4. Move the file to the correct location
+    ```bash
+      ssh <computenode hostname or ip> 'sudo mv /tmp/munge.key /etc/munge/munge.key'
+    ```
+
+4. **Start** and **enable** the `munge` service
+
+5. Install dependency packages:
+
+    ```bash
+    sudo dnf install gcc openssl openssl-devel pam-devel numactl numactl-devel hwloc lua readline-devel ncurses-devel man2html libibmad libibumad rpm-build perl-Switch libssh2-devel mariadb-devel perl-ExtUtils-MakeMaker rrdtool-devel lua-devel hwloc-devel
+    ```
+
+6. Download the 20.11.9 version of the Slurm source code tarball (.tar.bz2) from https://download.schedmd.com/slurm/. Copy the URL for `slurm-20.11.9.tar.bz2` from your browser and use the `wget` command to easily download files directly to your VM.
+
+7. Environment variables are a convenient way to store a name and value for easier recovery when they're needed. Export the version of the tarball you downloaded to the environment variable VERSION. This will make installation easier as you will see how we reference the environment variable instead of typing out the version number at every instance.
+
+    ```bash
+      export VERSION=20.11.9
+    ```
+
+8. Build RPM packages for Slurm for installation
+
+    ```bash
+      sudo rpmbuild -ta slurm-$VERSION.tar.bz2
+    ```
+
+    This should successfully generate Slurm RPMs in the directory that you invoked the `rpmbuild` command from.
+
+9.  Copy these RPMs to your compute node to install later, using `scp`.
+
+10. Install Slurm server
+
+    ```bash
+      sudo dnf localinstall ~/rpmbuild/RPMS/x86_64/slurm-$VERSION*.rpm \
+                            ~/rpmbuild/RPMS/x86_64/slurm-devel-$VERSION*.rpm \
+                            ~/rpmbuild/RPMS/x86_64/slurm-example-configs-$VERSION*.rpm \
+                            ~/rpmbuild/RPMS/x86_64/slurm-perlapi-$VERSION*.rpm \
+                            ~/rpmbuild/RPMS/x86_64/slurm-slurmctld-$VERSION*.rpm
+    ```
+
+11. Setup Slurm server
+
+    ```bash
+      sudo cp /etc/slurm/slurm.conf.example /etc/slurm/slurm.conf
+    ```
+
+    Edit this file (`/etc/slurm/slurm.conf`) and set appropriate values for:
+
+    ```conf
+    ClusterName=      #Name of your cluster (whatever you want)
+    ControlMachine=   #DNS name of the head node
+    ```
+
+    Populate the nodes and partitions at the bottom with the following two lines:
+
+    ```conf
+    NodeName=<computenode> Sockets=<num_sockets> CoresPerSocket=<num_cpu_cores> \
+    ThreadsPerCore=<num_threads_per_core> State=UNKNOWN
+    ```
+
+    ```conf
+    PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
+    ```
+
+    **To check how many cores your compute node has, run `lscpu` on the compute node.** You will get output including `CPU(s)`, `Thread(s) per core`, `Core(s) per socket` and more that will help you determine what to use for the Slurm configuration.
+
+    **Hint: if you overspec your compute resources in the definition file then Slurm will not be able to use the nodes.**
+
+12. Create Necessary Directories and Set Permissions:
+  ```bash
+    sudo mkdir -p /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
+    sudo chown -R slurm:slurm /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
+  ```
+
+13. **Start** and **enable** the `slurmctld` service on the head node.
+
+## Compute Node Configuration (Clients)
+
+1. Setup MUNGE:
+
+    ```bash
+     sudo dnf install munge munge-libs
+      sudo scp /etc/munge/munge.key <compute_node_name_or_ip>:/etc/munge/munge.key
+      sudo chown munge:munge /etc/munge/munge.key
+      sudo chmod 400 /etc/munge/munge.key
+     ```
+
+2. Install Slurm Client
+  ```bash
+    sudo dnf localinstall ~/rpmbuild/RPMS/x86_64/slurm-$VERSION*.rpm \
+                     ~/rpmbuild/RPMS/x86_64/slurm-slurmd-$VERSION*.rpm \
+                     ~/rpmbuild/RPMS/x86_64/slurm-pam_slurm-$VERSION*.rpm
+  ```
+
+3. Copy `/etc/slurm/slurm.conf` from head node to compute node.
+
+4. Create necessary directories:
+    ```bash
+    sudo mkdir -p /var/spool/slurm/d
+    sudo chown slurm:slurm /var/spool/slurm/d
+    ```
+
+5. **Start** and **enable** the `slurmd` service.
+
+Return to your head node. To demonstrate that your scheduler is working you can run the following command as your normal user:
+
 ```bash
-wget https://hpcg-benchmark.org/downloads/hpcg-3.1.tar.gz
+  sinfo
 ```
 
-Alternatively the source can be obtained from GitHub:
-```bash
-git clone https://github.com/hpcg-benchmark/hpcg/
-```
-Lastly, it is possible to find prebuilt versions of HPCG which should provide optimal performance. You are required to use **HPCG** version **3.1** or newer.
+You should see your compute node in an idle state.
 
-## Submission
-
-You must once again build **HPCG** using both (1.) **GCC**, an open-source **MPI** implementation, and open-source maths libraries; and (2.) the equivalent Intel implementation.
-
-Similarly, as was the case for **HPCC**, you must submit a `README.md` file describing the libraries and versions used to build **HPCG**, all relevant input and output files, and the executable binaries used in your best run.
-
-
-
-# Application Benchmarks and System Evaluation
-
-HPC applications are widely used in scientific research and systems evaluation or benchmarking to address complex computational problems. These applications span various fields, including computational chemistry, computational fluid dynamics, cosmology / astrophysics, quantum mechanics, weather forecasting, genomics, to name a few...
-
-These applications are integral to advancing scientific research, enabling researchers to solve complex problems that are otherwise computationally prohibitive. They are also essential for evaluating and benchmarking the performance of high-performance computing systems, ensuring that they meet the demands of cutting-edge research and industrial applications.
-
-You will now build, compile, install and run a few such examples.
-
-## GROMACS (ADH Cubic)
-
-GROMACS is a versatile package to perform molecular dynamics, i.e. simulate the Newtonian equations of motion for systems with hundreds to millions of particles. It is primarily designed for biochemical molecules like proteins, lipids and nucleic acids that have a lot of complicated bonded interactions, but since GROMACS is extremely fast at calculating the nonbonded interactions (that usually dominate simulations) many groups are also using it for research on non-biological systems, such as polymers.
-
-Detailed installation instructions can be found at: http://manual.gromacs.org/current/install-guide/index.html, but here's a general installation overview:
-
-1. Ensure you have an up-to-date `cmake` available on your system.
-
-2. You will also require a compiler such as the GNU `gcc`, Intel `icc` or other, and **MPI (OpenMPI, MPICH, Intel MPI or other)** be installed on system. Your **PATH** & **LD_LIBRARY_PATH** environment variables should be set up to reflect this.
-
-3. Compile GROMACS **with MPI support** from source using `cmake`.
-
-The benchmark **(adh_cubic)** should complete within a few minutes and has a small memory footprint, it is intended to demonstrate that your installation is working properly. The metric which will be used to assess your performance is the **ns/day** (number of nanoseconds the model is simulated for per day of computation), quoted at the end of the simulation output. **Higher is better**.
-
-Ensure that your GROMACS /**bin** directory is exported to your **PATH**. You should be able to type `gmx_mpi --version` in your terminal and have the application information displayed correctly. The first task is to pre-process the input data into a usable format, using the `grompp` tool:
+Slurm allows for jobs to be submitted in _batch_ (set-and-forget) or _interactive_ (real-time response to the user) modes. Start an interactive session on your compute node via the scheduler with
 
 ```bash
-gmx_mpi grompp -f pme_verlet.mdp -c conf.gro -p topol.top -o md_0_1.tpr
-
-#export PATH and LD_LIBRARY_PATH
-mpirun gmx_mpi mdrun -nsteps 5000 -s md_0_1.tpr -g gromacs.log
+  srun -N 1 --pty bash
 ```
 
-Then execute the script from you head node, which will in turn launch the simulation using MPI and write output to the log file `gromacs_log`.
+You should automatically be logged into your compute node. This is done via Slurm. Re-run `sinfo` now and also run the command `squeue`. Here you will see that your compute node is now allocated to this job.
 
-You may modify the `mpirun` command to optimise performance (significantly) but in order to produce a valid result, the simulation must run for **5,000 steps**. Quoted in the output as:
+To finish, type `exit` and you'll be placed back on your head node. If you run `squeue` again, you will now see that the list is empty.
+
+<div style="page-break-after: always;"></div>
+
+To confirm that your node configuration is correct, you can run the following command on the head node:
+
+```bash
+sinfo -alN
+```
+
+The `S:C:T` column means "sockets, cores, threads" and your numbers for your compute node should match the settings that you made in the `slurm.conf` file.
+
+# GROMACS Application Benchmark
+
+You will now be extending some of your earlier work from [Tutorial 3](../tutorial3/README.md#gromacs-adh-cubic).
+
+## Protein Visualization
+
+> [!NOTE] You will need to work on your or laptop to complete this section, not on your head node nor compute node.
+
+You are able to score bonus points for this tutorial by submitting a visualisation of your **adh_cubic** benchmark run. Follow the instructions below to accomplish this and upload the visualisation.
+
+Download and install the VMD visualization tool by selecting the correct version for your operating system. For example, for a Windows machine with an Nvidia GPU select the “Windows OpenGL, CUDA” option. You may need to register on the website.
+
+```http
+https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD
+```
+
+Use the `WinSCP` application for Windows, or the `scp` command for Linux to copy the output file `confout.gro` of the **adh_cubic** benchmark from your cluster to your PC. Attempting to visualise the larger "1.5M_water" simulation is not necessary and not recommended due to memory limitations of most PCs.
+
+1. Open VMD, select **File** then **New Module...**, click **Browse...** and select your `.gro` file.
+
+2. Ensure the filetype was detected as **Gromacs GRO** then click **Load**. In the main VMD window you will see that 134177 particles have been loaded. You should also see the display window has been populated with your simulation particle data.
+
+    You can manipulate the data with your mouse cursor: zoom with the mouse wheel or rotate it by dragging with the left mouse button held down. This visualisation presents a naturally occurring protein (blue/green) found in the human body, suspended in a solution of water molecules (red/white).
+
+3. From the main VMD window, select **Graphics** then **Representations..**.
+
+4. Under **Selected Atoms**, replace **all** with **not resname SOL** and click **apply**. You will notice the water solution around your protein has been removed, allowing you to better examine the protein.
+
+5. In the same window, select the dropdown **Drawing Method** and try out a few different options. Select **New Cartoon** before moving on.
+
+6. From the main VMD window, once again select **Graphics** then **Colors**. Under **Categories**, select **Display**, then **Background**, followed by **8 white**.
+
+7. Finally, you are ready to render a snapshot of your visualisation. From the main window, select **File** then **Render...**, ensure **Snapshot...** is selected and enter an appropriate filename. Click **Start Rendering**.
+
+Simulations like this are used to to develop and prototype experimental pharmaceutical drug designs. By visualising the output, researchers are able to better interpret simulation results.
+
+[!TIP]
+> Copy the resulting `.bmp` file(s) from yout cluster to your local computer or laptop and demonstrate this to your instructors for bonus points.
+
+## Benchmark 2 (1.5M Water)
+
+> [!CAUTION]
+> This is a large benchmark and can possibly take some time. Complete the next sections and come back to this if you feel as though your time is limited.
+
+Pre-process the input data using the `grompp` command
+
+```bash
+gmx_mpi grompp -f pme_verlet.mdp -c out.gro -p topol.top -o md_0_1.tpr
+```
+
+Using a batch script similar to the one above, run the benchmark. You may modify the mpirun command to optimise performance (significantly) but in order to produce a valid result, the simulation must run for 5,000 steps. Quoted in the output as:
 
 ```text
 "5000 steps,     10.0 ps."
 ```
 
 > [!NOTE]
-> Please be able to present the instructors with the output of `gmx_mpi --version`. Also be able to present the instructors with your Slurm batch script and `gromacs_log` files for the **adh_cubic** benchmark.
-
-## LAMMPS (Lennard-Jones)
-
-[LAMMPS](https://docs.lammps.org) (Large-scale Atomic/Molecular Massively Parallel Simulator) is a classical molecular dynamics simulation code designed for simulating particles in a variety of fields including materials science, chemistry, physics, and biology. It was originally developed at Sandia National Laboratories and is now maintained by a community of developers. LAMMPS runs on single processors or in parallel using message-passing techniques and a spatial-decomposition of the simulation domain.
-
-The purpose of this benchmark is to demonstrate to you that there are often multiple way to build and compile many applications.
-
-1. Configure prerequisites and install dependencies
-   * DNF / YUM
-   ```bash
-   # RHEL, Rocky, Alma, CentOS Stream
-   sudo dnf groupinstall 'Development Tools' -y
-   sudo dnf install cmake git -y
-   sudo dnf install fftw-devel libjpeg-devel libpng-devel libtiff-devel libX11-devel libXext-devel libXrender-devel -y
-   ```
-   * APT
-   ```bash
-   # Ubuntu
-   sudo apt install build-essential cmake git -y
-   sudo apt install libfftw3-dev libjpeg-dev libpng-dev libtiff-dev libx11-dev libxext-dev libxrender-dev -y
-   ```
-   * Pacman
-   ```bash
-   # Arch
-   sudo pacman -S base-devel cmake git -y
-   sudo pacman -S fftw libjpeg-turbo libpng libtiff libx11 libxext libxrender -y
-   ```
-1. Clone, build and compile LAMMPS with `make`
-
-   Building LAMMPS with traditional Makefiles requires that you have a `Makefile.<machine>` file appropriate for your system in either the `src` folder.
-   ```bash
-   # Ensure that the correct paths are exported
-
-   git clone -b stable https://github.com/lammps/lammps.git
-   cd lammps/src
-
-   # List the different make options
-   make
-
-   # Build a serial LAMMPS executable using GNU g++
-   # Remember to monitor top / htop / btop in another tmux pane
-   make serial
-
-   # Build a parallel LAMMPS executable with MPI
-   # If you were frustrated at how long the previous make build took,
-   # try to build and compile using the -j<num_threads> switch
-   make mpi
-   ```
-1. Copy the executable binaries to the benchmarks folder
-   ```bash
-   cp lmp_serial ../bench
-   cp lmp_mpi ../bench
-   ```
-
-1. Execute the Lennard Jones benchmarks
-   ```bash
-   cd ../bench
-
-   # Verify that only one thread is utilized
-   ./lmp_serial -in in.lj
-
-   # Verify the number of OpenMP threads utilized
-   export OMP_NUM_THREADS=<num_threads>
-   mpirun -np <num_procs> lmp_mpi -in in.lj
-   ```
-1. Rerun your binaries against the Rhodopsin Structure benchmark
-
-   The Lennard Jones benchmark might be too short for proper evaluation. These small bencharks are often used for an installation validation test.
-   ```bash
-   # Save the output for submission
-   ./lmp_serial < in.rhodo > lmp_serial_rhodo.out
-   mpirun -np <num_procs> lmp_mpi -in in.rhodo > lmp_mpi_rhodo.out
-   ```
-
-> [!IMPORTANT]
-> The following section is included here for illustrative purposes. If you feel that you are falling behind in the competition, you may read through this section without completing it. Limited instructions will be provided, and you will be required to take decisions in terms of choice of compiler, MPI implementation, FFTW library. This will be good practice for what benchmarks *might* look like in the Nationals Round of the Student Cluster Competition.
->
-> 1. Build LAMMPS with GCC, OpenMP and OpenMPI using CMake
->   * In addition to a choice of `gcc`, `MPI` implementation and an `FFTW` library, you'll need to also install `cmake`.
->   * If you're using the same checkout as before, you need to purge your `src` directory
->   ```bash
->   cd lammps/src
->
->   # Remove conflicting files from the previous build, uninstall all packages
->   # make no-all purge
->   ```
->   * Configure the build with CMake, then compile and install
->   ```bash
->   cmake ../cmake -D BUILD_MPI=on -D BUILD_OMP=on -D CMAKE_C_COMPILER=gcc -D CMAKE_CXX_COMPILER=g++ -D MPI_C_COMPILER=mpicc -D MPI_CXX_COMPILER=mpicxx
->
->   make -j$(nproc)
->
->   make DESTDIR=/<path-to-install-dir> install
->   ```
->   * Rerun the benchmarks
->   ```bash
->   export OMP_NUM_THREADS=<num_threads>
->   mpirun -np <num_procs> ./lmp -in <input_file>
->   ```
-
-## Qiskit (Quantum Volume)
-
-IBM's Qiskit is an open-source [Software Development Kit (SDK)](https://www.ibm.com/quantum/qiskit) for working with quantum computers at the level of circuits, pulses, and algorithms. It provides tools for creating and manipulating quantum programs and running them on prototype quantum devices on IBM Quantum Platform or on simulators on a local computer.
-
-[Qiskit-Aer](https://github.com/Qiskit/) is an extension to the Qiskit SDK for using high performance computing resources to simulate quantum computers and programs. It provides interfaces to run quantum circuits with or without noise using a number of various simulation methods. *Qiskit-Aer* supports leveraging *MPI* to improve the performance of simulation.
-
-**Quantum Volume (QV)** is a single-number metric that can be measured using a concrete protocol on near-term quantum computers of modest size. The QV method quantifies the largest random circuit of equal width and depth that the computer successfully implements. Quantum computing systems with high-fidelity operations, high connectivity, large calibrated gate sets, and circuit rewriting tool chains are expected to have higher quantum volumes. Simply put, Quantum Volume is a single number meant to encapsulate the performance of today’s quantum computers, like a classical computer’s transistor count.
-
-For this benchmark, we will be providing you with the details of the script that you will need to write yourself, or [download](resources/qv_experiment.py) from the competition GitHub repository in order to successfully conduct the (Quantum Volume Experiment)(https://qiskit.org/ecosystem/experiments/dev/manuals/verification/quantum_volume.html).
-
-1. Configure and install dependencies
-   You will be using [Python Pip - PyPI](https://pypi.org/project/pip/) to configure and install Qiskit. `pip` is the official tool for installing and using Python packages from various indexes.
-   * DNF / YUM
-     ```bash
-     # RHEL, Rocky, Alma, CentOS Stream
-     sudo dnf install -y python3 python3-pip
-     ```
-   * APT
-     ```bash
-     # Ubuntu
-     sudo apt update
-     sudo apt install -y python3 python3-pip python3-venv
-     ```
-   * Pacman
-     ```bash
-     # Arch
-     sudo pacman -S python
-     ```
-1. Create and Activate a New Virtual Environment
-
-   Separate your python projects and ensure that they exist in their own, clean environments:
-
-   ```bash
-   python3 -m venv QiskitAer
-   source QiskitAer/bin/activate
-   ```
-
-1. Install `qiskit-aer`
-   ```bash
-   pip install qiskit-aer
-   ```
-
-1. Save the following in a Python script `qv_experiment.py`:
-
-   ```python
-   from qiskit import *
-   from qiskit.circuit.library import *
-   from qiskit_aer import *
-   import time
-   import numpy as np
-   def quant_vol(qubits=15, depth=10):
-     sim = AerSimulator(method='statevector', device='CPU')
-     circuit = QuantumVolume(qubits, depth, seed=0)
-     circuit.measure_all()
-     circuit = transpile(circuit, sim)
-
-     start = time.time()
-     result = sim.run(circuit, shots=1, seed_simulator=12345).result()
-     time_val = time.time() - start
-
-     # Optionally return and print result for debugging
-     # Bonus marks available for reading the simulation time directly from `result`
-   return time_val
-   ```
-
-1. Parameterize the following variables for the QV experiment
-
-   These are used to generate the QV circuits and run them on a backend and on an ideal simulator:
-   * `qubits`: number or list of physical qubits to be simulated for the experiment,
-   * `depth`: meaning the number of discrete time steps during which the circuit can run gates before the qubits decohere.
-   * `shots`: used for sampling statistics, number of repetitions of each circuit.
-
-1. Run the benchmark by executing the script you've just written:
-   ```bash
-   $ python qv_experiment.py
-   ```
-
-1. Deactivate the Python virtualenv
-   ```bash
-   deactivate
-   ```
+> Please be ready to present the `gromacs_log` files for the **1.5M_water** benchmark to the instructors.

@@ -1,31 +1,3 @@
-# Student Cluster Competition – Tutorial 2 (Rocky Linux 9 & 10 Unified)
-
-## Rocky Linux 9 & 10 Compatibility (READ FIRST)
-
-This tutorial is **fully compatible with Rocky Linux 9.x and Rocky Linux 10.x**.
-
-### Key OS assumptions
-- Python **3 only**
-- SELinux **Enforcing** by default
-- `systemd` + `firewalld`
-- cgroups **v2**
-- NetworkManager is used for networking
-- NFSv4 via `nfs-utils`
-- nftables is the firewall backend
-
-### Critical notes
-- Always use `python3`, never `python`
-- Do **not** disable SELinux or firewalld
-- Prefer `systemctl` over legacy `service`
-- Ensure consistent UID/GID across nodes (Ansible)
-
-Troubleshooting:
-```bash
-sestatus
-journalctl -xe
-```
-
----
 Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
 =========================================================================
 
@@ -213,10 +185,8 @@ For the tutorials you are encouraged to use tmux.
    * DNF / YUM
    ```bash
    # RHEL, Rocky, Alma, CentOS Stream
-   sudo dnf install -y epel-release
-   sudo dnf makecache
-
-   sudo dnf install -y ansible-core
+   sudo dnf update
+   sudo dnf install tmux
    ```
    * APT
    ```bash
