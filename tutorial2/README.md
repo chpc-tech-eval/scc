@@ -1097,13 +1097,12 @@ Many of the benefits that were discussed with ZeroTier, also apply to NetBird, b
 1. Deploy NetBird on all peers that you would like to connect to the VPN:
 
    Include your `headnode`, your laptop(s) and _optionally_ other devices:
-   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys3.png" width=900 /></
 
    ```bash
    # Install on you head node using the command line
    curl -fsSL https://pkgs.netbird.io/install.sh | sh
 
-   # Bring up the NetBird interface, in this example the setup key would be C532D6B4-569C-430E-A649-A2E4D998D6D5
+   # Bring up the NetBird interface,
    netbird up --setup-key <YOUR SETUP KEY>
 
    # Verify that a NetBird VPN interface (wt0) has been successfully established and assigned an IP address
@@ -1133,7 +1132,7 @@ Many of the benefits that were discussed with ZeroTier, also apply to NetBird, b
 1. Initiate an SSH connection from one of your laptops, to your head node, using the NetBird VPN interface:
 
    Note that NetBird uses 2FA. You will need to use your SSO to login to the NetBird browser application, and also verify the NetBird client attempting to make an SSH connection with your head node:
-   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys9.png" width=900 /></
+   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys9.png" width=300 /></
 
 You have successfully configured your NetBird VPN.
 
