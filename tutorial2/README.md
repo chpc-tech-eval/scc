@@ -23,6 +23,7 @@ Tutorial 2: Standing Up a Compute Node and Configuring Users and Services
     1. [Create User Accounts](#create-user-accounts)
 1. [WirGuard VPN Cluster Access](#wirguard-vpn-cluster-access)
 1. [ZeroTier](#zerotier)
+1. [NetBird](#netbird)
 
 <!-- markdown-toc end -->
 
@@ -412,7 +413,7 @@ Stateful packet inspection, also referred to as dynamic packet filtering, is a n
 
    The policy for `input` and `forward` will be initially set to `accept`, and then `drop` thereafter. The policy for `output` will be to `accept`.
    ```bash
-   # If you set this to drop now, you will not be able to access your head node via ssh
+   # If you set this to drop now, you will not be able to access your head node via SSH
    sudo nft add chain inet hn_table hn_input '{ type filter hook input priority 0 ; policy accept ; }'
    sudo nft add chain inet hn_table hn_forward '{ type filter hook forward priority 0 ; policy accept ; }'
    sudo nft add chain inet hn_table hn_output '{ type filter hook output priority 0 ; policy accept ; }'
@@ -860,6 +861,18 @@ WireGuard is a modern, high-performance, and easy-to-use VPN (Virtual Private Ne
 
 Each device generates its own key pair, and peers exchange public keys. This key exchange process is secure and ensures that only authorized devices can communicate. WireGuard is stateless between packets, which means that it does not maintain session state between the communication of two peers, meaning that sessions persist even when roaming or through network disruptions.
 
+> [!IMPORTANT]
+> Traditional VPNs follow a simple model: one gateway, all traffic routed through it, every device connected to the same point. However, these days it is common for teams and resources to be spread across countries, infrastructure is split between several clouds, and the same database needs to be reachable from the office, a developer's home laptop, and a CI runner. Trying to funnel all of that through one gateway leads to bottlenecks: slow when busy and completely dead when down.
+>
+> Instead of routing everything through a central gateway, modern VPN implementations based on WireGuard, instead build a mesh network where devices connect directly to each other through encrypted tunnels. The management server only handles authentication and key exchange. The actual traffic never touches it. The result: lower latency, fewer points of failure, and far easier scaling than a traditional VPN.
+>
+> The following sections will review VPN configurations and deployments for:
+> * WireGuard: The underlying protocol, requiring some level of experience / expertise to deeply and with the expectation that the user will manage key distribution, policies, NAT traversal, monitoring themselves,
+> * ZeroTier: Whic implements mesh, peer-to-peer networks, through a proprietary, closed source protocol instead of WireGuard,
+> * NetBird: A feature rich, fully open-source, WireGuard based mesh network, that is easy to deploy and which also allows you to self-host.
+>
+> You are encouraged to review and attempt all three implementations, but are **strongly recommended** to ensure that you at least successfully configure NetBird before moving onto the next tutorial.
+
 Some of the benefits and key features of WireGuard include:
 
 * **Ease of Setup and Management**: WireGuard is designed to be easy to configure and deploy. Its configuration is straightforward and involves only a few steps, making it accessible even for users who are not experts in networking.
@@ -974,7 +987,7 @@ Some of the benefits and key features of ZeroTier include:
 
 * **Performance**: Unlike traditional VPNs that can introduce latency and reduce performance, ZeroTier is designed to optimize network performance by using peer-to-peer technology and intelligent routing.
 
-    * **Scalability**: ZeroTier can scale from small home networks to large enterprise deployments. Its flexible architecture allows it to handle a wide range of network sizes and configurations.
+* **Scalability**: ZeroTier can scale from small home networks to large enterprise deployments. Its flexible architecture allows it to handle a wide range of network sizes and configurations.
 
 * **Open Source**: The core ZeroTier engine is open source, which allows for transparency, community contributions, and customization.
 
@@ -1047,3 +1060,77 @@ You will be able to create Virtual Private Networks (VPN) between systems you mi
    * Make sure to open *UDP Port 9993* on your head node and restart the `nfstables` service.
 
 You have successfully created a ZeroTier VPN network.
+
+# NetBird
+
+> [!CAUTION]
+> If you have successfully configured either WireGuard or ZeroTier, generally speaking you will not need additional VPN configurations. Disable the WireGuard and / or the ZeroTier services to continue to experiment with this example. You and your team will then decide on the preferred method.
+
+[NetBird](https://app.netbird.io/) combines a configuration-free peer-to-peer private network and a centralized access control system in a single platform, making it easy to create secure private networks. They key features of NetBird are that it simplifies the parts that make self-hosted WireGuard painful at scale, i.e. automatic handling of NAT traversal, peer discovery, and access control. Instead of maintaining a central VPN server that all traffic routes through, NetBird creates direct peer-to-peer tunnels between machines when possible, falling back to relay servers only when NAT traversal fails.
+
+Some of the key features include:
+* **Connect:** NetBird creates a WireGuard-based overlay network that automatically connects your machines over an encrypted tunnel, leaving behind the hassle of opening ports, complex firewall rules, VPN gateways, and so forth.
+
+* **Secure:** NetBird enables secure remote access by applying granular access policies while allowing you to manage them intuitively from a single place. Works universally on any infrastructure.
+
+Many of the benefits that were discussed with ZeroTier, also apply to NetBird, but with the additional added benefit that NetBird can be fully self-managed / self-hosted. You will be able to create Virtual Private Networks (VPN) between systems you might have local network access to, but where you traditionally do not have external network access to. Let's demonstrate this with an example by creating your first NetBird network:
+
+> [!TIP]
+> NetBird maintains a comprehensive set of [Documentation and Guides](https://docs.netbird.io/) and for those of you interested in contributing to the project and being a part of their vibrant and active community, checkout their [GitHub](https://github.com/netbirdio/netbird) page.
+
+1. Create a service account
+
+   Navigate to [app.netbird.io](https://app.netbird.io/) and create an account.
+   <p align="center"><img alt="NetBird Create a network." src="./resources/netbird-login.png" width=900 /></p>
+
+1. Feel free to continue and navigate yourselves through the setup guide:
+
+   Share some details about your use case to configure the Nitride VPN:
+   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setup1.png" width=900 /></
+
+   You'll want to create a peer-to-peer, virtual private network:
+   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setup2.png" width=900 /></
+
+1. Alternatively, you can skip straight to the dashboard and Create `Your Setup Keys`:
+   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys.png" width=900 /></
+
+1. Give the Setup key a sensible name, _optionally_ make the key resuable to deploy over a number of nodes / devices, and specify the number of devices within this network:
+   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys2.png" width=900 /></
+
+1. Deploy NetBird on all peers that you would like to connect to the VPN, i.e. your `headnode`, your laptop(s) and _optionally_ other devices:
+   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys3.png" width=900 /></
+   ```bash
+   # Install on you head node using the command line
+   curl -fsSL https://pkgs.netbird.io/install.sh | sh
+
+   # Bring up the NetBird interface, in this example the setup key would be C532D6B4-569C-430E-A649-A2E4D998D6D5
+   netbird up --setup-key <YOUR SETUP KEY>
+
+   # Verify that a NetBird VPN interface (wt0) has been successfully established and assigned an IP address
+   ip a
+   ```
+1. Navigate back to your browser and once again verify that all nodes and clients _(i.e. Peers)_ that you've added, are in fact connected.
+
+   It can be useful to connect directly to a node using SSH via the browser, or your Android / iOS device(s), without the need for a dedicated terminal or an installation of the NetBird client:
+   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys4.png" width=900 /></
+
+1. After you have verified that your are able to connect to your head node using the NetBird browser application, you will now configure your head node for native SSH connectivity via the NetBird VPN:
+
+  From the drop down menu for head node peer, navigate to `View Details`:
+  <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys5.png" width=900 /></
+
+  There are many options for you to explore and navigate through here. For now, just concentrate on creating a new SSH Policy, _(take note of the `1 Active Policy` which refers to the temporary access invoked for your browser client)_:
+  <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys6.png" width=900 /></
+
+  NetBird allows for a considerable amount of access customization through the use of policies. Configure all your client `Sources` _(i.e. laptops)_, so that they may all connect to your head node over SSH:
+  <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys7.png" width=900 /></
+
+1. Initiate an SSH connection from one of your laptops, to your head node, using the NetBird VPN interface:
+
+   Note that NetBird uses 2FA. You will need to use your SSO to login to the NetBird browser application, and also verify the NetBird client attempting to make an SSH connection with your head node:
+   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys9.png" width=900 /></
+
+You have successfully configured your NetBird VPN.
+
+> [!NOTE]
+> If you successfully manage to connect but are instantly booted out with a `no shell: Permission denied` error, there may be an issue with SELinux. Refer to the [NetBird Github Issue: SELinux prevents SSH Access on Alma](https://github.com/netbirdio/netbird/issues/4931) for a resolution.
