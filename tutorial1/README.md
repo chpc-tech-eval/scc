@@ -405,6 +405,10 @@ Congratulations! Once your VM instance has completed it's building, block device
 
 In order for you to be able to SSH into your newly created OpenStack instance, you'll need to associate a publicly accessible [Floating IP](https://kb.leaseweb.com/network/floating-ips/using-floating-ips) address. This allocates a *virtual IP* address to your *virtual machine*, so that you can access it directly from your laboratory workstation.
 
+Before you allocate an IP to your instance be sure that you have allocated a interface to the router you created in previous steps.
+
+   <p align="center"><img alt="OpenStack Router Interface." src="./resources/allocate_router_interface.png" width=900 /></p>
+
 1. Select ***Associate Floating IP*** from the *Create Snapshot* dropdown menu, just below the *Actions* tab:
    <p align="center"><img alt="OpenStack Running State." src="./resources/openstack_associate_floating_ip.png" width=900 /></p>
 1. From the *Manage Floating IP Associations* dialog box, click the "➕" and select *Public Internet*:
@@ -669,8 +673,21 @@ You will now install and run HPL on your **head node**.
    ```bash
    # RHEL, Rocky, Alma, Centos Steam
    sudo dnf update -y
-   sudo dnf install openmpi atlas openmpi-devel atlas-devel -y
-   sudo dnf install wget nano -y
+
+   # Enable CRB repository
+   sudo dnf config-manager --set-enabled crb
+
+   # Install build tools and MPI
+   sudo dnf install -y \
+   gcc \
+   gcc-c++ \
+   make \
+   openmpi \
+   openmpi-devel \
+   openblas \
+   openblas-devel \
+   wget \
+   nano
    ```
    * APT
    ```bash
@@ -716,8 +733,8 @@ You will now install and run HPL on your **head node**.
 
      MPdir              = /usr/lib64/openmpi
 
-     LAdir              = /usr/lib64/atlas
-     LAlib              = $(LAdir)/libtatlas.so $(LAdir)/libsatlas.so
+     LAdir              = /usr/lib64
+     LAlib              = -lopenblas
 
      CC                 = mpicc
 
