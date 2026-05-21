@@ -17,30 +17,61 @@ This tutorial will conclude with you downloading, installing and running the Hig
 1. [Network Primer](#network-primer)
     1. [Basic Networking Example (WhatIsMyIp.com)](#basic-networking-example-whatismyipcom)
     1. [Terminal, Windows MobaXTerm and PowerShell Commands](#terminal-windows-mobaxterm-and-powershell-commands)
-1. [Launching your First Open Stack Virtual Machine Instance](#launching-your-first-open-stack-virtual-machine-instance)
-    1. [Accessing the NICIS Cloud](#accessing-the-nicis-cloud)
-    1. [Verify your Teams' Project Workspace and Available Resources](#verify-your-teams-project-workspace-and-available-resources)
-    1. [Generating SSH Keys](#generating-ssh-keys)
-    1. [Create a New Private Virtual Network](#create-a-new-private-virtual-network)
-    1. [Create a New Router](#create-a-new-router)
-    1. [Create a New Security Group](#create-a-new-security-group)
-    1. [Launch a New Instance](#launch-a-new-instance)
-    1. [Linux Flavors and Distributions](#linux-flavors-and-distributions)
-        1. [Summary of Linux Distributions](#summary-of-linux-distributions)
-    1. [OpenStack Instance Flavors](#openstack-instance-flavors)
-    1. [Networks, Ports, Services and Security Groups](#networks-ports-services-and-security-groups)
-    1. [Key Pair](#key-pair)
-    1. [Verify that your Instance was Successfully Deployed and Launched](#verify-that-your-instance-was-successfully-deployed-and-launched)
-    1. [Associating an Externally Accessible IP Address](#associating-an-externally-accessible-ip-address)
-    1. [Troubleshooting](#troubleshooting)
+
+1. [Launching your First Virtual Machine Instance](#launching-your-first-virtual-machine-instance)
+    1. [Launching your First OpenStack Virtual Machine Instance](#31-launching-your-first-openstack-virtual-machine-instance)
+        1. [Accessing the NICIS Cloud](#accessing-the-nicis-cloud)
+        1. [Verify your Teams' Project Workspace and Available Resources](#verify-your-teams-project-workspace-and-available-resources)
+        1. [Generating SSH Keys](#generating-ssh-keys)
+        1. [Create a New Private Virtual Network](#create-a-new-private-virtual-network)
+        1. [Create a New Router](#create-a-new-router)
+        1. [Create a New Security Group](#create-a-new-security-group)
+        1. [Launch a New Instance](#launch-a-new-instance)
+        1. [Linux Flavors and Distributions](#linux-flavors-and-distributions)
+            1. [Summary of Linux Distributions](#summary-of-linux-distributions)
+        1. [OpenStack Instance Flavors](#openstack-instance-flavors)
+        1. [Networks, Ports, Services and Security Groups](#networks-ports-services-and-security-groups)
+        1. [Key Pair](#key-pair)
+        1. [Verify that your Instance was Successfully Deployed and Launched](#verify-that-your-instance-was-successfully-deployed-and-launched)
+        1. [Associating an Externally Accessible IP Address](#associating-an-externally-accessible-ip-address)
+        1. [Troubleshooting](#troubleshooting)
+
+    1. [Launching Your First AWS EC2 Instance](#32-launching-your-first-aws-ec2-instance)
+        1. [Accessing the AWS Management Console](#321-accessing-the-aws-management-console)
+        1. [Creating a New EC2 Instance](#322-creating-a-new-ec2-instance)
+        1. [Selecting an AMI](#selecting-an-ami)
+        1. [Choosing an Instance Type](#choosing-an-instance-type)
+        1. [Creating or Using an SSH Key Pair](#323-creating-or-using-an-ssh-key-pair)
+        1. [Configuring Network Settings](#324-configuring-network-settings)
+        1. [Launching the Instance](#325-launching-the-instance)
+        1. [Allocating and Associating an Elastic IP](#326-allocating-and-associating-an-elastic-ip)
+        1. [Connecting to Your Instance via SSH](#327-connecting-to-your-instance-via-ssh)
+        1. [AWS Troubleshooting](#328-aws-troubleshooting)
+      
+    1. [Launching Your First OCI Instance](#33-launching-your-first-oci-instance)
+        1. [Creating an Account and Logging In](#331-creating-an-account-and-logging-in)
+        1. [Setting Up the Networking](#332-setting-up-the-networking)
+        1. [Creating a Subnet](#333-creating-a-subnet)
+        1. [Creating an Instance](#334-creating-an-instance)
+        1. [Choosing an Image and Shape](#choosing-an-image-and-shape)
+        1. [Configuring Networking](#configuring-networking)
+        1. [SSH Keys](#ssh-keys)
+        1. [Launching and Connecting](#335-launching-and-connecting)
+        1. [OCI Troubleshooting](#336-oci-troubleshooting)
+
+    1. [Launching Your First Oracle Cloud Instance](#33-launching-your-first-oracle-cloud-instance)
+
 1. [Introduction to Basic Linux Administration](#introduction-to-basic-linux-administration)
     1. [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
     1. [Running Basic Linux Commands and Services](#running-basic-linux-commands-and-services)
+
 1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
     1. [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
+
 1. [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](#install-compile-and-run-high-performance-linpack-hpl-benchmark)
 
 <!-- markdown-toc end -->
+
 
 # Checklist
 
@@ -435,6 +466,486 @@ Before you allocate an IP to your instance be sure that you have allocated a int
 
 If your VM is deleted then the floating IP associated with that deleted VM will stay in your project under `Networks -> Floating IPs` for future use. Should you accidentally associate your floating IP to one of your compute nodes, dissociate it as per the diagram below, so that it may be allocated to your head node. Selecting the floating IP and clicking `Release Floating IPs` will send the floating IP back to the pool and you can call a tutor to help you get back your IP.
   <p align="center"><img alt="OpenStack Instance flavor." src="./resources/openstack_troubleshooting_dissociate_float_ip.png" width=900 /></p>
+
+
+## 3.2 Launching Your First AWS EC2 Instance
+
+Amazon EC2 (Elastic Compute Cloud) allows you to create virtual machines on the AWS cloud.
+This section guides you through logging into AWS, launching an instance, configuring networking,
+assigning an Elastic IP, and connecting via SSH.
+
+---
+
+### 3.2.1 Accessing the AWS Management Console
+
+> **Prerequisite:**  
+> Most universities give SCC teams AWS access via student login.  
+> If your institution does not provide an account, you may use a Free Tier account.
+
+1. Open the AWS Console:
+
+https://console.aws.amazon.com/
+
+
+2. Sign in using:
+- Your student credentials **OR**
+- Your personal AWS account
+
+ <p align="center"><img alt="SignIn" src="./resources/SignIn.png" width=900 /></p>
+
+
+3. After logging in, search for **EC2** in the search bar.
+
+4. Open the **EC2 Dashboard**.
+
+ <p align="center"><img alt="SignIn" src="./resources/EC2Dashboard.png" width=900 /></p>
+
+
+### 3.2.2 Creating a New EC2 Instance
+
+Once inside the EC2 Dashboard:
+
+1. Click **Instances** (left menu)
+
+2. Click **Launch Instance** to begin configuring your VM
+
+
+<p align="center"><img alt="SignIn" src="./resources/LaunchInstance.png" width=900 /></p>
+
+
+#### Selecting an AMI
+
+An **AMI** (Amazon Machine Image) determines which operating system and base
+software your EC2 instance will run. On the **Quick Start** tab AWS shows a
+set of common images like this:
+
+| Quick Start option | OS family              | Typical usage / notes                                  |
+|--------------------|------------------------|--------------------------------------------------------|
+| Amazon Linux       | Linux (Amazon Linux)   | Optimised for AWS, good general-purpose server choice  |
+| Ubuntu             | Linux (Debian-based)   | Very popular, large community and package ecosystem    |
+| Red Hat            | Linux (RHEL)           | Enterprise-focused, often used in production systems   |
+| SUSE Linux         | Linux (SUSE)           | Enterprise and SAP workloads                           |
+| Debian             | Linux (Debian)         | Stable, community-driven server distribution           |
+| Windows            | Microsoft Windows      | Required if you need a Windows Server environment      |
+| macOS*             | Apple macOS            | Specialised use; requires dedicated Mac hardware       |
+
+> \* macOS instances are only available in certain regions and accounts.
+
+For this tutorial, you may select **any AMI that suits your project or
+institutional requirements**. In most SCC and teaching environments a
+Linux-based AMI (such as Amazon Linux, Ubuntu, Red Hat, SUSE or Debian) is
+preferred because it aligns with typical HPC and command-line workflows.
+If you are unsure, consult your team or course coordinator for a
+recommended choice.
+
+#### Selecting an Instance Type
+
+Instance types determine the CPU and RAM of your VM.
+
+AWS will show a list similar to this:
+
+<p align="center"><img alt="SignIn" src="./resources/InstanceType.png" width=900 /></p>
+
+| Instance type | vCPUs | Memory (GiB) | Free Tier Eligible | Notes |
+|---------------|-------|--------------|---------------------|--------|
+| **t3.micro**  | 2     | 1            |  Yes               | Good for testing |
+| **t3.small**  | 2     | 2            |  Yes               | More RAM |
+| **t3.medium** | 2     | 4            |  No                | Heavier workloads |
+
+Students may choose:
+
+- **any Free Tier instance**,  
+- or any instance their institution grants access to.
+
+There is **no fixed instance you must use** for this tutorial.
+
+---
+
+### 3.2.3 Creating or Using an SSH Key Pair
+
+To connect securely via SSH, AWS requires an SSH key pair.
+
+In the **Key pair (login)** section:
+
+
+<p align="center"><img alt="SignIn" src="./resources/KeyPair.png" width=900 /></p>
+
+
+#### Option A — Create a New Key Pair
+1. Click **Create new key pair**
+2. Name the key  
+3. Choose:
+   - **Key pair type:** RSA  
+   - **Format:** `.pem`
+4. Download the private key (`something.pem`)
+
+>  This file can never be downloaded again. Keep it safe.
+
+#### Option B — Use an Existing Key Pair
+If you already have a `.pem` key:
+- Choose **Existing key pair**
+- Select your key from the list
+
+#### Set Correct Permissions
+
+Before using the key, ensure the permissions are set correctly:
+
+```bash
+chmod 400 your-key.pem
+```
+---
+### 3.2.4 Configuring Network Settings
+
+In this section you will configure the networking rules that allow your AWS instance
+to receive external traffic (e.g., SSH connections).
+
+Under **Network settings**, ensure the following:
+
+1. **VPC:**  
+   Use the default VPC.
+
+2. **Auto-assign Public IP:**  
+   Ensure this option is enabled so your instance is accessible from the internet.
+
+3. **Security Group Configuration:**  
+   Create a new security group or use an existing one.  
+   Make sure the following inbound rules are allowed:
+   
+| Type      | Protocol | Port | Source             | Description                             |
+|-----------|----------|------|--------------------|-----------------------------------------|
+| SSH       | TCP      | 22   | `<YOUR_IP/32>`     | Required to log in via SSH              |
+| ICMP      | ALL      | ALL  | `<YOUR_IP/32>`     | (Optional) Allows ping/troubleshooting  |
+
+> [!TIP]
+> Replace `<YOUR_IP/32>` with your own public IP address in CIDR notation,
+> for example `196.21.42.123/32`. You can find your public IP using
+> https://www.whatismyip.com or a similar site.
+
+> [!CAUTION]
+> For quick testing from **multiple locations or networks**, you *may* temporarily
+> use `0.0.0.0/0` as the source, but this is less secure because it allows SSH
+> from anywhere on the internet. For best practice, restrict SSH to your own IP
+> or to your university’s network range.
+
+---
+
+### 3.2.5 Launching the Instance
+
+After configuring the instance details, scroll to the bottom of the page and click:
+
+Launch Instance
+
+<p align="center"><img alt="SignIn" src="./resources/LaunchEC2.png" width=900 /></p>
+
+AWS will begin creating your virtual machine.  
+Once completed, you should see:
+
+- **Instance ID**
+- **Public IPv4 address**
+- **Instance state:** Running
+
+<p align="center"><img alt="SignIn" src="./resources/RunningInstance.png" width=1000 /></p>
+
+You can view these in the **Instances** page of the EC2 Dashboard.
+
+### 3.2.6 Allocating and Associating an Elastic IP
+
+AWS may change your public IP each time the instance stops/starts.  
+An **Elastic IP** ensures that your instance keeps the same IP address.
+
+Follow these steps:
+
+1. In the EC2 left-hand menu, open **Elastic IPs**
+
+<p align="center"><img alt="SignIn" src="./resources/ElasticIPs.png" width=400 /></p>
+
+2. Click **Allocate Elastic IP**
+
+<p align="center"><img alt="SignIn" src="./resources/AllocateElasticIP.png" width=900 /></p>
+
+3. Select **Allocate**
+4. After allocation, choose **Actions → Associate Elastic IP**
+5. Select:
+   - Your instance  
+   - The correct network interface  
+6. Click **Associate**
+
+Your instance now has a **persistent public IP**.
+
+---
+### 3.2.7 Connecting to Your Instance via SSH
+
+Use the following SSH command to connect to your instance:
+
+```bash
+ssh -i your-key.pem ubuntu@<YOUR-ELASTIC-IP>
+```
+Notes:
+
+- Ensure your .pem file:
+
+- Exists in your current directory
+
+- Has correct permissions (chmod 400)
+
+- Matches the key pair selected during creation
+
+---
+### 3.2.8 AWS Troubleshooting
+
+Common problems and quick checks:
+
+1. SSH: “Permission denied (publickey)”
+
+Make sure you are using the correct username for your AMI
+(for Ubuntu AMIs this is usually ubuntu).
+
+Confirm you are pointing to the correct key file and Elastic IP:
+
+```bash
+ssh -i your-key.pem ubuntu@<YOUR-ELASTIC-IP>
+```
+
+Check the key permissions (required by AWS):
+
+```bash
+chmod 400 your-key.pem
+```
+
+2. Connection timed out
+
+- If SSH hangs and eventually times out:
+
+- Check the EC2 console: instance must be Running.
+
+- Verify that your Security Group allows inbound TCP 22 from your IP
+ (for example YOUR_IP/32).
+
+- Make sure you are using the correct Elastic IP address.
+
+- Ensure your local network/firewall allows outbound SSH on port 22.
+
+3. “Unprotected private key file” warning
+
+- If SSH complains that your .pem file is too open:
+
+```bash
+chmod 400 *.pem
+```
+
+- Try connecting again after fixing the permissions.
+
+4. Still stuck?
+
+If you are still unable to connect:
+
+- Stop the instance and then start it again from the EC2 console.
+
+- Re-check that the correct key pair was selected when the instance was launched.
+
+- Carefully review your Security Group rules.
+
+- Compare your settings with a teammate’s working configuration or ask a tutor
+  to review your AWS setup.
+
+5. As a last resort: Recreate the instance
+
+If nothing else works:
+
+- Terminate the problematic EC2 instance.
+
+- Keep your existing Security Group and key pair.
+
+- Launch a new instance by following the steps in Section 3.2.
+
+- If you were using an Elastic IP, disassociate it from the old instance and
+  associate it with the new one instead of allocating a new Elastic IP.
+
+## 3.3 Launching Your First OCI Instance
+
+Oracle Cloud Infrastructure (OCI) allows you to create virtual machines (Compute Instances) in the cloud. This section guides you through creating an account, setting up a Virtual Cloud Network (VCN), and launching an instance within the Always Free tier.
+
+---
+
+### 3.3.1 Creating an Account and Logging In
+
+> **Prerequisite:**
+> You will need a valid credit/debit card for identity verification.
+> A small amount will be charged and immediately refunded to verify the card.
+> If you are a student, select student options where available during signup.
+
+1. Go to the Oracle Cloud Free Tier page:
+
+https://www.oracle.com/cloud/free/
+
+2. Click the **Start for free** button.
+
+3. Follow the on-screen instructions to create your account.
+
+4. **Two-Factor Authentication (2FA):**
+   Oracle uses the Oracle Mobile Authenticator app for security. You will be prompted to install this on your mobile device during the signup process.
+
+5. Once verified and logged in, you will see the **OCI Console Dashboard**:
+
+<p align="center"><img alt="OCI Dashboard" src="./resources/OCIDashboard.png" width=900 /></p>
+
+---
+
+### 3.3.2 Setting Up the Networking
+
+Before launching a computer, you must create a network for it to live in.
+
+1. Click the **Navigation Menu** (hamburger icon) in the top left corner.
+
+2. Navigate to **Networking** → **Virtual Cloud Networks**.
+
+3. Click **Create VCN**.
+
+4. Configure the VCN:
+   - **Name:** Give your VCN a recognizable name (e.g., `My-Project-VCN`).
+   - **IPv4 CIDR Block:** Enter a valid /16 value (e.g., `10.0.0.0/16`).
+
+<p align="center"><img alt="VCN Setup" src="./resources/VCNSetupHD.png" width=900 /></p>
+
+5. **IPv6 Configuration:**
+   Toggle **Assign an Oracle allocated IPv6 /56 prefix** to **ON**.
+
+<p align="center"><img alt="IPv6 Toggle" src="./resources/IPv6ToggleHD.png" width=900 /></p>
+
+6. Click **Create VCN**.
+
+### 3.3.3 Creating a Subnet
+
+1. Click on the **Name** of the VCN you just created to enter its details page.
+
+2. Go to the **Subnets** tab (usually selected by default).
+
+3. Click the **Create Subnet** button.
+
+4. Configure the Subnet:
+   - **Name:** e.g., `Public-Subnet-A`.
+   - **IPv4 CIDR Block:** Give it a valid range inside your VCN (e.g., `10.0.1.0/24`).
+   - **Subnet Access:** Ensure **Public Subnet** is selected.
+
+<p align="center"><img alt="Subnet Access" src="./resources/SubnetAccessHD.png" width=900 /></p>
+
+5. Click **Create Subnet**.
+
+---
+
+### 3.3.4 Creating an Instance
+
+Now that the network is ready, you can create the virtual machine.
+
+1. Navigate to **Compute** → **Instances**.
+
+2. Click **Create instance**.
+
+3. **Naming:** Give your instance a name (e.g., `Web-Server-01`).
+
+#### Choosing an Image and Shape
+
+**Image:** This is the Operating System. Click "Change Image" to see options.
+
+| Image Option | OS Family | Default Username | Notes |
+| :--- | :--- | :--- | :--- |
+| **Oracle Linux** | Linux (RPM-based) | `opc` | Default choice. Optimized for OCI. |
+| **Ubuntu** | Linux (Debian-based) | `ubuntu` | Very popular, easy for beginners. |
+| **CentOS** | Linux (RPM-based) | `opc` | Community-driven enterprise Linux. |
+| **Windows** | Windows Server | `opc` | **Not Free Tier eligible** in most cases. |
+
+**Shape:** This is the hardware (CPU/RAM). For the **Always Free** tier, select one of the following:
+
+| Shape | Processor | Specs | Limits |
+| :--- | :--- | :--- | :--- |
+| **VM.Standard.E2.1.Micro** | AMD | 1 OCPU, 1GB RAM | Up to 2 instances allowed. |
+| **VM.Standard.A1.Flex** | Ampere (ARM) | Up to 4 OCPUs, 24GB RAM | **Subject to region availability.** High performance. |
+
+#### Configuring Networking
+
+Scroll down to the **Networking** section.
+
+1. **Primary Network:** Select the VCN you created earlier.
+2. **Subnet:** Select the Public Subnet you created earlier.
+3. **Public IP:**
+   - Select **"Automatically assign private IPv4 address"**.
+   - Toggle **"Assign a public IPv4 address"** to **ON**.
+
+<p align="center"><img alt="Assign Public IP" src="./resources/AssignPublicIPHD.png" width=900 /></p>
+
+#### SSH Keys
+
+Scroll to the **Add SSH keys** section.
+
+1. Select **Generate a key pair for me** (easiest) or **Upload public key files** (if you have one).
+2. **Download the Private Key** and save it securely.
+
+> [!CAUTION]
+> You must download the private key (`.key`) now. You cannot download it after the instance is created.
+
+<p align="center"><img alt="SSH Keys" src="./resources/SSHKeys.png" width=900 /></p>
+
+3. Click **Create** at the bottom of the page.
+
+---
+
+### 3.3.5 Launching and Connecting
+
+#### Launching
+The instance will immediately begin provisioning.
+If the status does not change to **Running** automatically:
+- Click the **3 dots** on the far right of the instance row.
+- Select **Start**.
+
+<p align="center"><img alt="Example instance running" src="./resources/RunningNode.png" width=900 /></p>
+
+#### Connecting via SSH
+
+Once the instance is **Running**, note down the **Public IP Address** from the instance dashboard.
+
+Open your terminal and run:
+
+```bash
+ssh -i path/to/your-key.key <username>@<PUBLIC-IP>
+```
+
+**Note on Usernames:**
+- If you chose **Oracle Linux**, the username is `opc`.
+- If you chose **Ubuntu**, the username is `ubuntu`.
+
+Example:
+```bash
+ssh -i my-oci-key.key ubuntu@123.45.67.89
+```
+
+---
+
+### 3.3.6 OCI Troubleshooting
+
+Common issues when setting up Oracle Cloud instances:
+
+1. **SSH: "Permission denied (publickey)"**
+
+   - **Check the Username:** Ensure you are using the correct user for your OS image (`opc` for Oracle Linux/CentOS, `ubuntu` for Ubuntu).
+   - **Check Key Permissions:** Your private key file must not be open to others. Run:
+     ```bash
+     chmod 400 your-key.key
+     ```
+   - **Check the Key File:** Ensure you are using the `.key` file you downloaded during creation, not a different key.
+
+2. **Connection Timed Out**
+
+   - **Check Security Lists (Firewall):** Go to your **VCN** → **Security Lists**. Ensure there is an **Ingress Rule** allowing traffic on **Port 22** (SSH) from Source `0.0.0.0/0` (or your specific IP).
+   - **Check Public IP:** Did you toggle "Assign public IPv4 address" to ON during creation? If not, your instance is isolated. You will need to terminate it and create a new one with the setting enabled.
+
+3. **"Out of Capacity" Error**
+
+   - If you cannot create an **Ampere A1 Flex** instance, the region may be out of free ARM capacity.
+   - **Solution:** Try creating a **VM.Standard.E2.1.Micro** (AMD) instance instead, as these are more commonly available.
+
+4. **Instance Stuck in "Provisioning"**
+
+   - Sometimes OCI takes a few minutes. If it takes longer than 10 minutes, Terminate the instance and try creating it again.
 
 # Introduction to Basic Linux Administration
 
