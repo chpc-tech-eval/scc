@@ -1081,15 +1081,12 @@ Many of the benefits that were discussed with ZeroTier, also apply to NetBird, b
 1. Create a service account
 
    Navigate to [app.netbird.io](https://app.netbird.io/) and create an account.
-   <p align="center"><img alt="NetBird Create a network." src="./resources/netbird-login.png" width=900 /></p>
+   <p align="center"><img alt="NetBird Create a network." src="./resources/netbird-login.png" width=300 /></p>
 
 1. Feel free to continue and navigate yourselves through the setup guide:
 
-   Share some details about your use case to configure the Nitride VPN:
-   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setup1.png" width=900 /></
-
-   You'll want to create a peer-to-peer, virtual private network:
-   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setup2.png" width=900 /></
+   Share some details about your use case to configure the NetBird VPN:
+   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setup1.png" width=300 /></
 
 1. Alternatively, you can skip straight to the dashboard and Create `Your Setup Keys`:
    <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys.png" width=900 /></
@@ -1097,8 +1094,11 @@ Many of the benefits that were discussed with ZeroTier, also apply to NetBird, b
 1. Give the Setup key a sensible name, _optionally_ make the key resuable to deploy over a number of nodes / devices, and specify the number of devices within this network:
    <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys2.png" width=900 /></
 
-1. Deploy NetBird on all peers that you would like to connect to the VPN, i.e. your `headnode`, your laptop(s) and _optionally_ other devices:
+1. Deploy NetBird on all peers that you would like to connect to the VPN:
+
+   Include your `headnode`, your laptop(s) and _optionally_ other devices:
    <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys3.png" width=900 /></
+
    ```bash
    # Install on you head node using the command line
    curl -fsSL https://pkgs.netbird.io/install.sh | sh
@@ -1109,6 +1109,7 @@ Many of the benefits that were discussed with ZeroTier, also apply to NetBird, b
    # Verify that a NetBird VPN interface (wt0) has been successfully established and assigned an IP address
    ip a
    ```
+
 1. Navigate back to your browser and once again verify that all nodes and clients _(i.e. Peers)_ that you've added, are in fact connected.
 
    It can be useful to connect directly to a node using SSH via the browser, or your Android / iOS device(s), without the need for a dedicated terminal or an installation of the NetBird client:
@@ -1116,14 +1117,18 @@ Many of the benefits that were discussed with ZeroTier, also apply to NetBird, b
 
 1. After you have verified that your are able to connect to your head node using the NetBird browser application, you will now configure your head node for native SSH connectivity via the NetBird VPN:
 
-  From the drop down menu for head node peer, navigate to `View Details`:
-  <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys5.png" width=900 /></
+   From the drop down menu for head node peer, navigate to `View Details`:
+   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys5.png" width=900 /></
 
-  There are many options for you to explore and navigate through here. For now, just concentrate on creating a new SSH Policy, _(take note of the `1 Active Policy` which refers to the temporary access invoked for your browser client)_:
-  <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys6.png" width=900 /></
+1. There are many options for you to explore and navigate through here.
 
-  NetBird allows for a considerable amount of access customization through the use of policies. Configure all your client `Sources` _(i.e. laptops)_, so that they may all connect to your head node over SSH:
-  <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys7.png" width=900 /></
+   For now, just concentrate on creating a new SSH Policy, _(take note of the `1 Active Policy` which refers to the temporary access invoked for your browser client)_:
+   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys6.png" width=900 /></
+
+1. NetBird allows for a considerable amount of access customization through the use of policies.
+
+   Configure all your client `Sources` _(i.e. laptops)_, so that they may all connect to your head node over SSH:
+   <p align="center"><img alt="NetBird, Guided setup 1." src="./resources/netbird-setupkeys7.png" width=900 /></
 
 1. Initiate an SSH connection from one of your laptops, to your head node, using the NetBird VPN interface:
 
