@@ -1,154 +1,307 @@
-Tutorial 0: Setting Up virtual environment
-======================================================
+# Tutorial 0: Setting Up a Virtual Environment with UTM on macOS
 
-This tutorial will help you become familiar with Virtual Computing and will also serve as an introduction to setting up a cluster. This tutorial will start with installing and setting up VirtualBox, an environment you can use to setup and initiate virtual machines (VM).
+This tutorial will help you become familiar with virtual computing and setting up a small virtual cluster using **UTM** on macOS.
 
-a Virtual machine is a type of simulated machine running on top of your current laptop or desktop environment. It "emulates" what a real machine and its OS would behave like.
+UTM is a virtualization and emulation application for Mac that works especially well on Apple Silicon (M1/M2/M3) devices and supports both ARM and x86 virtual machines.
 
-Here you will need to make a decision on choice of Linux distribution that you will use, remember that your VM has very limited resources as it will share the host machine's resources. 
+A virtual machine (VM) is a simulated computer running inside your current laptop or desktop environment. It behaves like a real machine with its own operating system (OS), networking, storage, and applications.
 
-Once your team has successfully setup VirtualBox and loaded your preferred OS, we can easily add additional machines to build a makeshift cluster.
+Your team will use UTM to create multiple Linux virtual machines and connect them together into a small cluster environment.
 
+---
 
 # Table of Contents
 
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-
 1. [Checklist](#checklist)
-1. [Install VirtualBox](#install-virtualbox)
-    1. [Download VirtualBox](#download-virtualbox)
-1. [VirtualBox](#virtualbox)
-    1. [Network](#network)
-    1. [Create new VM](#create-new-vm)
-    1. [Operating System](#operating-system)
-    1. [Download OS](#download-prefered-os)
-    1. [Mount and Install](#mount-and-install)
-1. [Setup Cluster](#setup-cluster)
+2. [Install UTM](#install-utm)
+   1. [Download UTM](#download-utm)
+3. [UTM Overview](#utm-overview)
+   1. [Networking](#networking)
+4. [Create a New VM](#create-a-new-vm)
+5. [Operating System](#operating-system)
+6. [Download Preferred OS](#download-preferred-os)
+7. [Mount and Install](#mount-and-install)
+8. [Setup Cluster](#setup-cluster)
+
+---
 
 # Checklist
 
-<u>Use the following checklist to keep track of your team's progress and to ensure that all members in your understand these concepts.</u>
+<u>Use the following checklist to keep track of your team's progress and ensure all members understand the concepts.</u>
 
-- [ ] Understand virtual computing, virtualisation and remote connections:
-  - [ ] Understand and be able to explain virtualisation and virtual machines
-  - [ ] Understand the difference between a NAT, bridged, internal and host only adaptors.
-- [ ] Learn how install an Operating System (OS):
-  - [ ] Learn about different Linux Distributions and Flavors
-- [ ] Learn how setup a cluster on VirtualBox:
-  - [ ] Learn how to link up different machines
+- [ ] Understand virtual computing, virtualization, and remote connections:
+  - [ ] Understand and explain virtualization and virtual machines
+  - [ ] Understand the difference between Shared Network, Bridged, and Host networking
+- [ ] Learn how to install an Operating System (OS):
+  - [ ] Learn about different Linux distributions and flavors
+- [ ] Learn how to setup a cluster using UTM:
+  - [ ] Learn how to connect multiple machines together
 
+---
 
-# Install VirtualBox
+# Install UTM
 
-## Download VirtualBox
+## Download UTM
 
-Head to your favourite search engine and search "VirtualBox download". Download virtualBox from virtualbox.org the one from Oracle.
+Head to your preferred search engine and search for **"UTM download"**.
 
-![Image](resources/search.PNG)
+Download UTM from the official website:
 
-Pick the correct build matching your host OS.
+https://mac.getutm.app/
 
-![Image](resources/host.PNG)
+You can also download it from the Mac App Store if preferred.
 
-The installation is straightforward, just click next, yes and install when asked.
+---
 
-# VirtualBox
+## Install UTM
 
-Import components of VirtualBox to take note of have been listed below.
+1. Open the downloaded `.dmg` file
+2. Drag **UTM.app** into the **Applications** folder
+3. Launch UTM
 
-![Image](resources/home.jpg)
+You may be prompted to allow additional permissions for virtualization.
 
-1. Home      - Takes you back to the start screen
-2. Machines  - Display list of all virtual machines
-3. Network   - Display all global network related settings
-4. New       - Create new VM
+---
 
-## Network
+# UTM Overview
 
-There are 4 basic network configurations. Try and understand the difference between the 4.
+Below are the key areas of the UTM interface:
 
-1. NAT - Network Address Translation (NAT) is a technique used in networking to map an entire private network (LAN) to a single, public IP address for internet communication.
+1. Virtual Machines List
+2. Create New VM
+3. VM Settings
+4. Start / Stop VM
+5. Network Configuration
+6. Storage and Drives
 
- - Think of this as your gateway to the internet.
- - Using this adaptor type will supply internet *only* 
+---
 
-2. Bridged adaptor - Piggy back on the back of your host machines network card.
+# Networking
 
- - Using this adaptor will *connect* you to the host machine network.
- - You will have access to all device on the host machine network including routers or servers on that network.
- - !!! Be careful with this type of adaptor
-    -   For example, setting your VM as a DHCP server and the VM will broadcast in your network.
+There are several networking modes available in UTM. Understanding these is important for cluster setup.
 
-3. Internal network - create an named internal network that we can share between VM's
+## 1. Shared Network (Recommended)
 
- - Think of this as a switch where you can plug VM's into.
+This is the default NAT-style network.
 
-4. Host-only Adaptor - Very simular to internal network, except you can use VirtualBox as a DHCP.
+- Provides internet access to the VM
+- VM can access the outside internet
+- Simplest and safest option
+- Similar to VirtualBox NAT mode
 
- - Simular to Internal network but more customizable
+Use this for:
+- Package downloads
+- Internet access
+- General usage
 
-Below is an example of the network adaptors you can attach to a virtual machine.
+---
 
-![Image](resources/networks.PNG)
+## 2. Bridged Network
 
-In the network tab you can customize the Host and NAT adaptor more.
+Bridged mode places the VM directly onto your physical network.
 
-![Image](resources/config-network.PNG)
+- VM receives an IP from your router
+- VM behaves like a real machine on your network
+- Other devices can directly access the VM
 
-## Create new VM
+Be careful when using bridged mode.
 
-Head to the HOME screen and press NEW, to create a new VM.
+For example:
+- Misconfigured services like DHCP servers can affect your home or office network
 
-![Image](resources/newVM.PNG)
+---
 
-Type a name and select a distro. Ignore ISO and unattended OS installion for now.
+## 3. Host Network / Internal Network
 
-![Image](resources/hardware.PNG)
+This allows VMs to communicate with each other privately.
 
-Select appropriate specs for your headnode based on your host machine.
+- No internet access by default
+- Useful for building clusters
+- Similar to an internal switch
 
-![Image](resources/Storage.PNG)
+Use this for:
+- Headnode ↔ Compute node communication
+- Cluster traffic
+- Testing distributed systems
 
-You can leave storage on the default settings as it is always possible to edit this again at a later stage.
+---
 
-## Operating System
+# Create a New VM
 
-You can head to the home screen and start your new VM. It will boot and wait for an ISO.
+Open UTM and select:
 
-## Download prefered OS
+**Create a New Virtual Machine**
 
-You can head to [this site](https://www.linux.org/pages/download/) to see some distro options.
+---
 
-Select a distro you feel comfortable with or select the trusted Ubuntu or RockyOS.
+## Choose Virtualization Type
 
-## Mount and Install
+For Apple Silicon Macs:
 
-Mount your downloaded ISO and complete the linux distro installation.
+- Select **Virtualize**
+- Choose **Linux**
 
-# Setup cluster
+For Intel Macs:
 
-You are now ready to create additional VM's and setup your cluster. Below is a network plan. 
+- You may use either **Virtualize** or **Emulate**
 
-!NOTE you can only change the network settings if the machines are **powered off**
+---
 
-![Image](resources/Network-plan.jpg)
+## Select ISO Image
 
-Our headnode will have 2 network adaptors. NAT for internet and internal for the internal network.
+Browse and select your downloaded Linux ISO.
 
-Bring up the headnode's settings by selecting the MACHINES tab, select the VM and select settings.
+---
 
-![Image](resources/head-net1.PNG)
+## Configure Hardware
 
-Head to the VM's network setting and add a second adaptor.
+Choose suitable resources based on your Mac specifications.
 
-![Image](resources/head-net2.PNG)
+Recommended starter setup:
 
-! Note the network name, remember to use the exact same name for the compute node to place them both on the "*same* (switch) *network*"
+| Resource | Recommended |
+|---|---|
+| CPU | 2–4 Cores |
+| RAM | 4–8 GB |
+| Storage | 20–40 GB |
 
-Now configure the compute node. Remember it only needs one adaptor.
+Remember:
+- Your VMs share resources with your host machine
+- Avoid allocating all available memory or CPU
 
-If you have configured the headnode correctly the network will appear in the list.
+---
 
-![Image](resources/Com-net1.png)
+## Configure Storage
 
-Once the network between the machines has been setup. You can configure the IP's on each VM and your cluster will be connected.
+The default storage settings are usually acceptable.
+
+You can resize storage later if needed.
+
+---
+
+# Operating System
+
+After creating the VM:
+
+1. Start the VM
+2. The Linux installer will boot from the ISO
+3. Follow the installation process
+
+---
+
+# Download Preferred OS
+
+You can browse Linux distributions here:
+
+https://www.linux.org/pages/download/
+
+Recommended beginner-friendly options:
+
+- Ubuntu
+- Rocky Linux
+
+For Apple Silicon Macs:
+- Ensure you download the **ARM64 / AArch64** version of the ISO
+
+Example:
+- Ubuntu Server ARM64
+- Rocky Linux AArch64
+
+Do NOT download AMD64 images on Apple Silicon Macs.
+
+---
+
+# Mount and Install
+
+Once the ISO is attached:
+
+1. Start the VM
+2. Complete the Linux installation
+3. Create a username and password
+4. Reboot the VM after installation
+5. Remove the ISO if prompted
+
+---
+
+# Setup Cluster
+
+You are now ready to create additional VMs and build a simple cluster.
+
+---
+
+# Suggested Cluster Layout
+
+| Machine | Network Adaptor 1 | Network Adaptor 2 |
+|---|---|---|
+| Headnode | Shared Network | Internal Network |
+| Compute Node 1 | Internal Network | — |
+| Compute Node 2 | Internal Network | — |
+
+---
+
+# Configure Headnode Networking
+
+Your headnode should have:
+
+1. Shared Network adaptor
+2. Internal Network adaptor
+
+The Shared adaptor provides internet access.
+
+The Internal adaptor connects to compute nodes.
+
+---
+
+# Configure Internal Network
+
+In the VM settings:
+
+1. Open **Network**
+2. Add a second network interface
+3. Configure it as:
+   - **Mode:** Host or Internal
+   - **Network Name:** `cluster-net`
+
+Use the exact same network name on all VMs.
+
+---
+
+# Configure Compute Nodes
+
+Each compute node only requires:
+
+- One Internal/Host network adaptor connected to `cluster-net`
+
+Once connected:
+- The VMs can communicate directly
+
+---
+
+# Configure IP Addresses
+
+You can manually configure IP addresses on each VM.
+
+Example:
+
+| Machine | IP Address |
+|---|---|
+| Headnode | 10.10.10.1 |
+| Compute1 | 10.10.10.2 |
+| Compute2 | 10.10.10.3 |
+
+---
+
+# Final Notes
+
+Once networking is configured correctly:
+
+- Your VMs will be able to communicate
+- You can SSH between nodes
+- You can begin experimenting with clustering technologies such as:
+  - Kubernetes
+  - Docker Swarm
+  - OpenStack
+  - Ceph
+  - MPI Clusters
+
+You now have a functional virtual lab environment running on macOS using UTM.
