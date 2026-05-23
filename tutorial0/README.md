@@ -1,4 +1,4 @@
-Tutorial 0: Setting Up virtual environment
+Tutorial 0: Setting Up a Virtual Environment
 ======================================================
 
 This tutorial will help you become familiar with Virtual Computing and will also serve as an introduction to setting up a cluster. This tutorial will start with installing and setting up VirtualBox, an environment you can use to setup and initiate virtual machines (VM).
@@ -14,7 +14,7 @@ Once you have successfully setup VirtualBox and loaded your preferred OS, we can
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
-- [Tutorial 0: Setting Up virtual environment](#tutorial-0-setting-up-virtual-environment)
+- [Tutorial 0: Setting Up a Virtual Environment](#tutorial-0-setting-up-a-virtual-environment)
 - [Table of Contents](#table-of-contents)
 - [Checklist](#checklist)
 - [Download and Install VirtualBox](#download-and-install-virtualbox)
@@ -57,10 +57,10 @@ Once you have successfully setup VirtualBox and loaded your preferred OS, we can
 
 - [ ] Understand virtual computing, virtualisation and remote connections:
   - [ ] Understand and be able to explain virtualisation and virtual machines
-  - [ ] Understand the difference between a NAT, bridged, internal and host only adapters.
+  - [ ] Understand the difference between NAT, bridged, internal, and host-only adapters.
 - [ ] Learn how to install an Operating System (OS):
   - [ ] Learn about different Linux Distributions and Flavors
-- [ ] Learn how setup a cluster on VirtualBox:
+- [ ] Learn how to setup a cluster on VirtualBox:
   - [ ] Learn how to link up different machines
 
 
@@ -286,7 +286,7 @@ You should see an image similar to the one shown below, with the full configurat
 ![Image](resources/vmLaunch.png)
 
 > [!CAUTION]
-> Do **not** attach the `.vbox` or `.vdi` file as a DVD/optical drive that is only for ISO files. Pre-built images must be added via **Home → Add**.
+> Do **not** attach the `.vbox` or `.vdi` file as a DVD/optical drive that is only for ISO files. Pre-built images must be added via **Home → Open**.
 > Do **not** move or delete the `.vdi` file. It is the virtual hard disk containing the OS. Both the `.vbox` and `.vdi` must stay in the same folder at all times.
 
 ### Pre-Built VM Specs: What Can and Cannot Be Changed
@@ -318,6 +318,7 @@ split you planned in [Plan your resource split](#plan-your-resource-split).
 
 > [!CAUTION]
 > **Known Issue — Kernel Panic on VirtualBox**
+>
 > Some users have reported a kernel panic error when running certain Linux distributions on VirtualBox 7.1.x on Windows 10. If you encounter this:
 > - Make sure you are using the latest point or most stable release of your chosen OS
 > - Update VirtualBox to **version 7.2.x** or later
@@ -367,10 +368,10 @@ common distributions:
 | **Arch Linux** | [archlinux.org/download](https://archlinux.org/download) | Standard ISO |
 
 > [!WARNING]
-> **For Ubuntu, do not download Ubuntu Desktop** - download **Ubuntu Server**
-instead. The Desktop edition includes a graphical interface which is not
-needed for competition practice and will use unnecessary resources on
-your laptop.
+> **For Ubuntu, do not download Ubuntu Desktop** — download **Ubuntu Server**
+> instead. The Desktop edition includes a graphical interface which is not
+> needed for competition practice and will use unnecessary resources on
+> your laptop.
 
 > [!CAUTION]
 > **Arch Linux is not recommended for beginners.** Unlike Rocky and Ubuntu, Arch has no guided installer, everything is configured manually through the command line. Only choose Arch if your team is already comfortable with Linux.
@@ -379,16 +380,16 @@ Once downloaded, attach it to your VM:
 
 1. Open **VirtualBox** and select your VM
 2. Click **Settings → Storage**
-3. Under **Controller: IDE**, click the **CD/DVD icon with a plus sign on it** (Add Optical Drive)
+3. Under the storage controller (usually shown as **Controller: SATA** or **Controller: IDE**), click the **CD/DVD icon with a plus sign on it** (Add Optical Drive)
 
 ![Image](resources/AddOD.png)
 
-4. It will open a page where you can add a disk as seen on the image below. Select the **ADD** button navigate to the location the `.iso`is downloaded.
+4. It will open a page where you can add a disk as seen on the image below. Select the **ADD** button and navigate to the location where the `.iso` is downloaded.
 
 ![Image](resources/AdddiskPage.png)
 
-5. Select your downloaded `.iso` file then click **open**, and it will be loaded on the disk page. This is where you will see all `.iso` files that you have loaded.
-6. Make sure the `iso` file is selected, then click **Choose**
+5. Select your downloaded `.iso` file then click **Open**, and it will be loaded on the disk page. This is where you will see all `.iso` files that you have loaded.
+6. Make sure the `.iso` file is selected, then click **Choose**
 7. Ensure that the disk is loaded and selected as seen in the image below.
 
 ![Image](resources/DiskLoaded.png)
@@ -396,8 +397,8 @@ Once downloaded, attach it to your VM:
 >[!IMPORTANT]
 > Remove the disk that is *Empty* by clicking on the disk and then **remove** it by clicking the **CD/DVD icon with a minus sign on it**.
 
-8. The disk that you just created with your `iso` file, should be the only one left, then click **OK**.
-9. Start the VM, it will boot from the ISO and launch the installer
+8. The disk that you just created with your `.iso` file should be the only one left. Click **OK**.
+9. Start the VM. It will boot from the ISO and launch the installer.
 10. Follow the on-screen steps to complete the installation. If this is your
 first time installing a Linux OS, refer to the official installation guides
 below for your chosen distribution:
@@ -422,7 +423,7 @@ With your headnode VM up and running, you are now ready to connect your VMs into
 ![Image](resources/Network-plan.jpg)
 
 > [!NOTE]
-> You can only change network settings when machines are **powered off**
+> You can only change network settings when machines are **powered off**.
 
 ## Understanding Network Adapters
 
@@ -468,9 +469,9 @@ With the headnode powered off, open its settings by selecting it in the
 
 ![Image](resources/head-net1.PNG)
 
-1. Go to the **Network** settings and enable a second adapter, by ticking the **Enable Network Adapter**.
-2. Change the **Attached to**  → **Internal Network**
-3. Name the internal network, network here is named `myNetwork`
+1. Go to the **Network** settings and enable a second adapter by ticking the **Enable Network Adapter** checkbox.
+2. Change the **Attached to** → **Internal Network**
+3. Name the internal network — in this example it is named `myNetwork`
 4. Click **OK**
 
 ![Image](resources/head-net2.PNG)
@@ -483,9 +484,9 @@ With the headnode powered off, open its settings by selecting it in the
 Before configuring the network, you need to create your compute node VM.
 Follow the same method you used for the headnode in [Get your virtual machine and operating system](#get-your-virtual-machine-and-operating-system), keeping in mind the resource split you planned in [Plan your resource split](#plan-your-resource-split) section.
 
- Some settings were already configured when creating your head node, so you can simply select them instead of repeating the steps. For example, the ISO image you previously added will now appear as an available option and can be selected directly.
+Some settings were already configured when creating your head node, so you can simply select them instead of repeating the steps. For example, the ISO image you previously added will now appear as an available option and can be selected directly.
 
- > [!IMPORTANT]
+> [!IMPORTANT]
 > **Unattended Guest OS Installation**
 >
 > When creating a second VM, if you select an ISO file in the
@@ -497,15 +498,15 @@ Follow the same method you used for the headnode in [Get your virtual machine an
 > ![Image](resources/Unattended.png)
 >
 > Leaving it ticked can cause the installation to hang with no clear
-indication of where the problem is. When it is ticked, VirtualBox will prompt you with an **Unattended Guest OS Installation** section
-where you will manually set your login credentials for that VM:
+> indication of where the problem is. When it is ticked, VirtualBox will prompt you with an **Unattended Guest OS Installation** section
+> where you will manually set your login credentials for that VM:
 >
 > - **Username** — the account name you will use to log into the VM
 > - **Password** — the password for that account
 >
 > Make sure to note these down as you will need them every time you
- log into that VM. Each VM has its own login, these are separate from any credentials used when setting up your headnode or from the
- pre-built image credentials in Method 1.
+> log into that VM. Each VM has its own login, these are separate from any credentials used when setting up your headnode or from the
+> pre-built image credentials in Method 1.
 
 > [!NOTE]
 > Remember that the compute node should receive the **larger share** of your laptop's resources, this is where the actual work gets done. Refer back to the suggested specs table in [Plan your resource split](#plan-your-resource-split) section for guidance.
@@ -531,7 +532,7 @@ Once the network between the machines has been set up, configure the IP addresse
 ## Configure IP Addresses
 
 With the network adapters set up, you now need to assign a static IP
-address to each VM so they can communicate with each other. We use static IPs (fixed addresses that do not change) because later you will be setting up a hosts file that maps names to IP addresses, if the IPs kept changing this would break that setup.
+address to each VM so they can communicate with each other. We use static IPs (fixed addresses that do not change) because later you will be setting up a hosts file that maps names to IP addresses. If the IPs kept changing this would break that setup.
 
 ### What is an IP Address?
 
@@ -571,7 +572,7 @@ You will see something like this on the headnode:
 
 **How to tell which is which:**
 - The **NAT interface** (`enp0s3`) will already have an IP starting with
-  `10.x.x.x` automatically assigned by VirtualBox **Do not touch this one**
+  `10.x.x.x` automatically assigned by VirtualBox. **Do not touch this one.**
 
 - The **internal network interface** (`enp0s8`) will have no IP assigned yet. This is where you assign your static IP.
 
@@ -602,7 +603,7 @@ configuration.
 ip addr show
 ```
 
-The interface with a `10.x.x.x` address is your NAT interface — leave it alone. The interface with no IP is your internal network interface this is where you assign your static IP.
+The interface with a `10.x.x.x` address is your NAT interface — leave it alone. The interface with no IP is your internal network interface — this is where you assign your static IP.
 
 **Step 2 — Create a connection profile for the internal interface**
 
@@ -722,8 +723,8 @@ Arch Linux uses **systemd-networkd** for network configuration.
 ip addr show
 ```
 
-The interface with a `10.x.x.x` address is your NAT interface leave
-it alone. The interface with no IP is your internal network interface this is where you assign your static IP.
+The interface with a `10.x.x.x` address is your NAT interface — leave
+it alone. The interface with no IP is your internal network interface — this is where you assign your static IP.
 
 **Step 2 — Create a network configuration file for the internal interface**
 
