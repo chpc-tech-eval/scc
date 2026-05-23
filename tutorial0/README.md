@@ -1,11 +1,11 @@
 Tutorial 0: Setting Up virtual environment
 ======================================================
 
-This tutorial will help you become familiar with Virtual Computing and will also serve as an introduction to setting up a cluster. This tutorial will start with installing and setting up VirtualBox, an environment you can use to setup and initiate virtual machines (vm).
+This tutorial will help you become familiar with Virtual Computing and will also serve as an introduction to setting up a cluster. This tutorial will start with installing and setting up VirtualBox, an environment you can use to setup and initiate virtual machines (VM).
 
-A virtual machine(vm) is a type of simulated machine running on top of your current laptop or desktop environment. It "emulates" what a real machine and its OS would behave like.
+A virtual machine (VM) is a type of simulated machine running on top of your current laptop or desktop environment. It "emulates" what a real machine and its OS would behave like.
 
-Here you will need to make a decision on choice of Linux distribution that you will use, remember that your vm has very limited resources as it will share the host machine's resources. 
+Here you will need to decide which Linux distribution to use, remember that your VM has very limited resources as it will share the host machine's resources.
 
 Once you have successfully setup VirtualBox and loaded your preferred OS, we can easily add additional machines to build a makeshift cluster.
 
@@ -41,7 +41,7 @@ Once you have successfully setup VirtualBox and loaded your preferred OS, we can
     - [Part A: Create a New Virtual Machine](#part-a-create-a-new-virtual-machine)
     - [Part B: Download and Attach an ISO](#part-b-download-and-attach-an-iso)
 - [Setup the Cluster](#setup-the-cluster)
-  - [Understanding Network Adaptors](#understanding-network-adaptors)
+  - [Understanding Network Adapters](#understanding-network-adapters)
   - [Configure the Headnode Network](#configure-the-headnode-network)
   - [Configure the Compute Node](#configure-the-compute-node)
     - [Compute Node Network Configuration](#compute-node-network-configuration)
@@ -53,12 +53,12 @@ Once you have successfully setup VirtualBox and loaded your preferred OS, we can
 
 # Checklist
 
-<u>Use the following checklist to keep track of your team's progress and to ensure that all members in your understand these concepts.</u>
+<u>Use the following checklist to keep track of your team's progress and to ensure that all members in your team understand these concepts.</u>
 
 - [ ] Understand virtual computing, virtualisation and remote connections:
   - [ ] Understand and be able to explain virtualisation and virtual machines
-  - [ ] Understand the difference between a NAT, bridged, internal and host only adaptors.
-- [ ] Learn how install an Operating System (OS):
+  - [ ] Understand the difference between a NAT, bridged, internal and host only adapters.
+- [ ] Learn how to install an Operating System (OS):
   - [ ] Learn about different Linux Distributions and Flavors
 - [ ] Learn how setup a cluster on VirtualBox:
   - [ ] Learn how to link up different machines
@@ -66,11 +66,11 @@ Once you have successfully setup VirtualBox and loaded your preferred OS, we can
 
 # Download and Install VirtualBox
 
-Head to your favourite search engine and search "VirtualBox download". Download [virtualBox](https://www.virtualbox.org/wiki/Downloads) from virtualbox.org the one from Oracle.
+Head to your favourite search engine and search "VirtualBox download". Download [VirtualBox](https://www.virtualbox.org/wiki/Downloads) from the official Oracle site at virtualbox.org.
 
 ![Image](resources/search.PNG)
 
-Pick the correct `VirtualBox Platform Packages` matching your host OS (OS that you are running on the machine that you are using). These set of instructions are being excuted on a Windows 11 machine.
+Pick the correct `VirtualBox Platform Packages` matching your host OS (OS that you are running on the machine that you are using). This set of instructions was executed on a Windows 11 machine.
 
 > [!NOTE]
 > Version of VirtualBox might be different to that showed in the image below. These instructions were tested on VirtualBox versions 7.2.6 and 7.2.8
@@ -96,7 +96,7 @@ Before creating any VMs, it is worth getting familiar with how to interact with 
 
 ### Mouse and Keyboard Capture
 
-When you click inside a running vm, VirtualBox will **capture** your mouse and keyboard, meaning your inputs go to the VM and not your host machine.
+When you click inside a running VM, VirtualBox will **capture** your mouse and keyboard, meaning your inputs go to the VM and not your host machine.
 
 To release your mouse and keyboard back to your host machine, press the
 **Host Key**. By default this is:
@@ -192,7 +192,7 @@ not need much power.
 ### Compute Node
 
 The compute node is where jobs are executed, give it the bulk of your
-laptop's available resources. At minimum, atleast for the *RAM* and *CPU Cores* more than what was allocated to the headnode.
+laptop's available resources. At a minimum, allocate more *RAM* and *CPU Cores* to the compute node than you did to the headnode.
 
 | Resource | Suggested Allocation | Why |
 |---|---|---|
@@ -276,7 +276,7 @@ The downloaded file is a `.7z` archive and extract it
 4. Select the `.vbox` file and click **Open**
 5. The VM will appear in your VirtualBox list
 
-You should see an image similar to the one shown below, with the full configuration details displayed on the right-hand side. In this example, the `Rocky 10.1` image was used. You can also view additional system specifications, including the allocated RAM, number of processors, storage capacity, and other hardware details of the vm.
+You should see an image similar to the one shown below, with the full configuration details displayed on the right-hand side. In this example, the `Rocky 10.1` image was used. You can also view additional system specifications, including the allocated RAM, number of processors, storage capacity, and other hardware details of the VM.
 
 ![Image](resources/vmLaunch.png)
 
@@ -301,7 +301,7 @@ split you planned in [Plan your resource split](#plan-your-resource-split).
 | **RAM (Memory)** | How much of your laptop's memory the VM is allowed to use | Adjust to match your planned split|
 | **CPU (Processors)** | How many CPU cores the VM can use | Adjust to match your planned split|
 | **Video Memory** | Memory used for the display | Only relevant for graphical desktops — leave as is for Minimal |
-| **Network Adaptors** | How the VM connects to networks | You will configure these after you gain a better understanding in [Setup the cluster](#setup-the-cluster) |
+| **Network Adapters** | How the VM connects to networks | You will configure these after you gain a better understanding in [Setup the cluster](#setup-the-cluster) |
 
 #### Cannot Be Changed
 
@@ -374,7 +374,7 @@ Once downloaded, attach it to your VM:
 
 1. Open **VirtualBox** and select your VM
 2. Click **Settings → Storage**
-3. Under **Controller: IDE**, click the **CD/DVD with an addiction sign on it icon** (Add Optical Drive)
+3. Under **Controller: IDE**, click the **CD/DVD icon with a plus sign on it** (Add Optical Drive)
 
 ![Image](resources/AddOD.png)
 
@@ -382,17 +382,17 @@ Once downloaded, attach it to your VM:
 
 ![Image](resources/AdddiskPage.png)
 
-5. Select your downloaded `.iso` file then click **open**, and it will loaded on the disk page. This is where you will see all `.iso` files that you have loaded.
+5. Select your downloaded `.iso` file then click **open**, and it will be loaded on the disk page. This is where you will see all `.iso` files that you have loaded.
 6. Make sure the `iso` file is selected, then click **Choose**
 7. Ensure that the disk is loaded and selected as seen in the image below.
 
 ![Image](resources/DiskLoaded.png)
 
 >[!IMPORTANT]
-> Remove the disk that is *Empty* by clicking on disk and **remove** by clicking the **CD/DVD with an minus sign on it icon** 
+> Remove the disk that is *Empty* by clicking on the disk and then **remove** it by clicking the **CD/DVD icon with a minus sign on it**.
 
 8. The disk that you just created with your `iso` file, should be the only one left, then click **OK**.
-9. Start the vm, it will boot from the ISO and launch the installer
+9. Start the VM, it will boot from the ISO and launch the installer
 10. Follow the on-screen steps to complete the installation. If this is your
 first time installing a Linux OS, refer to the official installation guides
 below for your chosen distribution:
@@ -412,47 +412,47 @@ below for your chosen distribution:
 
 # Setup the Cluster
 
-With your headnode vm up and running, you are now ready to connect your vms into a cluster. Below is the network plan we will follow.
+With your headnode VM up and running, you are now ready to connect your VMs into a cluster. Below is the network plan we will follow.
 
 ![Image](resources/Network-plan.jpg)
 
 > [!NOTE]
 > You can only change network settings when machines are **powered off**
 
-## Understanding Network Adaptors
+## Understanding Network Adapters
 
 Before configuring the cluster, it is important to understand the four basic
-network adaptor types in VirtualBox:
+network adapter types in VirtualBox:
 
 1. **NAT** — Network Address Translation maps your VM to a single public IP
    for internet access. Think of this as your gateway to the internet —
    it supplies internet access only.
 
-2. **Bridged Adaptor** — Piggybacks on your host machine's network card,
+2. **Bridged Adapter** — Piggybacks on your host machine's network card,
    connecting the VM directly to the host network. You will have access to
    all devices on that network including routers and servers.
 
 > [!IMPORTANT]
-> **Be careful with the Bridged Adaptor.** For example, if you configure
+> **Be careful with the Bridged Adapter.** For example, if you configure
 > your VM as a DHCP server it will broadcast across your entire host network.
 
 3. **Internal Network** — Creates a named private network shared only between
    VMs. Think of this as a virtual switch that you plug VMs into.
 
-4. **Host-Only Adaptor** — Similar to Internal Network but VirtualBox itself
+4. **Host-Only Adapter** — Similar to Internal Network but VirtualBox itself
    can act as the DHCP server, making it more customizable.
 
-Below is an example of the network adaptors you can attach to a virtual machine.
+Below is an example of the network adapters you can attach to a virtual machine.
 
 ![Image](resources/networks.PNG)
 
-In the network tab you can customise the Host and NAT adaptors further.
+In the network tab you can customise the Host and NAT adapters further.
 
 ![Image](resources/config-network.PNG)
 
 ## Configure the Headnode Network
 
-The headnode requires **two network adaptors**:
+The headnode requires **two network adapters**:
 - **NAT** — for internet access
 - **Internal Network** — for communicating with compute nodes
 
@@ -461,7 +461,7 @@ With the headnode powered off, open its settings by selecting it in the
 
 ![Image](resources/head-net1.PNG)
 
-1. Go to the **Network** settings and enable a second adaptor, by ticking the **Enable Network Adapter**.
+1. Go to the **Network** settings and enable a second adapter, by ticking the **Enable Network Adapter**.
 2. Change the **Attached to**  → **Internal Network**
 3. Name the internal network, network here is named `myNetwork`
 4. Click **OK**
@@ -491,27 +491,27 @@ Follow the same method you used for the headnode in [Get your virtual machine an
 >
 > Leaving it ticked can cause the installation to hang with no clear
 indication of where the problem is. When it is ticked, VirtualBox will prompt you with an **Unattended Guest OS Installation** section
-where you will manually set your login credentials for that vm:
+where you will manually set your login credentials for that VM:
 >
-> - **Username** — the account name you will use to log into the vm
+> - **Username** — the account name you will use to log into the VM
 > - **Password** — the password for that account
 >
 > Make sure to note these down as you will need them every time you
- log into that vm. Each vm has its own login, these are separate from any credentials used when setting up your headnode or from the
+ log into that VM. Each VM has its own login, these are separate from any credentials used when setting up your headnode or from the
  pre-built image credentials in Method 1.
 
 > [!NOTE]
 > Remember that the compute node should receive the **larger share** of your laptop's resources, this is where the actual work gets done. Refer back to the suggested specs table in [Plan your resource split](#plan-your-resource-split) section for guidance.
 
-Once your compute node vm is created and the OS is running, the installation process may take some time, **power it off** before configuring the network.
+Once your compute node VM is created and the OS is running, the installation process may take some time, **power it off** before configuring the network.
 
 ### Compute Node Network Configuration
 
-The compute node only needs **one adaptor → Internal Network** to
+The compute node only needs **one adapter → Internal Network** to
 communicate with the headnode.
 
 Select your compute node VM, go to **Settings → Network** and set
-**Adaptor 1** to **Internal Network**, using the exact same network name
+**Adapter 1** to **Internal Network**, using the exact same network name
 as the headnode.
 
 If the headnode was configured correctly, the internal network will
@@ -519,12 +519,12 @@ appear in the dropdown list.
 
 ![Image](resources/Com-net1.png)
 
-Once the network between the machines has been set up, configure the IP addresses on each vm and your cluster will be connected.
+Once the network between the machines has been set up, configure the IP addresses on each VM and your cluster will be connected.
 
 ## Configure IP Addresses
 
-With the network adaptors set up, you now need to assign a static IP
-address to each vm so they can communicate with each other. We use static IPs (fixed addresses that do not change) because later you will be setting up a hosts file that maps names to IP addresses, if the IPs kept changing this would break that setup.
+With the network adapters set up, you now need to assign a static IP
+address to each VM so they can communicate with each other. We use static IPs (fixed addresses that do not change) because later you will be setting up a hosts file that maps names to IP addresses, if the IPs kept changing this would break that setup.
 
 ### What is an IP Address?
 
@@ -566,10 +566,10 @@ You will see something like this on the headnode:
 - The **NAT interface** (`enp0s3`) will already have an IP starting with
   `10.x.x.x` automatically assigned by VirtualBox **Do not touch this one**
 
-- The **internal network interface** (`enp0s8`) will have no IP assigned yet, this is where you assign your static IP
+- The **internal network interface** (`enp0s8`) will have no IP assigned yet. This is where you assign your static IP.
 
 > [!IMPORTANT]
-> Interface names may be different then those stated in this guide, but check the IPs in order to identify which interface is NAT and which is the internal network.
+> Interface names may be different than those stated in this guide, but check the IPs in order to identify which interface is NAT and which is the internal network.
 > 
 > Always assign your static IP to the **internal network interface**
 > (`enp0s8`), never to the NAT interface (`enp0s3`). The compute node only has one interface so assign the static IP to that one.
@@ -762,4 +762,4 @@ the following:
 - `internal network interface` has a connection profile — if not, create one with
   `sudo nmcli con add type ethernet ifname enp0s8 con-name enp0s8`
   (Rocky) or equivalent for your distro
-- Both VMs are **powered on**
+- Both VMs are **powered on**.
