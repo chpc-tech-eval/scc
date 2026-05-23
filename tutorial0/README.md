@@ -119,7 +119,7 @@ To release your mouse and keyboard back to your host machine, press the
 | Toggle seamless mode | `Right Ctrl + L` |
 | Take a snapshot | `Right Ctrl + T` |
 | Reset the VM | `Right Ctrl + R` |
-| Power off the VM | `Right Ctrl + H` |
+| ACPI shutdown (graceful power off) | `Right Ctrl + H` |
 | Switch between VMs | Click the VM in the left panel |
 
 ### Full Screen Mode
@@ -265,8 +265,13 @@ OS image you download.
 
 The downloaded file is a `.7z` archive and extract it
 
-- Right-click the downloaded file → **7-Zip → Extract Here**
-- You will get a folder containing a `.vbox` and `.vdi` file
+You will need an archive tool that can open `.7z` files:
+
+- **Windows:** install [7-Zip](https://www.7-zip.org/), then right-click the file → **7-Zip → Extract Here**
+- **Mac:** install [Keka](https://www.keka.io/) (from the App Store or website), then right-click the file → **Open With → Keka**
+- **Linux:** install `p7zip` (e.g. `sudo dnf install p7zip` / `sudo apt install p7zip-full`), then run `7z x <filename>.7z`
+
+You will get a folder containing a `.vbox` and `.vdi` file.
 
 **Step 2 — Add the VM to VirtualBox**
 
@@ -280,7 +285,7 @@ You should see an image similar to the one shown below, with the full configurat
 
 ![Image](resources/vmLaunch.png)
 
-> [!DANGER]
+> [!CAUTION]
 > Do **not** attach the `.vbox` or `.vdi` file as a DVD/optical drive that is only for ISO files. Pre-built images must be added via **Home → Add**.
 > Do **not** move or delete the `.vdi` file. It is the virtual hard disk containing the OS. Both the `.vbox` and `.vdi` must stay in the same folder at all times.
 
@@ -439,8 +444,10 @@ network adapter types in VirtualBox:
 3. **Internal Network** — Creates a named private network shared only between
    VMs. Think of this as a virtual switch that you plug VMs into.
 
-4. **Host-Only Adapter** — Similar to Internal Network but VirtualBox itself
-   can act as the DHCP server, making it more customizable.
+4. **Host-Only Adapter** — Similar to Internal Network, but the **host
+   machine can also reach the VMs** on this network (Internal Network is
+   VM-to-VM only). VirtualBox itself can act as the DHCP server, making
+   it more customizable.
 
 Below is an example of the network adapters you can attach to a virtual machine.
 
@@ -599,18 +606,24 @@ The interface with a `10.x.x.x` address is your NAT interface — leave it alone
 
 **Step 2 — Create a connection profile for the internal interface**
 
-If the interface has no connection profile yet, create one first:
+If the interface has no connection profile yet, create one first. Replace
+`<interface name>` with your actual interface (e.g. `enp0s8`). The
+`con-name` is the name of the connection profile, here we keep it the
+same as the interface name for clarity:
 
 ```bash
-sudo nmcli con add type ethernet ifname <interface name> con-name enp0s8
+sudo nmcli con add type ethernet ifname <interface name> con-name <interface name>
 ```
 
 **Step 3 — Assign the static IP**
 
+These commands operate on the **connection name** you set above (not the
+interface name — they just happen to match here):
+
 ```bash
-sudo nmcli con mod <interface name> ipv4.addresses 192.168.1.x/24
-sudo nmcli con mod <interface name> ipv4.method manual
-sudo nmcli con up <interface name>
+sudo nmcli con mod <connection name> ipv4.addresses 192.168.1.x/24
+sudo nmcli con mod <connection name> ipv4.method manual
+sudo nmcli con up <connection name>
 ```
 
 Replace `192.168.1.x` with `192.168.1.1` for the headnode or
@@ -657,13 +670,18 @@ sudo nano /etc/netplan/00-installer-config.yaml
 
 **Step 3 — Update the file to look like this**
 
+Replace `<NAT interface name>` and `<internal interface name>` with the
+actual names you identified in Step 1 (for example `enp0s3` and `enp0s8`).
+The two keys must be **different**, otherwise YAML will only keep the
+last one and the NAT interface will lose its config.
+
 ```yaml
 network:
   version: 2
   ethernets:
-    <interface name>:
+    <NAT interface name>:
       dhcp4: true
-    <interface name>:
+    <internal interface name>:
       dhcp4: no
       addresses:
         - 192.168.1.x/24
@@ -758,8 +776,11 @@ If you get replies, your cluster network is connected. If not, check
 the following:
 
 - Both VMs are using the **same internal network name** in VirtualBox
-- This static IP is assigned to the correct interface, which is the internal network interface
-- `internal network interface` has a connection profile — if not, create one with
-  `sudo nmcli con add type ethernet ifname enp0s8 con-name enp0s8`
-  (Rocky) or equivalent for your distro
+- The static IP is assigned to the correct interface — the **internal
+  network interface**, not the NAT interface
+- The internal network interface has an active configuration. If not,
+  re-apply it for your distribution:
+  - **Rocky:** `sudo nmcli con add type ethernet ifname <interface name> con-name <interface name>` then re-run the `nmcli con mod` steps
+  - **Ubuntu:** re-check `/etc/netplan/00-installer-config.yaml` and run `sudo netplan apply`
+  - **Arch:** re-check `/etc/systemd/network/20-internal.network` and run `sudo systemctl restart systemd-networkd`
 - Both VMs are **powered on**.
