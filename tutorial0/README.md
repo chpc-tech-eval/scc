@@ -154,11 +154,23 @@ At this stage, you do not need to configure the full cluster network yet. The go
 
 2. Click **Create New Virtual Machine**
 
+### Step 1: Create a New VM
+
+1. Open UTM  
+2. Click **Create New Virtual Machine**
+
+![Create VM Screen](./images/create-vm.png)
+
+<img width="1074" height="799" alt="Screenshot 2026-05-25 at 14 57 43" src="https://github.com/user-attachments/assets/8de4ebed-cc89-4dc9-aa31-153f35c50343" />
+
+
 3. Select **Virtualize**
 
 4. Select **Linux**
 
 Use **Virtualize** on Apple Silicon Macs because it provides better performance than emulation when using an ARM64/AArch64 operating system.
+
+
 
 ---
 
