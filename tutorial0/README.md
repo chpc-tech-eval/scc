@@ -290,6 +290,40 @@ After installation:
 
 At this point, you have successfully created your headnode VM.
 
+## Verify Your Headnode
+
+Before continuing, it is important to confirm that your VM is working correctly and that you can interact with it.
+
+---
+
+### Connect to Your VM
+
+If you are using the UTM console, you should already see your Linux terminal.
+
+View your network Interfaces and IP address:
+
+```text
+ip a
+```
+
+<img width="917" height="493" alt="Screenshot 2026-05-25 at 12 02 53" src="https://github.com/user-attachments/assets/7708dff9-4057-40ff-83e1-6b7c18371666" />
+
+
+If SSH is enabled, you can also connect remotely using:
+
+```bash
+
+ssh <username>@<ip-address>
+```
+
+<img width="580" height="73" alt="Screenshot 2026-05-25 at 15 45 40" src="https://github.com/user-attachments/assets/82e92600-c2e9-4638-83b9-b39d495cefc7" />
+
+You can test connectivity by also pinging an external host:
+
+```text
+ping -c 4 google.com
+```
+
 ---
 
 ## Understanding Networking
@@ -473,9 +507,35 @@ ens3
 ens4
 ```
 
-The interface names do not have to match across all nodes.
+The interface names do not have to match across all nodes. What matters is that the correct interface is assigned to the correct network.
 
-What matters is that the correct interface is assigned to the correct network.
+> [!WARNING]
+> The newly added network interface will not work immediately.
+>
+> By default, it has no IP address and is not active. You must manually configure and activate it before it can be used for communication.
+
+<img width="650" height="319" alt="Screenshot 2026-05-25 at 12 08 21" src="https://github.com/user-attachments/assets/785b56fa-c703-4988-b3d8-5420bcc6531c" />
+
+
+
+To configure the new interface, use the NetworkManager text user interface:
+
+
+```text
+sudo nmtui
+```
+
+<img width="1275" height="835" alt="Screenshot 2026-05-25 at 16 02 49" src="https://github.com/user-attachments/assets/2f2655aa-98a1-4cf4-8a3d-118fb3d17988" />
+
+If enp0s2 is not showing, add it manually, then edit the settings.
+
+<img width="661" height="514" alt="Screenshot 2026-05-25 at 16 03 05" src="https://github.com/user-attachments/assets/752afb44-d3d7-4aca-a021-528d0e4bbcac" />
+
+Set IPv4 Configuration to Manual, the set a private IP address e.g 192.168.100.1/24 . Leave evrything else as is. Save the settings and then activate the connection. You should then see: 
+
+<img width="648" height="661" alt="Screenshot 2026-05-25 at 12 12 39" src="https://github.com/user-attachments/assets/93062ff0-3a1c-422d-8a7a-20eac2b641ff" />
+
+
 
 ### Example Interface Mapping
 
@@ -524,21 +584,69 @@ For each compute node:
 
 All nodes must use the same VLAN name to be on the same private network.
 
+### Configure Compute Node Network Interfaces
+
+> [!IMPORTANT]
+> Just like the headnode, the network interface on each compute node will **not be automatically configured or activated**.
+>
+> You must manually assign an IP address and bring the interface up before it can be used.
+
 ---
 
-## Configure IP Addresses
+Each compute node must be configured on the same private network as the headnode.
 
-Now configure static IPs so the nodes can always find each other reliably.
+For example:
 
-Suggested addressing:
+| Machine   | IP Address       |
+|-----------|------------------|
+| Headnode  | 192.168.100.1    |
+| Compute1  | 192.168.100.2    |
+| Compute2  | 192.168.100.3    |
 
-| Node | Interface | IP Address | CIDR |
-|---|---|---|---|
-| `headnode` | private adapter | `10.10.10.10` | `/24` |
-| `compute1` | only adapter | `10.10.10.11` | `/24` |
-| `compute2` | only adapter | `10.10.10.12` | `/24` |
+---
 
-Gateway/DNS are optional on private-only interfaces.  
-For compute nodes without internet adapters, they are usually not needed.
+### Configure Using `nmtui`
+
+Run the following command on each compute node:
+
+```bash
+sudo nmtui
+```
+
+
+Steps
+
+1. Select Edit a connection
+2. Choose the network interface (e.g. enp0s1)
+3. Set the following:
+
+```text
+Compute1
+
+* IPv4 Configuration → Manual
+* Address → 192.168.100.2/24
+* Gateway → 192.168.100.1
+* DNS → 8.8.8.8
+
+⸻
+
+Compute2
+
+* IPv4 Configuration → Manual
+* Address → 192.168.100.3/24
+* Gateway → 192.168.100.1
+* DNS → 8.8.8.8
+
+```
+
+⸻
+
+4. Save the configuration
+5. Go back and select Activate a connection
+6. Select the interface to bring it UP
+
+
+---
+
 
 
