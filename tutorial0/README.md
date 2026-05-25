@@ -462,11 +462,16 @@ Use a simple VLAN name like `cluster-net` and keep that exact name for all nodes
 
 ### Private Network Interface
 
-This second interface will be used only for communication with the compute nodes.
+This second interface will be used only for communication with the compute nodes. After starting the VM again, Linux should detect the new network interface. Depending on the operating system, the interface names may look like:
 
-After starting the VM again, Linux should detect the new network interface.
-
-Depending on the operating system, the interface names may look like:
+```text
+enp0s1
+enp0s2
+eth0
+eth1
+ens3
+ens4
+```
 
 The interface names do not have to match across all nodes.
 
