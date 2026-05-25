@@ -421,6 +421,28 @@ Now add a second network interface for private cluster communication.
 
 Use a simple VLAN name like `cluster-net` and keep that exact name for all nodes.
 
+### Private Network Interface
+
+This second interface will be used only for communication with the compute nodes.
+
+After starting the VM again, Linux should detect the new network interface.
+
+Depending on the operating system, the interface names may look like:
+
+The interface names do not have to match across all nodes.
+
+What matters is that the correct interface is assigned to the correct network.
+
+### Example Interface Mapping
+
+| Machine   | Internet Interface | Private Interface |
+|-----------|------------------|------------------|
+| Headnode  | enp0s1           | enp0s2           |
+| Compute1  | —                | enp0s1           |
+| Compute2  | —                | enp0s1           |
+
+This is normal.
+
 ### Create Compute Node VMs
 
 Now create two additional VMs: `compute1` and `compute2`.
@@ -429,6 +451,22 @@ You can either:
 
 - Install each compute node from ISO (same process as headnode), or
 - Clone the headnode VM after installation and rename clones.
+
+## Important Note About Cloning
+
+If you clone a VM, the clone may keep some settings from the original VM.
+
+After cloning, check the following:
+
+- VM name  
+- Linux hostname  
+- Network interface settings  
+- IP address  
+- MAC address  
+
+If two VMs have the same IP address, they will conflict on the network.
+
+Each VM must have a unique IP address.
 
 For each compute node:
 
@@ -459,20 +497,4 @@ Suggested addressing:
 Gateway/DNS are optional on private-only interfaces.  
 For compute nodes without internet adapters, they are usually not needed.
 
-### Example Netplan (Ubuntu Server)
 
-Use this style on each node (adjust interface names and IPs).
-
-`/etc/netplan/01-cluster.yaml`:
-
-```yaml
-network:
-  version: 2
-  ethernets:
-    enp0s1:
-      dhcp4: true
-    enp0s2:
-      dhcp4: false
-      addresses:
-        - 10.10.10.10/24
-```
