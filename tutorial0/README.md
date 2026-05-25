@@ -202,13 +202,10 @@ For example, if your Mac has 8 GB of RAM, do not assign all 8 GB to the VM.
 
 For the first VM setup, use:
 
-| Setting | Value |
-
-|---|---|
-
-| Network Mode | Shared Network |
-
-| Emulated Network Card | virtio-net-pci |
+| Setting               | Value             |
+|----------------------|------------------|
+| Network Mode         | Shared Network   |
+| Emulated Network Card| virtio-net-pci   |
 
 The **Shared Network** gives your VM internet access. This is useful for downloading packages and updates.
 
