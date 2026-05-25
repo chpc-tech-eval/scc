@@ -125,22 +125,18 @@ Rocky Linux is more enterprise-like and is closer to what you may see in server,
 ---
 
 ### Important for Apple Silicon Users
-
-If you are using an M1/M2/M3/M4 Mac, download the **ARM64** or **AArch64** version of the operating system.
-
-Examples:
-
-- Ubuntu Server ARM64
-
-- Rocky Linux AArch64
-
-Do **not** download:
-
-- AMD64
-
-- x86_64
-
-These are designed for Intel/AMD machines and may not boot correctly on Apple Silicon when using virtualization.
+> [!IMPORTANT]
+> If you are using an M1/M2/M3/M4 Mac, download the **ARM64 / AArch64** version of the operating system.
+>
+> **Examples:**
+> - Ubuntu Server ARM64  
+> - Rocky Linux AArch64  
+>
+> **Do NOT download:**
+> - AMD64  
+> - x86_64  
+>
+> These are designed for Intel/AMD machines and may not boot correctly on Apple Silicon.
 
 ---
 
