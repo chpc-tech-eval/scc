@@ -762,3 +762,46 @@ What Just Happened?
 * Responses are routed back through the headnode
 
 This is a simplified version of how networking works in real clusters and cloud environments.
+
+## Final Notes
+
+You now have the foundation of a small virtual cluster running on macOS using UTM.
+
+---
+
+### At this stage, you should have:
+
+- One **headnode** with two network interfaces:
+  - Shared Network (internet access)
+  - Private/Internal Network (cluster communication)
+
+- Two **compute nodes** connected to the private network
+
+- Static IP addresses configured for all nodes
+
+- Basic network connectivity between nodes (successful `ping` tests)
+
+---
+
+### What’s Next?
+
+In later tutorials, you can build on this setup to learn:
+
+- SSH key-based access between nodes  
+- Hostname configuration and `/etc/hosts` setup  
+- MPI setup and distributed execution  
+- Benchmarking and performance comparisons  
+- Basic scheduler concepts (e.g. Slurm-style workflows)
+
+---
+
+## Quick Recap Checklist
+
+- [ ] Installed UTM  
+- [ ] Downloaded ARM64 / AArch64 Linux ISO  
+- [ ] Created and installed headnode VM  
+- [ ] Added private network interface to headnode  
+- [ ] Created compute node VMs  
+- [ ] Connected all nodes to `cluster-net`  
+- [ ] Assigned static IP addresses  
+- [ ] Verified network connectivity using `ping`  
