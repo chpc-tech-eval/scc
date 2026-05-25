@@ -159,17 +159,19 @@ At this stage, you do not need to configure the full cluster network yet. The go
 1. Open UTM  
 2. Click **Create New Virtual Machine**
 
-![Create VM Screen](./images/create-vm.png)
-
 <img width="1074" height="799" alt="Screenshot 2026-05-25 at 14 57 43" src="https://github.com/user-attachments/assets/8de4ebed-cc89-4dc9-aa31-153f35c50343" />
 
 
 3. Select **Virtualize**
 
+<img width="1069" height="794" alt="Screenshot 2026-05-25 at 15 01 59" src="https://github.com/user-attachments/assets/1ac4fa5d-02d6-4fc4-95a2-eece28b7ceb7" />
+
+
 4. Select **Linux**
 
 Use **Virtualize** on Apple Silicon Macs because it provides better performance than emulation when using an ARM64/AArch64 operating system.
 
+<img width="1068" height="780" alt="Screenshot 2026-05-25 at 15 03 00" src="https://github.com/user-attachments/assets/24534c63-c3e7-4640-bc49-bb8e4db7537f" />
 
 
 ---
@@ -177,6 +179,9 @@ Use **Virtualize** on Apple Silicon Macs because it provides better performance 
 ### Step 2: Select ISO Image
 
 Browse and select the Linux ISO file you downloaded earlier.
+
+<img width="453" height="504" alt="Screenshot 2026-05-25 at 15 04 12" src="https://github.com/user-attachments/assets/bc244ccc-ca1e-4b7c-be5d-712fcd58b57b" />
+
 
 This ISO will be used to install Linux onto the virtual machine.
 
