@@ -685,11 +685,11 @@ Try the following command from one of the compute nodes:
 ping -c 4 8.8.8.8
 ```
 
-##Question
+## Question
 
 Can the compute node reach the internet?
 
-#Answer
+## Answer
 
 No — the compute nodes do not have direct internet access.
 
@@ -729,7 +729,7 @@ Run the following on the headnode:
 ```bash
 sudo iptables -t nat -A POSTROUTING -o enp0s1 -j MASQUERADE
 ```
-###Step 3: Allow Forwarding Traffic
+### Step 3: Allow Forwarding Traffic
 
 ```bash
 sudo iptables -A FORWARD -i enp0s2 -o enp0s1 -j ACCEPT
@@ -743,7 +743,7 @@ sudo iptables -A FORWARD -i enp0s1 -o enp0s2 -m state --state RELATED,ESTABLISHE
 > - `enp0s2` → Internal / Host-only Network (cluster interface)
 
 ---
-###Step 4: Test Connectivity Again
+### Step 4: Test Connectivity Again
 
 From a compute node, run:
 
