@@ -277,16 +277,16 @@ After installation:
 2. Remove or eject the ISO if prompted
 3. Ensure the VM boots into the installed Linux system
 
-If the VM boots back into the installer instead of Linux, the ISO is still attached or being prioritized during boot.
-
-To fix this:
-
-1. Shut down the VM
-2. Open the VM settings in UTM
-3. Remove or eject the ISO
-4. Start the VM again
-
-Your VM should now boot into Linux.
+> [!WARNING]
+> If your VM boots back into the installer instead of Linux, the ISO is still attached or being prioritised during boot.
+>
+> **To fix this:**
+> - Shut down the VM  
+> - Open the VM settings in UTM  
+> - Remove or eject the ISO  
+> - Start the VM again  
+>
+> Your VM should now boot into Linux.
 
 At this point, you have successfully created your headnode VM.
 
