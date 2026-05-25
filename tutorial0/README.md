@@ -531,7 +531,13 @@ If enp0s2 is not showing, add it manually, then edit the settings.
 
 <img width="661" height="514" alt="Screenshot 2026-05-25 at 16 03 05" src="https://github.com/user-attachments/assets/752afb44-d3d7-4aca-a021-528d0e4bbcac" />
 
-Set IPv4 Configuration to Manual, the set a private IP address e.g 192.168.100.1/24 . Leave evrything else as is. Save the settings and then activate the connection. You should then see: 
+Set IPv4 Configuration to Manual, the set a private IP address e.g 192.168.100.1/24 . Leave evrything else as is. Save the settings and then activate the connection. 
+
+
+<img width="649" height="521" alt="Screenshot 2026-05-25 at 16 03 22" src="https://github.com/user-attachments/assets/ff0abef0-f503-4897-97d0-f121bec6d482" />
+
+
+You should then see: 
 
 <img width="648" height="661" alt="Screenshot 2026-05-25 at 12 12 39" src="https://github.com/user-attachments/assets/93062ff0-3a1c-422d-8a7a-20eac2b641ff" />
 
