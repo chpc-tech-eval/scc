@@ -166,10 +166,9 @@ At this stage, you do not need to configure the full cluster network yet. The go
 
 <img width="1069" height="794" alt="Screenshot 2026-05-25 at 15 01 59" src="https://github.com/user-attachments/assets/1ac4fa5d-02d6-4fc4-95a2-eece28b7ceb7" />
 
+Use **Virtualize** on Apple Silicon Macs because it provides better performance than emulation when using an ARM64/AArch64 operating system.
 
 4. Select **Linux**
-
-Use **Virtualize** on Apple Silicon Macs because it provides better performance than emulation when using an ARM64/AArch64 operating system.
 
 <img width="1068" height="780" alt="Screenshot 2026-05-25 at 15 03 00" src="https://github.com/user-attachments/assets/24534c63-c3e7-4640-bc49-bb8e4db7537f" />
 
