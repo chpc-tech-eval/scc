@@ -179,7 +179,8 @@ Use **Virtualize** on Apple Silicon Macs because it provides better performance 
 
 Browse and select the Linux ISO file you downloaded earlier.
 
-<img width="453" height="504" alt="Screenshot 2026-05-25 at 15 04 12" src="https://github.com/user-attachments/assets/bc244ccc-ca1e-4b7c-be5d-712fcd58b57b" />
+<img width="446" height="517" alt="Screenshot 2026-05-25 at 15 05 10" src="https://github.com/user-attachments/assets/54320504-9ad9-4d9e-bc75-5f42b8c3d6b9" />
+
 
 
 This ISO will be used to install Linux onto the virtual machine.
