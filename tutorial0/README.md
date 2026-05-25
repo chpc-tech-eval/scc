@@ -199,12 +199,13 @@ Use the following as a starting point:
 | RAM      | 4–8 GB      |
 | Storage  | 20–40 GB    |
 
-Your VM shares resources with your Mac.
-
-Do not allocate all available CPU cores or memory to the VM, because your Mac still needs resources to run macOS and UTM.
-
-For example, if your Mac has 8 GB of RAM, do not assign all 8 GB to the VM.
-
+> [!TIP]
+> Your VM shares resources with your Mac.
+>
+> Do not allocate all available CPU cores or memory to the VM, as your Mac still needs resources to run macOS and UTM.
+>
+> **Example:**
+> - If your Mac has **8 GB of RAM**, do not assign all 8 GB to the VM.
 ---
 
 ### Step 4: Configure the Initial Network
