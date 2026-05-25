@@ -18,13 +18,13 @@ Before starting this tutorial, ensure that you have:
 
 - UTM installed on your machine
 
-- Basic familiarity with using a computer
+- Basic familiarity with using the terminal
 
 - Enough free disk space for multiple virtual machines
 
 - Enough memory to run more than one VM at the same time
 
-No prior Linux or cluster experience is required.
+
 
 ---
 
