@@ -700,7 +700,7 @@ This is because:
 * There is no route to external networks
 
 ---
-##Enabling Internet Access via the Headnode (NAT Forwarding)
+## Enabling Internet Access via the Headnode (NAT Forwarding)
 
 To allow compute nodes to access the internet, the headnode can act as a **gateway** using Network Address Translation (NAT).
 
