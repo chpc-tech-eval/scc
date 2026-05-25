@@ -1,12 +1,20 @@
 # Tutorial 0: Setting Up a Virtual Environment with UTM on macOS
 
-This tutorial will help you become familiar with virtual computing and setting up a small virtual cluster using **UTM** on macOS.
+This tutorial introduces the basics of virtual computing and guides you through setting up a small virtual cluster using **UTM** on macOS.
 
-UTM is a virtualization and emulation application for Mac that works especially well on Apple Silicon (M1/M2/M3) devices and supports both ARM and x86 virtual machines.
+UTM is a virtualization and emulation application designed for macOS, with excellent support for Apple Silicon devices (M1/M2/M3/M4). It allows you to run multiple virtual machines using both ARM and x86 architectures.
 
-A virtual machine (VM) is a simulated computer running inside your current laptop or desktop environment. It behaves like a real machine with its own operating system (OS), networking, storage, and applications.
+A virtual machine (VM) is a software-based computer that runs inside your physical machine. Each VM has its own operating system, storage, networking, and applications, and behaves like an independent computer.
 
-Your team will use UTM to create multiple Linux virtual machines and connect them together into a small cluster environment.
+In this tutorial, you will use UTM to create multiple Linux virtual machines and connect them into a small cluster environment. This setup will form the foundation for later tutorials involving networking, distributed computing, and benchmarking.
+
+## Prerequisites
+
+Before starting this tutorial, ensure that you have:
+
+- A macOS device (preferably Apple Silicon: M1/M2/M3/M4)
+- UTM installed on your machine
+- Basic familiarity with using the terminal
 
 ---
 
