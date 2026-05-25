@@ -221,6 +221,9 @@ The **Shared Network** gives your VM internet access. This is useful for downloa
 
 The **virtio-net-pci** network card is recommended because it is efficient and commonly used in virtualized Linux environments.
 
+<img width="782" height="393" alt="Headnode shared network" src="https://github.com/user-attachments/assets/8748b108-cbc2-47e7-89c7-a6bf0bc5dd0f" />
+
+
 At this stage, your headnode only needs one network interface. Later, you will add a second private/internal network interface for cluster communication.
 
 ---
