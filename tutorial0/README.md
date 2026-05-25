@@ -12,7 +12,7 @@ In this tutorial, you will use UTM to create multiple Linux virtual machines and
 
 Before starting this tutorial, ensure that you have:
 
-- A macOS device (preferably Apple Silicon: M1/M2/M3/M4)
+- A macOS device ( M1/M2/M3/M4)
 - UTM installed on your machine
 - Basic familiarity with using the terminal
 
