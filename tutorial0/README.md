@@ -426,13 +426,7 @@ The compute nodes are worker machines that can later be used for distributed com
 ```
 ### Key Idea
 
-The headnode has access to the internet.
-
-The compute nodes do not have direct internet access.
-
-All compute node communication happens through the private/internal network.
-
-This mirrors how many real HPC clusters are structured, where compute nodes are often isolated and managed through a headnode or login node.
+The headnode has access to the internet. The compute nodes do not have direct internet access. All compute node communication happens through the private/internal network. This mirrors how many real HPC clusters are structured, where compute nodes are often isolated and managed through a headnode or login node.
 
 ---
 
@@ -447,7 +441,15 @@ Now add a second network interface for private cluster communication.
 1. Shut down the headnode VM.
 2. Open the VM settings in UTM.
 3. Go to **Network**.
+
+<img width="806" height="452" alt="Screenshot 2026-05-25 at 15 30 44" src="https://github.com/user-attachments/assets/81b81470-c062-498a-a183-4fc6f51cf8ee" />
+
+
 4. Add a new network interface.
+
+<img width="801" height="403" alt="Screenshot 2026-05-25 at 15 31 08" src="https://github.com/user-attachments/assets/17820af4-b568-4e38-a4b3-c591e8c6af2e" />
+
+
 5. Configure it as:
 
 | Setting | Value |
