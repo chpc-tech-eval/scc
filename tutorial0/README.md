@@ -303,6 +303,10 @@ For this tutorial, you will use two main types of networks:
 1. Shared Network
 2. Internal / Host-Only Network
 
+There is also an additional type:
+
+3. Bridged Network
+
 ---
 
 ### Shared Network
@@ -339,7 +343,22 @@ In this tutorial, the compute nodes will connect only to the private/internal ne
 
 ---
 
-### Why Use Two Networks?
+## 3. Bridged Network
+
+Bridged mode places the VM directly onto your physical network.
+
+- VM receives an IP from your router
+- VM behaves like a real machine on your network
+- Other devices can directly access the VM
+
+Be careful when using bridged mode.
+
+For example:
+- Misconfigured services like DHCP servers can affect your home or office network
+
+---
+
+### Why Use The Two Networks?
 
 The headnode will have two network interfaces:
 
