@@ -702,9 +702,7 @@ This is because:
 ---
 ## Enabling Internet Access via the Headnode (NAT Forwarding)
 
-To allow compute nodes to access the internet, the headnode can act as a **gateway** using Network Address Translation (NAT).
-
-This allows traffic from compute nodes to pass through the headnode to the internet.
+To allow compute nodes to access the internet, the headnode can act as a **gateway** using Network Address Translation (NAT). This allows traffic from compute nodes to pass through the headnode to the internet.
 
 ---
 
