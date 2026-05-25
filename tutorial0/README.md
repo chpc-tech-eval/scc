@@ -248,9 +248,21 @@ Using clear names is helpful later when you create multiple machines.
 
 1. Start the VM
 2. The Linux installer should boot from the ISO
+
+<img width="791" height="633" alt="Screenshot 2026-05-25 at 15 18 43" src="https://github.com/user-attachments/assets/fb0beb71-5a71-4eeb-9016-8aa2c93f3030" />
+
+
 3. Follow the installation steps
 4. Select your language and keyboard settings
+
+<img width="1279" height="834" alt="Screenshot 2026-05-25 at 15 16 47" src="https://github.com/user-attachments/assets/c27ff459-35b3-497e-9c41-c2390e599882" />
+
+
 5. Create a username and password
+
+<img width="1278" height="833" alt="Screenshot 2026-05-25 at 15 16 57" src="https://github.com/user-attachments/assets/38fd0e2d-5fc2-4961-b59a-f6f39b9d85f0" />
+
+
 6. Complete the installation
 
 If the installer requires a root password or an administrator user, make sure you set one.
