@@ -8,50 +8,79 @@ A virtual machine (VM) is a software-based computer that runs inside your physic
 
 In this tutorial, you will use UTM to create multiple Linux virtual machines and connect them into a small cluster environment. This setup will form the foundation for later tutorials involving networking, distributed computing, and benchmarking.
 
+---
+
 ## Prerequisites
 
 Before starting this tutorial, ensure that you have:
 
-- A macOS device ( M1/M2/M3/M4)
+- A macOS device (M1/M2/M3/M4)
+
 - UTM installed on your machine
-- Basic familiarity with using the terminal
+
+- Basic familiarity with using a computer
+
+- Enough free disk space for multiple virtual machines
+
+- Enough memory to run more than one VM at the same time
+
+No prior Linux or cluster experience is required.
 
 ---
 
-# Table of Contents
+## Table of Contents
 
 1. [Checklist](#checklist)
+
 2. [Install UTM](#install-utm)
-   1. [Download UTM](#download-utm)
-3. [UTM Overview](#utm-overview)
-   1. [Networking](#networking)
-4. [Download Operating System](#download-operating-system)
-5. [Create and Install Your First VM](#create-and-install-your-first-vm)
-6. [Understanding Networking](#understanding-networking)
-7. [Setup Cluster](#setup-cluster)
 
+3. [Download Operating System](#download-operating-system)
 
----
+4. [Create and Install Your Headnode VM](#create-and-install-your-headnode-vm)
 
-# Checklist
+5. [Understanding Networking](#understanding-networking)
 
-<u>Use the following checklist to keep track of your team's progress and ensure all members understand the concepts.</u>
+6. [Expand the Headnode into a Cluster](#expand-the-headnode-into-a-cluster)
 
-- [ ] Understand virtual computing, virtualization, and remote connections:
-  - [ ] Understand and explain virtualization and virtual machines
-  - [ ] Understand the difference between Shared Network, Bridged, and Host networking
-- [ ] Learn how to install an Operating System (OS):
-  - [ ] Learn about different Linux distributions and flavors
-- [ ] Learn how to setup a cluster using UTM:
-  - [ ] Learn how to connect multiple machines together
+7. [Suggested Cluster Layout](#suggested-cluster-layout)
+
+8. [Configure Networking in UTM](#configure-networking-in-utm)
+
+9. [Configure IP Addresses](#configure-ip-addresses)
+
+10. [Final Notes](#final-notes)
 
 ---
 
-# Install UTM
+## Checklist
 
-## Download UTM
+Use the following checklist to track progress:
 
-Head to your preferred search engine and search for **"UTM download"**.
+- [ ] Understand what a virtual machine is
+
+- [ ] Install UTM successfully
+
+- [ ] Download a Linux operating system ISO
+
+- [ ] Create and install your first VM
+
+- [ ] Understand that the first VM will become the headnode
+
+- [ ] Add a private/internal network interface to the headnode
+
+- [ ] Create additional compute node VMs
+
+- [ ] Connect all nodes using a private network
+
+- [ ] Configure static IP addresses
+
+- [ ] Confirm that all nodes can communicate
+
+---
+
+## Install UTM
+
+### Download UTM
 
 Download UTM from the official website:
 
@@ -61,255 +90,389 @@ You can also download it from the Mac App Store if preferred.
 
 ---
 
-## Install UTM
+### Install UTM
 
 1. Open the downloaded `.dmg` file
+
 2. Drag **UTM.app** into the **Applications** folder
+
 3. Launch UTM
 
-You may be prompted to allow additional permissions for virtualization.
+You may be prompted to allow permissions for virtualization.
 
 ---
 
-# UTM Overview
+## Download Operating System
 
-Below are the key areas of the UTM interface:
+Before creating a virtual machine, you need a Linux installation file called an **ISO image**.
 
-1. Virtual Machines List
-2. Create New VM
-3. VM Settings
-4. Start / Stop VM
-5. Network Configuration
-6. Storage and Drives
+An ISO image is a file that contains everything needed to install an operating system, similar to a virtual installation disk.
 
----
-
-# Networking
-
-There are several networking modes available in UTM. Understanding these is important for cluster setup.
-
-## 1. Shared Network (Recommended)
-
-This is the default NAT-style network.
-
-- Provides internet access to the VM
-- VM can access the outside internet
-- Simplest and safest option
-- Similar to VirtualBox NAT mode
-
-Use this for:
-- Package downloads
-- Internet access
-- General usage
-
----
-
-## 2. Bridged Network
-
-Bridged mode places the VM directly onto your physical network.
-
-- VM receives an IP from your router
-- VM behaves like a real machine on your network
-- Other devices can directly access the VM
-
-Be careful when using bridged mode.
-
-For example:
-- Misconfigured services like DHCP servers can affect your home or office network
-
----
-
-## 3. Host Network / Internal Network
-
-This allows VMs to communicate with each other privately.
-
-- No internet access by default
-- Useful for building clusters
-- Similar to an internal switch
-
-Use this for:
-- Headnode ↔ Compute node communication
-- Cluster traffic
-- Testing distributed systems
-
----
-
-# Create a New VM
-
-Open UTM and select:
-
-**Create a New Virtual Machine**
-
----
-
-## Choose Virtualization Type
-
-For Apple Silicon Macs:
-
-- Select **Virtualize**
-- Choose **Linux**
-
-For Intel Macs:
-
-- You may use either **Virtualize** or **Emulate**
-
----
-
-## Select ISO Image
-
-Browse and select your downloaded Linux ISO.
-
----
-
-## Configure Hardware
-
-Choose suitable resources based on your Mac specifications.
-
-Recommended starter setup:
-
-| Resource | Recommended |
-|---|---|
-| CPU | 2–4 Cores |
-| RAM | 4–8 GB |
-| Storage | 20–40 GB |
-
-Remember:
-- Your VMs share resources with your host machine
-- Avoid allocating all available memory or CPU
-
----
-
-## Configure Storage
-
-The default storage settings are usually acceptable.
-
-You can resize storage later if needed.
-
----
-
-# Operating System
-
-After creating the VM:
-
-1. Start the VM
-2. The Linux installer will boot from the ISO
-3. Follow the installation process
-
----
-
-# Download Preferred OS
-
-You can browse Linux distributions here:
+Browse Linux distributions here:
 
 https://www.linux.org/pages/download/
 
-Recommended beginner-friendly options:
+### Recommended options
 
 - Ubuntu
+
 - Rocky Linux
 
-For Apple Silicon Macs:
-- Ensure you download the **ARM64 / AArch64** version of the ISO
+Ubuntu is beginner-friendly.
 
-Example:
+Rocky Linux is more enterprise-like and is closer to what you may see in server, cloud, and HPC environments.
+
+---
+
+### Important for Apple Silicon Users
+
+If you are using an M1/M2/M3/M4 Mac, download the **ARM64** or **AArch64** version of the operating system.
+
+Examples:
+
 - Ubuntu Server ARM64
+
 - Rocky Linux AArch64
 
-Do NOT download AMD64 images on Apple Silicon Macs.
+Do **not** download:
+
+- AMD64
+
+- x86_64
+
+These are designed for Intel/AMD machines and may not boot correctly on Apple Silicon when using virtualization.
 
 ---
 
-# Mount and Install
+## Create and Install Your Headnode VM
 
-Once the ISO is attached:
+In this section, you will create your first virtual machine.
+
+This VM will become your **headnode**.
+
+The headnode is the main machine in the cluster. It is usually used to manage the cluster, connect to other machines, and coordinate work between compute nodes.
+
+At this stage, you do not need to configure the full cluster network yet. The goal is to first create one working Linux VM.
+
+---
+
+### Step 1: Create a New VM
+
+1. Open UTM
+
+2. Click **Create New Virtual Machine**
+
+3. Select **Virtualize**
+
+4. Select **Linux**
+
+Use **Virtualize** on Apple Silicon Macs because it provides better performance than emulation when using an ARM64/AArch64 operating system.
+
+---
+
+### Step 2: Select ISO Image
+
+Browse and select the Linux ISO file you downloaded earlier.
+
+This ISO will be used to install Linux onto the virtual machine.
+
+---
+
+### Step 3: Configure Hardware Resources
+
+Choose suitable resources based on your Mac specifications.
+
+Use the following as a starting point:
+
+| Resource | Recommended |
+
+|---|---|
+
+| CPU | 2–4 Cores |
+
+| RAM | 4–8 GB |
+
+| Storage | 20–40 GB |
+
+Your VM shares resources with your Mac.
+
+Do not allocate all available CPU cores or memory to the VM, because your Mac still needs resources to run macOS and UTM.
+
+For example, if your Mac has 8 GB of RAM, do not assign all 8 GB to the VM.
+
+---
+
+### Step 4: Configure the Initial Network
+
+For the first VM setup, use:
+
+| Setting | Value |
+
+|---|---|
+
+| Network Mode | Shared Network |
+
+| Emulated Network Card | virtio-net-pci |
+
+The **Shared Network** gives your VM internet access. This is useful for downloading packages and updates.
+
+The **virtio-net-pci** network card is recommended because it is efficient and commonly used in virtualized Linux environments.
+
+At this stage, your headnode only needs one network interface. Later, you will add a second private/internal network interface for cluster communication.
+
+---
+
+### Step 5: Create the VM
+
+Complete the setup and create the virtual machine.
+
+You may name it:
+
+```text
+
+headnode
+
+```
+
+Using clear names is helpful later when you create multiple machines.
+
+---
+
+### Step 6: Install Linux
 
 1. Start the VM
-2. Complete the Linux installation
-3. Create a username and password
-4. Reboot the VM after installation
-5. Remove the ISO if prompted
+2. The Linux installer should boot from the ISO
+3. Follow the installation steps
+4. Select your language and keyboard settings
+5. Create a username and password
+6. Complete the installation
+
+If the installer requires a root password or an administrator user, make sure you set one.
 
 ---
 
-# Setup Cluster
+### Step 7: Reboot and Eject the ISO
 
-You are now ready to create additional VMs and build a simple cluster.
+After installation:
+
+1. Reboot the VM
+2. Remove or eject the ISO if prompted
+3. Ensure the VM boots into the installed Linux system
+
+If the VM boots back into the installer instead of Linux, the ISO is still attached or being prioritized during boot.
+
+To fix this:
+
+1. Shut down the VM
+2. Open the VM settings in UTM
+3. Remove or eject the ISO
+4. Start the VM again
+
+Your VM should now boot into Linux.
+
+At this point, you have successfully created your headnode VM.
 
 ---
 
-# Suggested Cluster Layout
+## Understanding Networking
 
-| Machine | Network Adaptor 1 | Network Adaptor 2 |
+Before expanding your setup into a cluster, it is important to understand the networking modes you will use.
+
+A cluster is made up of multiple machines that need to communicate with each other. In a real cluster, machines are often separated into different networks depending on their purpose.
+
+For this tutorial, you will use two main types of networks:
+
+1. Shared Network
+2. Internal / Host-Only Network
+
+---
+
+### Shared Network
+
+The Shared Network is used to provide internet access to a VM.
+
+It is similar to NAT networking in VirtualBox.
+
+Use this for:
+
+- Installing packages
+- Downloading updates
+- Accessing external repositories
+- General internet access
+
+In this tutorial, only the headnode will use the Shared Network.
+
+---
+
+### Internal / Host-Only Network
+
+The Internal or Host-Only Network is used for private communication between VMs.
+
+Use this for:
+
+- Headnode to compute node communication
+- Cluster traffic
+- SSH between nodes
+- MPI or benchmarking traffic in later tutorials
+
+By default, this network does not provide internet access.
+
+In this tutorial, the compute nodes will connect only to the private/internal network. They will not have direct internet access.
+
+---
+
+### Why Use Two Networks?
+
+The headnode will have two network interfaces:
+
+1. One interface for internet access
+2. One interface for private cluster communication
+
+The compute nodes will only have one network interface:
+
+1. One interface for private cluster communication
+
+This creates a simple cluster design where the headnode acts as the central machine.
+
+---
+
+## Expand the Headnode into a Cluster
+
+Now that your headnode VM is working, you can expand the setup into a cluster.
+
+You will do this by:
+
+1. Adding a second network interface to the headnode
+2. Creating compute nodes
+3. Connecting the compute nodes to the same private/internal network
+4. Assigning static IP addresses
+
+---
+
+## Suggested Cluster Layout
+
+Your cluster will consist of:
+
+- One headnode
+- Two compute nodes
+
+The headnode is the main node.
+
+The compute nodes are worker machines that can later be used for distributed computing and benchmarking.
+
+---
+
+### Network Design
+
+| Machine | Adapter 1 | Adapter 2 |
 |---|---|---|
-| Headnode | Shared Network | Internal Network |
-| Compute Node 1 | Internal Network | — |
-| Compute Node 2 | Internal Network | — |
+| Headnode | Shared Network | Internal / Host-Only Network |
+| Compute Node 1 | Internal / Host-Only Network | - |
+| Compute Node 2 | Internal / Host-Only Network | - |
 
 ---
 
-# Configure Headnode Networking
+### Visual Representation
 
-Your headnode should have:
+```text
+        INTERNET
+            |
+     [ Shared Network ]
+            |
+        Headnode
+        Adapter 1: Shared Network
+        Adapter 2: Internal Network
+            |
+     [ Internal / Host-Only Network ]
+        |                         |
+    Compute1                  Compute2
+```
+### Key Idea
 
-1. Shared Network adaptor
-2. Internal Network adaptor
+The headnode has access to the internet.
 
-The Shared adaptor provides internet access.
+The compute nodes do not have direct internet access.
 
-The Internal adaptor connects to compute nodes.
+All compute node communication happens through the private/internal network.
 
----
-
-# Configure Internal Network
-
-In the VM settings:
-
-1. Open **Network**
-2. Add a second network interface
-3. Configure it as:
-   - **Mode:** Host or Internal
-   - **Network Name:** `cluster-net`
-
-Use the exact same network name on all VMs.
-
----
-
-# Configure Compute Nodes
-
-Each compute node only requires:
-
-- One Internal/Host network adaptor connected to `cluster-net`
-
-Once connected:
-- The VMs can communicate directly
+This mirrors how many real HPC clusters are structured, where compute nodes are often isolated and managed through a headnode or login node.
 
 ---
 
-# Configure IP Addresses
+## Configure Networking in UTM
 
-You can manually configure IP addresses on each VM.
+### Configure the Headnode
 
-Example:
+Your headnode already has one network interface using Shared Network.
 
-| Machine | IP Address |
+Now add a second network interface for private cluster communication.
+
+1. Shut down the headnode VM.
+2. Open the VM settings in UTM.
+3. Go to **Network**.
+4. Add a new network interface.
+5. Configure it as:
+
+| Setting | Value |
 |---|---|
-| Headnode | 10.10.10.1 |
-| Compute1 | 10.10.10.2 |
-| Compute2 | 10.10.10.3 |
+| Network Mode | Emulated VLAN |
+| VLAN Name | `cluster-net` |
+| Emulated Network Card | `virtio-net-pci` |
+
+Use a simple VLAN name like `cluster-net` and keep that exact name for all nodes.
+
+### Create Compute Node VMs
+
+Now create two additional VMs: `compute1` and `compute2`.
+
+You can either:
+
+- Install each compute node from ISO (same process as headnode), or
+- Clone the headnode VM after installation and rename clones.
+
+For each compute node:
+
+1. Create or clone VM.
+2. Set VM name (`compute1`, `compute2`).
+3. In **Network**, configure only one adapter:
+   - **Network Mode:** Emulated VLAN
+   - **VLAN Name:** `cluster-net`
+   - **Network Card:** `virtio-net-pci`
+4. Do **not** add Shared Network to compute nodes.
+
+All nodes must use the same VLAN name to be on the same private network.
 
 ---
 
-# Final Notes
+## Configure IP Addresses
 
-Once networking is configured correctly:
+Now configure static IPs so the nodes can always find each other reliably.
 
-- Your VMs will be able to communicate
-- You can SSH between nodes
-- You can begin experimenting with clustering technologies such as:
-  - Kubernetes
-  - Docker Swarm
-  - OpenStack
-  - Ceph
-  - MPI Clusters
+Suggested addressing:
 
-You now have a functional virtual lab environment running on macOS using UTM.
+| Node | Interface | IP Address | CIDR |
+|---|---|---|---|
+| `headnode` | private adapter | `10.10.10.10` | `/24` |
+| `compute1` | only adapter | `10.10.10.11` | `/24` |
+| `compute2` | only adapter | `10.10.10.12` | `/24` |
+
+Gateway/DNS are optional on private-only interfaces.  
+For compute nodes without internet adapters, they are usually not needed.
+
+### Example Netplan (Ubuntu Server)
+
+Use this style on each node (adjust interface names and IPs).
+
+`/etc/netplan/01-cluster.yaml`:
+
+```yaml
+network:
+  version: 2
+  ethernets:
+    enp0s1:
+      dhcp4: true
+    enp0s2:
+      dhcp4: false
+      addresses:
+        - 10.10.10.10/24
+```
