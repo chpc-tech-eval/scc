@@ -142,11 +142,7 @@ Rocky Linux is more enterprise-like and is closer to what you may see in server,
 
 ## Create and Install Your Headnode VM
 
-In this section, you will create your first virtual machine.
-
-This VM will become your **headnode**.
-
-The headnode is the main machine in the cluster. It is usually used to manage the cluster, connect to other machines, and coordinate work between compute nodes.
+In this section, you will create your first virtual machine. This VM will become your **headnode**. The headnode is the main machine in the cluster. It is usually used to manage the cluster, connect to other machines, and coordinate work between compute nodes.
 
 At this stage, you do not need to configure the full cluster network yet. The goal is to first create one working Linux VM.
 
