@@ -654,5 +654,111 @@ Compute2
 
 ---
 
+## Test Cluster Connectivity
+
+Now that all nodes are configured, you can test communication across the cluster.
+
+---
+
+### Test Private Network Connectivity
+
+From the **headnode**, try pinging the compute nodes:
+
+```bash
+ping 192.168.100.2
+ping 192.168.100.3
+```
+
+From one compute node, try pinging the headnode and the other compute node:
 
 
+```bash
+ping 192.168.100.1
+ping 192.168.100.2/3
+```
+
+Quick Check
+
+Try the following command from one of the compute nodes:
+
+```bash
+ping -c 4 8.8.8.8
+```
+
+##Question
+
+Can the compute node reach the internet?
+
+#Answer
+
+No — the compute nodes do not have direct internet access.
+
+This is because:
+
+* They are only connected to the internal/private network
+* They do not have a connection to the Shared Network
+* There is no route to external networks
+
+---
+##Enabling Internet Access via the Headnode (NAT Forwarding)
+
+To allow compute nodes to access the internet, the headnode can act as a **gateway** using Network Address Translation (NAT).
+
+This allows traffic from compute nodes to pass through the headnode to the internet.
+
+---
+
+### Step 1: Enable IP Forwarding on the Headnode
+
+Run the following command on the headnode:
+
+```bash
+sudo sysctl -w net.ipv4.ip_forward=1
+```
+
+To make this change permanent:
+
+
+```bash
+echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
+```
+### Step 2: Configure NAT Using iptables
+
+Run the following on the headnode:
+
+```bash
+sudo iptables -t nat -A POSTROUTING -o enp0s1 -j MASQUERADE
+```
+###Step 3: Allow Forwarding Traffic
+
+```bash
+sudo iptables -A FORWARD -i enp0s2 -o enp0s1 -j ACCEPT
+sudo iptables -A FORWARD -i enp0s1 -o enp0s2 -m state --state RELATED,ESTABLISHED -j ACCEPT
+```
+---
+> [!IMPORTANT]
+> Replace the interface names if needed:
+>
+> - `enp0s1` → Shared Network (internet-facing interface)
+> - `enp0s2` → Internal / Host-only Network (cluster interface)
+
+---
+###Step 4: Test Connectivity Again
+
+From a compute node, run:
+
+```bash
+ping -c 4 8.8.8.8
+```
+If successful, the compute node can now reach the internet through the headnode.
+
+⸻
+
+What Just Happened?
+
+* The headnode is now acting as a router
+* Compute nodes send traffic to the headnode
+* The headnode forwards traffic to the internet
+* Responses are routed back through the headnode
+
+This is a simplified version of how networking works in real clusters and cloud environments.
