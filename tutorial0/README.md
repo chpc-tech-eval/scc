@@ -25,11 +25,11 @@ Before starting this tutorial, ensure that you have:
    1. [Download UTM](#download-utm)
 3. [UTM Overview](#utm-overview)
    1. [Networking](#networking)
-4. [Create a New VM](#create-a-new-vm)
-5. [Operating System](#operating-system)
-6. [Download Preferred OS](#download-preferred-os)
-7. [Mount and Install](#mount-and-install)
-8. [Setup Cluster](#setup-cluster)
+4. [Download Operating System](#download-operating-system)
+5. [Create and Install Your First VM](#create-and-install-your-first-vm)
+6. [Understanding Networking](#understanding-networking)
+7. [Setup Cluster](#setup-cluster)
+
 
 ---
 
