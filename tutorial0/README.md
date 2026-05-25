@@ -185,14 +185,10 @@ Choose suitable resources based on your Mac specifications.
 Use the following as a starting point:
 
 | Resource | Recommended |
-
-|---|---|
-
-| CPU | 2–4 Cores |
-
-| RAM | 4–8 GB |
-
-| Storage | 20–40 GB |
+|----------|-------------|
+| CPU      | 2–4 Cores   |
+| RAM      | 4–8 GB      |
+| Storage  | 20–40 GB    |
 
 Your VM shares resources with your Mac.
 
