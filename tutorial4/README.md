@@ -1235,21 +1235,26 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
 
 4. **Start** and **enable** the `munge` service
 
-5. Install dependency packages:
+   Test munge encryption/decryption between the current node and a different node
+    ```bash
+      munge -n | ssh <different node hostname or ip> unmunge
+    ```
+
+6. Install dependency packages:
 
     ```bash
     sudo dnf install gcc openssl openssl-devel pam-devel numactl numactl-devel hwloc lua readline-devel ncurses-devel man2html libibmad libibumad rpm-build perl-Switch libssh2-devel mariadb-devel perl-ExtUtils-MakeMaker rrdtool-devel lua-devel hwloc-devel pmix pmix-devel
     ```
 
-6. Download the 25.11.6 version of the Slurm source code tarball (.tar.bz2) from https://download.schedmd.com/slurm/. Copy the URL for `slurm-25.11.6.bz2` from your browser and use the `wget` command to easily download files directly to your VM.
+7. Download the 25.11.6 version of the Slurm source code tarball (.tar.bz2) from https://download.schedmd.com/slurm/. Copy the URL for `slurm-25.11.6.bz2` from your browser and use the `wget` command to easily download files directly to your VM.
 
-7. Environment variables are a convenient way to store a name and value for easier recovery when they're needed. Export the version of the tarball you downloaded to the environment variable VERSION. This will make installation easier as you will see how we reference the environment variable instead of typing out the version number at every instance.
+8. Environment variables are a convenient way to store a name and value for easier recovery when they're needed. Export the version of the tarball you downloaded to the environment variable VERSION. This will make installation easier as you will see how we reference the environment variable instead of typing out the version number at every instance.
 
     ```bash
       export VERSION=25.11.6
     ```
 
-8. Build RPM packages for Slurm for installation
+9. Build RPM packages for Slurm for installation
 
     ```bash
       rpmbuild --define "_annobin_gcc_plugin %{nil}" --define "_with_pmix --with-pmix=/usr" -ta slurm-$VERSION.tar.bz2
@@ -1257,9 +1262,9 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
 
     This should successfully generate Slurm RPMs in the `~/rpmbuild/RPMS/x86_64` directory.
 
-9.  Copy these RPMs to your compute node to install later, using `scp`.
+10.  Copy these RPMs to your compute node to install later, using `scp`.
 
-10. Install Slurm server
+11. Install Slurm server
 
     ```bash
       sudo dnf localinstall ~/rpmbuild/RPMS/x86_64/slurm-$VERSION*.rpm \
@@ -1269,7 +1274,7 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
                             ~/rpmbuild/RPMS/x86_64/slurm-slurmctld-$VERSION*.rpm
     ```
 
-11. Setup Slurm server
+12. Setup Slurm server
 
     ```bash
       sudo cp /etc/slurm/slurm.conf.example /etc/slurm/slurm.conf
