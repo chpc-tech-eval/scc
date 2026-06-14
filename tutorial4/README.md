@@ -1252,7 +1252,7 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
 8. Build RPM packages for Slurm for installation
 
     ```bash
-      rpmbuild --define "_annobin_gcc_plugin %{nil}" --define "_with_pmix --with-pmix=/usr" --with multiple_slurmd -ta slurm-$VERSION.tar.bz2
+      rpmbuild --define "_annobin_gcc_plugin %{nil}" --define "_with_pmix --with-pmix=/usr" -ta slurm-$VERSION.tar.bz2
     ```
 
     This should successfully generate Slurm RPMs in the `~/rpmbuild/RPMS/x86_64` directory.
