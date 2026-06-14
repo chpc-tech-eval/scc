@@ -1282,22 +1282,25 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
     ControlMachine=   #DNS name of the head node
     ```
 
-    Populate the nodes and partitions at the bottom with the following two lines:
+    Populate the node's specification at the bottom with the following lines:
 
     ```conf
-    NodeName=<computenode> Sockets=<num_sockets> CoresPerSocket=<num_cpu_cores> \
-    ThreadsPerCore=<num_threads_per_core> State=UNKNOWN
+    NodeName=<computenode> Sockets=<num_sockets> CoresPerSocket=<num_cpu_cores> ThreadsPerCore=<num_threads_per_core> State=UNKNOWN
     ```
+
+    The `<computenode>` value needs to be replaced with the DNS names of your compute nodes. This can either be a comma-seperated list (e.g. `compute_node_1,compute_node_2,compute_node_3`), a hostlist expression (e.g. `compute_node_[1-3]`), or individual specification lines per compute node.
+
+    Compute nodes then need to be grouped into partitions:
 
     ```conf
     PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
     ```
 
-    **To check how many cores your compute node has, run `lscpu` on the compute node.** You will get output including `CPU(s)`, `Thread(s) per core`, `Core(s) per socket` and more that will help you determine what to use for the Slurm configuration.
+    **To check how many cores your compute node has, run `lscpu` on the compute node.** You will get output including `CPU(s)`, `Thread(s) per core`, `Core(s) per socket` and more that will help you determine what to use for the Slurm configuration. Use `free -m` to get details on the amount of memory in MiB available on your compute node.
 
     **Hint: if you overspec your compute resources in the definition file then Slurm will not be able to use the nodes.**
 
-12. Create Necessary Directories and Set Permissions:
+13. Create Necessary Directories and Set Permissions:
   ```bash
     sudo mkdir -p /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
     sudo chown -R slurm:slurm /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
