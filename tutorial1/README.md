@@ -333,6 +333,18 @@ After browsing to the image that you'd like to use, enter a sensible `Image Name
 
 <p align="center"><img alt="OpenStack Select Source." src="./resources/openstack_add_arch2.png" width=900 /></p>
 
+Please note that the login details for you **own** uploaded image may vary depending on the choice of operating system. `SSH keys` might also not load correctly. 
+
+```bash
+# The most common login credentails:
+user     : <OS flavor>
+password : <OS flavor>
+
+# For example on Arch
+user     : arch
+password : arch
+```
+
 ## OpenStack Instance Flavors
 
 An important aspect of system administration is resource monitoring, management and utilization. Each Team will be required to manage their available resources and ensure that the resources of their clusters are utilized in such a way as to maximize system performance. You have been allocated a pool of resources which you will need to decide how you are going to allocate the sizing of the compute, memory and storage across your head node and compute node(s).
@@ -731,7 +743,7 @@ You will now install and run HPL on your **head node**.
    ```bash
    # Arch
    sudo pacman -Syu
-   sudo pacman -S base-devel openmpi atlas-lapack nano wget
+   sudo pacman -S base-devel openmpi openblas nano wget
    ```
 </details>
 
