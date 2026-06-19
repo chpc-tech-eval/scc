@@ -281,7 +281,7 @@ We need to install the statically `($(LIBdir)/libhpl.a)` and dynamically`($(LAdi
      ```bash
      # Arch
      sudo pacman -Syu
-     sudo pacman -S base-devel openmpi atlas-lapack nano wget
+     sudo pacman -S base-devel openmpi openblas nano wget
      ```
 
 1. Configuring and Tuning HPL
@@ -346,7 +346,7 @@ Code compiled specifically for HPC hardware can use instruction sets like `AVX`,
    sudo apt install build-essential hwloc libhwloc-dev libevent-dev gfortran wget
 
    # Pacman
-   sudo pacman install base-devel gfortran git gcc wget
+   sudo pacman -S base-devel gcc gcc-fortran git wget
    ```
 
 1. Fetch and Compile OpenBLAS Source Files
@@ -475,7 +475,7 @@ You will be making use of the **2024-2** versions of the Intel oneAPI and HPC To
    sudo apt install libdrm2 libgtk-3-0 libnotify4 xdg-utils libxcb-dri3-0 libgbm1 libatspi2.0-0
 
    # Pacman (Arch)
-   sudo pacman -S libdrm gtk3 libnotify xdg-utils libxcb mesa-libgbm at-spi2-core
+   sudo pacman -S libdrm gtk3 libnotify xdg-utils libxcb mesa at-spi2-core
    ```
 1. Download the offline installers into your `HOME` directory
    * Intel oneAPI Base Toolkit
