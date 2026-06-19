@@ -654,8 +654,11 @@ Pacman-based systems
 # Not recommend for beginners, unless you have previous Linux expertise or
 # unless you are looking for a challenge.
 
+# The image available on Sebowa has outdated packages and package database, and a corrupted keyring
+# Run the following two commands in this order to update the keyring and installed packages
 sudo pacman -Sy archlinux-keyring
 sudo pacman -Syu
+
 sudo pacman -S <PACKAGE_NAME>
 sudo pacman -R <PACKAGE_NAME>
 ```
