@@ -1235,27 +1235,32 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
 
 4. **Start** and **enable** the `munge` service
 
+   Test munge encryption/decryption between the current node and a different node
+    ```bash
+      munge -n | ssh <different node hostname or ip> unmunge
+    ```
+
 5. Install dependency packages:
 
     ```bash
-    sudo dnf install gcc openssl openssl-devel pam-devel numactl numactl-devel hwloc lua readline-devel ncurses-devel man2html libibmad libibumad rpm-build perl-Switch libssh2-devel mariadb-devel perl-ExtUtils-MakeMaker rrdtool-devel lua-devel hwloc-devel
+    sudo dnf install gcc openssl openssl-devel pam-devel numactl numactl-devel hwloc lua readline-devel ncurses-devel man2html libibmad libibumad rpm-build perl-Switch libssh2-devel mariadb-devel perl-ExtUtils-MakeMaker rrdtool-devel lua-devel hwloc-devel pmix pmix-devel
     ```
 
-6. Download the 20.11.9 version of the Slurm source code tarball (.tar.bz2) from https://download.schedmd.com/slurm/. Copy the URL for `slurm-20.11.9.tar.bz2` from your browser and use the `wget` command to easily download files directly to your VM.
+6. Download the 25.11.6 version of the Slurm source code tarball (.tar.bz2) from https://download.schedmd.com/slurm/. Copy the URL for `slurm-25.11.6.bz2` from your browser and use the `wget` command to easily download files directly to your VM.
 
 7. Environment variables are a convenient way to store a name and value for easier recovery when they're needed. Export the version of the tarball you downloaded to the environment variable VERSION. This will make installation easier as you will see how we reference the environment variable instead of typing out the version number at every instance.
 
     ```bash
-      export VERSION=20.11.9
+      export VERSION=25.11.6
     ```
 
 8. Build RPM packages for Slurm for installation
 
     ```bash
-      sudo rpmbuild -ta slurm-$VERSION.tar.bz2
+      rpmbuild --define "_annobin_gcc_plugin %{nil}" --define "_with_pmix --with-pmix=/usr" -ta slurm-$VERSION.tar.bz2
     ```
 
-    This should successfully generate Slurm RPMs in the directory that you invoked the `rpmbuild` command from.
+    This should successfully generate Slurm RPMs in the `~/rpmbuild/RPMS/x86_64` directory.
 
 9.  Copy these RPMs to your compute node to install later, using `scp`.
 
@@ -1282,26 +1287,29 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
     ControlMachine=   #DNS name of the head node
     ```
 
-    Populate the nodes and partitions at the bottom with the following two lines:
+    Populate the node's specification at the bottom with the following lines:
 
     ```conf
-    NodeName=<computenode> Sockets=<num_sockets> CoresPerSocket=<num_cpu_cores> \
-    ThreadsPerCore=<num_threads_per_core> State=UNKNOWN
+    NodeName=<computenode> Sockets=<num_sockets> CoresPerSocket=<num_cpu_cores> ThreadsPerCore=<num_threads_per_core> State=UNKNOWN
     ```
+
+    The `<computenode>` value needs to be replaced with the DNS names of your compute nodes. This can either be a comma-seperated list (e.g. `compute_node_1,compute_node_2,compute_node_3`), a hostlist expression (e.g. `compute_node_[1-3]`), or individual specification lines per compute node.
+
+    Compute nodes then need to be grouped into partitions:
 
     ```conf
     PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
     ```
 
-    **To check how many cores your compute node has, run `lscpu` on the compute node.** You will get output including `CPU(s)`, `Thread(s) per core`, `Core(s) per socket` and more that will help you determine what to use for the Slurm configuration.
+    **To check how many cores your compute node has, run `lscpu` on the compute node.** You will get output including `CPU(s)`, `Thread(s) per core`, `Core(s) per socket` and more that will help you determine what to use for the Slurm configuration. Use `free -m` to get details on the amount of memory in MiB available on your compute node.
 
     **Hint: if you overspec your compute resources in the definition file then Slurm will not be able to use the nodes.**
 
 12. Create Necessary Directories and Set Permissions:
-  ```bash
+    ```bash
     sudo mkdir -p /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
     sudo chown -R slurm:slurm /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
-  ```
+    ```
 
 13. **Start** and **enable** the `slurmctld` service on the head node.
 

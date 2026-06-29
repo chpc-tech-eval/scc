@@ -654,7 +654,11 @@ Pacman-based systems
 # Not recommend for beginners, unless you have previous Linux expertise or
 # unless you are looking for a challenge.
 
+# The image available on Sebowa has outdated packages and package database, and a corrupted keyring
+# Run the following two commands in this order to update the keyring and installed packages
+sudo pacman -Sy archlinux-keyring
 sudo pacman -Syu
+
 sudo pacman -S <PACKAGE_NAME>
 sudo pacman -R <PACKAGE_NAME>
 ```
@@ -731,7 +735,7 @@ You will now install and run HPL on your **head node**.
    ```bash
    # Arch
    sudo pacman -Syu
-   sudo pacman -S base-devel openmpi atlas-lapack nano wget
+   sudo pacman -S base-devel openmpi openblas nano wget
    ```
 </details>
 
@@ -807,7 +811,7 @@ You will now install and run HPL on your **head node**.
    MPdir              = /usr/lib/openmpi
 
    LAdir              = /usr/lib
-   LAlib              = $(LAdir)/libcblas.so $(LAdir)/libatlas.so
+   LAlib              = -lopenblas
 
    CC                 = mpicc
 
