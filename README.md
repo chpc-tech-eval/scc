@@ -1,4 +1,4 @@
-CHPC 2025 Student Cluster Competition
+CHPC 2026 Student Cluster Competition
 ======================================
 
 Welcome the **Center for High Performance Computing (CHPC)'s Student Cluster Competition (SCC)** - Team Selection Round. This round requires each team to build a **prototype multi-node compute cluster** within the National Integrated Cyber Infrastructure Systems (NICIS) **virtual compute cloud** (described below).
