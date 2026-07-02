@@ -43,7 +43,7 @@ You are strongly encouraged to get help and even assist others by [Opening and P
 
 Everyday will comprise of a couple of lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](resources/CHPC_2025_SCC_Selection_Round_Timetable.pdf) is available for you to download.
 
-<p align="center"><img alt="Timetable." src="resources/Selection Round Timetable 226.png" width=900 /></p>
+<p align="center"><img alt="Timetable." src="resources/Selection_Round_Timetable_2026.png" width=900 /></p>
 
 ## Scoring
 
