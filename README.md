@@ -134,7 +134,7 @@ In addition, your choice of design must take into consideration:
 * Team Management, Coordination and Planning.
 
 > [!IMPORTANT]
-> You may submit an additional design, that extends upon your small R 500 000.00 cluster, up to the value of R 5 000 000.00. You may use any of the above links for this exercise, using a Dollar to Rand conversion rate or 1:20. You may use GPU's from either AMD or NVIDIA. You may utilize CPUs from either AMD or Intel. You must use HPE as a base platform for your severs.
+> You may submit an additional design, that extends upon your small R 650 000.00 cluster, up to the value of R 5 000 000.00. You may use any of the above links for this exercise, using a Dollar to Rand conversion rate or 1:20. You may use GPU's from either AMD or NVIDIA. You may utilize CPUs from either AMD or Intel. You must use HPE as a base platform for your severs.
 >
 > In this revised design, consider additional nodes, additional / performance CPU's, additional RAM, GPU's, InfiniBand interconnects and any other aspects that you think would improve the performance of your initial cluster design.
 >
@@ -147,14 +147,14 @@ The 10 minute slide presentation by the whole team must include your design deci
 After the presentation the judging panel will have an opportunity to ask questions to each member of your team. All members of your team can be questioned about any part of the cluster, so make sure you are fully familiar with the design.
 
 > [!CAUTION]
-> The deadline for submission of the Cluster Design Assignment is **23:00 on Friday the 11th July**. Late submissions will be penalized.
+> The deadline for submission of the Cluster Design Assignment is **23:00 on Friday the 10th July**. Late submissions will be penalized.
 
 ## Technical Knowledge Assessment
 
-Each Team must work together to answer and complete the [Technical Knowledge Assessment](resources/CHPC_SCC_2025_Technical_Knowledge_Assessment.docx) to the best of their ability. Team Captains must email your findings to the organizers **no later than 23:00 12th July**. You are required to demonstrate your understanding of the concepts in **YOUR OWN WORDS**. Keep your answers succinct and to the point. Your answers to each of the questions, should not exceed more than 2-3 lines.
+Each Team must work together to answer and complete the [Technical Knowledge Assessment](resources/CHPC_SCC_2025_Technical_Knowledge_Assessment.docx) to the best of their ability. Team Captains must email your findings to the organizers **no later than 23:00 11th July**. You are required to demonstrate your understanding of the concepts in **YOUR OWN WORDS**. Keep your answers succinct and to the point. Your answers to each of the questions, should not exceed more than 2-3 lines.
 
 > [!CAUTION]
-> The deadline for submission of the Technical Knowledge Assessment is **23:00 on Saturday the 12th July**. Late submissions will be penalized.
+> The deadline for submission of the Technical Knowledge Assessment is **23:00 on Saturday the 11th July**. Late submissions will be penalized.
 
 ## Tutorials
 
