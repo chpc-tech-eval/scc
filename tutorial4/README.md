@@ -1243,7 +1243,7 @@ The Slurm Workload Manager (formerly known as Simple Linux Utility for Resource 
 5. Install dependency packages:
 
     ```bash
-    sudo dnf install gcc openssl openssl-devel pam-devel numactl numactl-devel hwloc lua readline-devel ncurses-devel man2html libibmad libibumad rpm-build perl-Switch libssh2-devel mariadb-devel perl-ExtUtils-MakeMaker rrdtool-devel lua-devel hwloc-devel pmix pmix-devel
+    sudo dnf install gcc openssl openssl-devel pam-devel numactl numactl-devel hwloc lua readline-devel ncurses-devel man2html libibmad libibumad rpm-build perl-Switch libssh2-devel mariadb-devel perl-ExtUtils-MakeMaker rrdtool-devel lua-devel hwloc-devel pmix pmix-devel dbus-devel
     ```
 
 6. Download the 25.11.6 version of the Slurm source code tarball (.tar.bz2) from https://download.schedmd.com/slurm/. Copy the URL for `slurm-25.11.6.bz2` from your browser and use the `wget` command to easily download files directly to your VM.
