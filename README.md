@@ -1,4 +1,4 @@
-CHPC 2025 Student Cluster Competition
+CHPC 2026 Student Cluster Competition
 ======================================
 
 Welcome the **Center for High Performance Computing (CHPC)'s Student Cluster Competition (SCC)** - Team Selection Round. This round requires each team to build a **prototype multi-node compute cluster** within the National Integrated Cyber Infrastructure Systems (NICIS) **virtual compute cloud** (described below).
@@ -19,7 +19,6 @@ The goal of this document is to introduce you to the competition platform and fa
     1. [Cluster Design Assignment](#cluster-design-assignment)
     1. [Technical Knowledge Assessment](#technical-knowledge-assessment)
     1. [Tutorials](#tutorials)
-1. [Lecture Recordings](#lecture-recordings)
 1. [Contributing to the Project](#contributing-to-the-project)
     1. [Steps to follow when editing existing content](#steps-to-follow-when-editing-existing-content)
     1. [Syntax and Style](#syntax-and-style)
@@ -41,9 +40,9 @@ You are strongly encouraged to get help and even assist others by [Opening and P
 
 ## Timetable
 
-Everyday will comprise of four lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](resources/CHPC_2025_SCC_Selection_Round_Timetable.pdf) is available for you to download.
+Everyday will comprise of a couple of lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](resources/SCC26_Selection_Round_TimeTable_final1.pdf) is available for you to download.
 
-<p align="center"><img alt="Timetable." src="resources/CHPC_2025_SCC_Local_Selection_Round_Timetable.png" width=900 /></p>
+<p align="center"><img alt="Timetable." src="resources/SCC26_Selection_Round_Final_Roster.png" width=900 /></p>
 
 ## Scoring
 
@@ -59,7 +58,7 @@ Teams will be evaluate according to the following breakdown, with your progress 
 
 ## Instructions for Mentors
 
-The role of mentors, instructors and volunteers is to provide leadership and guidance for the student competitors participating in this year's Center for High Performance Computing 2025 Student Cluster Competition.
+The role of mentors, instructors and volunteers is to provide leadership and guidance for the student competitors participating in this year's Center for High Performance Computing 2026 Student Cluster Competition.
 
 In preparing your teams for the competition, your main goal is to ensure that you teach and impart knowledge to the student participants in such a way that they are empowered and enable to tackle the problems and benchmarking tasks themselves.
 
@@ -116,7 +115,7 @@ You will need to submit the following for scoring and evaluation by the judges:
 
 ## Cluster Design Assignment
 
-You are tasked with designing a small cluster, with at least three nodes, to the value of R 500  000.00 (ZAR) and present your design to the judging panel. In your design you must specify hardware and software for an operational cluster and describe how it functions. The design must be based on servers and interconnects from either [HPE](https://buy.hpe.com/us/en/servers-systems), and accessories from either [NVIDIA](https://www.nvidia.com/en-us/high-performance-computing/), or [AMD](https://www.amd.com/en/solutions/high-performance-computing.html) or [Intel](https://www.intel.com/content/www/us/en/high-performance-computing/hpc-products.html). You *MUST* use the prices you find in the [Parts List Spreadsheet](resources/CHPC_Student_Cluster_Competition_Parts_List_2025.xlsx).
+You are tasked with designing a small cluster, with at least three nodes, to the value of R 650  000.00 (ZAR) and present your design to the judging panel. In your design you must specify hardware and software for an operational cluster and describe how it functions. The design must be based on servers and interconnects from either [HPE](https://buy.hpe.com/us/en/servers-systems), and accessories from either [NVIDIA](https://www.nvidia.com/en-us/high-performance-computing/), or [AMD](https://www.amd.com/en/solutions/high-performance-computing.html) or [Intel](https://www.intel.com/content/www/us/en/high-performance-computing/hpc-products.html). You *MUST* use the prices you find in the [Parts List Spreadsheet](resources/resources:CHPC_Student_Cluster_Competition_Parts_List_2026.xlsx).
 
 The primary purpose of your HPC cluster is to run the following applications and benchmarks as efficiently as possible:
 * [code_saturne](https://www.code-saturne.org/cms/web/)
@@ -134,7 +133,7 @@ In addition, your choice of design must take into consideration:
 * Team Management, Coordination and Planning.
 
 > [!IMPORTANT]
-> You may submit an additional design, that extends upon your small R 500 000.00 cluster, up to the value of R 5 000 000.00. You may use any of the above links for this exercise, using a Dollar to Rand conversion rate or 1:20. You may use GPU's from either AMD or NVIDIA. You may utilize CPUs from either AMD or Intel. You must use HPE as a base platform for your severs.
+> You may submit an additional design, that extends upon your small R 650 000.00 cluster, up to the value of R 5 000 000.00. You may use any of the above links for this exercise, using a Dollar to Rand conversion rate or 1:20. You may use GPU's from either AMD or NVIDIA. You may utilize CPUs from either AMD or Intel. You must use HPE as a base platform for your severs.
 >
 > In this revised design, consider additional nodes, additional / performance CPU's, additional RAM, GPU's, InfiniBand interconnects and any other aspects that you think would improve the performance of your initial cluster design.
 >
@@ -147,14 +146,14 @@ The 10 minute slide presentation by the whole team must include your design deci
 After the presentation the judging panel will have an opportunity to ask questions to each member of your team. All members of your team can be questioned about any part of the cluster, so make sure you are fully familiar with the design.
 
 > [!CAUTION]
-> The deadline for submission of the Cluster Design Assignment is **23:00 on Friday the 11th July**. Late submissions will be penalized.
+> The deadline for submission of the Cluster Design Assignment is **23:00 on Friday the 10th July**. Late submissions will be penalized.
 
 ## Technical Knowledge Assessment
 
-Each Team must work together to answer and complete the [Technical Knowledge Assessment](resources/CHPC_SCC_2025_Technical_Knowledge_Assessment.docx) to the best of their ability. Team Captains must email your findings to the organizers **no later than 23:00 12th July**. You are required to demonstrate your understanding of the concepts in **YOUR OWN WORDS**. Keep your answers succinct and to the point. Your answers to each of the questions, should not exceed more than 2-3 lines.
+Each Team must work together to answer and complete the [Technical Knowledge Assessment](resources/CHPC_SCC_2025_Technical_Knowledge_Assessment.docx) to the best of their ability. Team Captains must email your findings to the organizers **no later than 23:00 11th July**. You are required to demonstrate your understanding of the concepts in **YOUR OWN WORDS**. Keep your answers succinct and to the point. Your answers to each of the questions, should not exceed more than 2-3 lines.
 
 > [!CAUTION]
-> The deadline for submission of the Technical Knowledge Assessment is **23:00 on Saturday the 12th July**. Late submissions will be penalized.
+> The deadline for submission of the Technical Knowledge Assessment is **23:00 on Saturday the 11th July**. Late submissions will be penalized.
 
 ## Tutorials
 
@@ -268,38 +267,6 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
     1. [Prerequisites](tutorial4/README.md#prerequisites)
     1. [Head Node Configuration (Server)](tutorial4/README.md#head-node-configuration-server)
     1. [Compute Node Configuration (Clients)](tutorial4/README.md#compute-node-configuration-clients)
-
-# Lecture Slides and Video Recordings
-
-The lecture slides are available for download - follow the link and download the raw files.
-
-## Day 1
-
-1. PDF Format
-   1. [Welcome and Introduction (Mabatho Hashatsi)](resources/Welcome_Introducation_MHashatsi_2025.pdf)
-   1. [Introduction to Tools for the Modern IT Engineer (Sean February)](resources/Intro_to_Tools_for_the_Modern_IT_Engineer_SFebruary2025.pdf)
-   1. [Introduction to Linux Services (Mabatho Hashatsi)](resources/Intro_to_Linux_Services_MHashatsi_2025.pdf)
-   1. [Getting Started (Matsobane Mpyana)](resources/Getting_Started_MMpyana2025.pdf)
-
-1. PPTX Format
-   1. [Welcome and Introduction (Mabatho Hashatsi)](resources/Welcome_Introducation_MHashatsi_2025.pptx)
-   1. [Introduction to Tools for the Modern IT Engineer (Sean February)]()
-   1. [Introduction to Linux Services (Mabatho Hashatsi)](resources/Intro_to_Linux_Services_MHashatsi_2025.pptx)
-   1. [Getting Started (Matsobane Mpyana)](resources/Getting_Started_MMpyana2025.pptx)
-
-## Day 2
-
-1. PDF Format
-   1. [HPC Hardware (Mabatho Hashatsi)](resources/HPCHardware_MHashatsi_08July.pdf)
-   1. [HPC Networking (Nyameko Lisa)](resources/HPCNetworks_NLisa_08July_NL.pdf)
-   1. [System Administration and Configuration]()
-   1. [Putting Together a HPC Cluster & Presentation Tips]()
-
-1. PPTX Format
-   1. [HPC Hardware (Mabatho Hashatsi)](resources/HPCHardware_MHashatsi_08July.pptx)
-   1. [HPC Networking (Nyameko Lisa)](resources/HPCNetworks_NLisa_08July_NL.pptx)
-   1. [System Administration and Configuration]()
-   1. [Putting Together a HPC Cluster & Presentation Tips]()
 
 # Contributing to the Project
 
