@@ -41,7 +41,7 @@ You are strongly encouraged to get help and even assist others by [Opening and P
 
 ## Timetable
 
-Everyday will comprise of a couple of lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](resources/Selection_Round_Time_Table2026.pdf) is available for you to download.
+Everyday will comprise of a couple of lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](resources/SCC26_Selection_Round_TimeTable_final1.pdf) is available for you to download.
 
 <p align="center"><img alt="Timetable." src="resources/Selection_Round_Timetable_2026.png" width=900 /></p>
 
