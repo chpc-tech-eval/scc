@@ -19,7 +19,6 @@ The goal of this document is to introduce you to the competition platform and fa
     1. [Cluster Design Assignment](#cluster-design-assignment)
     1. [Technical Knowledge Assessment](#technical-knowledge-assessment)
     1. [Tutorials](#tutorials)
-1. [Lecture Recordings](#lecture-recordings)
 1. [Contributing to the Project](#contributing-to-the-project)
     1. [Steps to follow when editing existing content](#steps-to-follow-when-editing-existing-content)
     1. [Syntax and Style](#syntax-and-style)
@@ -43,7 +42,7 @@ You are strongly encouraged to get help and even assist others by [Opening and P
 
 Everyday will comprise of a couple of lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](resources/SCC26_Selection_Round_TimeTable_final1.pdf) is available for you to download.
 
-<p align="center"><img alt="Timetable." src="resources/Selection_Round_Timetable_2026.png" width=900 /></p>
+<p align="center"><img alt="Timetable." src="reresources/SCC26_Selection_Round_Final_Roster.png" width=900 /></p>
 
 ## Scoring
 
@@ -268,38 +267,6 @@ You will be evaluated on your overall progress in the tutorials. Below you will 
     1. [Prerequisites](tutorial4/README.md#prerequisites)
     1. [Head Node Configuration (Server)](tutorial4/README.md#head-node-configuration-server)
     1. [Compute Node Configuration (Clients)](tutorial4/README.md#compute-node-configuration-clients)
-
-# Lecture Slides and Video Recordings
-
-The lecture slides are available for download - follow the link and download the raw files.
-
-## Day 1
-
-1. PDF Format
-   1. [Welcome and Introduction (Mabatho Hashatsi)](resources/Welcome_Introducation_MHashatsi_2025.pdf)
-   1. [Introduction to Tools for the Modern IT Engineer (Sean February)](resources/Intro_to_Tools_for_the_Modern_IT_Engineer_SFebruary2025.pdf)
-   1. [Introduction to Linux Services (Mabatho Hashatsi)](resources/Intro_to_Linux_Services_MHashatsi_2025.pdf)
-   1. [Getting Started (Matsobane Mpyana)](resources/Getting_Started_MMpyana2025.pdf)
-
-1. PPTX Format
-   1. [Welcome and Introduction (Mabatho Hashatsi)](resources/Welcome_Introducation_MHashatsi_2025.pptx)
-   1. [Introduction to Tools for the Modern IT Engineer (Sean February)]()
-   1. [Introduction to Linux Services (Mabatho Hashatsi)](resources/Intro_to_Linux_Services_MHashatsi_2025.pptx)
-   1. [Getting Started (Matsobane Mpyana)](resources/Getting_Started_MMpyana2025.pptx)
-
-## Day 2
-
-1. PDF Format
-   1. [HPC Hardware (Mabatho Hashatsi)](resources/HPCHardware_MHashatsi_08July.pdf)
-   1. [HPC Networking (Nyameko Lisa)](resources/HPCNetworks_NLisa_08July_NL.pdf)
-   1. [System Administration and Configuration]()
-   1. [Putting Together a HPC Cluster & Presentation Tips]()
-
-1. PPTX Format
-   1. [HPC Hardware (Mabatho Hashatsi)](resources/HPCHardware_MHashatsi_08July.pptx)
-   1. [HPC Networking (Nyameko Lisa)](resources/HPCNetworks_NLisa_08July_NL.pptx)
-   1. [System Administration and Configuration]()
-   1. [Putting Together a HPC Cluster & Presentation Tips]()
 
 # Contributing to the Project
 
