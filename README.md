@@ -42,7 +42,7 @@ You are strongly encouraged to get help and even assist others by [Opening and P
 
 Everyday will comprise of a couple of lectures in the mornings and tutorials taking place in the afternoons. A [PDF Version of the Timetable](resources/SCC26_Selection_Round_TimeTable_final1.pdf) is available for you to download.
 
-<p align="center"><img alt="Timetable." src="reresources/SCC26_Selection_Round_Final_Roster.png" width=900 /></p>
+<p align="center"><img alt="Timetable." src="resources/SCC26_Selection_Round_Final_Roster.png" width=900 /></p>
 
 ## Scoring
 
