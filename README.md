@@ -27,7 +27,7 @@ The goal of this document is to introduce you to the competition platform and fa
 
 # Structure of the Competition
 
-The CHPC invites applications from suitably qualified candidates to enter the CHPC Student Cluster Competition. The CHPC Student Cluster Competition gives undergraduate students at South African universities exposure to the High Performance Computing (HPC) Industry. The winning team will be entered into the ISC Student Cluster Competition hosted at the [2026 International Supercomputing Conference](https://www.isc-hpc.com/) held in Hamburg, Germany.
+The CHPC invites applications from suitably qualified candidates to enter the CHPC Student Cluster Competition. The CHPC Student Cluster Competition gives undergraduate students at South African universities exposure to the High Performance Computing (HPC) Industry. The winning team will be entered into the ISC Student Cluster Competition hosted at the [2027 International Supercomputing Conference](https://www.isc-hpc.com/) held in Hamburg, Germany.
 
 You will be accessing all of the course work and material through this GitHub repository, which you and your team must check regularly to receive updates.
 
@@ -54,7 +54,6 @@ Teams will be evaluate according to the following breakdown, with your progress 
 | Technical Knowledge Assessment     | 0.2    |
 | Tutorials                          | 0.4    |
 | Cluster Design Presentation        | 0.4    |
-|                                    |        |
 
 ## Instructions for Mentors
 
@@ -98,7 +97,6 @@ Below is a table with a number of Linux system commands and utilities that you *
 | proc               | Information and control center of the kernel, providing a communications channel between kernel space and user space. Many of the preceding commands query information provided by proc, i.e. `cat /proc/cpuinfo`. |
 | uname              | Useful for determining information about your current flavor and distribution of your operating system and its version.                                                                                            |
 | lsblk              | Provides information about block devices (disks, hard drives, flash drives, etc) connected to your system and their partitioning schemes.                                                                          |
-|                    |                                                                                                                                                                                                                    |
 
 # Deliverables
 
@@ -118,10 +116,10 @@ You will need to submit the following for scoring and evaluation by the judges:
 You are tasked with designing a small cluster, with at least three nodes, to the value of R 650  000.00 (ZAR) and present your design to the judging panel. In your design you must specify hardware and software for an operational cluster and describe how it functions. The design must be based on servers and interconnects from either [HPE](https://buy.hpe.com/us/en/servers-systems), and accessories from either [NVIDIA](https://www.nvidia.com/en-us/high-performance-computing/), or [AMD](https://www.amd.com/en/solutions/high-performance-computing.html) or [Intel](https://www.intel.com/content/www/us/en/high-performance-computing/hpc-products.html). You *MUST* use the prices you find in the [Parts List Spreadsheet](resources/resources:CHPC_Student_Cluster_Competition_Parts_List_2026.xlsx).
 
 The primary purpose of your HPC cluster is to run the following applications and benchmarks as efficiently as possible:
-* [code_saturne](https://www.code-saturne.org/cms/web/)
-* [SeisSol](https://seissol.org/)
-* [OpenMX](https://www.openmx-square.org/index.html)
-* [Fine-Tuning LlaMA 3 using LoRA and QLoRA](https://www.llama.com/docs/how-to-guides/fine-tuning/)
+* [WRF](https://docs.nersc.gov/applications/wrf/)
+* [SOD2D](https://ceec-coe.eu/sod2d/)
+* [ASCOT5](https://ascot4fusion.github.io/ascot5/)
+* [FIO](https://fio.readthedocs.io/)
 
 In addition, your choice of design must take into consideration:
 * Base Platform (Server),
@@ -133,7 +131,7 @@ In addition, your choice of design must take into consideration:
 * Team Management, Coordination and Planning.
 
 > [!IMPORTANT]
-> You may submit an additional design, that extends upon your small R 650 000.00 cluster, up to the value of R 5 000 000.00. You may use any of the above links for this exercise, using a Dollar to Rand conversion rate or 1:20. You may use GPU's from either AMD or NVIDIA. You may utilize CPUs from either AMD or Intel. You must use HPE as a base platform for your severs.
+> You may submit an additional design, that extends upon your small R 650 000.00 cluster, up to the value of R 5 000 000.00. You may use any of the above links for this exercise, using a Dollar to Rand conversion rate or 1:18. You may use GPU's from either AMD or NVIDIA. You may utilize CPUs from either AMD or Intel. You must use HPE as a base platform for your severs.
 >
 > In this revised design, consider additional nodes, additional / performance CPU's, additional RAM, GPU's, InfiniBand interconnects and any other aspects that you think would improve the performance of your initial cluster design.
 >
