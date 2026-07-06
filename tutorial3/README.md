@@ -378,7 +378,7 @@ Code compiled specifically for HPC hardware can use instruction sets like `AVX`,
    # architecture using `lscpu` or similar tools.
    #
    # Once again you can adjust the --prefix to install to your preferred path.
-   CFLAGS="-Ofast -march=cascadelake -mtune=cascadelake" ./configure --prefix=$HOME/opt/openmpi
+   CFLAGS="-Ofast -march=cascadelake -mtune=cascadelake" ./configure --prefix=$HOME/opt/openmpi --enable-mpi1-compatibility
 
    # Use the maximum number of threads to compile the application
    make -j$(nproc)

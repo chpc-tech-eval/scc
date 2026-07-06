@@ -13,32 +13,34 @@ This tutorial will conclude with you downloading, installing and running the Hig
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
-1. [Checklist](#checklist)
-1. [Network Primer](#network-primer)
-    1. [Basic Networking Example (WhatIsMyIp.com)](#basic-networking-example-whatismyipcom)
-    1. [Terminal, Windows MobaXTerm and PowerShell Commands](#terminal-windows-mobaxterm-and-powershell-commands)
-1. [Launching your First Open Stack Virtual Machine Instance](#launching-your-first-open-stack-virtual-machine-instance)
-    1. [Accessing the NICIS Cloud](#accessing-the-nicis-cloud)
-    1. [Verify your Teams' Project Workspace and Available Resources](#verify-your-teams-project-workspace-and-available-resources)
-    1. [Generating SSH Keys](#generating-ssh-keys)
-    1. [Create a New Private Virtual Network](#create-a-new-private-virtual-network)
-    1. [Create a New Router](#create-a-new-router)
-    1. [Create a New Security Group](#create-a-new-security-group)
-    1. [Launch a New Instance](#launch-a-new-instance)
-    1. [Linux Flavors and Distributions](#linux-flavors-and-distributions)
-        1. [Summary of Linux Distributions](#summary-of-linux-distributions)
-    1. [OpenStack Instance Flavors](#openstack-instance-flavors)
-    1. [Networks, Ports, Services and Security Groups](#networks-ports-services-and-security-groups)
-    1. [Key Pair](#key-pair)
-    1. [Verify that your Instance was Successfully Deployed and Launched](#verify-that-your-instance-was-successfully-deployed-and-launched)
-    1. [Associating an Externally Accessible IP Address](#associating-an-externally-accessible-ip-address)
-    1. [Troubleshooting](#troubleshooting)
-1. [Introduction to Basic Linux Administration](#introduction-to-basic-linux-administration)
-    1. [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
-    1. [Running Basic Linux Commands and Services](#running-basic-linux-commands-and-services)
-1. [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
-    1. [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
-1. [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](#install-compile-and-run-high-performance-linpack-hpl-benchmark)
+- [Tutorial 1: Standing Up Your Head Node and Running HPL](#tutorial-1-standing-up-your-head-node-and-running-hpl)
+- [Table of Contents](#table-of-contents)
+- [Checklist](#checklist)
+- [Network Primer](#network-primer)
+  - [Basic Networking Example (WhatIsMyIp.com)](#basic-networking-example-whatismyipcom)
+  - [Terminal, Windows MobaXTerm and PowerShell Commands](#terminal-windows-mobaxterm-and-powershell-commands)
+- [Launching your First Open Stack Virtual Machine Instance](#launching-your-first-open-stack-virtual-machine-instance)
+  - [Accessing the NICIS Cloud](#accessing-the-nicis-cloud)
+  - [Verify your Teams' Project Workspace and Available Resources](#verify-your-teams-project-workspace-and-available-resources)
+  - [Generating SSH Keys](#generating-ssh-keys)
+  - [Create a New Private Virtual Network](#create-a-new-private-virtual-network)
+  - [Create a New Router](#create-a-new-router)
+  - [Create a New Security Group](#create-a-new-security-group)
+  - [Launch a New Instance](#launch-a-new-instance)
+  - [Linux Flavors and Distributions](#linux-flavors-and-distributions)
+    - [Summary of Linux Distributions](#summary-of-linux-distributions)
+  - [OpenStack Instance Flavors](#openstack-instance-flavors)
+  - [Networks, Ports, Services and Security Groups](#networks-ports-services-and-security-groups)
+  - [Key Pair](#key-pair)
+  - [Verify that your Instance was Successfully Deployed and Launched](#verify-that-your-instance-was-successfully-deployed-and-launched)
+  - [Associating an Externally Accessible IP Address](#associating-an-externally-accessible-ip-address)
+  - [Troubleshooting](#troubleshooting)
+- [Introduction to Basic Linux Administration](#introduction-to-basic-linux-administration)
+  - [Accessing your VM Using SSH vs the OpenStack Web Console (VNC)](#accessing-your-vm-using-ssh-vs-the-openstack-web-console-vnc)
+  - [Running Basic Linux Commands and Services](#running-basic-linux-commands-and-services)
+- [Linux Binaries, Libraries and Package Management](#linux-binaries-libraries-and-package-management)
+  - [User Environment and the `PATH` Variable](#user-environment-and-the-path-variable)
+- [Install, Compile and Run High Performance LinPACK (HPL) Benchmark](#install-compile-and-run-high-performance-linpack-hpl-benchmark)
 
 <!-- markdown-toc end -->
 
@@ -595,7 +597,12 @@ From this point onward, you're going to need to pay extra attention to the comma
 > [!WARNING]
 > Do not try to type the following arbitrary commands into your head node's terminal. They are merely included here for illustration purposes.
 
-* DNF / YUM
+<details>
+<summary><img src="https://img.shields.io/badge/Rocky_Linux-10ABC7?logo=rockylinux&logoColor=white"> </summary>
+
+<br>
+
+DNF / YUM
 ```bash
 # RHEL, Alma, Rocky, Centos
 # You are strongly recommended to use one of the distros mentioned above.
@@ -606,7 +613,16 @@ sudo dnf update
 sudo dnf install <PACKAGE_NAME>
 sudo dnf remove <PACKAGE_NAME>
 ```
-* APT-based systems
+
+</details>
+
+<details>
+<summary><img src="https://img.shields.io/badge/Ubuntu_Server-E95420?logo=ubuntu&logoColor=white"> </summary>
+
+<br>
+
+
+APT-based systems
 ```bash
 
 # Ubuntu
@@ -619,7 +635,16 @@ sudo apt update
 sudo apt install <PACKAGE_NAME>
 sudo apt remove <PACKAGE_NAME>
 ```
-* Pacman-based systems
+
+</details>
+
+<details>
+<summary><img src="https://img.shields.io/badge/Arch_Linux-1793D1?logo=archlinux&logoColor=white"> </summary>
+
+<br>
+
+
+Pacman-based systems
 ```bash
 
 # Arch-Like Linux
@@ -629,10 +654,16 @@ sudo apt remove <PACKAGE_NAME>
 # Not recommend for beginners, unless you have previous Linux expertise or
 # unless you are looking for a challenge.
 
+# The image available on Sebowa has outdated packages and package database, and a corrupted keyring
+# Run the following two commands in this order to update the keyring and installed packages
+sudo pacman -Sy archlinux-keyring
 sudo pacman -Syu
+
 sudo pacman -S <PACKAGE_NAME>
 sudo pacman -R <PACKAGE_NAME>
 ```
+
+</details>
 
 ## User Environment and the `PATH` Variable
 
@@ -669,7 +700,10 @@ You will now install and run HPL on your **head node**.
 1. Update the system and install dependencies
 
    You are going to be installing tools that will allow you to compile applications using the `make` command. You will also be installing a maths library to compute matrix multiplications, and an `mpi` library for communication between processes, in this case mapped to CPU cores.
-   * DNF / YUM
+
+<details>
+<summary><img src="https://img.shields.io/badge/Rocky_Linux-10ABC7?logo=rockylinux&logoColor=white"> </summary>
+
    ```bash
    # RHEL, Rocky, Alma, Centos Steam
    sudo dnf update -y
@@ -678,30 +712,34 @@ You will now install and run HPL on your **head node**.
    sudo dnf config-manager --set-enabled crb
 
    # Install build tools and MPI
-   sudo dnf install -y \
-   gcc \
-   gcc-c++ \
-   make \
-   openmpi \
-   openmpi-devel \
-   openblas \
-   openblas-devel \
-   wget \
-   nano
+   sudo dnf install -y gcc gcc-c++ make openmpi openmpi-devel openblas openblas-devel wget nano
    ```
-   * APT
+
+</details>
+
+<details>
+<summary><img src="https://img.shields.io/badge/Ubuntu_Server-E95420?logo=ubuntu&logoColor=white"> </summary>
+
    ```bash
    # Ubuntu
    sudo apt update
    sudo apt install build-essential openmpi-bin libopenmpi-dev libatlas-base-dev
+   sudo apt install wget nano
    ```
-   * Pacman
+
+  </details>
+
+<details>
+<summary><img src="https://img.shields.io/badge/Arch_Linux-1793D1?logo=archlinux&logoColor=white"> </summary>
+
    ```bash
    # Arch
    sudo pacman -Syu
-   sudo pacman -S base-devel openmpi atlas-lapack nano wget
+   sudo pacman -S base-devel openmpi openblas nano wget
    ```
-1. Fetch the HPL source files
+</details>
+
+2. Fetch the HPL source files
 
    You will download the HPL source files. This is why you installed `wget` in the previous step.
    ```bash
@@ -718,7 +756,7 @@ You will now install and run HPL on your **head node**.
    # list the contents of the folder
    ls
    ```
-1. Configure HPL
+3. Configure HPL
 
    Copy and edit your own `Make.<TEAM_NAME>` file in the `hpl` directory to suit your system configuration.
    ```bash
@@ -727,34 +765,63 @@ You will now install and run HPL on your **head node**.
    ```
 
    You need to carefully edit your `Make.<TEAM_NAME>` file, ensuring that you make the following changes:
-   * RHEL, Rocky, Alma, CentOS Stream based systems
-     ```conf
-     ARCH               = <TEAM_NAME>
 
-     MPdir              = /usr/lib64/openmpi
+<details>
+<summary><img src="https://img.shields.io/badge/Rocky_Linux-10ABC7?logo=rockylinux&logoColor=white"> </summary>
+
+```conf
+   ARCH               = <TEAM_NAME>
+
+   MPdir              = /usr/lib64/openmpi
 
      LAdir              = /usr/lib64
      LAlib              = -lopenblas
 
-     CC                 = mpicc
+   CC                 = mpicc
 
-     LINKER             = mpicc
-     ```
-   * Ubuntu based systems
-     ```conf
-     ARCH               = <TEAM_NAME>
+   LINKER             = mpicc
+```
 
-     MPdir              = /usr/lib/x86_64-linux-gnu/openmpi
+</details>
 
-     LAdir              = /usr/lib/x86_64-linux-gnu/atlas/
-     LAlib              = $(LAdir)/libblas.so $(LAdir)/liblapack.so
+<details>
+<summary><img src="https://img.shields.io/badge/Ubuntu_Server-E95420?logo=ubuntu&logoColor=white"> </summary>
 
-     CC                 = mpicc
+```conf
+   ARCH               = <TEAM_NAME>
 
-     LINKER             = mpicc
-     ```
+   MPdir              = /usr/lib/x86_64-linux-gnu/openmpi
 
-1. Temporarily edit your `PATH` variable
+   LAdir              = /usr/lib/x86_64-linux-gnu/atlas/
+   LAlib              = $(LAdir)/libblas.so $(LAdir)/liblapack.so
+
+   CC                 = mpicc
+
+   LINKER             = mpicc
+```
+
+</details>
+
+<details>
+<summary><img src="https://img.shields.io/badge/Arch_Linux-1793D1?logo=archlinux&logoColor=white"> </summary>
+
+```conf
+   ARCH               = <TEAM_NAME>
+
+   MPdir              = /usr/lib/openmpi
+
+   LAdir              = /usr/lib
+   LAlib              = -lopenblas
+
+   CC                 = mpicc
+
+   LINKER             = mpicc
+```
+
+</details>
+
+
+4. Temporarily edit your `PATH` variable
 
    You are almost ready to compile HPL, you will need to modify your path variable in order for your MPI C Compiler `mpicc` to be a recognized binary.
    Check to see if `mpicc` is currently detected:
@@ -769,7 +836,7 @@ You will now install and run HPL on your **head node**.
    # Rerun the which command to confirm that the `mpicc` binary is found
    which mpicc
    ```
-1. Compile HPL
+5. Compile HPL
 
    You are finally ready to compile HPL. Should you encounter any errors and need to make adjustments and changes, first run a `make clean arch=<TEAM_NAME>`.
    ```bash
@@ -779,7 +846,7 @@ You will now install and run HPL on your **head node**.
    ls bin/<TEAM_NAME>
    ```
 
-1. Configure your `HPL.dat`
+6. Configure your `HPL.dat`
 
    Make the following changes to your `HPL.dat` file:
    ```bash
@@ -793,7 +860,7 @@ You will now install and run HPL on your **head node**.
    1            Ps
    1            Qs
    ```
-1. Running HPL on a Single CPU
+7. Running HPL on a Single CPU
 
    For now, you will be running HPL on your head node, on a single CPU. Later you will learn how to run HPL over multiple CPUs, each with multiple cores, across multiple nodes...
    ```bash
@@ -806,6 +873,5 @@ You will now install and run HPL on your **head node**.
 >
 > If you compile fails and you would like to try to fix your errors and recompile, you must ensure that you reset to a clean start with `make clean`.
 
-Congratulations!
-
-You have successfully completed you first HPL benchmark.
+>[!NOTE]
+>  🎉 Congratulations! You have successfully completed your first HPL benchmark.
