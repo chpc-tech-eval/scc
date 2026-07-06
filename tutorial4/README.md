@@ -1874,9 +1874,13 @@ Also note, you are NOT allowed to use precompiled binaries.
 
 Before compiling, load the following modules from lmod:
 
+You can either use GCC + OpenMPI or InteloneAPI toolkit(intel compiler and intelMPI).
+
+The instructions following are for the Intel toolchain:
+
 ```bash
-ml oneapi/(your installed version)    # Names are subject to your configuration
-                                      # This will automatically load IntelMPI as well .. according to allan
+ml oneapi/2026.1.0                    # Names are subject to your configuration, load the intel compiler
+                                      # This will automatically load IntelMPI as well depending on your lmod setup
 
 ```
 
@@ -1908,7 +1912,7 @@ tar -xzf ThirdParty-v2506.tgz
 
 
 
-## Source OpenFOAM Environment and Set GCC 15 Flags
+## Source OpenFOAM Environment and set Flags
 
 > **Critical:** Always source the bashrc FIRST, then set WM_NCOMPROCS.
 > Setting WM_NCOMPROCS before sourcing will cause it to be overwritten.
@@ -1935,7 +1939,7 @@ echo $WM_PROJECT_DIR    # Points to OpenFOAM-v2506
 
 ## Build OpenFOAM
 
-This step takes **2 to 4 hours** depending on available cores.
+This step takes **2 to 3 hours** depending on available cores.
 
 ```bash
 cd ~/OpenFOAM/OpenFOAM-v2506
@@ -1946,7 +1950,7 @@ Check for errors when complete:
 
 ```bash
 grep -c "Error" ~/openfoam_build.log   # ignore if ADIOS did not build 
-                                       # but SCOTCH is needed and HAS to be built
+                                       # but SCOTCH is needed and has to be built
 ```
 
 It is heavily advised to make use of a multiplexer such as Tmux as the build will consume a heavy chunk of time and you do not want your build to fail because your laptop or PC went into sleep mode
@@ -1979,14 +1983,8 @@ Verify:
 
 ```bash
 ls $FOAM_LIBBIN/libscotchDecomp.so          # Serial Scotch decomposition
-ls $FOAM_LIBBIN/sys-openmpi/libptscotchDecomp.so  # Parallel Scotch decomposition
 ```
-to rerun the build of Scotch:
 
-```bash
-cd ~/OpenFOAM/OpenFOAM-v2506/src/parallel/decompose
-./Allwmake -j$(nproc) 2>&1 | tee ~/decompose_build.log
-```
 ---
 
 ## Verify Installation
