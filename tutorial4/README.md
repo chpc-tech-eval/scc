@@ -31,6 +31,19 @@
 1. [GROMACS Application Benchmark](#gromacs-application-benchmark)
     1. [Protein Visualization](#protein-visualization)
     1. [Benchmark 2 (1.5M Water)](#benchmark-2-15m-water)
+1. [OpenMX Application Benchmark](#openmx-application-benchmark)
+    1. [Pre-Requisite](#pre-requisite)
+    1. [Setup](#setup)
+        1. [Modify makefile](#modify-makefile)
+            1. [A. Intel (easy difficulty)](#a-intel-easy-difficulty)
+            1. [B. Mix IntelMKL + openMPI + GCC (medium difficulty)](#b-mix-intelmkl--openmpi--gcc-medium-difficulty)
+            1. [C. Own high performace libraries (complex difficulty)](#c-own-high-performace-libraries-complex-difficulty)
+                1. [Build FFTW](#build-fftw)
+                1. [Build OpenBLAS](#build-openblas)
+                1. [ScaLAPACK (Scalable Linear Algebra PACKage)](#scalapackscalable-linear-algebra-package)
+                1. [Setup makefile](#setup-makefile)
+    1. [Tasks](#tasks)
+        1. [Optimization](#optimization)
 
 <!-- markdown-toc end -->
 
@@ -97,7 +110,7 @@ Cluster monitoring is crucial for managing Linux machines. Effective monitoring 
   Docker is a platform for creating, deploying, and managing containerized applications. Docker Compose defines and manages multi-container applications using a YAML file. For cluster monitoring on a Rocky Linux head node, we will use Docker and Docker Compose to bundle Grafana, Prometheus, and Node Exporter into deployable containers. This approach simplifies installation and configuration, ensuring all components are up and running quickly and consistently, streamlining the deployment of the monitoring stack.
 
 > [!NOTE]
-> When the word **Input:** is mentioned, excpect the next line to have commands that you need to copy and paste into your own terminal.
+> When the word **Input:** is mentioned, expect the next line to have commands that you need to copy and paste into your own terminal.
 >
 > Whenever the word **Output:** is mentioned **DON'T** copy and paste anything below this word as this is just the expected output.
 >
@@ -262,7 +275,7 @@ You will need to have `docker`, `containerd` and `docker-compose` installed on a
 > [!TIP]
 > If you've successfully configured nftables, you will be required to open the following TCP ports 3000, 9090, 9100.
 
-Bring up your monitoring stack and verify that the have been correctly configured
+Bring up your monitoring stack and verify that it has been configured correctly
 
 * Bring up your monitoring stack
   ```bash
@@ -295,7 +308,7 @@ Congratulations on correctly configuring your monitoring services!
 SSH port forwarding, also known as SSH tunneling, is a method of creating a secure connection between a local computer and a remote machine through an SSH (Secure Shell) connection. Local port forwarding allows you to forward a port on your local machine to a port on a remote machine. It is commonly used to access services behind a firewall or NAT.
 
 > [!IMPORTANT]
-> The following is included to demonstrate the concept of TCP Port Forwarding. In the next section, your are:
+> The following is included to demonstrate the concept of TCP Port Forwarding. In the next section, you are:
 > * Opening a TCP Forwarding Port and listening on Port 3000 on your **workstation**, i.e. http://localhost:3000
 > * You are then binding this ***SOCKET*** to TCP Port 3000 on your **head node**.
 >
@@ -325,7 +338,7 @@ SSH port forwarding, also known as SSH tunneling, is a method of creating a secu
 > ```
 
 > [!CAUTION]
-> You need to ensure that you have understood the above discussions. This section on port forwarding, is included for situations where you do know have `sudo` rights on the machine your are working on and cannot open ports or install applications via `sudo`, then you can forward ports over SSH.
+> You need to ensure that you have understood the above discussions. This section on port forwarding is included for situations where you do not have `sudo` rights on the machine you are working on and cannot open ports or install applications via `sudo`; in those cases, you can forward ports over SSH.
 >
 > Take the time now however, to ensure that all of your team members understand that there are a number of methods with which you can access remote services on your head node:
 > * http://154.114.57.x:3000
@@ -382,16 +395,16 @@ Congratulations on successfully deploying your monitoring stack and adding Grafa
 
 <p align="center"><img alt="Grafana Login." src="./resources/grafana_done.png" width=900 /></p>
 
-If you've managed to successfully configure your dash boards for your head node, repeat the steps for deploying **Node Exporter** on your compute node(s).
+If you've managed to successfully configure your dashboards for your head node, repeat the steps for deploying **Node Exporter** on your compute node(s).
 
 > [!NOTE]
 > Should you have any difficulties running the above configuration, use the alternative process below to deploy your monitoring stack. Click on the heading to reveal content.
 <details>
 <summary>Installing your monitoring stack from pre-compiled binaries</summary>
-For this tutorial we will install from pre-complied binaries.
+For this tutorial we will install from precompiled binaries.
 
 ### Prometheus
-The installation and the configuration of Prometheus should be done on your headnode.
+The installation and configuration of Prometheus should be done on your head node.
 
 1. Create a Prometheus user without login access, this will be done manually as shown below:
  ```bash
@@ -411,7 +424,7 @@ tar -xvzf prometheus-2.33.1.linux-amd64.tar.gz
 cd prometheus-2.33.1.linux-amd64
 sudo mv prometheus promtool /usr/local/bin/
 ```
-5. Move back to the home directory, create directorise for prometheus.
+5. Move back to the home directory and create directories for Prometheus.
  ```bash
 cd ~
 sudo mkdir /etc/prometheus
@@ -496,12 +509,12 @@ sudo systemctl start prometheus
 > [!IMPORTANT]
 > If you have a firewall running, add a TCP rule for port 9090
 
-Verify that your prometheus configuration is working navigating to `http://<headnode_ip>:9090` in your web browser, access prometheus web interface. Ensure that the `headnode_ip` is the public facing ip.
+Verify that your Prometheus configuration is working by navigating to `http://<headnode_ip>:9090` in your web browser to access the Prometheus web interface. Ensure that the `headnode_ip` is the public-facing IP.
 
 ### Node Exporter
 Node Exporter is a Prometheus exporter specifically designed for hardware and OS metrics exposed by Unix-like kernels. It collects detailed system metrics such as CPU usage, memory usage, disk I/O, and network statistics. These metrics are exposed via an HTTP endpoint, typically accessible at `<node_ip>:9100/metrics`. The primary role of Node Exporter is to provide a source of system-level metrics that Prometheus can scrape and store. This exporter is crucial for gaining insights into the health and performance of individual nodes within a network.
 
-The installation and the configuration node exporter will be done on the **compute node/s**
+The installation and configuration of Node Exporter will be done on the **compute node(s)**.
 
 1. Create a Node Exporter User
  ```bash
@@ -556,7 +569,7 @@ sudo systemctl start node_exporter
   sudo systemctl status node_exporter
   ``` 
 #### SSH Tunneling
-In order to verify that node exporter is set up correctly we need to access `<node_ip>:9100/metrics`. This can only been done by simply going to your broswer and putting it in as we did with Prometheus, we need to use a SSH tunnel.
+In order to verify that Node Exporter is set up correctly, we need to access `<node_ip>:9100/metrics`. This can only be done through an SSH tunnel.
 
 **What is SSH Tunneling?** \
 SSH tunneling, also known as SSH port forwarding, is a method of securely forwarding network traffic from one network node to another via an encrypted SSH connection. It allows you to securely transmit data over untrusted networks by encrypting the traffic.
@@ -584,8 +597,8 @@ user@headnode_ip: The SSH connection details for the headnode.
 ### Grafana
 Grafana is an open-source platform for monitoring and observability, known for its capability to create interactive and customizable dashboards. It integrates seamlessly with various data sources, including Prometheus. Through its user-friendly interface, Grafana allows users to build and execute queries to visualize data effectively. Beyond visualization, Grafana also supports alerting based on the visualized data, enabling users to set up notifications for specific conditions. This makes Grafana a powerful tool for both real-time monitoring and historical analysis of system performance.
 
-Now we go back to the headnode for the installation and the configuration of Grafana
- 1. Add the Grafana Repository, by adding the following directives in this file:
+Now we return to the head node for the installation and configuration of Grafana
+ 1. Add the Grafana repository by adding the following directives to this file:
 ```bash
 sudo nano /etc/yum.repos.d/grafana.repo
 ```
@@ -650,7 +663,7 @@ Jupyter Notebooks provide a versatile and powerful environment for conducting sc
 
 1. Start by installing all the prerequisites
 
-   You would have already installed most these from [Qiskit Benchmark](../tutorial3/README.md##qiskit-quantum-volume) in tutorial 3.
+   You would have already installed most of these from [Qiskit Benchmark](../tutorial3/README.md##qiskit-quantum-volume) in tutorial 3.
    * DNF / YUM
      ```bash
      # RHEL, Rocky, Alma, CentOS Stream
@@ -703,7 +716,7 @@ You will now visualize the results from the [table you prepared of Rmax (GFlops/
    # Look for a line similar to the one below, and carefully copy your <TOKEN>
    http://127.0.0.1:8889/lab?token=<TOKEN>
    ```
-1. Open a browser on you workstation and navigate to your JupyterLab server on your headnode:
+1. Open a browser on your workstation and navigate to your JupyterLab server on your head node:
    ```bash
    http://<headnode_public_ip>:8889
    ```
@@ -721,7 +734,7 @@ You will now visualize the results from the [table you prepared of Rmax (GFlops/
 
 ## Visualize Your Qiskit Results
 
-You are now going to extend your `qv_experiment` and plot your results, by drawing a graph of *"Number of Qubits vs Simulation time to Solution"*:
+You are now going to extend your `qv_experiment` and plot your results by drawing a graph of *"Number of Qubits vs Simulation Time to Solution"*:
 
 1. Create and Activate a New Python Virtual Environment
 
@@ -927,11 +940,11 @@ Generate and configure the `cloud.yml` file that will authenticate you against y
 
 Circle CI is a Continuous Integration and Continuous Delivery platform that can be utilized to implement DevOps practices. It helps teams build, test, and deploy applications quickly and reliably.
 
-In this section of the tutorials you're going to be expanding on the OpenStack instance automation with CircleCI `Workflows` and `Pipelines`. For this tutorial you will be using your GitHub account which will integrate directly into CircleCI.
+In this section of the tutorial, you're going to expand on OpenStack instance automation with CircleCI `Workflows` and `Pipelines`. For this tutorial, you will use your GitHub account to integrate directly with CircleCI.
 
 ## Prepare GitHub Repository
 
-   You will be integration GitHub into CircleCI workflows, wherein every time you commit changes to your `deploy_compute` GitHub repository, CircleCI will instantiate and trigger Terraform, to create a new compute node VM on Sebowa.
+   You will be integrating GitHub into CircleCI workflows, wherein every time you commit changes to your `deploy_compute` GitHub repository, CircleCI will instantiate and trigger Terraform to create a new compute node VM on Sebowa.
 
 1. Create GitHub Repository
    If you haven't already done so, sign up for a [GitHub Account](https://github.com/). Then create an empty private repository with a suitable name, i.e. `deploy_compute_node`:
@@ -1061,11 +1074,11 @@ In this section of the tutorials you're going to be expanding on the OpenStack i
 To run the High-Performance Linpack (HPL) benchmark using Ansible and GitHub Actions, you can follow these steps:
 
 ## **Step 1: Set up a GitHub Repo**
-1. Create a Github Repository or you can navigate to an existing Repository.
+1. Create a GitHub repository or navigate to an existing repository.
 
-2. In your Repo, navigate to **Settings** → **Security** → **Secrets and variables** → **Actions**.
+2. In your repo, navigate to **Settings** → **Security** → **Secrets and variables** → **Actions**.
 
-3. Click on **New repository secret**, for the title fill in "SSH_PRIVATE_KEY" and for the secrete, fill in the private key you use to connect to the cluster.
+3. Click on **New repository secret**. For the title, enter `SSH_PRIVATE_KEY`, and for the secret, paste the private key you use to connect to the cluster.
 
 <p align="center"><img alt="Creating Github Actions secretes" src="./resources/setting_up_secrets.png" width=900 /></p>
 
@@ -1163,9 +1176,9 @@ jobs:
 
 ## **Final Remarks**
 
-After pushing the workflow file, the hpl benchmark will run on all nodes if slurm and openmpi are configured correctly. To confirm if the benchmark is running you can check your cluster monitoring software (Graphana) or do a classic htop/btop on the compute nodes.
+After pushing the workflow file, the HPL benchmark will run on all nodes if Slurm and OpenMPI are configured correctly. To confirm that the benchmark is running, check your cluster monitoring software (Grafana) or use `htop`/`btop` on the compute nodes.
 
-The github action workflow is triggered on push commands, this means that if any code is pushed to the Repo, the hpl benchmark will run.
+The GitHub Actions workflow is triggered on push events, which means that if any code is pushed to the repository, the HPL benchmark will run.
 
 --------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1428,3 +1441,411 @@ Using a batch script similar to the one above, run the benchmark. You may modify
 
 
 [def]: ./resources/circleci_successful_deploy.png"
+
+# OpenMX Application Benchmark
+
+OpenMX (Open source package for Material eXplorer) is an open-source software package for first-principles electronic structure calculations of materials based on density functional theory. OpenMX implements functionalities frequently required in materials research, such as structural optimization, molecular dynamics, calculations under electric fields, charge doping, electrical transport calculations, core-level excitations, Wannier functions, and various charge and bonding analyses.
+
+## Pre-Requisite
+
+1. MPI - IntelMPI or openMPI or similar
+2. Math Libraries	- choose one
+
+	A. IntelMKL
+
+	B. IntelMKL Mix
+
+	C. OpenBLAS and FFTW and Scalapack
+
+! TIP
+ - IntelOneAPI includes everything needed for a complete build.
+
+## Setup
+
+```bash
+# Download OpenMX4
+wget https://www.openmx-square.org/openmx4.0.tar.gz
+
+# Extract OpenMX4
+tar zxvf openmx4.0.tar.gz
+```
+
+- Download `jobs` and `patch4.0.1` from the scc site. You can clone the ssc site and copy what you need, or just download the files and scp copy to your cluster.
+
+```bash
+# copy patch and jobs to source folder
+cp ./patch4.0.1.tar.gz openmx4.0/source
+cp ./jobs.tar.gz openmx4.0/work
+
+# move to work
+cd openmx4.0/work
+
+# Extract jobs
+tar zxvf jobs.tar.gz
+
+# move to source
+cd ../source
+
+# Extract patch
+tar zxvf patch4.0.1.tar.gz
+```
+
+!!! Note modify makefile according to selected tool-chain
+
+### Modify makefile
+
+```bash
+vim makefile
+```
+
+#### A. Intel (easy difficulty)
+
+Fix MKLROOT directory
+
+```bash
+# Before
+MKLROOT = /opt/intel/oneapi/mkl/2025.3
+
+# After
+MKLROOT = /home/rocky/intel/oneapi/mkl/2026.0
+```
+
+Load OneAPI and build openmx
+
+```
+ml oneapi/2026.0.1
+
+make install
+```
+
+Test Run!
+
+```bash
+cd ../work
+
+mpiexec -n 2 ./openmx 1-Methane.dat
+```
+
+#### B. Mix IntelMKL + openMPI + GCC (medium difficulty)
+
+Fix MKLROOT directory and select correct c and fortran compilers
+
+```bash
+# Before
+MKLROOT = /opt/intel/oneapi/mkl/2025.3
+
+# After
+MKLROOT = /home/rocky/intel/oneapi/mkl/2026.0
+
+# Replace CC , FC and LIB with
+CC = mpicc -O3 -fopenmp -fcommon -Wno-error=implicit-function-declaration -I${MKLROOT}/include/fftw -I${MKLROOT}/include
+FC = mpifort -O3 -fopenmp -fallow-argument-mismatch -I${MKLROOT}/include
+LIB= -L${MKLROOT}/lib/intel64 -lmkl_scalapack_lp64 -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core -lmkl_blacs_openmpi_lp64 -lmpi -lmpi_mpifh -lgfortran
+```
+
+Load mkl , openmpi and gcc and build openmx
+
+```
+ml compiler-rt tbb mkl
+ml gcc openmpi
+
+make install
+```
+
+Test Run!
+
+```bash
+cd ../work
+
+mpirun -n 2 ./openmx 1-Methane.dat
+```
+
+#### C. Own high performace libraries (complex difficulty)
+
+These next few steps are very involved and can be skipped, it was only added for completeness.
+
+##### Build FFTW
+
+More information can be found at :
+
+> https://www.fftw.org/download.html
+
+```bash
+# Get FFTW
+wget https://www.fftw.org/fftw-3.3.10.tar.gz
+tar -xzf fftw-3.3.10.tar.gz
+cd fftw-3.3.10
+
+# Configure and install (more flags bellow)
+./configure --prefix=/home/software/fftw3/3.3.10/gcc-14.2.1
+make -j$(nproc)
+sudo make -j$(nproc) install
+```
+
+##### Build OpenBLAS
+
+Read the GitHub links below for optimization tips.
+
+> https://github.com/OpenMathLib/OpenBLAS
+
+```bash
+# Fetch the source files from the GitHub repository
+git clone https://github.com/xianyi/OpenBLAS.git
+cd OpenBLAS
+
+# Tested against version 0.3.26, you can try an build `develop` branch
+# check branches here
+# https://github.com/OpenMathLib/OpenBLAS/tags
+# Favourites
+# git checkout v0.3.26
+# git checkout v0.3.28
+# git checkout develop
+git checkout v0.3.28
+
+# Make sure correct gcc,g++ and gfortran is loaded
+export CC=/home/software/gcc/8.2.0/bin/gcc
+export CXX=/home/software/gcc/8.2.0/bin/g++
+export FC=/home/software/gcc/8.2.0/bin/gfortran
+
+# You can adjust the PREFIX to install to your preferred directory
+make -j$(nproc)
+sudo make -j$(nproc) PREFIX=/home/software/openblas/0.3.28/gcc-8.2.0 install
+```
+
+##### ScaLAPACK (Scalable Linear Algebra PACKage)
+
+More infomation on scalapack :
+
+> https://netlib.org/scalapack/
+
+Scalapack REPO:
+
+> https://github.com/Reference-ScaLAPACK/scalapack/
+
+Download location :
+
+> https://github.com/Reference-ScaLAPACK/scalapack/archive/refs/tags/v2.2.2.tar.gz
+
+```bash
+# Download ScaLAPACK
+wget https://github.com/Reference-ScaLAPACK/scalapack/archive/refs/tags/v2.2.2.tar.gz
+
+# Extract the archive
+tar -xzvf v2.2.2.tar.gz
+cd scalapack-2.2.2
+
+# Create a build directory
+mkdir build
+cd build
+
+####  ---- load modules !!!!!
+# NEEDS openBLAS or ( Lapack and BLACs )
+# NEEDS GCC and fortran
+# NEEDS a mpi like openMPI
+ml fftw3 gcc openBlas openmpi
+
+cmake -DCMAKE_INSTALL_PREFIX=/home/software/scalapack/2.2.2/gcc-14.2.1/ ..
+
+# Install scalapack
+# before installing, make sure correct gcc and openblas is loaded !!
+sudo cmake --build . -j --target install
+```
+
+##### Setup makefile
+
+```bash
+vim makefile
+```
+
+ - Recommended config
+
+```bash
+FFTROOT=home/rocky/software/fftw3/3.3.10/openmpi-5.0.10-gcc-15.2.0-vectorized
+LBSROOT=home/rocky/software/openblas/0.3.28/openmpi-5.0.10-gcc-15.2.0-COOPERLAKE-vectorized
+MPIROOT=home/rocky/software/openMPI/5.0.10/gcc-15.2.0-source-omp-no-pmix
+
+CC = mpicc -O3 -ffast-math -fopenmp -fcommon -Wno-error=implicit-function-declaration -I/$(FFTROOT)/include -I/$(LBSROOT)/include -I/$(MPIROOT)/include
+FC = mpifort -O3 -fopenmp -fallow-argument-mismatch
+LIB= -lfftw3 -lmpi -lmpi_mpifh -lopenblas -lscalapack -lgfortran
+```
+
+Load gcc , openmpi , fftw , openblas , scalapack
+
+```
+# For the creator of the tutorial this loads everything, however you might have to load more modules.
+ml gcc openmpi scalapack
+
+make install
+```
+
+
+Test Run!
+
+```bash
+cd ../work
+
+mpirun -n 2 ./openmx 1-Methane.dat
+```
+
+## Tasks
+
+1. Run `1-Methane.dat` to make sure OpenMX build is working
+2. Run `2-Si.dat` as the optimization benchmark
+3. Run `3-NVC.dat` as the final task, and upload a screenshot of your final output to the [discussions page](https://github.com/chpc-tech-eval/scc/discussions/319).
+4. Visualize results using [viewer](https://www.openmx-square.org/viewer/) and ```nvc.sden.cube``` output file. Upload as very small video to twitter and tag `@chpc_scc`.
+
+### Optimization
+
+1. Make sure openMPI can use hyperthreading if it gives a performance bonus, otherwise disable hyperthreading.
+
+**MPI Ranks**: These are individual processes that communicate with each other using MPI. Each rank typically runs on a separate core or processor. EACH `process` is assigned a unigue `rank number`.
+
+**OpenMP Threads**: Within each MPI rank, you can use OpenMP to `create multiple threads`. These threads share the memory space of the MPI rank and can run concurrently on different cores.
+
+By varying the number of `OpenMP threads` **per** `MPI rank`, you can optimize the performance of your application. This approach can be beneficial in several scenarios:
+
+*Memory Bandwidth* and *Cache Efficiency*: On nodes with many cores, using multiple OpenMP threads per MPI rank can help alleviate memory bandwidth and cache size limitations.
+
+**GPU** Utilization: When running applications on `GPUs`, using `fewer MPI ranks` and **more** `OpenMP threads` can better utilize the computational power of the CPU for tasks that still run on the CPU side.
+
+To implement this, you can set the number of OpenMP threads using the `OMP_NUM_THREADS` environment variable and then run your application with mpirun. 
+
+For example (bad, just for learning):
+
+```bash
+# This command sets 4 OpenMP threads per MPI rank and runs the application with 2 MPI ranks
+export OMP_NUM_THREADS=4
+mpirun -np 2 ./openmx Methane.dat
+
+# Real example for 32 processes x 4 openMP threads per MPI = 128 processes for the 128 logical cores [hyper threading enabled]
+export OMP_NUM_THREADS=4
+mpirun -np 32 --map-by socket:PE=4 --bind-to hwthread --use-hwthread-cpus --oversubscribe --report-bindings ./openmx 2-Si.dat -nt 4
+
+# Recommended add
+export OMP_PROC_BIND=close
+
+# It is clear from this what numbers is for what, just ignore the -nt 4 as this is specific to openmx to enable openMP for 4 parallel threads
+
+# Use this for 128 core on 1 node
+export OMP_PROC_BIND=close
+export OMP_NUM_THREADS=4
+mpirun -np 32 --map-by socket:PE=4 --bind-to hwthread --use-hwthread-cpus --oversubscribe --report-bindings ./openmx <another_input>.dat -nt 4
+```
+
+#### OpenMP vs MPI ranks
+
+It all depends on the mpi you are using.
+
+Use [openMPI manual](https://docs.open-mpi.org/en/v5.0.x/man-openmpi/man1/mpirun.1.html) for guidance on how to properly use `mpirun`
+
+below is breakdown of keypoints
+
+```bash
+# Command use
+mpirun [options] ./app [app input]
+
+# [options]
+
+-np X   # create X processes
+
+--map-by [options]   # This is how processes are distributed through cluster/system
+
+    # map options
+    slot / core / numa / node / ppr:N
+    # ppr:N   -> map N Processes Per Resource (core/slot/numa/node)
+    pe=n
+    # pe=n    -> n cpu's to each process, processing elements (cores)
+    # slots   -> cpu's / cores
+
+--bind-to [options]     # Bind processes to 
+
+    # bind options
+    none / package / numa / core
+    :overload-allowed
+
+--rank-by [options]     # How processes are place/ordered
+
+    slot / node / fill / span
+
+--report-bindings
+
+-x OMP_NUM_THREADS=2 
+
+# To pass lib to all hosts
+-x LD_LIBRARY_PATH
+
+-H host1,host2
+
+--hostfile hosts.txt
+
+    hosts.txt
+    com1 slot=64
+    com2 slot=64
+```
+
+##### openMPI example
+
+```bash
+# If 4 nodes with 256 total cores
+# 4 openmp threads , 64 mpi ranks
+# 16 processes per node , 4 cpu's pre process (processing elements)
+export OMP_NUM_THREADS=4
+mpirun -np 64 --map-by ppr:16:node:pe=4 ./openmx 2-Si.dat -nt 4
+```
+
+- Full Example
+
+```bash
+# Full example 
+
+mpirun -np 128 -x OMP_NUM_THREADS=2 --hostfile hosts.txt -x LD_LIBRARY_PATH --map-by ppr:32:node:pe=2 ./openmx 2-Si.dat -nt 2
+```
+
+##### intelMPI example
+
+```bash
+# n    -> number of processes
+# ppn  -> processes per node
+# On 4 nodes with 256 total cores
+# 4 openmp threads, 64 mpi ranks, 16 processes per node
+mpiexec -n 64 -ppn 16 -genv OMP_NUM_THREADS=4 -genv I_MPI_PIN_DOMAIN=socket -genv I_MPI_PIN_ORDER=compact ./openmx 2-Si.dat -nt 4
+
+```
+
+### OpenMP flags
+
+```
+Intel = -openmp
+Intel = -qopenmp
+Intel = -fiopenmp          
+GNU   = -fopenmp
+CLANG = -fopenmp         
+PGI = -mp -Dnosse
+```
+
+### Compiler Flags
+
+#### Intel
+
+```bash
+# Min
+-xHost
+# Min++
+-axAVX -axSSE4.2 -xSSE2
+# Favourite
+-mavx2 -mavx512bw -mavx512dq -mavx512vl -mavx512cd
+# Others
+-O3 -fopenmp -march=native -mtune=native
+# Safe
+-xHOST -fp-model precise
+
+For AVX-512, here are some specific vectorization flags you can use when compiling programs:
+
+-mavx512f: Enables the foundational AVX-512 instructions 1.
+-mavx512bw: Enables AVX-512 byte and word instructions 1.
+-mavx512dq: Enables AVX-512 doubleword and quadword instructions 1.
+-mavx512vl: Enables AVX-512 vector length extensions for 128-bit and 256-bit vectors 1.
+-mavx512cd: Enables AVX-512 conflict detection instructions 1.
+-qopt-zmm-usage: Controls the usage of ZMM registers for AVX-512 2.
+-mprefer-vector-width-512: Prefers 512-bit vector width for AVX-512 2.
+```
