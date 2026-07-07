@@ -44,6 +44,9 @@
                 1. [Setup makefile](#setup-makefile)
     1. [Tasks](#tasks)
         1. [Optimization](#optimization)
+1. [OpenFOAM Application Benchmark](#openfoam-application-benchmark)
+   
+		   
 
 <!-- markdown-toc end -->
 
@@ -1849,3 +1852,216 @@ For AVX-512, here are some specific vectorization flags you can use when compili
 -qopt-zmm-usage: Controls the usage of ZMM registers for AVX-512 2.
 -mprefer-vector-width-512: Prefers 512-bit vector width for AVX-512 2.
 ```
+
+# OpenFOAM Application Benchmark
+
+Open-source Field Operation And Manipulation is a free, open source computational fluid dynamics (CFD) software package.
+
+It solves the fundamental equations of fluid mechanics - the Navier-Stokes equations - numerically across a 3D mesh. Instead of doing a physical experiment, you can simulate how air, water or any fluid behaves around or through objects on a computer.
+
+
+For this section, you will be using OpenFoam v2506 with the Intel oneAPI C++ Compiler and combine it with IntelMPI.
+
+
+
+Detailed installation instructions and general guidance can be found at: https://gitlab.com/openfoam/core/openfoam, but here's a general installation overview for a RHEL based system and except for the different package managers eg. apt and yum, the instructions are the same.
+ 
+Also note, you are NOT allowed to use precompiled binaries.
+
+
+## Prerequisites
+**Note:** This step assumes you already have `lmod` installed.
+
+Before compiling, load the following modules from lmod:
+
+You can either use GCC + OpenMPI or InteloneAPI toolkit(intel compiler and intelMPI).
+
+The instructions following are for the Intel toolchain:
+
+```bash
+ml oneapi/2026.1.0                    # Names are subject to your configuration, load the intel compiler
+                                      # This will automatically load IntelMPI as well depending on your lmod setup
+
+```
+
+
+## Install System Dependencies
+
+```bash
+sudo dnf install -y \
+    flex bison \
+    fftw-devel \
+    make cmake \
+    wget git               #dnf, apt, yum packages according to your flavour of Linux
+```
+
+Packages might have different names depending on your linux distribution
+
+
+## Download OpenFOAM and ThirdParty libraries
+
+```bash
+mkdir -p ~/OpenFOAM && cd ~/OpenFOAM
+
+wget https://dl.openfoam.com/source/v2506/OpenFOAM-v2506.tgz
+wget https://dl.openfoam.com/source/v2506/ThirdParty-v2506.tgz
+
+tar -xzf OpenFOAM-v2506.tgz
+tar -xzf ThirdParty-v2506.tgz
+```
+
+
+
+## Source OpenFOAM Environment and set Flags
+
+> **Critical:** Always source the bashrc FIRST, then set WM_NCOMPROCS.
+> Setting WM_NCOMPROCS before sourcing will cause it to be overwritten.
+
+```bash
+source ~/OpenFOAM/OpenFOAM-v2506/etc/bashrc
+
+export WM_NCOMPROCS=$(nproc)
+export PATH=~/bin:$PATH
+```
+> **Note:** You must re-source this file (`source ~/OpenFOAM/OpenFOAM-v2506/etc/bashrc`) every time you open a new terminal session — it does not persist automatically unless added to  ~/.bashrc.
+
+
+
+Verify the environment loaded correctly:
+
+```bash
+echo $WM_PROJECT_DIR    # Points to OpenFOAM-v2506
+
+```
+
+---
+
+
+## Build OpenFOAM
+
+This step takes **2 to 3 hours** depending on available cores.
+
+```bash
+cd ~/OpenFOAM/OpenFOAM-v2506
+./Allwmake -j$(nproc) 2>&1 | tee ~/openfoam_build.log
+```
+
+Check for errors when complete:
+
+```bash
+grep -c "Error" ~/openfoam_build.log   # ignore if ADIOS did not build 
+                                       # but SCOTCH is needed and has to be built
+```
+
+It is heavily advised to make use of a multiplexer such as Tmux as the build will consume a heavy chunk of time and you do not want your build to fail because your laptop or PC went into sleep mode
+
+---
+
+
+### If the Build Fails
+
+`Allwmake` is safe to re-run — it skips targets that already compiled successfully. If you hit an error:
+
+1. Check `~/openfoam_build.log` for the specific error near the bottom of the file.
+2. Fix the issue, then re-run `./Allwmake -j$(nproc)` from the same directory.
+
+### Common Errors
+
+- **Missing `flex`/`bison`** — mesh generation tools will fail to build.
+- **`command not found: wmake`** — the environment wasn't sourced correctly in this terminal session.
+- **Build seems "stuck" after re-opening a terminal** — you forgot to re-source `etc/bashrc`.
+
+---
+
+## Scotch Libraries
+
+After OpenFOAM is built, check if scotch has built successfully.
+
+Also note that OpenFoam can be installed successfully without Scotch, but Scotch is critical for running the solvers.
+
+Verify:
+
+```bash
+ls $FOAM_LIBBIN/libscotchDecomp.so          # Serial Scotch decomposition
+```
+
+---
+
+## Verify Installation
+
+```bash
+foamInstallationTest
+```
+
+Expected output should show:
+- `Base configuration ok`
+- `Critical systems ok`
+
+
+
+
+##  Benchmark-ing Start
+
+### How OpenFOAM Parallelisation Works
+
+OpenFOAM uses an unconventional approach to parallelisation via **domain decomposition**.
+Instead of running on a shared dataset, the mesh and fields are split into separate
+subdirectories — one per MPI rank:
+
+```
+processor0/
+processor1/
+processor2/
+...
+processorN/
+```
+
+This applies to both the mesh generation tool (`snappyHexMesh`) and the flow solver (`simpleFoam`). After processing, the partitioned results can be reconstructed into a single dataset using `reconstructPar`.
+
+The decomposition is controlled by `system/decomposeParDict`. The `numberOfSubdomains` in this file **must match** the number of MPI ranks passed to `mpirun`.
+
+---
+
+### Get the Case
+
+First, download the Wind Around Buildings case:
+
+```bash
+wget https://github.com/chpc-tech-eval/chpc25-scc-nationals/raw/refs/heads/main/OpenFOAM/OpenFoam_cases.tgz
+tar -xzf OpenFoam_cases.tgz
+```
+
+Use the **3.2 million cell** case from the extracted folder.
+
+---
+
+### Set Up the Case
+
+Before running, edit the following:
+
+- **`system/decomposeParDict`**
+  - Set `numberOfSubdomains` to match the number of cores you are using.
+  - Set `method` to `scotch`.
+- **`system/controlDict`**
+  - Set `endTime` to `50`.
+
+The case is conveniently pre-configured for you otherwise — you shouldn't need to touch anything else.
+
+Run the setup script, which handles decomposition and prepares reconstruction automatically:
+
+```bash
+./makeCase.sh
+```
+
+---
+
+### Run the Case
+
+> **Note:** This step assumes you already have `slurm` installed.
+
+A Slurm script is also provided to run the case. You're not required to use it, but it's a helpful baseline:
+
+```bash
+sbatch runFoam.sh
+```
+If you do make use of slurm, direct simpleFoam to write to a .out so that results can be confirmed by the instructors.
