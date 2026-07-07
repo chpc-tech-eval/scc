@@ -1694,7 +1694,7 @@ mpirun -n 2 ./openmx 1-Methane.dat
 
 ### Optimization
 
-1. Make sure openMPI can use hyperthreading if it gives a performance bonus, otherwise disable hyperthreading.
+Make sure openMPI can use hyperthreading if it gives a performance bonus, otherwise disable hyperthreading.
 
 **MPI Ranks**: These are individual processes that communicate with each other using MPI. Each rank typically runs on a separate core or processor. EACH `process` is assigned a unigue `rank number`.
 
@@ -1867,7 +1867,7 @@ Detailed installation instructions and general guidance can be found at: https:/
 
 ## Prerequisites
 >[!NOTE]
->This step assumes you already have `lmod` installed.
+> This step assumes you already have `lmod` installed.
 
 Before compiling, load the following modules from lmod:
 
@@ -1933,8 +1933,6 @@ echo $WM_PROJECT_DIR    # Points to OpenFOAM-v2506
 
 ```
 
----
-
 
 ## Build OpenFOAM
 
@@ -1954,7 +1952,6 @@ grep -c "Error" ~/openfoam_build.log   # ignore if ADIOS did not build
 
 It is heavily advised to make use of a multiplexer such as Tmux as the build will consume a heavy chunk of time and you do not want your build to fail because your laptop or PC went into sleep mode
 
----
 
 
 ### If the Build Fails
@@ -1970,7 +1967,6 @@ It is heavily advised to make use of a multiplexer such as Tmux as the build wil
 - **`command not found: wmake`** — the environment wasn't sourced correctly in this terminal session.
 - **Build seems "stuck" after re-opening a terminal** — you forgot to re-source `etc/bashrc`.
 
----
 
 ## Scotch Libraries
 
@@ -1984,7 +1980,6 @@ Verify:
 ls $FOAM_LIBBIN/libscotchDecomp.so          # Serial Scotch decomposition
 ```
 
----
 
 ## Verify Installation
 
@@ -2019,7 +2014,6 @@ This applies to both the mesh generation tool (`snappyHexMesh`) and the flow sol
 
 The decomposition is controlled by `system/decomposeParDict`. The `numberOfSubdomains` in this file **must match** the number of MPI ranks passed to `mpirun`.
 
----
 
 ### Get the Case
 
@@ -2032,7 +2026,6 @@ tar -xzf OpenFoam_cases.tgz
 
 Use the **3.2 million cell** case from the extracted folder.
 
----
 
 ### Set Up the Case
 
@@ -2052,7 +2045,6 @@ Run the setup script, which handles decomposition and prepares reconstruction au
 ./makeCase.sh
 ```
 
----
 
 ### Run the Case
 
