@@ -153,6 +153,29 @@ Each Team must work together to answer and complete the [Technical Knowledge Ass
 > [!CAUTION]
 > The deadline for submission of the Technical Knowledge Assessment is **23:00 on Saturday the 11th July**. Late submissions will be penalized.
 
+## Lecture Slides
+
+Each day the lecture slides will be uploaded here to the GitHub repo.
+
+### Day 1
+
+1. [Welcome and Introduction](http://154.114.52.167/Welcome%20&%20Introduction.pptx)
+1. [Linux Services](http://154.114.52.167/Linux_Services_LPitsi_Slides.pptx)
+
+### Day 2
+
+1. [HPC Hardware](http://154.114.52.167/HPC_Hardware_KRamlall_Slides.pptx)
+1. [Networking and SSH](http://154.114.52.167/Networking_and_SSH_Allen.pptx)
+1. [Network File Systems](http://154.114.52.167/Network_File_Systems_Allen.pptx)
+1. [System Administration and Configuration](http://154.114.52.167/SysAdmin_and_Config_LPitsi_Slides.pptx)
+
+### Day 3
+
+1. [Compiler Tools](http://154.114.52.167/Compiler_Tools_Thina_Calana.pptx)
+
+### Day 4
+
+
 ## Tutorials
 
 You will be evaluated on your overall progress in the tutorials. Below you will find an overview, glossary and high level breakdown of the tutorials. You must progress through four tutorials, which will be released daily. Your overall progress through the tutorials forms a large component of you score. By the end of the week you would have covered a considerable amount of content, use the links provided should you need to refer to a specific section and are having trouble remembering where is it.
