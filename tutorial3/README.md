@@ -608,17 +608,17 @@ The [TOP500 list](https://top500.org/lists/top500/2024/06/) is a project that ra
 
    Populate the following table by recording your Rmax from HPL results, and calculating your expected Rpeak value.
 
-| Rank | System                                          | Threads   | Rmax (GFlops/s)       | Rpeak (GFlops/s)         |
-|------|-------------------------------------------------|-----------|-----------------------|--------------------------|
-| 1    | Frontier - HPE - United States                  | 8 699 904 | 1206 x 10<sup>6</sup> | 1714.81 x 10<sup>6</sup> |
-|      |                                                 |           |                       |                          |
-| 2    |                                                 |           |                       |                          |
-| 3    |                                                 |           |                       |                          |
-|      | Head node                                       | 2         |                       |                          |
-|      | Compute node using head node `xhpl` binary      |           |                       |                          |
-|      | Compute node using custom compiled MPI and BLAS |           |                       |                          |
-|      | Compute node using Intel oneAPI Toolkits        |           |                       |                          |
-|      | Across two compute nodes                        |           |                       |                          |
+| Rank | System                                          | Threads    | Rmax (GFlops/s)        | Rpeak (GFlops/s)          |
+|------|-------------------------------------------------|------------|------------------------|---------------------------|
+| 1    | LineShine - LinkKun LX2 - Shenzen China         | 13 789 440 | 2 198 x 10<sup>6</sup> | 2 735.82 x 10<sup>6</sup> |
+|      |                                                 |            |                        |                           |
+| 3    | Frontier - HPE - United States                  | 8 699 904  | 1 206 x 10<sup>6</sup> | 1 714.81 x 10<sup>6</sup> |
+|      |                                                 |            |                        |                           |
+|      | Head node                                       | 2          |                        |                           |
+|      | Compute node using head node `xhpl` binary      |            |                        |                           |
+|      | Compute node using custom compiled MPI and BLAS |            |                        |                           |
+|      | Compute node using Intel oneAPI Toolkits        |            |                        |                           |
+|      | Across two compute nodes                        |            |                        |                           |
 
 > [!IMPORTANT]
 > You do **NOT** need to try and Rank you VM's HPL performance. Cores and threads are used interchangeably in this context. Following the recommended configuration and guides, your head node has one CPU package with two compute cores (or threads). Continuing this same analogy, your compute node has one CPU with six cores (or threads).
@@ -678,6 +678,9 @@ You will be using `hwloc` to help you understand how you are going to be mapping
 ## VTune
 
 You're now going to recompile HPL across *"multiple"* nodes, using Intel oneAPI's `vtune` application for profiling.
+
+> [!IMPORTANT]
+> You do not have direct access to your VM's CPU's and hence you _may_ not be able to utilize profiling tools in this round of the competition. It would nonetheless still be a very good idea to run `vTune` on your laptops, or on your universities' cluster, to determine the MPI communications' profile.
 
 1. Recompile HPL
    You must ensure the following Intel oneAPI modules are configure and loaded
