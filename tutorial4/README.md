@@ -94,19 +94,15 @@ In this tutorial you will:
 
 Cluster monitoring is crucial for managing Linux machines. Effective monitoring helps detect and resolve issues promptly, provides insights into resource usage (CPU, memory, disk, network), aids in capacity planning, and ensures infrastructure scales with workload demands. By monitoring system performance and health, administrators can prevent downtime, reduce costs, and improve efficiency.
 
-![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/f951e4b7-20ff-49a4-b9a7-28aa57e51f5b)
-
 * **Traditional Approach Using `top` or `htop`**
 
   Traditionally, Linux system monitoring involves command-line tools like `top` or `htop`. These tools offer real-time system performance insights, displaying active processes, resource usage, and system load. While invaluable for monitoring individual machines, they lack the ability to aggregate and visualize data across multiple nodes in a cluster, which is essential for comprehensive monitoring in larger environments.
 
-  ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/7e0c8b92-adc2-4106-94ee-ca4ee78a13f5)
 
 * **Using Grafana, Prometheus, and Node Exporter**
 
   Modern solutions use Grafana, Prometheus, and Node Exporter for robust and scalable monitoring. Prometheus collects and stores metrics, Node Exporter provides system-level metrics, and Grafana visualizes this data. This combination enables comprehensive cluster monitoring with historical data analysis, alerting capabilities, and customizable visualizations, facilitating better decision-making and faster issue resolution.
 
-  ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/3f64a8bd-87fa-4b51-9576-b28da3af632b)
 
 * **What is Docker and Docker Compose and How We Will Use It**
 
@@ -362,11 +358,11 @@ Once you have understood the above considerations, you may proceed to create a T
 
 1. From a browser on your **workstation** navigate to the Grafana dashboard on your head node
 
-1. Go to a browser and login to Grafana:
+2. Go to a browser and login to Grafana:
 
    <p align="center"><img alt="Grafana Login." src="./resources/grafana_login.png" width=900 /></p>
 
-1. Login to you Grafana dashboards
+3. Login to you Grafana dashboards
    ```
    username: admin
    password: <YOUR_GRAFANA_PASSWORD>
@@ -374,23 +370,21 @@ Once you have understood the above considerations, you may proceed to create a T
 
   <p align="center"><img alt="Grafana Login." src="./resources/grafana_login.png" width=900 /></p>
 
-1. Go to Dashboards
+4. Go to Dashboards
 
   <p align="center"><img alt="Grafana Login." src="./resources/grafana_dashboards.png" width=900 /></p>
 
-1. Click on New then Import
+5. Click on New then Import
 
   <p align="center"><img alt="Grafana Login." src="./resources/grafana_new.png" width=900 /></p>
 
-1. Input: 1860 and click Load
+6. Input: 1860 and click Load
 
    <p align="center"><img alt="Grafana Login." src="./resources/grafana_import.png" width=900 /></p>
 
-1. Click on source: "Prometheus"
+7. Click on source: "Prometheus"
 
-1. Click on Import:
-
-   ![image](https://github.com/ChpcTraining/monitoring_vms/assets/157092105/f078be7e-2663-4947-b8fd-fc6c6d548513)
+8. Click on Import:
 
 ## Success State, Next Steps and Troubleshooting
 
@@ -1183,7 +1177,6 @@ After pushing the workflow file, the HPL benchmark will run on all nodes if Slur
 
 The GitHub Actions workflow is triggered on push events, which means that if any code is pushed to the repository, the HPL benchmark will run.
 
---------------------------------------------------------------------------------------------------------------------------------------
 
 # Slurm Scheduler and Workload Manager
 
@@ -1389,7 +1382,8 @@ You will now be extending some of your earlier work from [Tutorial 3](../tutoria
 
 ## Protein Visualization
 
-> [!NOTE] You will need to work on your or laptop to complete this section, not on your head node nor compute node.
+> [!NOTE]
+> You will need to work on your or laptop to complete this section, not on your head node nor compute node.
 
 You are able to score bonus points for this tutorial by submitting a visualisation of your **adh_cubic** benchmark run. Follow the instructions below to accomplish this and upload the visualisation.
 
@@ -1419,7 +1413,7 @@ Use the `WinSCP` application for Windows, or the `scp` command for Linux to copy
 
 Simulations like this are used to to develop and prototype experimental pharmaceutical drug designs. By visualising the output, researchers are able to better interpret simulation results.
 
-[!TIP]
+> [!TIP]
 > Copy the resulting `.bmp` file(s) from yout cluster to your local computer or laptop and demonstrate this to your instructors for bonus points.
 
 ## Benchmark 2 (1.5M Water)
@@ -1460,8 +1454,8 @@ OpenMX (Open source package for Material eXplorer) is an open-source software pa
 
 	C. OpenBLAS and FFTW and Scalapack
 
-! TIP
- - IntelOneAPI includes everything needed for a complete build.
+>[!TIP]
+>IntelOneAPI includes everything needed for a complete build.
 
 ## Setup
 
@@ -1493,7 +1487,8 @@ cd ../source
 tar zxvf patch4.0.1.tar.gz
 ```
 
-!!! Note modify makefile according to selected tool-chain
+>[!NOTE]
+> Modify makefile according to selected tool-chain
 
 ### Modify makefile
 
@@ -1521,7 +1516,7 @@ ml oneapi/2026.0.1
 make install
 ```
 
-Test Run!
+** Test Run! **
 
 ```bash
 cd ../work
@@ -1555,7 +1550,7 @@ ml gcc openmpi
 make install
 ```
 
-Test Run!
+** Test Run! **
 
 ```bash
 cd ../work
@@ -1682,7 +1677,7 @@ make install
 ```
 
 
-Test Run!
+** Test Run! **
 
 ```bash
 cd ../work
@@ -1699,7 +1694,7 @@ mpirun -n 2 ./openmx 1-Methane.dat
 
 ### Optimization
 
-1. Make sure openMPI can use hyperthreading if it gives a performance bonus, otherwise disable hyperthreading.
+Make sure openMPI can use hyperthreading if it gives a performance bonus, otherwise disable hyperthreading.
 
 **MPI Ranks**: These are individual processes that communicate with each other using MPI. Each rank typically runs on a separate core or processor. EACH `process` is assigned a unigue `rank number`.
 
@@ -1865,12 +1860,14 @@ For this section, you will be using OpenFoam v2506 with the Intel oneAPI C++ Com
 
 
 Detailed installation instructions and general guidance can be found at: https://gitlab.com/openfoam/core/openfoam, but here's a general installation overview for a RHEL based system and except for the different package managers eg. apt and yum, the instructions are the same.
- 
-Also note, you are NOT allowed to use precompiled binaries.
+
+ >[!WARNING]
+ > Also note, you are NOT allowed to use precompiled binaries.
 
 
 ## Prerequisites
-**Note:** This step assumes you already have `lmod` installed.
+>[!NOTE]
+> This step assumes you already have `lmod` installed.
 
 Before compiling, load the following modules from lmod:
 
@@ -1914,7 +1911,8 @@ tar -xzf ThirdParty-v2506.tgz
 
 ## Source OpenFOAM Environment and set Flags
 
-> **Critical:** Always source the bashrc FIRST, then set WM_NCOMPROCS.
+> [!IMPORTANT]
+> Always source the bashrc FIRST, then set WM_NCOMPROCS.
 > Setting WM_NCOMPROCS before sourcing will cause it to be overwritten.
 
 ```bash
@@ -1923,7 +1921,8 @@ source ~/OpenFOAM/OpenFOAM-v2506/etc/bashrc
 export WM_NCOMPROCS=$(nproc)
 export PATH=~/bin:$PATH
 ```
-> **Note:** You must re-source this file (`source ~/OpenFOAM/OpenFOAM-v2506/etc/bashrc`) every time you open a new terminal session — it does not persist automatically unless added to  ~/.bashrc.
+> [!NOTE]
+> You must re-source this file (`source ~/OpenFOAM/OpenFOAM-v2506/etc/bashrc`) every time you open a new terminal session — it does not persist automatically unless added to  ~/.bashrc.
 
 
 
@@ -1933,8 +1932,6 @@ Verify the environment loaded correctly:
 echo $WM_PROJECT_DIR    # Points to OpenFOAM-v2506
 
 ```
-
----
 
 
 ## Build OpenFOAM
@@ -1955,7 +1952,6 @@ grep -c "Error" ~/openfoam_build.log   # ignore if ADIOS did not build
 
 It is heavily advised to make use of a multiplexer such as Tmux as the build will consume a heavy chunk of time and you do not want your build to fail because your laptop or PC went into sleep mode
 
----
 
 
 ### If the Build Fails
@@ -1971,7 +1967,6 @@ It is heavily advised to make use of a multiplexer such as Tmux as the build wil
 - **`command not found: wmake`** — the environment wasn't sourced correctly in this terminal session.
 - **Build seems "stuck" after re-opening a terminal** — you forgot to re-source `etc/bashrc`.
 
----
 
 ## Scotch Libraries
 
@@ -1985,7 +1980,6 @@ Verify:
 ls $FOAM_LIBBIN/libscotchDecomp.so          # Serial Scotch decomposition
 ```
 
----
 
 ## Verify Installation
 
@@ -2020,7 +2014,6 @@ This applies to both the mesh generation tool (`snappyHexMesh`) and the flow sol
 
 The decomposition is controlled by `system/decomposeParDict`. The `numberOfSubdomains` in this file **must match** the number of MPI ranks passed to `mpirun`.
 
----
 
 ### Get the Case
 
@@ -2033,7 +2026,6 @@ tar -xzf OpenFoam_cases.tgz
 
 Use the **3.2 million cell** case from the extracted folder.
 
----
 
 ### Set Up the Case
 
@@ -2053,7 +2045,6 @@ Run the setup script, which handles decomposition and prepares reconstruction au
 ./makeCase.sh
 ```
 
----
 
 ### Run the Case
 
