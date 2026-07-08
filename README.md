@@ -166,24 +166,24 @@ Each day the lecture slides will be uploaded here to the GitHub repo.
 
 ### Day 2
 
-1. [HPC Hardware](https://scc-files.duckdns.org//HPC_Hardware_KRamlall_Slides.pptx)
-1. [Networking and SSH](https://scc-files.duckdns.org//Networking_and_SSH_Allen.pptx)
-1. [Network File Systems](https://scc-files.duckdns.org//Network_File_Systems_Allen.pptx)
-1. [System Administration and Configuration](https://scc-files.duckdns.org//SysAdmin_and_Config_LPitsi_Slides.pptx)
-1. [Putting together an HPC Cluster](https://scc-files.duckdns.org//HPC_Putting_together_cluster.pptx)
+1. [HPC Hardware](https://scc-files.duckdns.org/HPC_Hardware_KRamlall_Slides.pptx)
+1. [Networking and SSH](https://scc-files.duckdns.org/Networking_and_SSH_Allen.pptx)
+1. [Network File Systems](https://scc-files.duckdns.org/Network_File_Systems_Allen.pptx)
+1. [System Administration and Configuration](https://scc-files.duckdns.org/SysAdmin_and_Config_LPitsi_Slides.pptx)
+1. [Putting together an HPC Cluster](https://scc-files.duckdns.org/HPC_Putting_together_cluster.pptx)
 
 ### Day 3
 
-1. [Scripting and Code Compilation](https://scc-files.duckdns.org//Scripting_and_Code_Compilation_Tebogo_Slides_final.pptx)
-1. [Environment Management Tools (LMOD)](https://scc-files.duckdns.org//Environment_Management_Tools_Thina_Calana.pptx)
-1. [Compiler Tools](https://scc-files.duckdns.org//Compiler_Tools_Thina_Calana.pptx)
-1. [Benchmarking and HPL](https://scc-files.duckdns.org//CHPC Selection Round - Benchmarking and HPL.pptx)
+1. [Scripting and Code Compilation](https://scc-files.duckdns.org/Scripting_and_Code_Compilation_Tebogo_Slides_final.pptx)
+1. [Environment Management Tools (LMOD)](https://scc-files.duckdns.org/Environment_Management_Tools_Thina_Calana.pptx)
+1. [Compiler Tools](https://scc-files.duckdns.org/Compiler_Tools_Thina_Calana.pptx)
+1. [Benchmarking and HPL](https://scc-files.duckdns.org/Benchmarking_and_HPL.pptx)
 
 ### Day 4
 
-1. [OpenMX](https://scc-files.duckdns.org//OpenMX_Allen.pptx)
-1. [Monitoring](https://scc-files.duckdns.org//Monitoring_Shadley_Wentzel.pptx)
-1. [Automation and Provisioning through Ansible](https://scc-files.duckdns.org//Automation_and_Provisioning_Ansible_TDiraditsile_Slides.pptx)
+1. [OpenMX](https://scc-files.duckdns.org/OpenMX_Allen.pptx)
+1. [Monitoring](https://scc-files.duckdns.org/Monitoring_Shadley_Wentzel.pptx)
+1. [Automation and Provisioning through Ansible](https://scc-files.duckdns.org/Automation_and_Provisioning_Ansible_TDiraditsile_Slides.pptx)
 
 ## Lecture Recordings
 
