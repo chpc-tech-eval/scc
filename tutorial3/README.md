@@ -457,14 +457,12 @@ Join the [Discussion](https://github.com/chpc-tech-eval/chpc24-scc-nmu/discussio
 
 Intel oneAPI Toolkits provide a comprehensive suite of development tools that span various programming models and architectures. These toolkits help developers optimize their applications for performance across CPUs, GPUs, FPGAs, and other accelerators, visit [Intel oneAPI Toolkits](https://www.intel.com/content/www/us/en/developer/tools/oneapi/toolkits.html) for more information.
 
-## Configure and Install Intel oneAPI Base and HPC Toolkits
+## Configure and Install Intel oneAPI Toolkits
 
 > [!CAUTION]
-> The Intel oneAPI Base and HPC Toolkits can provide considerable improvements of your benchmarking results. However, they can be tricky to install and configure. You are advised to skip this section if you have fallen behind the pace recommended by the course coordinators. Skipping this section will *NOT* stop you from completing the remainder of the tutorials.
+> The Intel oneAPI Toolkits can provide considerable improvements of your benchmarking results. However, they can be tricky to install and configure. You are advised to skip this section if you have fallen behind the pace recommended by the course coordinators. Skipping this section will *NOT* stop you from completing the remainder of the tutorials.
 
-You will need to install and configure Intel's oneAPI Base Toolkit which includes Intel's optimized Math Kernel Libraries and Intel's C/C++ Compilers. Additionally, you will also need to install Intel's HPC Toolkit which extends the functionality of the oneAPI Base Toolkit and includes Intel's optimized FORTRAN and MPI Compilers.
-
-You will be making use of the **2024-2** versions of the Intel oneAPI and HPC Toolkits.
+You will need to install and configure Intel's oneAPI Base Toolkit which includes Intel's optimized Math Kernel Libraries, Intel's C/C++ Compilers and FORTRAN and MPI Compilers.
 
 1. *Optionally* the following prerequisites and install dependencies, to make use of Intel's VTune Profiler for a graphical user interface.
    ```bash
@@ -478,24 +476,17 @@ You will be making use of the **2024-2** versions of the Intel oneAPI and HPC To
    sudo pacman -S libdrm gtk3 libnotify xdg-utils libxcb mesa at-spi2-core
    ```
 1. Download the offline installers into your `HOME` directory
-   * Intel oneAPI Base Toolkit
+   * Intel oneAPI Toolkit
      ```bash
-     wget https://registrationcenter-download.intel.com/akdlm/IRC_NAS/9a98af19-1c68-46ce-9fdd-e249240c7c42/l_BaseKit_p_2024.2.0.634_offline.sh
-     ```
-
-   * Intel oneAPI HPC Toolkit
-     ```bash
-     wget https://registrationcenter-download.intel.com/akdlm/IRC_NAS/d4e49548-1492-45c9-b678-8268cb0f1b05/l_HPCKit_p_2024.2.0.635_offline.sh
+     wget https://registrationcenter-download.intel.com/akdlm/IRC_NAS/33cb2a22-ddf1-4aa9-8d68-1f5a118acaf2/intel-oneapi-toolkit-2026.1.0.192_offline.sh
      ```
 
 1. Use `chmod` to make the scripts executable
    ```bash
-   # First make the Basekit executable
-   chmod +x l_BaseKit_p_2024.2.0.634_offline.sh
-
-   # Then make the HPCkit executable
-   chmod +x l_HPCKit_p_2024.2.0.635_offline.sh
+   # First make the toolkit executable
+   chmod +x intel-oneapi-toolkit-2026.1.0.192_offline.sh
    ```
+   
 1. Run the installation script using the following command line parameters:
    * `-a`: List of arguments to follow...
    * `--cli`: Executing the installer on a Command Line Interface.
@@ -505,14 +496,9 @@ You will be making use of the **2024-2** versions of the Intel oneAPI and HPC To
    These must be run separately and you will need to navigate through a number of CLI text prompts and accept the end-user license agreement.
    ```bash
    # Run Intel oneAPI Basekit installation script
-   ./l_BaseKit_p_2024.2.0.634_offline.sh -a --cli --eula accept
+   ./intel-oneapi-toolkit-2026.1.0.192_offline.sh -a --cli --eula accept
    ```
 
-   Should there be any missing dependencies, use your systems' Package manager to install them
-   ```bash
-   # Run Intel oneAPI HPCkit installation script
-   ./l_HPCKit_p_2024.2.0.635_offline.sh -a --cli --eula accept
-   ```
 1. Configure your Environment to use Intel oneAPI Toolkits
    You can either use the `setvars.sh` configuration script or modulefiles:
    * To have your environment automaticaly prepared for use with Intel's oneAPI Toolkit append the following line either to your `/etc/profile` or your `~/.bashrc` or your `~/.profile` or run the command every time you login to your node
