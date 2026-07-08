@@ -18,6 +18,8 @@ The goal of this document is to introduce you to the competition platform and fa
 1. [Deliverables](#deliverables)
     1. [Cluster Design Assignment](#cluster-design-assignment)
     1. [Technical Knowledge Assessment](#technical-knowledge-assessment)
+    1. [Lecture Slides](#lecture-slides)
+    1. [Lecture Recordings](#lecture-recordings)
     1. [Tutorials](#tutorials)
 1. [Contributing to the Project](#contributing-to-the-project)
     1. [Steps to follow when editing existing content](#steps-to-follow-when-editing-existing-content)
