@@ -177,7 +177,7 @@ Each day the lecture slides will be uploaded here to the GitHub repo.
 
 ## Lecture Recordings
 
-Link to YouTube Playlist [![Playlist Thumbnail](HTTP://img.youtube.com/vi/ohENPWOHqx0/0.jpg)](https://www.youtube.com/playlist?list=PLR-ra8xOs0q4&si=M-n4R77uKV2xU-vI) of pre-recorded lecture recordings.
+Link to [![YouTube Playlist](https://img.youtube.com/vi/ohENPWOHqx0/maxresdefault.jpg)](https://www.youtube.com/playlist?list=PLR-ra8xOs0q4&si=M-n4R77uKV2xU-vI) of pre-recorded lecture recordings.
 
 ## Tutorials
 
