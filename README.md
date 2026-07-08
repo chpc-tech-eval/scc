@@ -161,29 +161,29 @@ Each day the lecture slides will be uploaded here to the GitHub repo.
 
 ### Day 1
 
-1. [Welcome and Introduction](http://154.114.52.167/Welcome%20&%20Introduction.pptx)
-1. [Linux Services](http://154.114.52.167/Linux_Services_LPitsi_Slides.pptx)
+1. [Welcome and Introduction](https://scc-files.duckdns.org//Welcome%20&%20Introduction.pptx)
+1. [Linux Services](https://scc-files.duckdns.org//Linux_Services_LPitsi_Slides.pptx)
 
 ### Day 2
 
-1. [HPC Hardware](http://154.114.52.167/HPC_Hardware_KRamlall_Slides.pptx)
-1. [Networking and SSH](http://154.114.52.167/Networking_and_SSH_Allen.pptx)
-1. [Network File Systems](http://154.114.52.167/Network_File_Systems_Allen.pptx)
-1. [System Administration and Configuration](http://154.114.52.167/SysAdmin_and_Config_LPitsi_Slides.pptx)
-1. [Putting together an HPC Cluster](http://154.114.52.167/HPC_Putting_together_cluster.pptx)
+1. [HPC Hardware](https://scc-files.duckdns.org//HPC_Hardware_KRamlall_Slides.pptx)
+1. [Networking and SSH](https://scc-files.duckdns.org//Networking_and_SSH_Allen.pptx)
+1. [Network File Systems](https://scc-files.duckdns.org//Network_File_Systems_Allen.pptx)
+1. [System Administration and Configuration](https://scc-files.duckdns.org//SysAdmin_and_Config_LPitsi_Slides.pptx)
+1. [Putting together an HPC Cluster](https://scc-files.duckdns.org//HPC_Putting_together_cluster.pptx)
 
 ### Day 3
 
-1. [Scripting and Code Compilation](http://154.114.52.167/Scripting_and_Code_Compilation_Tebogo_Slides_final.pptx)
-1. [Environment Management Tools (LMOD)](http://154.114.52.167/Environment_Management_Tools_Thina_Calana.pptx)
-1. [Compiler Tools](http://154.114.52.167/Compiler_Tools_Thina_Calana.pptx)
-1. [Benchmarking and HPL](http://154.114.52.167/CHPC Selection Round - Benchmarking and HPL.pptx)
+1. [Scripting and Code Compilation](https://scc-files.duckdns.org//Scripting_and_Code_Compilation_Tebogo_Slides_final.pptx)
+1. [Environment Management Tools (LMOD)](https://scc-files.duckdns.org//Environment_Management_Tools_Thina_Calana.pptx)
+1. [Compiler Tools](https://scc-files.duckdns.org//Compiler_Tools_Thina_Calana.pptx)
+1. [Benchmarking and HPL](https://scc-files.duckdns.org//CHPC Selection Round - Benchmarking and HPL.pptx)
 
 ### Day 4
 
-1. [OpenMX](http://154.114.52.167/OpenMX_Allen.pptx)
-1. [Monitoring](http://154.114.52.167/Monitoring_Shadley_Wentzel.pptx)
-1. [Automation and Provisioning through Ansible](http://154.114.52.167/Automation_and_Provisioning_Ansible_TDiraditsile_Slides.pptx)
+1. [OpenMX](https://scc-files.duckdns.org//OpenMX_Allen.pptx)
+1. [Monitoring](https://scc-files.duckdns.org//Monitoring_Shadley_Wentzel.pptx)
+1. [Automation and Provisioning through Ansible](https://scc-files.duckdns.org//Automation_and_Provisioning_Ansible_TDiraditsile_Slides.pptx)
 
 ## Lecture Recordings
 
