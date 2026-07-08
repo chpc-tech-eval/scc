@@ -18,6 +18,8 @@ The goal of this document is to introduce you to the competition platform and fa
 1. [Deliverables](#deliverables)
     1. [Cluster Design Assignment](#cluster-design-assignment)
     1. [Technical Knowledge Assessment](#technical-knowledge-assessment)
+    1. [Lecture Slides](#lecture-slides)
+    1. [Lecture Recordings](#lecture-recordings)
     1. [Tutorials](#tutorials)
 1. [Contributing to the Project](#contributing-to-the-project)
     1. [Steps to follow when editing existing content](#steps-to-follow-when-editing-existing-content)
@@ -168,12 +170,20 @@ Each day the lecture slides will be uploaded here to the GitHub repo.
 1. [Networking and SSH](http://154.114.52.167/Networking_and_SSH_Allen.pptx)
 1. [Network File Systems](http://154.114.52.167/Network_File_Systems_Allen.pptx)
 1. [System Administration and Configuration](http://154.114.52.167/SysAdmin_and_Config_LPitsi_Slides.pptx)
+1. [Putting together an HPC Cluster](http://154.114.52.167/HPC_Putting_together_cluster.pptx)
 
 ### Day 3
 
+1. [Scripting and Code Compilation](http://154.114.52.167/Scripting_and_Code_Compilation_Tebogo_Slides_final.pptx)
+1. [Environment Management Tools (LMOD)](http://154.114.52.167/Environment_Management_Tools_Thina_Calana.pptx)
 1. [Compiler Tools](http://154.114.52.167/Compiler_Tools_Thina_Calana.pptx)
+1. [Benchmarking and HPL](http://154.114.52.167/CHPC Selection Round - Benchmarking and HPL.pptx)
 
 ### Day 4
+
+1. [OpenMX](http://154.114.52.167/OpenMX_Allen.pptx)
+1. [Monitoring](http://154.114.52.167/Monitoring_Shadley_Wentzel.pptx)
+1. [Automation and Provisioning through Ansible](http://154.114.52.167/Automation_and_Provisioning_Ansible_TDiraditsile_Slides.pptx)
 
 ## Lecture Recordings
 
