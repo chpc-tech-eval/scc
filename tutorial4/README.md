@@ -1558,7 +1558,7 @@ cd ../work
 mpirun -n 2 ./openmx 1-Methane.dat
 ```
 
-#### C. Own high performace libraries (complex difficulty)
+#### C. Own high performance libraries (complex difficulty)
 
 These next few steps are very involved and can be skipped, it was only added for completeness.
 
