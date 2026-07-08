@@ -14,7 +14,7 @@ Student Cluster Competition - Tutorial 3
     1. [Configure and Run HPL on Compute Node](#configure-and-run-hpl-on-compute-node)
 1. [Building and Compiling OpenBLAS and OpenMPI Libraries from Source](#building-and-compiling-openblas-and-openmpi-libraries-from-source)
 1. [Intel oneAPI Toolkits and Compiler Suite](#intel-oneapi-toolkits-and-compiler-suite)
-    1. [Configure and Install Intel oneAPI Base and HPC Toolkits](#configure-and-install-intel-oneapi-base-and-hpc-toolkits)
+    1. [Configure and Install Intel oneAPI Toolkits](#configure-and-install-intel-oneapi-toolkits)
     1. [Configuring and Running HPL with Intel oneAPI Toolkit and MKL](#configuring-and-running-hpl-with-intel-oneapi-toolkit-and-mkl)
 1. [LinPACK Theoretical Peak Performance](#linpack-theoretical-peak-performance)
     1. [Top500 List](#top500-list)
@@ -495,7 +495,7 @@ You will need to install and configure Intel's oneAPI Base Toolkit which include
 
    These must be run separately and you will need to navigate through a number of CLI text prompts and accept the end-user license agreement.
    ```bash
-   # Run Intel oneAPI Basekit installation script
+   # Run Intel oneAPI kit installation script
    ./intel-oneapi-toolkit-2026.1.0.192_offline.sh -a --cli --eula accept
    ```
 

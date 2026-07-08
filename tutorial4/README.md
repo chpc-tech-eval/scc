@@ -177,10 +177,10 @@ You will need to have `docker`, `containerd` and `docker-compose` installed on a
 
    Download and deploy a test image and run it inside a container. When the container runs, it prints a confirmation message and exits.
    ```bash
-   # Check the verions of Docker
+   # Check the versions of Docker
    docker --version
 
-   # Download and deplpoy a test image
+   # Download and deploy a test image
    sudo docker run hello-world
 
    # Check your version of Docker Compose
@@ -192,13 +192,13 @@ You will need to have `docker`, `containerd` and `docker-compose` installed on a
 
 1. Create a suitable directory, e.g. `/opt/monitoring_stack`
 
-   This which you’ll keep a number of important configuration files.
+   This is where you’ll keep a number of important configuration files.
 
    ```bash
    sudo mkdir /opt/monitoring_stack/
    cd /opt/monitoring_stack/
    ```
-1. Create and edit your monitoring configurations files
+1. Create and edit your monitoring configuration files
    ```bash
    sudo nano /opt/monitoring_stack/docker-compose.yml
    ```
@@ -255,7 +255,7 @@ You will need to have `docker`, `containerd` and `docker-compose` installed on a
        static_configs:
          - targets: ['node-exporter:9100']
    ```
-1. Configure you Promeheus Data Sources
+1. Configure your Prometheus data sources
    ```bash
    sudo nano /opt/monitoring_stack/prometheus-datasource.yaml
    ```
@@ -362,7 +362,7 @@ Once you have understood the above considerations, you may proceed to create a T
 
    <p align="center"><img alt="Grafana Login." src="./resources/grafana_login.png" width=900 /></p>
 
-3. Login to you Grafana dashboards
+3. Login to your Grafana dashboards
    ```
    username: admin
    password: <YOUR_GRAFANA_PASSWORD>
@@ -411,7 +411,7 @@ sudo useradd --no-create-home --shell /sbin/nologin prometheus
  ```bash
 wget https://github.com/prometheus/prometheus/releases/download/v2.33.1/prometheus-2.33.1.linux-amd64.tar.gz
  ```
-3. Long list file to verify Prometheus was downloaded
+3. List the files to verify Prometheus was downloaded
  ```bash
 ll
  ```
@@ -439,7 +439,7 @@ sudo mv consoles/ console_libraries/ prometheus.yml /etc/prometheus/
 sudo chown -R prometheus:prometheus /etc/prometheus/
  ```
 8. Configure Prometheus \
-  Edit the `/etc/prometheus/prometheus.yml` file to configure your targets(compute node)
+  Edit the `/etc/prometheus/prometheus.yml` file to configure your targets (compute node)
 
     *Hint : Add the job configuration for the compute_node in the scrape_configs section of your Prometheus YAML configuration file. Ensure that all necessary configurations for this job are correctly placed within the relevant sections of the YAML file.*:
 
@@ -517,7 +517,7 @@ The installation and configuration of Node Exporter will be done on the **comput
  ```bash
 sudo adduser -M -r -s /sbin/nologin node_exporter
 ```
-2. Download and Install Node Exporter, this is done using `wget` as done before
+2. Download and install Node Exporter; this is done using `wget` as before
  ```bash
 cd /usr/src/
 
@@ -529,7 +529,7 @@ sudo tar xvf node_exporter-1.6.1.linux-amd64.tar.gz
 ```bash
 mv node_exporter-*/node_exporter /usr/local/bin
 ```
-4.  Create a service file to manage Node Exporter with `systemctl`, the file can be created with the text editor `nano` (Can use any text editor of your choice)
+4. Create a service file to manage Node Exporter with `systemctl`; the file can be created with the text editor `nano` (or any text editor of your choice)
  ```bash
 sudo nano /etc/systemd/system/node_exporter.service
  ```
