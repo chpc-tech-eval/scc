@@ -172,6 +172,7 @@ Each day the lecture slides will be uploaded here to the GitHub repo.
 ### Day 3
 
 1. [Compiler Tools](http://154.114.52.167/Compiler_Tools_Thina_Calana.pptx)
+1. [](http://154.114.52.167/)
 
 ### Day 4
 

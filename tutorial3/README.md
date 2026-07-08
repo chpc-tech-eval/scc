@@ -588,7 +588,7 @@ You can determine the maximum and base frequency of your CPU model on the Intel 
 
 ## Top500 List
 
-The [TOP500 list](https://top500.org/lists/top500/2024/06/) is a project that ranks and details the 500 most powerful supercomputers in the world. The ranking is based on the High-Performance Linpack (HPL) benchmark, which measures a system's floating point computing power.
+The [TOP500 list](https://top500.org/lists/top500/) is a project that ranks and details the 500 most powerful supercomputers in the world. The ranking is based on the High-Performance Linpack (HPL) benchmark, which measures a system's floating point computing power.
 
 1. Go the the Top500 List and compare your results
 
