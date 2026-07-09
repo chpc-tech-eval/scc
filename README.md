@@ -150,7 +150,7 @@ After the presentation the judging panel will have an opportunity to ask questio
 
 ## Technical Knowledge Assessment
 
-Each Team must work together to answer and complete the [Technical Knowledge Assessment](resources/CHPC_SCC_2025_Technical_Knowledge_Assessment.docx) to the best of their ability. Team Captains must email your findings to the organizers **no later than 23:00 11th July**. You are required to demonstrate your understanding of the concepts in **YOUR OWN WORDS**. Keep your answers succinct and to the point. Your answers to each of the questions, should not exceed more than 2-3 lines.
+Each Team must work together to answer and complete the [Technical Knowledge Assessment](resources/CHPC_SCC_2026_Technical_Knowledge_Assessment.docx) to the best of their ability. Team Captains must email your findings to the organizers **no later than 23:00 11th July**. You are required to demonstrate your understanding of the concepts in **YOUR OWN WORDS**. Keep your answers succinct and to the point. Your answers to each of the questions, should not exceed more than 2-3 lines.
 
 > [!CAUTION]
 > The deadline for submission of the Technical Knowledge Assessment is **23:00 on Saturday the 11th July**. Late submissions will be penalized.
