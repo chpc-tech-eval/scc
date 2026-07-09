@@ -181,6 +181,8 @@ Each day the lecture slides will be uploaded here to the GitHub repo.
 
 ### Day 4
 
+1. [Basic Intro to Quantum Computing](https://scc-files.duckdns.org/quantum_computing_nlisa.pptx)
+    1. [Jupyterlab Notebook](resources/Day4_QC_Demo.ipynb)
 1. [OpenMX](https://scc-files.duckdns.org/OpenMX_Allen.pptx)
 1. [Monitoring](https://scc-files.duckdns.org/Monitoring_Shadley_Wentzel.pptx)
 1. [Automation and Provisioning through Ansible](https://scc-files.duckdns.org/Automation_and_Provisioning_Ansible_TDiraditsile_Slides.pptx)
