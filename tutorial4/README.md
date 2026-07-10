@@ -1385,7 +1385,7 @@ You will now be extending some of your earlier work from [Tutorial 3](../tutoria
 > [!NOTE]
 > You will need to work on your or laptop to complete this section, not on your head node nor compute node.
 
-You are able to score bonus points for this tutorial by submitting a visualisation of your **adh_cubic** benchmark run. Follow the instructions below to accomplish this and upload the visualisation.
+You are able to score bonus points for this tutorial by submitting a visualisation of your **adh_cubic** benchmark run. Follow the instructions below to accomplish this and upload the visualization.
 
 Download and install the VMD visualization tool by selecting the correct version for your operating system. For example, for a Windows machine with an Nvidia GPU select the “Windows OpenGL, CUDA” option. You may need to register on the website.
 
@@ -1415,26 +1415,6 @@ Simulations like this are used to to develop and prototype experimental pharmace
 
 > [!TIP]
 > Copy the resulting `.bmp` file(s) from yout cluster to your local computer or laptop and demonstrate this to your instructors for bonus points.
-
-## Benchmark 2 (1.5M Water)
-
-> [!CAUTION]
-> This is a large benchmark and can possibly take some time. Complete the next sections and come back to this if you feel as though your time is limited.
-
-Pre-process the input data using the `grompp` command
-
-```bash
-gmx_mpi grompp -f pme_verlet.mdp -c out.gro -p topol.top -o md_0_1.tpr
-```
-
-Using a batch script similar to the one above, run the benchmark. You may modify the mpirun command to optimise performance (significantly) but in order to produce a valid result, the simulation must run for 5,000 steps. Quoted in the output as:
-
-```text
-"5000 steps,     10.0 ps."
-```
-
-> [!NOTE]
-> Please be ready to present the `gromacs_log` files for the **1.5M_water** benchmark to the instructors.
 
 
 [def]: ./resources/circleci_successful_deploy.png"
@@ -1688,9 +1668,9 @@ mpirun -n 2 ./openmx 1-Methane.dat
 ## Tasks
 
 1. Run `1-Methane.dat` to make sure OpenMX build is working
-2. Run `2-Si.dat` as the optimization benchmark
+2. Run `2-Si.dat` as the optimization benchmark to optimize OpenMX, and submit screenshots on [discussions page](https://github.com/chpc-tech-eval/scc/discussions/319).
 3. Run `3-NVC.dat` as the final task, and upload a screenshot of your final output to the [discussions page](https://github.com/chpc-tech-eval/scc/discussions/319).
-4. Visualize results using [viewer](https://www.openmx-square.org/viewer/) and ```nvc.sden.cube``` output file. Upload as very small video to twitter and tag `@chpc_scc`.
+4. Visualize results using [viewer](https://www.openmx-square.org/viewer/) and ```nvc.sden.cube``` output file. Upload as very small video to twitter and tag `@chpc_scc` or show a mentor.
 
 ### Optimization
 
@@ -2056,3 +2036,30 @@ A Slurm script is also provided to run the case. You're not required to use it, 
 sbatch runFoam.sh
 ```
 If you do make use of slurm, direct simpleFoam to write to a .out so that results can be confirmed by the instructors.
+
+# GROMACS Application Benchmark (Part 3)
+
+> [!DANGER]
+> Come back to this benchmark after you have completed OpenMX and OpenFOAM!
+> The instructions for this part are highly subject to change.
+
+## Benchmark 2 (1.5M Water)
+
+> [!CAUTION]
+> This is a large benchmark and can possibly take some time. Complete the next sections and come back to this if you feel as though your time is limited.
+
+Pre-process the input data using the `grompp` command
+
+```bash
+gmx_mpi grompp -f pme_verlet.mdp -c out.gro -p topol.top -o md_0_1.tpr
+```
+
+Using a batch script similar to the one above, run the benchmark. You may modify the mpirun command to optimise performance (significantly) but in order to produce a valid result, the simulation must run for 5,000 steps. Quoted in the output as:
+
+```text
+"5000 steps,     10.0 ps."
+```
+
+> [!NOTE]
+> Please be ready to present the `gromacs_log` files for the **1.5M_water** benchmark to the instructors.
+
