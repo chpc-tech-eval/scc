@@ -1421,6 +1421,9 @@ Simulations like this are used to to develop and prototype experimental pharmace
 > [!CAUTION]
 > This is a large benchmark and can possibly take some time. Complete the next sections and come back to this if you feel as though your time is limited.
 
+> [!DANGER]
+> Come back to this benchmark after you have completed OpenMX and OpenFOAM!
+
 Pre-process the input data using the `grompp` command
 
 ```bash
