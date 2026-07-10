@@ -1688,9 +1688,9 @@ mpirun -n 2 ./openmx 1-Methane.dat
 ## Tasks
 
 1. Run `1-Methane.dat` to make sure OpenMX build is working
-2. Run `2-Si.dat` as the optimization benchmark
+2. Run `2-Si.dat` as the optimization benchmark to optimize OpenMX, and submit screenshots on [discussions page](https://github.com/chpc-tech-eval/scc/discussions/319).
 3. Run `3-NVC.dat` as the final task, and upload a screenshot of your final output to the [discussions page](https://github.com/chpc-tech-eval/scc/discussions/319).
-4. Visualize results using [viewer](https://www.openmx-square.org/viewer/) and ```nvc.sden.cube``` output file. Upload as very small video to twitter and tag `@chpc_scc`.
+4. Visualize results using [viewer](https://www.openmx-square.org/viewer/) and ```nvc.sden.cube``` output file. Upload as very small video to twitter and tag `@chpc_scc` or show a mentor.
 
 ### Optimization
 
